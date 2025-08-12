@@ -1,0 +1,1284 @@
+{
+  "version": "2.3.0",
+  "last_updated": "2025-08-02",
+  "schema_version": "1.0",
+  "metadata": {
+    "description": "OS and device fingerprinting database for network scanning",
+    "author": "xAI Security Team",
+    "contact": "security@x.ai"
+  },
+  "windows": {
+    "windows_xp": {
+      "description": "Windows XP",
+      "version_range": "SP1-SP3",
+      "required_ports": [
+        {"port": 135, "protocol": "TCP", "service": "RPC", "weight": 0.4},
+        {"port": 445, "protocol": "TCP", "service": "SMB", "weight": 0.4}
+      ],
+      "optional_ports": [
+        {"port": 137, "protocol": "UDP", "service": "NetBIOS", "weight": 0.1},
+        {"port": 138, "protocol": "UDP", "service": "NetBIOS", "weight": 0.1},
+        {"port": 139, "protocol": "TCP", "service": "NetBIOS", "weight": 0.1}
+      ],
+      "confidence_boost": [
+        {"port": 3389, "protocol": "TCP", "service": "RDP", "weight": 0.2}
+      ],
+      "negative_indicators": [
+        {"port": 22, "protocol": "TCP", "service": "SSH", "confidence_reduction": 0.6}
+      ],
+      "network_indicators": {
+        "ttl": {"value": 128, "tolerance": 2},
+        "tcp_window_size": {"value": 65535, "tolerance": 1000},
+        "tcp_stack_quirks": {
+          "option_order": ["MSS", "NOP", "Window Scale", "NOP", "NOP", "Timestamp", "SACK Permitted"],
+          "ecn_support": false
+        }
+      },
+      "service_banners": [
+        {
+          "port": 445,
+          "protocol": "TCP",
+          "banner_regex": "Windows XP|Windows 2000",
+          "weight": 0.3
+        }
+      ],
+      "vulnerabilities": [
+        {
+          "id": "CVE-2008-4250",
+          "description": "Remote code execution in Server service (MS08-067)",
+          "severity": "Critical",
+          "mitigation": "Apply Service Pack 3 or disable SMBv1"
+        },
+        {
+          "id": "CVE-2017-0144",
+          "description": "EternalBlue SMB exploit (MS17-010)",
+          "severity": "Critical",
+          "mitigation": "Apply security patches or disable SMBv1"
+        }
+      ],
+      "confidence_threshold": 0.7
+    },
+    "windows_10": {
+      "description": "Windows 10",
+      "version_range": "1507-22H2",
+      "required_ports": [
+        {"port": 135, "protocol": "TCP", "service": "RPC", "weight": 0.4},
+        {"port": 445, "protocol": "TCP", "service": "SMB", "weight": 0.4}
+      ],
+      "optional_ports": [
+        {"port": 137, "protocol": "UDP", "service": "NetBIOS", "weight": 0.1},
+        {"port": 138, "protocol": "UDP", "service": "NetBIOS", "weight": 0.1},
+        {"port": 139, "protocol": "TCP", "service": "NetBIOS", "weight": 0.1},
+        {"port": 5355, "protocol": "UDP", "service": "LLMNR", "weight": 0.1}
+      ],
+      "confidence_boost": [
+        {"port": 49664, "protocol": "TCP", "service": "RPC Dynamic", "weight": 0.1},
+        {"port": 49665, "protocol": "TCP", "service": "RPC Dynamic", "weight": 0.1}
+      ],
+      "negative_indicators": [
+        {"port": 22, "protocol": "TCP", "service": "SSH", "confidence_reduction": 0.5}
+      ],
+      "network_indicators": {
+        "ttl": {"value": 128, "tolerance": 2},
+        "tcp_window_size": {"value": 65535, "tolerance": 1000},
+        "tcp_stack_quirks": {
+          "option_order": ["MSS", "Window Scale", "NOP", "NOP", "Timestamp", "SACK Permitted"],
+          "ecn_support": true
+        }
+      },
+      "service_banners": [
+        {
+          "port": 445,
+          "protocol": "TCP",
+          "banner_regex": "Windows 10|Windows 8|SMB 3\\.1\\.1.*Win10/2016\\+",
+          "weight": 0.3
+        }
+      ],
+      "confidence_threshold": 0.7
+    },
+    "windows_11": {
+      "description": "Windows 11",
+      "version_range": "21H2-24H2",
+      "required_ports": [
+        {"port": 135, "protocol": "TCP", "service": "RPC", "weight": 0.3},
+        {"port": 445, "protocol": "TCP", "service": "SMB", "weight": 0.3}
+      ],
+      "optional_ports": [
+        {"port": 137, "protocol": "UDP", "service": "NetBIOS", "weight": 0.1},
+        {"port": 138, "protocol": "UDP", "service": "NetBIOS", "weight": 0.1},
+        {"port": 139, "protocol": "TCP", "service": "NetBIOS", "weight": 0.1},
+        {"port": 5040, "protocol": "TCP", "service": "CDPSvc", "weight": 0.15},
+        {"port": 5353, "protocol": "UDP", "service": "mDNS", "weight": 0.1},
+        {"port": 5355, "protocol": "UDP", "service": "LLMNR", "weight": 0.1},
+        {"port": 7680, "protocol": "TCP", "service": "Delivery Optimization", "weight": 0.15}
+      ],
+      "confidence_boost": [
+        {"port": 49664, "protocol": "TCP", "service": "RPC Dynamic", "weight": 0.1},
+        {"port": 49665, "protocol": "TCP", "service": "RPC Dynamic", "weight": 0.1},
+        {"port": 49666, "protocol": "TCP", "service": "RPC Dynamic", "weight": 0.1}
+      ],
+      "negative_indicators": [
+        {"port": 22, "protocol": "TCP", "service": "SSH", "confidence_reduction": 0.5},
+        {"port": 88, "protocol": "TCP", "service": "Kerberos", "confidence_reduction": 0.3}
+      ],
+      "port_combinations": [
+        {
+          "ports": [{"port": 5040, "protocol": "TCP"}, {"port": 7680, "protocol": "TCP"}],
+          "confidence_boost": 0.3,
+          "description": "Windows 11 consumer services"
+        }
+      ],
+      "network_indicators": {
+        "ttl": {"value": 128, "tolerance": 2},
+        "tcp_window_size": {"value": 65535, "tolerance": 1000},
+        "tcp_stack_quirks": {
+          "option_order": ["MSS", "Window Scale", "NOP", "NOP", "Timestamp", "SACK Permitted"],
+          "ecn_support": true
+        }
+      },
+      "static_indicators": {
+        "tcp_always_present": [135, 445, 5040, 7680],
+        "tcp_interface_bound": [139],
+        "udp_always_present": [500, 4500, 5050, 5353, 5355],
+        "udp_interface_bound": [137, 138],
+        "rpc_static_range": [49664, 49665, 49666, 49667, 49668],
+        "rpc_dynamic_range": [49669, 65535]
+      },
+      "firewall_indicators": {
+        "enabled_services": ["AllJoyn Router", "Cast to Device", "Connected Devices Platform", "Core Networking", "Delivery Optimization", "File and Printer Sharing", "mDNS", "Network Discovery"],
+        "default_tcp_ports": [135, 445, 139, 5040, 7680, 49664, 49665, 49666, 49667, 49668],
+        "default_udp_ports": [137, 138, 500, 4500, 5050, 5353, 5355],
+        "cast_media_ports": [2177, 2869, 10246, 10247, 23554, 23555, 23556]
+      },
+      "service_banners": [
+        {
+          "port": 445,
+          "protocol": "TCP",
+          "banner_regex": "Windows 11",
+          "weight": 0.3
+        }
+      ],
+      "confidence_threshold": 0.8
+    },
+    "windows_server_2019": {
+      "description": "Windows Server 2019",
+      "required_ports": [
+        {"port": 135, "protocol": "TCP", "service": "RPC", "weight": 0.4},
+        {"port": 445, "protocol": "TCP", "service": "SMB", "weight": 0.4}
+      ],
+      "optional_ports": [
+        {"port": 88, "protocol": "TCP", "service": "Kerberos", "weight": 0.15},
+        {"port": 389, "protocol": "TCP", "service": "LDAP", "weight": 0.15},
+        {"port": 5985, "protocol": "TCP", "service": "WinRM", "weight": 0.1}
+      ],
+      "confidence_boost": [
+        {"port": 593, "protocol": "TCP", "service": "RPC over HTTP", "weight": 0.05}
+      ],
+      "negative_indicators": [
+        {"port": 88, "protocol": "TCP", "service": "Kerberos", "confidence_reduction": 0.3},
+        {"port": 389, "protocol": "TCP", "service": "LDAP", "confidence_reduction": 0.3},
+        {"port": 3268, "protocol": "TCP", "service": "Global Catalog", "confidence_reduction": 0.4}
+      ],
+      "network_indicators": {
+        "ttl": {"value": 128, "tolerance": 2},
+        "tcp_window_size": {"value": 65535, "tolerance": 1000},
+        "tcp_stack_quirks": {
+          "option_order": ["MSS", "Window Scale", "NOP", "NOP", "Timestamp", "SACK Permitted"],
+          "ecn_support": true
+        }
+      },
+      "service_banners": [
+        {
+          "port": 445,
+          "protocol": "TCP",
+          "banner_regex": "Windows Server 2019|Windows Server 2016",
+          "weight": 0.2
+        },
+        {
+          "port": 5985,
+          "protocol": "TCP",
+          "banner_regex": "Microsoft-HTTPAPI",
+          "weight": 0.1
+        }
+      ],
+      "confidence_threshold": 0.45
+    },
+    "windows_server_2022": {
+      "description": "Windows Server 2022",
+      "required_ports": [
+        {"port": 135, "protocol": "TCP", "service": "RPC", "weight": 0.3},
+        {"port": 445, "protocol": "TCP", "service": "SMB", "weight": 0.3}
+      ],
+      "optional_ports": [
+        {"port": 123, "protocol": "UDP", "service": "NTP", "weight": 0.1},
+        {"port": 139, "protocol": "TCP", "service": "NetBIOS", "weight": 0.1},
+        {"port": 5985, "protocol": "TCP", "service": "WinRM", "weight": 0.2},
+        {"port": 47001, "protocol": "TCP", "service": "WinRM SSL", "weight": 0.2}
+      ],
+      "confidence_boost": [
+        {"port": 1688, "protocol": "TCP", "service": "KMS", "weight": 0.1}
+      ],
+      "negative_indicators": [
+        {"port": 88, "protocol": "TCP", "service": "Kerberos", "confidence_reduction": 0.4},
+        {"port": 389, "protocol": "TCP", "service": "LDAP", "confidence_reduction": 0.4}
+      ],
+      "standalone_indicators": {
+        "tcp_always_present": [135, 445, 5985, 47001, 49664, 49665, 49666, 49667, 49668, 49669],
+        "udp_always_present": [123, 5353, 5355],
+        "interface_bound": [139, 137, 138],
+        "missing_consumer_services": [5040, 7680],
+        "server_management": [5985, 47001],
+        "rpc_range": [49664, 49669]
+      },
+      "firewall_indicators": {
+        "enabled_services": ["Windows Remote Management", "Core Networking", "File and Printer Sharing", "mDNS"],
+        "default_tcp_ports": [135, 139, 445, 5985, 47001, 49664, 49665, 49666, 49667, 49668, 49669],
+        "default_udp_ports": [123, 137, 138, 5353, 5355],
+        "management_ports": [5985, 47001]
+      },
+      "service_banners": [
+        {
+          "port": 445,
+          "protocol": "TCP",
+          "banner_regex": "Windows Server 2022",
+          "weight": 0.3
+        },
+        {
+          "port": 5985,
+          "protocol": "TCP",
+          "banner_regex": "Microsoft-HTTPAPI",
+          "weight": 0.15
+        }
+      ],
+      "confidence_threshold": 0.7
+    },
+    "windows_server_2025_dc": {
+      "description": "Windows Server 2025 Domain Controller",
+      "required_ports": [
+        {"port": 88, "protocol": "TCP", "service": "Kerberos", "weight": 0.25},
+        {"port": 135, "protocol": "TCP", "service": "RPC", "weight": 0.15},
+        {"port": 389, "protocol": "TCP", "service": "LDAP", "weight": 0.25},
+        {"port": 445, "protocol": "TCP", "service": "SMB", "weight": 0.15}
+      ],
+      "optional_ports": [
+        {"port": 53, "protocol": "TCP", "service": "DNS", "weight": 0.1},
+        {"port": 464, "protocol": "TCP", "service": "Kerberos PCR", "weight": 0.08},
+        {"port": 636, "protocol": "TCP", "service": "LDAPS", "weight": 0.08},
+        {"port": 3268, "protocol": "TCP", "service": "Global Catalog", "weight": 0.12},
+        {"port": 3269, "protocol": "TCP", "service": "Global Catalog SSL", "weight": 0.12},
+        {"port": 5985, "protocol": "TCP", "service": "WinRM", "weight": 0.08},
+        {"port": 9389, "protocol": "TCP", "service": "ADWS", "weight": 0.08}
+      ],
+      "confidence_boost": [
+        {"port": 47001, "protocol": "TCP", "service": "WinRM SSL", "weight": 0.05}
+      ],
+      "service_banners": [
+        {
+          "port": 445,
+          "protocol": "TCP",
+          "banner_regex": "Windows Server 2025|SMB 3\\.1\\.1.*Server 2025|SMB 3\\.1\\.1.*Win10/2016\\+|SMBv2/3.*Modern Windows",
+          "weight": 0.25
+        },
+        {
+          "port": 5985,
+          "protocol": "TCP",
+          "banner_regex": "Microsoft-HTTPAPI",
+          "weight": 0.15
+        }
+      ],
+      "confidence_threshold": 0.45
+    },
+    "windows_server_dc_generic": {
+      "description": "Windows Server Domain Controller",
+      "required_ports": [
+        {"port": 88, "protocol": "TCP", "service": "Kerberos", "weight": 0.3},
+        {"port": 135, "protocol": "TCP", "service": "RPC", "weight": 0.2},
+        {"port": 389, "protocol": "TCP", "service": "LDAP", "weight": 0.3},
+        {"port": 445, "protocol": "TCP", "service": "SMB", "weight": 0.2}
+      ],
+      "optional_ports": [
+        {"port": 53, "protocol": "TCP", "service": "DNS", "weight": 0.1},
+        {"port": 464, "protocol": "TCP", "service": "Kerberos PCR", "weight": 0.08},
+        {"port": 636, "protocol": "TCP", "service": "LDAPS", "weight": 0.08},
+        {"port": 3268, "protocol": "TCP", "service": "Global Catalog", "weight": 0.12},
+        {"port": 3269, "protocol": "TCP", "service": "Global Catalog SSL", "weight": 0.12},
+        {"port": 5985, "protocol": "TCP", "service": "WinRM", "weight": 0.08}
+      ],
+      "service_banners": [
+        {
+          "port": 445,
+          "protocol": "TCP",
+          "banner_regex": "Windows Server|SMB 3\\.1\\.1.*Win10/2016\\+|SMB 3\\.0.*Win8/2012",
+          "weight": 0.2
+        },
+        {
+          "port": 5985,
+          "protocol": "TCP",
+          "banner_regex": "Microsoft-HTTPAPI",
+          "weight": 0.15
+        }
+      ],
+      "confidence_threshold": 0.4
+    },
+    "windows_workstation": {
+      "description": "Windows Workstation (Generic)",
+      "required_ports": [
+        {"port": 135, "protocol": "TCP", "service": "RPC", "weight": 0.4},
+        {"port": 445, "protocol": "TCP", "service": "SMB", "weight": 0.4}
+      ],
+      "optional_ports": [
+        {"port": 139, "protocol": "TCP", "service": "NetBIOS", "weight": 0.1},
+        {"port": 3389, "protocol": "TCP", "service": "RDP", "condition": "Remote Desktop enabled", "weight": 0.2}
+      ],
+      "confidence_boost": [
+        {"port": 5357, "protocol": "TCP", "service": "WSD", "weight": 0.1}
+      ],
+      "negative_indicators": [
+        {"port": 88, "protocol": "TCP", "service": "Kerberos", "confidence_reduction": 0.6},
+        {"port": 389, "protocol": "TCP", "service": "LDAP", "confidence_reduction": 0.6}
+      ],
+      "network_indicators": {
+        "ttl": {"value": 128, "tolerance": 2},
+        "tcp_window_size": {"value": 65535, "tolerance": 1000},
+        "tcp_stack_quirks": {
+          "option_order": ["MSS", "Window Scale", "NOP", "NOP", "Timestamp", "SACK Permitted"],
+          "ecn_support": true
+        }
+      },
+      "service_banners": [
+        {
+          "port": 445,
+          "protocol": "TCP",
+          "banner_regex": "Windows",
+          "weight": 0.2
+        }
+      ],
+      "confidence_threshold": 0.7
+    },
+    "windows_server_2022_firewall": {
+      "description": "Windows Server 2022 (Firewall)",
+      "required_ports": [],
+      "optional_ports": [
+        {"port": 5985, "protocol": "TCP", "service": "WinRM", "weight": 0.4},
+        {"port": 3389, "protocol": "TCP", "service": "RDP", "weight": 0.3},
+        {"port": 80, "protocol": "TCP", "service": "HTTP", "weight": 0.2},
+        {"port": 443, "protocol": "TCP", "service": "HTTPS", "weight": 0.2},
+        {"port": 135, "protocol": "TCP", "service": "RPC", "weight": 0.1},
+        {"port": 445, "protocol": "TCP", "service": "SMB", "weight": 0.1}
+      ],
+      "service_banners": [
+        {
+          "port": 5985,
+          "protocol": "TCP",
+          "banner_regex": "Microsoft-HTTPAPI/2\\.0.*2022|VERSION:2022",
+          "weight": 0.6
+        },
+        {
+          "port": 3389,
+          "protocol": "TCP",
+          "banner_regex": "\\x03\\x00\\x00\\x13",
+          "weight": 0.4
+        },
+        {
+          "port": 80,
+          "protocol": "TCP",
+          "banner_regex": "Microsoft-IIS|Microsoft-HTTPAPI",
+          "weight": 0.3
+        },
+        {
+          "port": 443,
+          "protocol": "TCP",
+          "banner_regex": "Microsoft-IIS|Microsoft-HTTPAPI",
+          "weight": 0.3
+        }
+      ],
+      "network_indicators": {
+        "ttl": {"value": 128, "tolerance": 2},
+        "tcp_window_size": {"value": 65535, "tolerance": 1000},
+        "tcp_stack_quirks": {
+          "option_order": ["MSS", "Window Scale", "NOP", "NOP", "Timestamp", "SACK Permitted"],
+          "ecn_support": true
+        }
+      },
+      "confidence_threshold": 0.5
+    },
+    "windows_server_2019_firewall": {
+      "description": "Windows Server 2019 (Firewall)",
+      "required_ports": [],
+      "optional_ports": [
+        {"port": 5985, "protocol": "TCP", "service": "WinRM", "weight": 0.4},
+        {"port": 3389, "protocol": "TCP", "service": "RDP", "weight": 0.3},
+        {"port": 80, "protocol": "TCP", "service": "HTTP", "weight": 0.2},
+        {"port": 443, "protocol": "TCP", "service": "HTTPS", "weight": 0.2},
+        {"port": 135, "protocol": "TCP", "service": "RPC", "weight": 0.1},
+        {"port": 445, "protocol": "TCP", "service": "SMB", "weight": 0.1}
+      ],
+      "service_banners": [
+        {
+          "port": 5985,
+          "protocol": "TCP",
+          "banner_regex": "Microsoft-HTTPAPI/2\\.0.*2019|VERSION:2019",
+          "weight": 0.6
+        },
+        {
+          "port": 3389,
+          "protocol": "TCP",
+          "banner_regex": "\\x03\\x00\\x00\\x13",
+          "weight": 0.4
+        },
+        {
+          "port": 80,
+          "protocol": "TCP",
+          "banner_regex": "Microsoft-IIS|Microsoft-HTTPAPI",
+          "weight": 0.3
+        },
+        {
+          "port": 443,
+          "protocol": "TCP",
+          "banner_regex": "Microsoft-IIS|Microsoft-HTTPAPI",
+          "weight": 0.3
+        }
+      ],
+      "network_indicators": {
+        "ttl": {"value": 128, "tolerance": 2},
+        "tcp_window_size": {"value": 65535, "tolerance": 1000},
+        "tcp_stack_quirks": {
+          "option_order": ["MSS", "Window Scale", "NOP", "NOP", "Timestamp", "SACK Permitted"],
+          "ecn_support": true
+        }
+      },
+      "confidence_threshold": 0.5
+    },
+    "windows_server_generic_firewall": {
+      "description": "Windows Server (Generic Firewall)",
+      "required_ports": [],
+      "optional_ports": [
+        {"port": 5985, "protocol": "TCP", "service": "WinRM", "weight": 0.3},
+        {"port": 3389, "protocol": "TCP", "service": "RDP", "weight": 0.2},
+        {"port": 80, "protocol": "TCP", "service": "HTTP", "weight": 0.15},
+        {"port": 443, "protocol": "TCP", "service": "HTTPS", "weight": 0.15},
+        {"port": 135, "protocol": "TCP", "service": "RPC", "weight": 0.1},
+        {"port": 445, "protocol": "TCP", "service": "SMB", "weight": 0.1},
+        {"port": 22, "protocol": "TCP", "service": "SSH", "weight": 0.05}
+      ],
+      "service_banners": [
+        {
+          "port": 5985,
+          "protocol": "TCP",
+          "banner_regex": "Microsoft-HTTPAPI/2\\.0",
+          "weight": 0.3
+        },
+        {
+          "port": 3389,
+          "protocol": "TCP",
+          "banner_regex": "\\x03\\x00\\x00\\x13",
+          "weight": 0.2
+        },
+        {
+          "port": 80,
+          "protocol": "TCP",
+          "banner_regex": "Microsoft-IIS|Microsoft-HTTPAPI",
+          "weight": 0.2
+        },
+        {
+          "port": 443,
+          "protocol": "TCP",
+          "banner_regex": "Microsoft-IIS|Microsoft-HTTPAPI",
+          "weight": 0.2
+        }
+      ],
+      "network_indicators": {
+        "ttl": {"value": 128, "tolerance": 2},
+        "tcp_window_size": {"value": 65535, "tolerance": 1000},
+        "tcp_stack_quirks": {
+          "option_order": ["MSS", "Window Scale", "NOP", "NOP", "Timestamp", "SACK Permitted"],
+          "ecn_support": true
+        }
+      },
+      "confidence_threshold": 0.35
+    }
+  },
+  "linux": {
+    "ubuntu_22_04": {
+      "description": "Ubuntu 22.04 LTS",
+      "required_ports": [
+        {"port": 22, "protocol": "TCP", "service": "SSH", "weight": 0.5}
+      ],
+      "optional_ports": [
+        {"port": 80, "protocol": "TCP", "service": "HTTP", "weight": 0.2},
+        {"port": 443, "protocol": "TCP", "service": "HTTPS", "weight": 0.2},
+        {"port": 631, "protocol": "TCP", "service": "CUPS", "weight": 0.1},
+        {"port": 53, "protocol": "UDP", "service": "DNS", "weight": 0.1}
+      ],
+      "confidence_boost": [
+        {"port": 9100, "protocol": "TCP", "service": "Node Exporter", "weight": 0.1}
+      ],
+      "negative_indicators": [
+        {"port": 135, "protocol": "TCP", "service": "RPC", "confidence_reduction": 0.8},
+        {"port": 445, "protocol": "TCP", "service": "SMB", "confidence_reduction": 0.6}
+      ],
+      "network_indicators": {
+        "ttl": {"value": 64, "tolerance": 2},
+        "tcp_window_size": {"value": 29200, "tolerance": 500},
+        "tcp_stack_quirks": {
+          "option_order": ["MSS", "Window Scale", "NOP", "SACK Permitted", "Timestamp"],
+          "ecn_support": true
+        }
+      },
+      "service_banners": [
+        {
+          "port": 22,
+          "protocol": "TCP",
+          "banner_regex": "OpenSSH_8\\.[0-9]+.*Ubuntu",
+          "weight": 0.4
+        }
+      ],
+      "confidence_threshold": 0.6
+    },
+    "ubuntu_24_04": {
+      "description": "Ubuntu 24.04 LTS",
+      "required_ports": [
+        {"port": 22, "protocol": "TCP", "service": "SSH", "weight": 0.5}
+      ],
+      "optional_ports": [
+        {"port": 80, "protocol": "TCP", "service": "HTTP", "weight": 0.2},
+        {"port": 443, "protocol": "TCP", "service": "HTTPS", "weight": 0.2},
+        {"port": 631, "protocol": "TCP", "service": "CUPS", "weight": 0.1},
+        {"port": 53, "protocol": "UDP", "service": "DNS", "weight": 0.1},
+        {"port": 9100, "protocol": "TCP", "service": "Node Exporter", "weight": 0.1}
+      ],
+      "confidence_boost": [
+        {"port": 9443, "protocol": "TCP", "service": "Prometheus", "weight": 0.1}
+      ],
+      "negative_indicators": [
+        {"port": 135, "protocol": "TCP", "service": "RPC", "confidence_reduction": 0.8},
+        {"port": 445, "protocol": "TCP", "service": "SMB", "confidence_reduction": 0.6}
+      ],
+      "network_indicators": {
+        "ttl": {"value": 64, "tolerance": 2},
+        "tcp_window_size": {"value": 29200, "tolerance": 500},
+        "tcp_stack_quirks": {
+          "option_order": ["MSS", "Window Scale", "NOP", "SACK Permitted", "Timestamp"],
+          "ecn_support": true
+        }
+      },
+      "service_banners": [
+        {
+          "port": 22,
+          "protocol": "TCP",
+          "banner_regex": "OpenSSH_9\\.[0-9]+.*Ubuntu",
+          "weight": 0.4
+        }
+      ],
+      "confidence_threshold": 0.6
+    },
+    "centos_7": {
+      "description": "CentOS 7",
+      "required_ports": [
+        {"port": 22, "protocol": "TCP", "service": "SSH", "weight": 0.5}
+      ],
+      "optional_ports": [
+        {"port": 80, "protocol": "TCP", "service": "HTTP", "weight": 0.2},
+        {"port": 443, "protocol": "TCP", "service": "HTTPS", "weight": 0.2},
+        {"port": 111, "protocol": "TCP", "service": "RPC", "weight": 0.1}
+      ],
+      "confidence_boost": [
+        {"port": 2049, "protocol": "TCP", "service": "NFS", "weight": 0.15}
+      ],
+      "negative_indicators": [
+        {"port": 135, "protocol": "TCP", "service": "RPC", "confidence_reduction": 0.8},
+        {"port": 445, "protocol": "TCP", "service": "SMB", "confidence_reduction": 0.6}
+      ],
+      "network_indicators": {
+        "ttl": {"value": 64, "tolerance": 2},
+        "tcp_window_size": {"value": 14600, "tolerance": 500},
+        "tcp_stack_quirks": {
+          "option_order": ["MSS", "Window Scale", "NOP", "SACK Permitted", "Timestamp"],
+          "ecn_support": true
+        }
+      },
+      "service_banners": [
+        {
+          "port": 22,
+          "protocol": "TCP",
+          "banner_regex": "OpenSSH_7\\.[0-9]+.*CentOS",
+          "weight": 0.4
+        }
+      ],
+      "vulnerabilities": [
+        {
+          "id": "CVE-2019-0211",
+          "description": "Apache HTTP Server privilege escalation",
+          "severity": "High",
+          "mitigation": "Update to latest CentOS 7 patches or disable affected Apache modules"
+        },
+        {
+          "id": "CVE-2020-14750",
+          "description": "Remote code execution in Oracle WebLogic Server",
+          "severity": "Critical",
+          "mitigation": "Apply CentOS 7 security updates or restrict network access"
+        }
+      ],
+      "confidence_threshold": 0.6
+    },
+    "rocky_9": {
+      "description": "Rocky Linux 9",
+      "required_ports": [
+        {"port": 22, "protocol": "TCP", "service": "SSH", "weight": 0.5}
+      ],
+      "optional_ports": [
+        {"port": 80, "protocol": "TCP", "service": "HTTP", "weight": 0.2},
+        {"port": 443, "protocol": "TCP", "service": "HTTPS", "weight": 0.2},
+        {"port": 111, "protocol": "TCP", "service": "RPC", "weight": 0.1},
+        {"port": 2049, "protocol": "TCP", "service": "NFS", "weight": 0.1}
+      ],
+      "confidence_boost": [
+        {"port": 9090, "protocol": "TCP", "service": "Cockpit", "weight": 0.15}
+      ],
+      "negative_indicators": [
+        {"port": 135, "protocol": "TCP", "service": "RPC", "confidence_reduction": 0.8},
+        {"port": 445, "protocol": "TCP", "service": "SMB", "confidence_reduction": 0.6}
+      ],
+      "network_indicators": {
+        "ttl": {"value": 64, "tolerance": 2},
+        "tcp_window_size": {"value": 14600, "tolerance": 500},
+        "tcp_stack_quirks": {
+          "option_order": ["MSS", "Window Scale", "NOP", "SACK Permitted", "Timestamp"],
+          "ecn_support": true
+        }
+      },
+      "service_banners": [
+        {
+          "port": 22,
+          "protocol": "TCP",
+          "banner_regex": "OpenSSH_8\\.[0-9]+.*Rocky",
+          "weight": 0.4
+        },
+        {
+          "port": 9090,
+          "protocol": "TCP",
+          "banner_regex": "Cockpit",
+          "weight": 0.3
+        }
+      ],
+      "confidence_threshold": 0.6
+    },
+    "fedora_41": {
+      "description": "Fedora 41",
+      "required_ports": [
+        {"port": 22, "protocol": "TCP", "service": "SSH", "weight": 0.5}
+      ],
+      "optional_ports": [
+        {"port": 80, "protocol": "TCP", "service": "HTTP", "weight": 0.2},
+        {"port": 443, "protocol": "TCP", "service": "HTTPS", "weight": 0.2},
+        {"port": 53, "protocol": "UDP", "service": "DNS", "weight": 0.1},
+        {"port": 9090, "protocol": "TCP", "service": "Cockpit", "weight": 0.15}
+      ],
+      "confidence_boost": [
+        {"port": 631, "protocol": "TCP", "service": "CUPS", "weight": 0.1}
+      ],
+      "negative_indicators": [
+        {"port": 135, "protocol": "TCP", "service": "RPC", "confidence_reduction": 0.8},
+        {"port": 445, "protocol": "TCP", "service": "SMB", "confidence_reduction": 0.6}
+      ],
+      "network_indicators": {
+        "ttl": {"value": 64, "tolerance": 2},
+        "tcp_window_size": {"value": 29200, "tolerance": 500},
+        "tcp_stack_quirks": {
+          "option_order": ["MSS", "Window Scale", "NOP", "SACK Permitted", "Timestamp"],
+          "ecn_support": true
+        }
+      },
+      "service_banners": [
+        {
+          "port": 22,
+          "protocol": "TCP",
+          "banner_regex": "OpenSSH_9\\.[0-9]+.*Fedora",
+          "weight": 0.4
+        },
+        {
+          "port": 9090,
+          "protocol": "TCP",
+          "banner_regex": "Cockpit",
+          "weight": 0.3
+        }
+      ],
+      "confidence_threshold": 0.6
+    },
+    "debian_11": {
+      "description": "Debian 11",
+      "required_ports": [
+        {"port": 22, "protocol": "TCP", "service": "SSH", "weight": 0.5}
+      ],
+      "optional_ports": [
+        {"port": 80, "protocol": "TCP", "service": "HTTP", "weight": 0.2},
+        {"port": 443, "protocol": "TCP", "service": "HTTPS", "weight": 0.2},
+        {"port": 53, "protocol": "UDP", "service": "DNS", "weight": 0.1}
+      ],
+      "confidence_boost": [
+        {"port": 25, "protocol": "TCP", "service": "SMTP", "weight": 0.1}
+      ],
+      "negative_indicators": [
+        {"port": 135, "protocol": "TCP", "service": "RPC", "confidence_reduction": 0.8},
+        {"port": 445, "protocol": "TCP", "service": "SMB", "confidence_reduction": 0.6}
+      ],
+      "network_indicators": {
+        "ttl": {"value": 64, "tolerance": 2},
+        "tcp_window_size": {"value": 29200, "tolerance": 500},
+        "tcp_stack_quirks": {
+          "option_order": ["MSS", "Window Scale", "NOP", "SACK Permitted", "Timestamp"],
+          "ecn_support": true
+        }
+      },
+      "service_banners": [
+        {
+          "port": 22,
+          "protocol": "TCP",
+          "banner_regex": "OpenSSH_8\\.[0-9]+.*Debian",
+          "weight": 0.4
+        }
+      ],
+      "confidence_threshold": 0.6
+    },
+    "raspberry_pi_os": {
+      "description": "Raspberry Pi OS (Debian-based)",
+      "required_ports": [
+        {"port": 22, "protocol": "TCP", "service": "SSH", "weight": 0.5}
+      ],
+      "optional_ports": [
+        {"port": 80, "protocol": "TCP", "service": "HTTP", "weight": 0.2},
+        {"port": 443, "protocol": "TCP", "service": "HTTPS", "weight": 0.2},
+        {"port": 5900, "protocol": "TCP", "service": "VNC", "weight": 0.15},
+        {"port": 3389, "protocol": "TCP", "service": "RDP", "weight": 0.1}
+      ],
+      "confidence_boost": [
+        {"port": 631, "protocol": "TCP", "service": "CUPS", "weight": 0.1}
+      ],
+      "negative_indicators": [
+        {"port": 135, "protocol": "TCP", "service": "RPC", "confidence_reduction": 0.8},
+        {"port": 445, "protocol": "TCP", "service": "SMB", "confidence_reduction": 0.6}
+      ],
+      "network_indicators": {
+        "ttl": {"value": 64, "tolerance": 2},
+        "tcp_window_size": {"value": 29200, "tolerance": 500},
+        "tcp_stack_quirks": {
+          "option_order": ["MSS", "Window Scale", "NOP", "SACK Permitted", "Timestamp"],
+          "ecn_support": true
+        }
+      },
+      "service_banners": [
+        {
+          "port": 22,
+          "protocol": "TCP",
+          "banner_regex": "OpenSSH_8\\.[0-9]+.*Debian|Raspbian",
+          "weight": 0.4
+        }
+      ],
+      "vulnerabilities": [
+        {
+          "id": "CVE-2021-4034",
+          "description": "Polkit pkexec local privilege escalation",
+          "severity": "High",
+          "mitigation": "Apply latest Raspberry Pi OS updates"
+        }
+      ],
+      "confidence_threshold": 0.6
+    }
+  },
+  "macos": {
+    "macos_15": {
+      "description": "macOS 15 (Sequoia)",
+      "required_ports": [
+        {"port": 22, "protocol": "TCP", "service": "SSH", "weight": 0.4}
+      ],
+      "optional_ports": [
+        {"port": 80, "protocol": "TCP", "service": "HTTP", "weight": 0.2},
+        {"port": 443, "protocol": "TCP", "service": "HTTPS", "weight": 0.2},
+        {"port": 445, "protocol": "TCP", "service": "SMB", "weight": 0.15},
+        {"port": 548, "protocol": "TCP", "service": "AFP", "weight": 0.15},
+        {"port": 5353, "protocol": "UDP", "service": "mDNS", "weight": 0.1}
+      ],
+      "confidence_boost": [
+        {"port": 5900, "protocol": "TCP", "service": "VNC", "weight": 0.15}
+      ],
+      "negative_indicators": [
+        {"port": 135, "protocol": "TCP", "service": "RPC", "confidence_reduction": 0.8},
+        {"port": 88, "protocol": "TCP", "service": "Kerberos", "confidence_reduction": 0.6}
+      ],
+      "network_indicators": {
+        "ttl": {"value": 64, "tolerance": 2},
+        "tcp_window_size": {"value": 65535, "tolerance": 1000},
+        "tcp_stack_quirks": {
+          "option_order": ["MSS", "Window Scale", "SACK Permitted", "NOP", "Timestamp"],
+          "ecn_support": true
+        }
+      },
+      "service_banners": [
+        {
+          "port": 22,
+          "protocol": "TCP",
+          "banner_regex": "OpenSSH_9\\.[0-9]+.*Darwin",
+          "weight": 0.4
+        },
+        {
+          "port": 445,
+          "protocol": "TCP",
+          "banner_regex": "Mac OS X|macOS",
+          "weight": 0.3
+        }
+      ],
+      "confidence_threshold": 0.7
+    }
+  },
+  "freebsd": {
+    "freebsd_14": {
+      "description": "FreeBSD 14",
+      "required_ports": [
+        {"port": 22, "protocol": "TCP", "service": "SSH", "weight": 0.5}
+      ],
+      "optional_ports": [
+        {"port": 80, "protocol": "TCP", "service": "HTTP", "weight": 0.2},
+        {"port": 443, "protocol": "TCP", "service": "HTTPS", "weight": 0.2},
+        {"port": 53, "protocol": "UDP", "service": "DNS", "weight": 0.1}
+      ],
+      "confidence_boost": [
+        {"port": 111, "protocol": "TCP", "service": "RPC", "weight": 0.15}
+      ],
+      "negative_indicators": [
+        {"port": 135, "protocol": "TCP", "service": "RPC", "confidence_reduction": 0.8},
+        {"port": 445, "protocol": "TCP", "service": "SMB", "confidence_reduction": 0.6}
+      ],
+      "network_indicators": {
+        "ttl": {"value": 64, "tolerance": 2},
+        "tcp_window_size": {"value": 65535, "tolerance": 1000},
+        "tcp_stack_quirks": {
+          "option_order": ["MSS", "Window Scale", "NOP", "Timestamp", "SACK Permitted"],
+          "ecn_support": true
+        }
+      },
+      "service_banners": [
+        {
+          "port": 22,
+          "protocol": "TCP",
+          "banner_regex": "OpenSSH_9\\.[0-9]+.*FreeBSD",
+          "weight": 0.4
+        }
+      ],
+      "vulnerabilities": [
+        {
+          "id": "CVE-2023-48795",
+          "description": "OpenSSH Terrapin attack vulnerability",
+          "severity": "Medium",
+          "mitigation": "Apply FreeBSD 14.0-RELEASE-p3 or later"
+        }
+      ],
+      "confidence_threshold": 0.6
+    }
+  },
+  "iot_os": {
+    "openwrt": {
+      "description": "OpenWRT (Router OS)",
+      "required_ports": [
+        {"port": 80, "protocol": "TCP", "service": "HTTP", "weight": 0.4}
+      ],
+      "optional_ports": [
+        {"port": 22, "protocol": "TCP", "service": "SSH", "weight": 0.3},
+        {"port": 443, "protocol": "TCP", "service": "HTTPS", "weight": 0.2},
+        {"port": 53, "protocol": "UDP", "service": "DNS", "weight": 0.2}
+      ],
+      "confidence_boost": [
+        {"port": 1900, "protocol": "UDP", "service": "UPnP", "weight": 0.15}
+      ],
+      "port_combinations": [
+        {
+          "ports": [{"port": 80, "protocol": "TCP"}, {"port": 53, "protocol": "UDP"}, {"port": 1900, "protocol": "UDP"}],
+          "confidence_boost": 0.4,
+          "description": "OpenWRT router services"
+        }
+      ],
+      "negative_indicators": [
+        {"port": 135, "protocol": "TCP", "service": "RPC", "confidence_reduction": 0.8},
+        {"port": 445, "protocol": "TCP", "service": "SMB", "confidence_reduction": 0.8}
+      ],
+      "network_indicators": {
+        "ttl": {"value": 64, "tolerance": 2},
+        "tcp_window_size": {"value": 14600, "tolerance": 500},
+        "tcp_stack_quirks": {
+          "option_order": ["MSS", "Window Scale", "NOP", "SACK Permitted", "Timestamp"],
+          "ecn_support": true
+        }
+      },
+      "service_banners": [
+        {
+          "port": 80,
+          "protocol": "TCP",
+          "banner_regex": "OpenWrt|LuCI",
+          "weight": 0.5
+        },
+        {
+          "port": 22,
+          "protocol": "TCP",
+          "banner_regex": "OpenSSH_8\\.[0-9]+.*OpenWrt",
+          "weight": 0.4
+        }
+      ],
+      "vulnerabilities": [
+        {
+          "id": "CVE-2023-36328",
+          "description": "LuCI XSS vulnerability in OpenWRT",
+          "severity": "Medium",
+          "mitigation": "Update to OpenWRT 23.05 or later"
+        }
+      ],
+      "confidence_threshold": 0.6
+    }
+  },
+  "database_servers": {
+    "mssql": {
+      "description": "Microsoft SQL Server",
+      "required_ports": [
+        {"port": 1433, "protocol": "TCP", "service": "MSSQL", "weight": 0.6}
+      ],
+      "optional_ports": [
+        {"port": 1434, "protocol": "UDP", "service": "MSSQL Browser", "weight": 0.2}
+      ],
+      "confidence_boost": [
+        {"port": 135, "protocol": "TCP", "service": "RPC", "weight": 0.2}
+      ],
+      "network_indicators": {
+        "ttl": {"value": 128, "tolerance": 2},
+        "tcp_window_size": {"value": 65535, "tolerance": 1000},
+        "tcp_stack_quirks": {
+          "option_order": ["MSS", "Window Scale", "NOP", "NOP", "Timestamp", "SACK Permitted"],
+          "ecn_support": true
+        }
+      },
+      "service_banners": [
+        {
+          "port": 1433,
+          "protocol": "TCP",
+          "banner_regex": "Microsoft SQL Server",
+          "weight": 0.4
+        }
+      ],
+      "confidence_threshold": 0.7
+    },
+    "mysql": {
+      "description": "MySQL Server",
+      "required_ports": [
+        {"port": 3306, "protocol": "TCP", "service": "MySQL", "weight": 0.7}
+      ],
+      "optional_ports": [
+        {"port": 22, "protocol": "TCP", "service": "SSH", "weight": 0.2}
+      ],
+      "network_indicators": {
+        "ttl": {"value": 64, "tolerance": 2},
+        "tcp_window_size": {"value": 29200, "tolerance": 500},
+        "tcp_stack_quirks": {
+          "option_order": ["MSS", "Window Scale", "NOP", "SACK Permitted", "Timestamp"],
+          "ecn_support": true
+        }
+      },
+      "service_banners": [
+        {
+          "port": 3306,
+          "protocol": "TCP",
+          "banner_regex": "MySQL|MariaDB",
+          "weight": 0.4
+        }
+      ],
+      "confidence_threshold": 0.7
+    },
+    "postgresql": {
+      "description": "PostgreSQL Server",
+      "required_ports": [
+        {"port": 5432, "protocol": "TCP", "service": "PostgreSQL", "weight": 0.7}
+      ],
+      "optional_ports": [
+        {"port": 22, "protocol": "TCP", "service": "SSH", "weight": 0.2}
+      ],
+      "network_indicators": {
+        "ttl": {"value": 64, "tolerance": 2},
+        "tcp_window_size": {"value": 29200, "tolerance": 500},
+        "tcp_stack_quirks": {
+          "option_order": ["MSS", "Window Scale", "NOP", "SACK Permitted", "Timestamp"],
+          "ecn_support": true
+        }
+      },
+      "service_banners": [
+        {
+          "port": 5432,
+          "protocol": "TCP",
+          "banner_regex": "PostgreSQL",
+          "weight": 0.4
+        }
+      ],
+      "confidence_threshold": 0.7
+    }
+  },
+  "web_servers": {
+    "iis": {
+      "description": "Microsoft IIS",
+      "required_ports": [
+        {"port": 80, "protocol": "TCP", "service": "HTTP", "weight": 0.3},
+        {"port": 135, "protocol": "TCP", "service": "RPC", "weight": 0.3}
+      ],
+      "optional_ports": [
+        {"port": 443, "protocol": "TCP", "service": "HTTPS", "weight": 0.2},
+        {"port": 445, "protocol": "TCP", "service": "SMB", "weight": 0.2}
+      ],
+      "network_indicators": {
+        "ttl": {"value": 128, "tolerance": 2},
+        "tcp_window_size": {"value": 65535, "tolerance": 1000},
+        "tcp_stack_quirks": {
+          "option_order": ["MSS", "Window Scale", "NOP", "NOP", "Timestamp", "SACK Permitted"],
+          "ecn_support": true
+        }
+      },
+      "service_banners": [
+        {
+          "port": 80,
+          "protocol": "TCP",
+          "banner_regex": "Microsoft-IIS",
+          "weight": 0.4
+        }
+      ],
+      "negative_indicators": [
+        {"port": 22, "protocol": "TCP", "service": "SSH", "confidence_reduction": 0.9}
+      ],
+      "confidence_threshold": 0.7
+    },
+    "apache": {
+      "description": "Apache HTTP Server",
+      "required_ports": [
+        {"port": 80, "protocol": "TCP", "service": "HTTP", "weight": 0.4}
+      ],
+      "optional_ports": [
+        {"port": 443, "protocol": "TCP", "service": "HTTPS", "weight": 0.3}
+      ],
+      "confidence_boost": [
+        {"port": 22, "protocol": "TCP", "service": "SSH", "weight": 0.2}
+      ],
+      "network_indicators": {
+        "ttl": {"value": 64, "tolerance": 2},
+        "tcp_window_size": {"value": 29200, "tolerance": 500},
+        "tcp_stack_quirks": {
+          "option_order": ["MSS", "Window Scale", "NOP", "SACK Permitted", "Timestamp"],
+          "ecn_support": true
+        }
+      },
+      "service_banners": [
+        {
+          "port": 80,
+          "protocol": "TCP",
+          "banner_regex": "Apache",
+          "weight": 0.4
+        },
+        {
+          "port": 443,
+          "protocol": "TCP",
+          "banner_regex": "Apache",
+          "weight": 0.4
+        }
+      ],
+      "confidence_threshold": 0.7
+    },
+    "nginx": {
+      "description": "NGINX Web Server",
+      "required_ports": [
+        {"port": 80, "protocol": "TCP", "service": "HTTP", "weight": 0.4}
+      ],
+      "optional_ports": [
+        {"port": 443, "protocol": "TCP", "service": "HTTPS", "weight": 0.3}
+      ],
+      "confidence_boost": [
+        {"port": 22, "protocol": "TCP", "service": "SSH", "weight": 0.2}
+      ],
+      "network_indicators": {
+        "ttl": {"value": 64, "tolerance": 2},
+        "tcp_window_size": {"value": 29200, "tolerance": 500},
+        "tcp_stack_quirks": {
+          "option_order": ["MSS", "Window Scale", "NOP", "SACK Permitted", "Timestamp"],
+          "ecn_support": true
+        }
+      },
+      "service_banners": [
+        {
+          "port": 80,
+          "protocol": "TCP",
+          "banner_regex": "nginx",
+          "weight": 0.4
+        },
+        {
+          "port": 443,
+          "protocol": "TCP",
+          "banner_regex": "nginx",
+          "weight": 0.4
+        }
+      ],
+      "confidence_threshold": 0.7
+    }
+  },
+  "network_devices": {
+    "tplink_router": {
+      "description": "TP-Link Router",
+      "required_ports": [
+        {"port": 80, "protocol": "TCP", "service": "HTTP", "weight": 0.2},
+        {"port": 53, "protocol": "TCP", "service": "DNS", "weight": 0.2},
+        {"port": 21, "protocol": "TCP", "service": "FTP", "weight": 0.2}
+      ],
+      "optional_ports": [
+        {"port": 139, "protocol": "TCP", "service": "NetBIOS", "weight": 0.1},
+        {"port": 445, "protocol": "TCP", "service": "SMB", "weight": 0.1},
+        {"port": 1900, "protocol": "TCP", "service": "UPnP", "weight": 0.1}
+      ],
+      "network_indicators": {
+        "ttl": {"value": 64, "tolerance": 2},
+        "tcp_window_size": {"value": 14600, "tolerance": 500},
+        "tcp_stack_quirks": {
+          "option_order": ["MSS", "Window Scale", "NOP", "SACK Permitted", "Timestamp"],
+          "ecn_support": true
+        }
+      },
+      "service_banners": [
+        {
+          "port": 80,
+          "protocol": "TCP",
+          "banner_regex": "TP-Link",
+          "weight": 0.3
+        },
+        {
+          "port": 21,
+          "protocol": "TCP",
+          "banner_regex": "TP-Link",
+          "weight": 0.4
+        }
+      ],
+      "negative_indicators": [
+        {"port": 135, "protocol": "TCP", "service": "RPC", "confidence_reduction": 0.8}
+      ],
+      "confidence_threshold": 0.4
+    },
+    "cisco_switch": {
+      "description": "Cisco Switch",
+      "required_ports": [
+        {"port": 161, "protocol": "UDP", "service": "SNMP", "weight": 0.4}
+      ],
+      "optional_ports": [
+        {"port": 80, "protocol": "TCP", "service": "HTTP", "weight": 0.2},
+        {"port": 443, "protocol": "TCP", "service": "HTTPS", "weight": 0.2},
+        {"port": 23, "protocol": "TCP", "service": "Telnet", "weight": 0.2}
+      ],
+      "network_indicators": {
+        "ttl": {"value": 255, "tolerance": 2},
+        "tcp_window_size": {"value": 4128, "tolerance": 500},
+        "tcp_stack_quirks": {
+          "option_order": ["MSS", "NOP", "NOP", "Window Scale", "SACK Permitted"],
+          "ecn_support": false
+        }
+      },
+      "service_banners": [
+        {
+          "port": 80,
+          "protocol": "TCP",
+          "banner_regex": "Cisco",
+          "weight": 0.4
+        }
+      ],
+      "confidence_threshold": 0.6
+    }
+  },
+  "iot_devices": {
+    "ip_camera": {
+      "description": "IP Camera",
+      "required_ports": [
+        {"port": 554, "protocol": "TCP", "service": "RTSP", "weight": 0.5}
+      ],
+      "optional_ports": [
+        {"port": 80, "protocol": "TCP", "service": "HTTP", "weight": 0.2},
+        {"port": 443, "protocol": "TCP", "service": "HTTPS", "weight": 0.2},
+        {"port": 8554, "protocol": "TCP", "service": "RTSP Alt", "weight": 0.1}
+      ],
+      "network_indicators": {
+        "ttl": {"value": 64, "tolerance": 2},
+        "tcp_window_size": {"value": 14600, "tolerance": 500},
+        "tcp_stack_quirks": {
+          "option_order": ["MSS", "Window Scale", "NOP", "SACK Permitted", "Timestamp"],
+          "ecn_support": true
+        }
+      },
+      "service_banners": [
+        {
+          "port": 80,
+          "protocol": "TCP",
+          "banner_regex": "Camera|IPCam",
+          "weight": 0.4
+        }
+      ],
+      "confidence_threshold": 0.6
+    }
+  },
+  "appliances": {
+    "synology_nas": {
+      "description": "Synology NAS",
+      "required_ports": [
+        {"port": 5000, "protocol": "TCP", "service": "DSM HTTP", "weight": 0.3}
+      ],
+      "optional_ports": [
+        {"port": 5001, "protocol": "TCP", "service": "DSM HTTPS", "weight": 0.2},
+        {"port": 22, "protocol": "TCP", "service": "SSH", "weight": 0.2},
+        {"port": 445, "protocol": "TCP", "service": "SMB", "weight": 0.2},
+        {"port": 139, "protocol": "TCP", "service": "NetBIOS", "weight": 0.1},
+        {"port": 111, "protocol": "TCP", "service": "RPC", "weight": 0.1}
+      ],
+      "network_indicators": {
+        "ttl": {"value": 64, "tolerance": 2},
+        "tcp_window_size": {"value": 14600, "tolerance": 500},
+        "tcp_stack_quirks": {
+          "option_order": ["MSS", "Window Scale", "NOP", "SACK Permitted", "Timestamp"],
+          "ecn_support": true
+        }
+      },
+      "service_banners": [
+        {
+          "port": 5000,
+          "protocol": "TCP",
+          "banner_regex": "Synology",
+          "weight": 0.4
+        }
+      ],
+      "negative_indicators": [
+        {"port": 135, "protocol": "TCP", "service": "RPC", "confidence_reduction": 0.8}
+      ],
+      "confidence_threshold": 0.3
+    },
+    "hp_printer": {
+      "description": "HP Network Printer",
+      "required_ports": [
+        {"port": 631, "protocol": "TCP", "service": "IPP", "weight": 0.4}
+      ],
+      "optional_ports": [
+        {"port": 80, "protocol": "TCP", "service": "HTTP", "weight": 0.2},
+        {"port": 443, "protocol": "TCP", "service": "HTTPS", "weight": 0.2},
+        {"port": 9100, "protocol": "TCP", "service": "JetDirect", "weight": 0.2}
+      ],
+      "network_indicators": {
+        "ttl": {"value": 64, "tolerance": 2},
+        "tcp_window_size": {"value": 14600, "tolerance": 500},
+        "tcp_stack_quirks": {
+          "option_order": ["MSS", "Window Scale", "NOP", "SACK Permitted", "Timestamp"],
+          "ecn_support": true
+        }
+      },
+      "service_banners": [
+        {
+          "port": 80,
+          "protocol": "TCP",
+          "banner_regex": "HP|JetDirect",
+          "weight": 0.4
+        }
+      ],
+      "confidence_threshold": 0.6
+    }
+  }
+}

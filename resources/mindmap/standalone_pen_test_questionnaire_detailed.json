@@ -1,0 +1,232 @@
+{
+    "Reconnaissance": [
+        {
+            "id": "stand_recon1",
+            "text": "Do you have the target IP address(es) or hostname(s)?",
+            "type": "boolean"
+        },
+        {
+            "id": "stand_recon2",
+            "text": "Which external scanning techniques or tools have you used?",
+            "type": "multi-choice",
+            "options": [
+                "Nmap ping sweep",
+                "Masscan",
+                "Shodan lookup",
+                "WHOIS",
+                "DNS enumeration"
+            ]
+        },
+        {
+            "id": "stand_recon3",
+            "text": "Have you identified open ports and services on the target?",
+            "type": "boolean"
+        },
+        {
+            "id": "stand_recon4",
+            "text": "Which port scanning methods were used?",
+            "type": "multi-choice",
+            "options": [
+                "TCP SYN scan",
+                "Full connect scan",
+                "UDP scan",
+                "Service/version detection"
+            ]
+        },
+        {
+            "id": "stand_recon5",
+            "text": "Did you perform banner grabbing or service enumeration?",
+            "type": "boolean"
+        }
+    ],
+    "Enumeration": [
+        {
+            "id": "stand_enum1",
+            "text": "Have you enumerated web application endpoints or directories?",
+            "type": "boolean"
+        },
+        {
+            "id": "stand_enum2",
+            "text": "Which tools were used for application enumeration?",
+            "type": "multi-choice",
+            "options": [
+                "Dirb/Dirbuster",
+                "Nikto",
+                "Gobuster",
+                "Burp Suite Scanner",
+                "EyeWitness"
+            ]
+        },
+        {
+            "id": "stand_enum3",
+            "text": "Did you enumerate user accounts or authentication mechanisms?",
+            "type": "boolean"
+        },
+        {
+            "id": "stand_enum4",
+            "text": "Have you performed vulnerability scanning?",
+            "type": "boolean"
+        },
+        {
+            "id": "stand_enum5",
+            "text": "Which vulnerability scanners were used?",
+            "type": "multi-choice",
+            "options": [
+                "Nessus",
+                "OpenVAS",
+                "Qualys",
+                "Rapid7 Nexpose",
+                "Nuclei"
+            ]
+        }
+    ],
+    "Exploitation": [
+        {
+            "id": "stand_exploit1",
+            "text": "Did you find exploitable vulnerabilities in services or applications?",
+            "type": "boolean"
+        },
+        {
+            "id": "stand_exploit2",
+            "text": "Which exploitation frameworks or scripts were used?",
+            "type": "multi-choice",
+            "options": [
+                "Metasploit",
+                "Manual exploit code",
+                "SQLmap",
+                "Burp Intruder",
+                "Custom scripts"
+            ]
+        },
+        {
+            "id": "stand_exploit3",
+            "text": "Were you able to execute code or commands on the target?",
+            "type": "boolean"
+        },
+        {
+            "id": "stand_exploit4",
+            "text": "Did you exploit authentication flaws (e.g., SQLi, default creds)?",
+            "type": "boolean"
+        },
+        {
+            "id": "stand_exploit5",
+            "text": "Have you exploited insecure deserialization or file upload vulnerabilities?",
+            "type": "boolean"
+        }
+    ],
+    "Privilege Escalation": [
+        {
+            "id": "stand_privesc1",
+            "text": "Did you identify local privilege escalation opportunities?",
+            "type": "boolean"
+        },
+        {
+            "id": "stand_privesc2",
+            "text": "Which privilege escalation techniques were used?",
+            "type": "multi-choice",
+            "options": [
+                "SUID/SGID binary abuse",
+                "Kernel exploit",
+                "Weak file permissions",
+                "Path hijacking",
+                "Scheduled tasks abuse"
+            ]
+        },
+        {
+            "id": "stand_privesc3",
+            "text": "Were you able to escalate to root/administrator privileges?",
+            "type": "boolean"
+        }
+    ],
+    "Persistence": [
+        {
+            "id": "stand_persist1",
+            "text": "Have you deployed persistence mechanisms on the target?",
+            "type": "boolean"
+        },
+        {
+            "id": "stand_persist2",
+            "text": "Which persistence methods were implemented?",
+            "type": "multi-choice",
+            "options": [
+                "Cron job/User startup script",
+                "Service creation",
+                "Scheduled task",
+                "Backdoor binary installation",
+                "SSH authorized_keys"
+            ]
+        },
+        {
+            "id": "stand_persist3",
+            "text": "Did you create new user accounts for persistence?",
+            "type": "boolean"
+        }
+    ],
+    "Credential Access": [
+        {
+            "id": "stand_cred1",
+            "text": "Did you extract credentials or hashes from the system?",
+            "type": "boolean"
+        },
+        {
+            "id": "stand_cred2",
+            "text": "Which tools or techniques were used to dump credentials?",
+            "type": "multi-choice",
+            "options": [
+                "Mimikatz",
+                "ProcDump + mimikatz",
+                "Hashcat",
+                "John the Ripper",
+                "Linux /etc/shadow extraction"
+            ]
+        },
+        {
+            "id": "stand_cred3",
+            "text": "Were you able to reuse extracted credentials for authentication?",
+            "type": "boolean"
+        }
+    ],
+    "Lateral Movement": [
+        {
+            "id": "stand_latmove1",
+            "text": "Did you pivot to other systems or networks from this host?",
+            "type": "boolean"
+        },
+        {
+            "id": "stand_latmove2",
+            "text": "Which pivoting techniques were used?",
+            "type": "multi-choice",
+            "options": [
+                "SSH tunneling",
+                "ProxyChains",
+                "Pass-the-Hash",
+                "VPN pivot",
+                "Reverse proxy"
+            ]
+        }
+    ],
+    "Clearing Tracks": [
+        {
+            "id": "stand_cleanup1",
+            "text": "Did you clear or tamper with system logs?",
+            "type": "boolean"
+        },
+        {
+            "id": "stand_cleanup2",
+            "text": "Which anti-forensics techniques were applied?",
+            "type": "multi-choice",
+            "options": [
+                "Log deletion/truncation",
+                "Timestamp modification",
+                "Binary timestomping",
+                "Tool cleanup",
+                "User account removal"
+            ]
+        },
+        {
+            "id": "stand_cleanup3",
+            "text": "Were persistence mechanisms cleaned up to avoid detection?",
+            "type": "boolean"
+        }
+    ]
+}

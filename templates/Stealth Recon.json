@@ -1,0 +1,35 @@
+{
+  "description": "Low-profile reconnaissance scan",
+  "tools": [
+    "dns_enum",
+    "port_scan"
+  ],
+  "settings": {
+    "rate_limit": {
+      "enabled": true,
+      "rps": 2,
+      "threads": 10
+    },
+    "proxy": {
+      "enabled": false
+    },
+    "export_formats": [
+      "JSON",
+      "Summary"
+    ]
+  },
+  "parameters": {
+    "dns_enum": {
+      "record_types": [
+        "A",
+        "AAAA",
+        "CNAME"
+      ]
+    },
+    "port_scan": {
+      "scan_type": "tcp_connect"
+    }
+  },
+  "created": "2025-07-02T20:00:29.108403",
+  "version": "1.0"
+}

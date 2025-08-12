@@ -1,0 +1,220 @@
+{
+  "Target Definition": [
+    {
+      "id": "target_selection",
+      "text": "Do you want to define a new target or select from existing targets?",
+      "type": "single-choice",
+      "options": ["Define New Target", "Select Existing Target"],
+      "action": "target_management"
+    },
+    {
+      "id": "target_type",
+      "text": "What type of target are you testing?",
+      "type": "single-choice", 
+      "options": ["Web Application", "Network Range", "Single Host", "Domain/Organization"],
+      "action": "set_target_type"
+    },
+    {
+      "id": "target_scope",
+      "text": "What is your target scope?",
+      "type": "text_input",
+      "placeholder": "e.g., https://example.com, 192.168.1.0/24, example.com",
+      "action": "set_target_scope"
+    }
+  ],
+  "Reconnaissance": [
+    {
+      "id": "passive_recon",
+      "text": "Start with passive reconnaissance?",
+      "type": "boolean",
+      "action": "launch_osint"
+    },
+    {
+      "id": "dns_enum",
+      "text": "Perform DNS enumeration and subdomain discovery?",
+      "type": "boolean", 
+      "action": "launch_dns_enum"
+    },
+    {
+      "id": "cert_transparency",
+      "text": "Search certificate transparency logs?",
+      "type": "boolean",
+      "action": "launch_cert_search"
+    }
+  ],
+  "Network Discovery": [
+    {
+      "id": "port_scan",
+      "text": "Perform port scanning to discover open services?",
+      "type": "boolean",
+      "action": "launch_port_scan"
+    },
+    {
+      "id": "scan_intensity",
+      "text": "What scan intensity level?",
+      "type": "single-choice",
+      "options": ["Stealth", "Normal", "Aggressive"],
+      "action": "set_scan_intensity"
+    },
+    {
+      "id": "os_detection",
+      "text": "Enable OS detection and service versioning?",
+      "type": "boolean",
+      "action": "enable_os_detection"
+    }
+  ],
+  "Service Enumeration": [
+    {
+      "id": "http_enum",
+      "text": "Enumerate HTTP/HTTPS services?",
+      "type": "boolean",
+      "action": "launch_http_enum"
+    },
+    {
+      "id": "smb_enum", 
+      "text": "Enumerate SMB shares and services?",
+      "type": "boolean",
+      "action": "launch_smb_enum"
+    },
+    {
+      "id": "rpc_enum",
+      "text": "Enumerate RPC endpoints and services?", 
+      "type": "boolean",
+      "action": "launch_rpc_enum"
+    },
+    {
+      "id": "other_services",
+      "text": "Which other services to enumerate?",
+      "type": "multi-choice",
+      "options": ["SMTP", "LDAP", "SNMP", "Database", "IKE/IPSec"],
+      "action": "launch_service_enum"
+    }
+  ],
+  "Vulnerability Assessment": [
+    {
+      "id": "vuln_scan",
+      "text": "Run automated vulnerability scanning?",
+      "type": "boolean",
+      "action": "launch_huggin_scanner"
+    },
+    {
+      "id": "web_vuln_test",
+      "text": "Perform web application vulnerability testing?",
+      "type": "boolean",
+      "action": "launch_web_testing"
+    },
+    {
+      "id": "auth_testing",
+      "text": "Test authentication mechanisms?",
+      "type": "boolean", 
+      "action": "launch_auth_testing"
+    }
+  ],
+  "Exploitation": [
+    {
+      "id": "exploit_vulns",
+      "text": "Attempt to exploit discovered vulnerabilities?",
+      "type": "boolean",
+      "action": "launch_exploitation"
+    },
+    {
+      "id": "shell_access",
+      "text": "Did you gain shell access to any systems?",
+      "type": "boolean",
+      "action": "shell_management"
+    },
+    {
+      "id": "initial_access",
+      "text": "Document initial access methods used:",
+      "type": "multi-choice",
+      "options": ["Web Shell", "Reverse Shell", "Bind Shell", "RDP/SSH", "Other"],
+      "action": "document_access"
+    }
+  ],
+  "Post-Exploitation": [
+    {
+      "id": "privilege_escalation",
+      "text": "Attempt privilege escalation?",
+      "type": "boolean",
+      "action": "launch_privesc"
+    },
+    {
+      "id": "lateral_movement", 
+      "text": "Perform lateral movement to other systems?",
+      "type": "boolean",
+      "action": "launch_lateral_movement"
+    },
+    {
+      "id": "data_collection",
+      "text": "Collect sensitive data or credentials?",
+      "type": "boolean",
+      "action": "launch_data_collection"
+    },
+    {
+      "id": "persistence",
+      "text": "Establish persistence mechanisms?",
+      "type": "boolean",
+      "action": "launch_persistence"
+    }
+  ],
+  "Evidence Collection": [
+    {
+      "id": "screenshot_evidence",
+      "text": "Capture screenshots of successful exploits?",
+      "type": "boolean",
+      "action": "capture_screenshots"
+    },
+    {
+      "id": "log_collection",
+      "text": "Collect relevant log files and evidence?",
+      "type": "boolean",
+      "action": "collect_logs"
+    },
+    {
+      "id": "proof_of_concept",
+      "text": "Create proof-of-concept demonstrations?",
+      "type": "boolean",
+      "action": "create_poc"
+    }
+  ],
+  "Cleanup": [
+    {
+      "id": "remove_tools",
+      "text": "Remove uploaded tools and backdoors?",
+      "type": "boolean",
+      "action": "cleanup_tools"
+    },
+    {
+      "id": "restore_configs",
+      "text": "Restore original system configurations?",
+      "type": "boolean",
+      "action": "restore_configs"
+    },
+    {
+      "id": "clear_logs",
+      "text": "Clear or restore log entries (if authorized)?",
+      "type": "boolean",
+      "action": "clear_logs"
+    }
+  ],
+  "Reporting": [
+    {
+      "id": "generate_report",
+      "text": "Generate comprehensive penetration test report?",
+      "type": "boolean",
+      "action": "generate_report"
+    },
+    {
+      "id": "executive_summary",
+      "text": "Include executive summary for management?",
+      "type": "boolean",
+      "action": "add_executive_summary"
+    },
+    {
+      "id": "remediation_guide",
+      "text": "Provide detailed remediation recommendations?",
+      "type": "boolean",
+      "action": "add_remediation_guide"
+    }
+  ]
+}

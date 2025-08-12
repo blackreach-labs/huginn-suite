@@ -1,0 +1,169 @@
+2025-08-11 00:30:26 - huggin - INFO - License saved successfully
+2025-08-11 00:30:26 - huggin - INFO - License loaded and validated successfully
+2025-08-11 00:30:26 - huggin - INFO - Application starting...
+2025-08-11 00:30:26 - huggin - INFO - Font loaded successfully
+2025-08-11 00:30:26 - huggin - INFO - Stylesheet loaded successfully
+2025-08-11 00:30:26 - huggin - INFO - Creating main window...
+2025-08-11 00:30:26 - huggin - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 00:30:27 - huggin - DEBUG - Session token generated
+2025-08-11 00:31:43 - huggin - ERROR - Unexpected error in open_wireless_security: 'LicenseManager' object has no attribute 'validate_feature_access'
+2025-08-11 00:36:56 - huggin - INFO - Update manager stopped during cleanup
+2025-08-11 00:40:34 - huggin - INFO - License saved successfully
+2025-08-11 00:40:34 - huggin - INFO - License loaded and validated successfully
+2025-08-11 00:40:34 - huggin - INFO - Application starting...
+2025-08-11 00:40:34 - huggin - INFO - Font loaded successfully
+2025-08-11 00:40:34 - huggin - INFO - Stylesheet loaded successfully
+2025-08-11 00:40:34 - huggin - INFO - Creating main window...
+2025-08-11 00:40:34 - huggin - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 00:40:36 - huggin - DEBUG - Session token generated
+2025-08-11 00:43:08 - huggin - INFO - Update manager stopped during cleanup
+2025-08-11 00:43:34 - huggin - INFO - License saved successfully
+2025-08-11 00:43:34 - huggin - INFO - License loaded and validated successfully
+2025-08-11 00:43:34 - huggin - INFO - Application starting...
+2025-08-11 00:43:34 - huggin - INFO - Font loaded successfully
+2025-08-11 00:43:34 - huggin - INFO - Stylesheet loaded successfully
+2025-08-11 00:43:34 - huggin - INFO - Creating main window...
+2025-08-11 00:43:34 - huggin - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 00:43:35 - huggin - DEBUG - Session token generated
+2025-08-11 00:46:18 - huggin - INFO - Update manager stopped during cleanup
+2025-08-11 00:47:00 - huggin - INFO - License saved successfully
+2025-08-11 00:47:00 - huggin - INFO - License loaded and validated successfully
+2025-08-11 00:47:00 - huggin - INFO - Application starting...
+2025-08-11 00:47:00 - huggin - INFO - Font loaded successfully
+2025-08-11 00:47:00 - huggin - INFO - Stylesheet loaded successfully
+2025-08-11 00:47:00 - huggin - INFO - Creating main window...
+2025-08-11 00:47:00 - huggin - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 00:47:02 - huggin - DEBUG - Session token generated
+2025-08-11 00:50:57 - huggin - INFO - Local DNS server started on port 53530
+2025-08-11 00:50:59 - huggin - INFO - DNS server changed to: LocalDNS
+2025-08-11 00:51:08 - huggin - INFO - DNS server changed to: 192.168.1.106
+2025-08-11 01:00:03 - huggin - INFO - Local DNS server stopped
+2025-08-11 01:00:03 - huggin - INFO - local_dns_server stopped
+2025-08-11 01:00:03 - huggin - INFO - Update manager stopped during cleanup
+2025-08-11 01:03:52 - huggin - INFO - License saved successfully
+2025-08-11 01:03:52 - huggin - INFO - License loaded and validated successfully
+2025-08-11 01:03:52 - huggin - INFO - Application starting...
+2025-08-11 01:03:52 - huggin - INFO - Font loaded successfully
+2025-08-11 01:03:52 - huggin - INFO - Stylesheet loaded successfully
+2025-08-11 01:03:52 - huggin - INFO - Creating main window...
+2025-08-11 01:03:52 - huggin - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 01:03:54 - huggin - DEBUG - Session token generated
+2025-08-11 01:05:01 - huggin - INFO - Update manager stopped during cleanup
+2025-08-11 09:15:55 - huggin - INFO - License saved successfully
+2025-08-11 09:15:55 - huggin - INFO - License loaded and validated successfully
+2025-08-11 09:15:55 - huggin - INFO - Application starting...
+2025-08-11 09:15:55 - huggin - INFO - Font loaded successfully
+2025-08-11 09:15:55 - huggin - INFO - Stylesheet loaded successfully
+2025-08-11 09:15:55 - huggin - INFO - Creating main window...
+2025-08-11 09:15:55 - huggin - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 09:15:57 - huggin - DEBUG - Session token generated
+2025-08-11 09:48:04 - huggin - INFO - Update manager stopped during cleanup
+2025-08-11 10:25:30 - huggin - INFO - License saved successfully
+2025-08-11 10:25:30 - huggin - INFO - License loaded and validated successfully
+2025-08-11 10:25:30 - huggin - INFO - Application starting...
+2025-08-11 10:25:30 - huggin - INFO - Font loaded successfully
+2025-08-11 10:25:30 - huggin - INFO - Stylesheet loaded successfully
+2025-08-11 10:25:30 - huggin - INFO - Creating main window...
+2025-08-11 10:25:30 - huggin - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 10:25:31 - huggin - DEBUG - Session token generated
+2025-08-11 10:47:56 - huggin - INFO - Update manager stopped during cleanup
+2025-08-11 10:54:45 - huggin - INFO - License saved successfully
+2025-08-11 10:54:45 - huggin - INFO - License loaded and validated successfully
+2025-08-11 10:54:45 - huggin - INFO - Application starting...
+2025-08-11 10:54:45 - huggin - INFO - Font loaded successfully
+2025-08-11 10:54:45 - huggin - INFO - Stylesheet loaded successfully
+2025-08-11 10:54:45 - huggin - INFO - Creating main window...
+2025-08-11 10:54:45 - huggin - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 10:54:47 - huggin - DEBUG - Session token generated
+2025-08-11 10:57:08 - huggin - INFO - DNS server changed to: LocalDNS
+2025-08-11 10:57:09 - huggin - INFO - Local DNS server started on port 53530
+2025-08-11 13:42:01 - huggin - INFO - Local DNS server stopped
+2025-08-11 13:42:01 - huggin - INFO - local_dns_server stopped
+2025-08-11 13:42:01 - huggin - INFO - Update manager stopped during cleanup
+2025-08-11 13:42:09 - huggin - INFO - License saved successfully
+2025-08-11 13:42:09 - huggin - INFO - License loaded and validated successfully
+2025-08-11 13:42:09 - huggin - INFO - Application starting...
+2025-08-11 13:42:09 - huggin - INFO - Font loaded successfully
+2025-08-11 13:42:09 - huggin - INFO - Stylesheet loaded successfully
+2025-08-11 13:42:09 - huggin - INFO - Creating main window...
+2025-08-11 13:42:09 - huggin - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 13:42:11 - huggin - DEBUG - Session token generated
+2025-08-11 13:46:43 - huggin - INFO - Update manager stopped during cleanup
+2025-08-11 13:55:00 - huggin - INFO - License saved successfully
+2025-08-11 13:55:00 - huggin - INFO - License loaded and validated successfully
+2025-08-11 13:55:00 - huggin - INFO - Application starting...
+2025-08-11 13:55:00 - huggin - INFO - Font loaded successfully
+2025-08-11 13:55:00 - huggin - INFO - Stylesheet loaded successfully
+2025-08-11 13:55:00 - huggin - INFO - Creating main window...
+2025-08-11 13:55:00 - huggin - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 13:55:02 - huggin - DEBUG - Session token generated
+2025-08-11 14:00:24 - huggin - INFO - OpenVPN connection started with config: C:/Users/allie/Downloads/Unified.ovpn
+2025-08-11 14:01:01 - huggin - INFO - Using default configuration
+2025-08-11 14:01:03 - huggin - INFO - License saved successfully
+2025-08-11 14:01:03 - huggin - INFO - License loaded and validated successfully
+2025-08-11 14:02:24 - huggin - INFO - VPN connection terminated
+2025-08-11 14:02:24 - huggin - INFO - vpn_manager stopped
+2025-08-11 14:02:24 - huggin - INFO - Update manager stopped during cleanup
+2025-08-11 14:21:02 - huggin - INFO - License saved successfully
+2025-08-11 14:21:02 - huggin - INFO - License loaded and validated successfully
+2025-08-11 14:21:02 - huggin - INFO - Application starting...
+2025-08-11 14:21:02 - huggin - INFO - Font loaded successfully
+2025-08-11 14:21:02 - huggin - INFO - Stylesheet loaded successfully
+2025-08-11 14:21:02 - huggin - INFO - Creating main window...
+2025-08-11 14:21:02 - huggin - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 14:21:03 - huggin - DEBUG - Session token generated
+2025-08-11 14:22:21 - huggin - INFO - OpenVPN connection started with config: C:/Users/allie/Downloads/TryHackMe.ovpn
+2025-08-11 14:27:40 - huggin - INFO - VPN connection terminated
+2025-08-11 14:27:40 - huggin - INFO - vpn_manager stopped
+2025-08-11 14:27:40 - huggin - INFO - Update manager stopped during cleanup
+2025-08-11 14:29:12 - huggin - INFO - License saved successfully
+2025-08-11 14:29:12 - huggin - INFO - License loaded and validated successfully
+2025-08-11 14:29:13 - huggin - INFO - Application starting...
+2025-08-11 14:29:13 - huggin - INFO - Font loaded successfully
+2025-08-11 14:29:13 - huggin - INFO - Stylesheet loaded successfully
+2025-08-11 14:29:13 - huggin - INFO - Creating main window...
+2025-08-11 14:29:13 - huggin - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 14:29:14 - huggin - DEBUG - Session token generated
+2025-08-11 14:31:25 - huggin - INFO - OpenVPN connection started with config: C:/Users/allie/Downloads/TryHackMe.ovpn
+2025-08-11 15:22:27 - huggin - INFO - VPN connection terminated
+2025-08-11 15:22:27 - huggin - INFO - vpn_manager stopped
+2025-08-11 15:29:17 - huggin - INFO - License saved successfully
+2025-08-11 15:29:17 - huggin - INFO - License loaded and validated successfully
+2025-08-11 15:29:17 - huggin - INFO - Application starting...
+2025-08-11 15:29:17 - huggin - INFO - Font loaded successfully
+2025-08-11 15:29:17 - huggin - INFO - Stylesheet loaded successfully
+2025-08-11 15:29:17 - huggin - INFO - Creating main window...
+2025-08-11 15:29:17 - huggin - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 15:29:18 - huggin - DEBUG - Session token generated
+2025-08-11 15:31:17 - huggin - INFO - OpenVPN connection started with config: C:/Users/allie/Downloads/TryHackMe.ovpn
+2025-08-11 15:43:41 - huggin - INFO - VPN connection terminated
+2025-08-11 15:43:41 - huggin - INFO - vpn_manager stopped
+2025-08-11 15:43:41 - huggin - INFO - Update manager stopped during cleanup
+2025-08-11 15:45:30 - huggin - INFO - License saved successfully
+2025-08-11 15:45:30 - huggin - INFO - License loaded and validated successfully
+2025-08-11 15:45:30 - huggin - INFO - Application starting...
+2025-08-11 15:45:30 - huggin - INFO - Font loaded successfully
+2025-08-11 15:45:30 - huggin - INFO - Stylesheet loaded successfully
+2025-08-11 15:45:30 - huggin - INFO - Creating main window...
+2025-08-11 15:45:30 - huggin - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 15:45:31 - huggin - DEBUG - Session token generated
+2025-08-11 15:46:40 - huggin - INFO - Update manager stopped during cleanup
+2025-08-11 16:26:54 - huggin - INFO - License saved successfully
+2025-08-11 16:26:54 - huggin - INFO - License loaded and validated successfully
+2025-08-11 16:26:54 - huggin - INFO - Application starting...
+2025-08-11 16:26:54 - huggin - INFO - Font loaded successfully
+2025-08-11 16:26:54 - huggin - INFO - Stylesheet loaded successfully
+2025-08-11 16:26:54 - huggin - INFO - Creating main window...
+2025-08-11 16:26:54 - huggin - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 16:30:28 - huggin - INFO - Update manager stopped during cleanup
+2025-08-11 16:45:57 - huggin - INFO - License saved successfully
+2025-08-11 16:45:57 - huggin - INFO - License loaded and validated successfully
+2025-08-11 16:45:58 - huggin - INFO - Application starting...
+2025-08-11 16:45:58 - huggin - INFO - Font loaded successfully
+2025-08-11 16:45:58 - huggin - INFO - Stylesheet loaded successfully
+2025-08-11 16:45:58 - huggin - INFO - Creating main window...
+2025-08-11 16:45:58 - huggin - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 17:09:04 - huggin - INFO - Update manager stopped during cleanup
+2025-08-11 20:49:34 - huggin - INFO - Using default configuration
+2025-08-11 20:49:36 - huggin - INFO - License saved successfully
+2025-08-11 20:49:36 - huggin - INFO - License loaded and validated successfully

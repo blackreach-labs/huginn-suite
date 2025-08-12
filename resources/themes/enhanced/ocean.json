@@ -1,0 +1,22 @@
+{
+  "name": "Ocean",
+  "description": "Deep ocean theme with wave effects",
+  "license_required": "enterprise",
+  "colors": {
+    "background": "#001122",
+    "surface": "#002244",
+    "accent": "#0088cc",
+    "text": "#87ceeb",
+    "success": "#00aa88",
+    "warning": "#ffaa00",
+    "error": "#ff4444"
+  },
+  "animations": {
+    "wave_effects": true,
+    "particle_field": true
+  },
+  "fonts": {
+    "primary": "Neuropol X",
+    "monospace": "Consolas"
+  }
+}

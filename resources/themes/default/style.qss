@@ -1,0 +1,138 @@
+/* ============================================================================
+   Huggin Qt Stylesheet (style.qss)
+   ============================================================================ */
+
+/* ----------------------------------------
+   1. Main Window / Page Widgets
+----------------------------------------- */
+QWidget#HomePage, QWidget#EnumerationPage {
+    background-color: transparent; /* Allows background QLabel to show through */
+}
+
+QLabel#TitleLabel {
+    font-family: "Arial", sans-serif;
+    font-size: 24pt;
+    font-weight: bold;
+    color: #64C8FF;
+    background-color: transparent;
+}
+
+
+/* ----------------------------------------
+   2. Info / Terminal Panel
+----------------------------------------- */
+QTextEdit#InfoPanel {
+    background-color: black;
+    /* **FIX**: Changed font name to match the loaded font family */
+    font-family: "Neuropol X";
+    border: none;
+    border-radius: 10px;
+    padding: 25px;
+}
+
+
+/* ----------------------------------------
+   3. Target Input Field
+----------------------------------------- */
+QLineEdit#TargetInput {
+    background-color: rgba(10, 20, 30, 180);
+    border: 1px solid #506478;
+    border-radius: 8px;
+    font-family: "Consolas", "Monaco", monospace;
+    font-size: 16pt;
+    color: #DCDCDC;
+    padding: 4px 10px;
+}
+
+QLineEdit#TargetInput:focus {
+    border: 2px solid #64C8FF;
+}
+
+
+/* ----------------------------------------
+   4. Sub-Menu Buttons
+----------------------------------------- */
+QPushButton[class="dnsToolButton"] {
+    background-color: rgba(50, 60, 70, 180);
+    border: 2px solid #808080;
+    border-radius: 12px;
+    font-family: "Consolas", "Monaco", monospace;
+    font-size: 14pt;
+    color: #DCDCDC;
+    padding: 6px 12px;
+}
+
+QPushButton[class="dnsToolButton"]:hover {
+    background-color: rgba(80, 100, 120, 200);
+    border: 2px solid #64C8FF;
+}
+
+QPushButton[class="dnsToolButton"]:pressed {
+    background-color: rgba(100, 140, 180, 220);
+    border: 2px solid #88DFFF;
+    padding-left: 14px;
+    padding-top: 8px;
+}
+
+
+/* ----------------------------------------
+   5. Back Buttons
+----------------------------------------- */
+QPushButton[class="backButton"] {
+    background-color: rgba(40, 50, 60, 180);
+    border: 1px solid #707070;
+    border-radius: 10px;
+    font-family: "Consolas", "Monaco", monospace;
+    font-size: 14pt;
+    color: #DCDCDC;
+    padding: 4px 10px;
+}
+
+QPushButton[class="backButton"]:hover {
+    background-color: rgba(70, 90, 110, 200);
+    border: 1px solid #64C8FF;
+}
+
+QPushButton[class="backButton"]:pressed {
+    background-color: rgba(90, 120, 150, 220);
+    border: 2px solid #88DFFF;
+}
+
+
+/* ----------------------------------------
+   6. Export Controls
+----------------------------------------- */
+QComboBox[class="exportCombo"] {
+    background-color: rgba(40, 50, 60, 180);
+    border: 1px solid #707070;
+    border-radius: 6px;
+    font-family: "Consolas", "Monaco", monospace;
+    font-size: 12pt;
+    color: #DCDCDC;
+    padding: 4px 8px;
+}
+
+QComboBox[class="exportCombo"]:hover {
+    border: 1px solid #64C8FF;
+}
+
+QPushButton[class="exportButton"] {
+    background-color: rgba(0, 100, 0, 180);
+    border: 1px solid #00AA00;
+    border-radius: 8px;
+    font-family: "Consolas", "Monaco", monospace;
+    font-size: 12pt;
+    color: #DCDCDC;
+    padding: 4px 8px;
+}
+
+QPushButton[class="exportButton"]:hover {
+    background-color: rgba(0, 150, 0, 200);
+    border: 1px solid #00FF00;
+}
+
+QPushButton[class="exportButton"]:disabled {
+    background-color: rgba(60, 60, 60, 100);
+    border: 1px solid #555555;
+    color: #888888;
+}

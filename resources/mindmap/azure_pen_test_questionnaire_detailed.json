@@ -1,0 +1,214 @@
+{
+    "Reconnaissance": [
+        {
+            "id": "az_recon1",
+            "text": "Do you have the target Azure tenant ID, domain names, and subscriptions?",
+            "type": "boolean"
+        },
+        {
+            "id": "az_recon2",
+            "text": "Which external discovery techniques did you use?",
+            "type": "multi-choice",
+            "options": [
+                "Subdomain enumeration (Amass)",
+                "Certificate transparency logs",
+                "Shodan scan",
+                "Public resource enumeration",
+                "GitHub leak search"
+            ]
+        },
+        {
+            "id": "az_recon3",
+            "text": "Have you identified publicly exposed Azure resources (e.g., App Services, Storage accounts)?",
+            "type": "boolean"
+        },
+        {
+            "id": "az_recon4",
+            "text": "Which Azure regions and services were discovered externally?",
+            "type": "multi-choice",
+            "options": [
+                "VMs",
+                "Storage Accounts",
+                "App Services",
+                "Function Apps",
+                "Key Vaults",
+                "APIM",
+                "AKS"
+            ]
+        }
+    ],
+    "Enumeration": [
+        {
+            "id": "az_enum1",
+            "text": "Did you enumerate Azure AD identities, groups, and roles?",
+            "type": "boolean"
+        },
+        {
+            "id": "az_enum2",
+            "text": "Which tools/commands were used for Azure AD enumeration?",
+            "type": "multi-choice",
+            "options": [
+                "Azure CLI (`az ad user list`)",
+                "AzureAD PowerShell",
+                "MSGraph API",
+                "BloodHound / AzureHound",
+                "LDAP queries"
+            ]
+        },
+        {
+            "id": "az_enum3",
+            "text": "Have you enumerated resource configurations and RBAC assignments?",
+            "type": "boolean"
+        },
+        {
+            "id": "az_enum4",
+            "text": "Did you identify misconfigured Azure Resource Manager templates or Bicep files?",
+            "type": "boolean"
+        }
+    ],
+    "Exploitation": [
+        {
+            "id": "az_exploit1",
+            "text": "Did you find misconfigured Storage Accounts (public read/write)?",
+            "type": "boolean"
+        },
+        {
+            "id": "az_exploit2",
+            "text": "Which exploitation techniques did you attempt?",
+            "type": "multi-choice",
+            "options": [
+                "OAuth token misconfiguration",
+                "MS Graph API SSRF",
+                "Function App injection",
+                "API Management misconfig",
+                "SQL injection in Azure SQL"
+            ]
+        },
+        {
+            "id": "az_exploit3",
+            "text": "Were you able to retrieve credentials or secrets from Key Vault?",
+            "type": "boolean"
+        },
+        {
+            "id": "az_exploit4",
+            "text": "Have you exploited managed identity misconfigurations for code execution?",
+            "type": "boolean"
+        }
+    ],
+    "Privilege Escalation": [
+        {
+            "id": "az_privesc1",
+            "text": "Did you identify overly permissive IAM/RBAC roles?",
+            "type": "boolean"
+        },
+        {
+            "id": "az_privesc2",
+            "text": "Which escalation methods were used?",
+            "type": "multi-choice",
+            "options": [
+                "Role assignment abuse (`User Access Administrator`)",
+                "Elevated consent grant",
+                "Azure AD Connect misconfig",
+                "Privileged Identity Management abuse"
+            ]
+        },
+        {
+            "id": "az_privesc3",
+            "text": "Were you able to escalate to Global Administrator or Owner role?",
+            "type": "boolean"
+        }
+    ],
+    "Persistence": [
+        {
+            "id": "az_persist1",
+            "text": "Have you created or modified service principals, users, or role assignments for persistence?",
+            "type": "boolean"
+        },
+        {
+            "id": "az_persist2",
+            "text": "Which persistence mechanisms were implemented?",
+            "type": "multi-choice",
+            "options": [
+                "New service principal",
+                "Managed identity creation",
+                "Logic App/Webhook",
+                "Automation Runbook",
+                "Scheduled Function"
+            ]
+        }
+    ],
+    "Credential Access": [
+        {
+            "id": "az_cred1",
+            "text": "Did you capture or extract secrets, tokens, or certificates?",
+            "type": "boolean"
+        },
+        {
+            "id": "az_cred2",
+            "text": "Which methods were used to obtain credentials?",
+            "type": "multi-choice",
+            "options": [
+                "OAuth token retrieval",
+                "Key Vault access",
+                "Azure Storage SAS token leak",
+                "MSI credential theft",
+                "Azure AD token replay"
+            ]
+        }
+    ],
+    "Lateral Movement": [
+        {
+            "id": "az_latmove1",
+            "text": "Which lateral movement techniques were employed?",
+            "type": "multi-choice",
+            "options": [
+                "VM-to-VM RDP/WinRM",
+                "Azure Bastion pivot",
+                "Storage SAS token sharing",
+                "Service Bus Queue abuse",
+                "Cross-tenant trust abuse"
+            ]
+        },
+        {
+            "id": "az_latmove2",
+            "text": "Did you move across subscriptions, tenants, or resource groups?",
+            "type": "boolean"
+        }
+    ],
+    "Resource Abuse & Exfiltration": [
+        {
+            "id": "az_exfil1",
+            "text": "Did you exfiltrate data from Storage Accounts, SQL DB, or Cosmos DB?",
+            "type": "boolean"
+        },
+        {
+            "id": "az_exfil2",
+            "text": "Which exfiltration methods were used?",
+            "type": "multi-choice",
+            "options": [
+                "SAS token download",
+                "Database export",
+                "Event Hub streaming",
+                "Custom API exfil",
+                "Azure Data Factory pipeline"
+            ]
+        }
+    ],
+    "Cleanup & Remediation": [
+        {
+            "id": "az_cleanup1",
+            "text": "Have you removed created service principals, role assignments, and keys?",
+            "type": "boolean"
+        },
+        {
+            "id": "az_cleanup2",
+            "text": "Did you restore original RBAC policies and access controls?",
+            "type": "boolean"
+        },
+        {
+            "id": "az_cleanup3",
+            "text": "Were logs and diagnostic settings returned to their initial state?",
+            "type": "boolean"
+        }
+    ]
+}

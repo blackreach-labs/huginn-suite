@@ -1,0 +1,36 @@
+{
+  "description": "Fast web application assessment",
+  "tools": [
+    "http_enum",
+    "api_enum"
+  ],
+  "settings": {
+    "rate_limit": {
+      "enabled": true,
+      "rps": 25,
+      "threads": 100
+    },
+    "proxy": {
+      "enabled": false
+    },
+    "export_formats": [
+      "JSON",
+      "PDF"
+    ]
+  },
+  "parameters": {
+    "http_enum": {
+      "timeout": 3,
+      "follow_redirects": false
+    },
+    "api_enum": {
+      "test_methods": [
+        "GET",
+        "POST",
+        "PUT"
+      ]
+    }
+  },
+  "created": "2025-07-02T20:00:29.108072",
+  "version": "1.0"
+}

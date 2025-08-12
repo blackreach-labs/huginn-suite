@@ -1,0 +1,34 @@
+{
+  "target_name": "LAB",
+  "primary_target": "*.lab.local, 192.168.1.0/24",
+  "scope": "*.lab.local, 192.168.1.0/24",
+  "subdomains": "",
+  "cloud_assets": "",
+  "out_scope": "",
+  "restrictions": "",
+  "dos_allowed": true,
+  "social_eng_allowed": true,
+  "physical_allowed": true,
+  "credentials": {
+    "credentials": [
+      {
+        "username": "Administrator",
+        "password": "Arkar00la!",
+        "domain": "LAB",
+        "service": "",
+        "notes": "",
+        "source": "manual",
+        "credential_type": "Username/Password"
+      },
+      {
+        "username": "huggin",
+        "password": "P@$$word!",
+        "domain": "LAB",
+        "service": "RDP",
+        "notes": "",
+        "source": "manual",
+        "credential_type": "Username/Password"
+      }
+    ]
+  }
+}

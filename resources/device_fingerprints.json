@@ -1,0 +1,141 @@
+{
+  "routers": {
+    "tplink": {
+      "model_keys": ["modelName", "productModel", "model"],
+      "title_patterns": ["TP-Link", "Archer", "TL-", "Deco"],
+      "cert_domains": ["tplinkmodem.net", "tplinkwifi.net"],
+      "favicon_hashes": [-370593630, 1234567890],
+      "server_patterns": ["TP-LINK", "lighttpd"],
+      "default_paths": ["/cgi-bin/luci", "/userRpm/LoginRpm.htm", "/webpages/login.html"],
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2020-10882",
+          "description": "Command injection in certain TP-Link routers",
+          "severity": "High"
+        }
+      ]
+    },
+    "netgear": {
+      "model_keys": ["modelName", "model", "productName"],
+      "title_patterns": ["NETGEAR", "ReadyNAS", "Nighthawk"],
+      "cert_domains": ["routerlogin.net", "routerlogin.com"],
+      "favicon_hashes": [987654321, -123456789],
+      "server_patterns": ["NETGEAR", "mini_httpd"],
+      "default_paths": ["/setup.cgi", "/currentsetting.htm", "/passwordrecovered.cgi"],
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2021-34991",
+          "description": "Authentication bypass in NETGEAR routers",
+          "severity": "Critical"
+        }
+      ]
+    },
+    "linksys": {
+      "model_keys": ["modelNumber", "model", "deviceName"],
+      "title_patterns": ["Linksys", "Smart Wi-Fi", "Velop"],
+      "cert_domains": ["myrouter.local", "linksyssmartwifi.com"],
+      "favicon_hashes": [-987654321, 456789123],
+      "server_patterns": ["Linksys", "httpd"],
+      "default_paths": ["/login.htm", "/Setup.asp", "/apply.cgi"],
+      "vulnerabilities": []
+    },
+    "dlink": {
+      "model_keys": ["model", "modelName", "productName"],
+      "title_patterns": ["D-Link", "DIR-", "DAP-"],
+      "cert_domains": ["dlinkrouter.local"],
+      "favicon_hashes": [111222333, -444555666],
+      "server_patterns": ["D-Link", "boa"],
+      "default_paths": ["/login_pic.asp", "/tools_admin.asp"],
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2019-17621",
+          "description": "Command injection in D-Link routers",
+          "severity": "High"
+        }
+      ]
+    }
+  },
+  "cameras": {
+    "hikvision": {
+      "model_keys": ["deviceName", "model"],
+      "title_patterns": ["Web Service", "IP Camera", "Hikvision"],
+      "cert_domains": [],
+      "favicon_hashes": [777888999, -111000222],
+      "server_patterns": ["App-webs", "uc-httpd"],
+      "default_paths": ["/doc/page/login.asp", "/ISAPI/System/deviceInfo"],
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2021-36260",
+          "description": "Command injection in Hikvision cameras",
+          "severity": "Critical"
+        }
+      ]
+    },
+    "dahua": {
+      "model_keys": ["deviceType", "model"],
+      "title_patterns": ["Web Service", "Dahua", "IP Camera"],
+      "cert_domains": [],
+      "favicon_hashes": [333444555, -666777888],
+      "server_patterns": ["Webs"],
+      "default_paths": ["/doc/page/login.asp", "/cgi-bin/main-cgi"],
+      "vulnerabilities": []
+    }
+  },
+  "printers": {
+    "hp": {
+      "model_keys": ["model", "productName"],
+      "title_patterns": ["HP", "LaserJet", "OfficeJet"],
+      "cert_domains": [],
+      "favicon_hashes": [123123123, -456456456],
+      "server_patterns": ["HP HTTP Server"],
+      "default_paths": ["/hp/device/this.LCDispatcher", "/DevMgmt/ProductConfigDyn.xml"],
+      "vulnerabilities": []
+    },
+    "canon": {
+      "model_keys": ["model", "modelName"],
+      "title_patterns": ["Canon", "PIXMA", "imageRUNNER"],
+      "cert_domains": [],
+      "favicon_hashes": [789789789, -012012012],
+      "server_patterns": ["Canon HTTP Server"],
+      "default_paths": ["/English/pages_MacUS/login.html"],
+      "vulnerabilities": []
+    }
+  },
+  "nas": {
+    "synology": {
+      "model_keys": ["model", "hostname"],
+      "title_patterns": ["Synology", "DiskStation", "DSM"],
+      "cert_domains": ["synology.me", "quickconnect.to"],
+      "favicon_hashes": [555666777, -888999000],
+      "server_patterns": ["nginx"],
+      "default_paths": ["/webman/login.cgi", "/webapi/auth.cgi"],
+      "vulnerabilities": []
+    },
+    "qnap": {
+      "model_keys": ["model", "modelName"],
+      "title_patterns": ["QNAP", "Turbo NAS", "QTS"],
+      "cert_domains": ["myqnapcloud.com"],
+      "favicon_hashes": [147258369, -963852741],
+      "server_patterns": ["http server"],
+      "default_paths": ["/cgi-bin/login.html", "/cgi-bin/authLogin.cgi"],
+      "vulnerabilities": [
+        {
+          "cve": "CVE-2021-28799",
+          "description": "Command injection in QNAP NAS",
+          "severity": "Critical"
+        }
+      ]
+    }
+  },
+  "iot": {
+    "generic": {
+      "model_keys": ["device", "model", "name"],
+      "title_patterns": ["IoT Device", "Smart Device", "Connected Device"],
+      "cert_domains": [],
+      "favicon_hashes": [],
+      "server_patterns": ["lwIP", "mongoose", "ESP32"],
+      "default_paths": ["/", "/config", "/setup"],
+      "vulnerabilities": []
+    }
+  }
+}

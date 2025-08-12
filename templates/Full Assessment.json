@@ -1,0 +1,52 @@
+{
+  "description": "Comprehensive security assessment",
+  "tools": [
+    "dns_enum",
+    "port_scan",
+    "http_enum",
+    "api_enum"
+  ],
+  "settings": {
+    "rate_limit": {
+      "enabled": true,
+      "rps": 10,
+      "threads": 50
+    },
+    "proxy": {
+      "enabled": false
+    },
+    "export_formats": [
+      "PDF",
+      "Summary",
+      "Correlate"
+    ]
+  },
+  "parameters": {
+    "dns_enum": {
+      "record_types": [
+        "A",
+        "AAAA",
+        "CNAME",
+        "MX",
+        "TXT"
+      ]
+    },
+    "port_scan": {
+      "scan_type": "tcp_connect"
+    },
+    "http_enum": {
+      "timeout": 5,
+      "follow_redirects": true
+    },
+    "api_enum": {
+      "test_methods": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE"
+      ]
+    }
+  },
+  "created": "2025-07-02T20:00:29.108649",
+  "version": "1.0"
+}

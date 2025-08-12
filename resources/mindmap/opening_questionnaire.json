@@ -1,0 +1,13 @@
+{
+  "id": "workflow_select",
+  "text": "Choose your penetration testing approach:",
+  "type": "single-choice",
+  "options": [
+    "Guided Workflow (Step-by-step)",
+    "Environment-Specific (AD/AWS/Azure/GCP)"
+  ],
+  "next": {
+    "Guided Workflow (Step-by-step)": "guided_workflow_questionnaire",
+    "Environment-Specific (AD/AWS/Azure/GCP)": "environment_selection"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": "env_select",
+  "text": "Which environment is in scope for this penetration test?",
+  "type": "single-choice",
+  "options": [
+    "Standalone Server",
+    "Active Directory",
+    "Microsoft Azure", 
+    "AWS",
+    "Google Cloud"
+  ],
+  "next": {
+    "Standalone Server": "standalone_pen_test_questionnaire_detailed",
+    "Active Directory": "ad_pen_test_questionnaire_detailed",
+    "Microsoft Azure": "azure_pen_test_questionnaire_detailed",
+    "AWS": "aws_pen_test_questionnaire_detailed",
+    "Google Cloud": "gcp_pen_test_questionnaire_detailed"
+  }
+}

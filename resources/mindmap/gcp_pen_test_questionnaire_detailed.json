@@ -1,0 +1,230 @@
+{
+    "Reconnaissance": [
+        {
+            "id": "gcp_recon1",
+            "text": "Do you have the target GCP project IDs, organization IDs, and domain names?",
+            "type": "boolean"
+        },
+        {
+            "id": "gcp_recon2",
+            "text": "Which external discovery techniques did you use?",
+            "type": "multi-choice",
+            "options": [
+                "Subdomain enumeration (Amass)",
+                "Certificate transparency logs",
+                "Shodan scan",
+                "Public dataset analysis",
+                "GitHub leak search"
+            ]
+        },
+        {
+            "id": "gcp_recon3",
+            "text": "Have you identified publicly exposed GCP resources (e.g., App Engine, Cloud Storage buckets)?",
+            "type": "boolean"
+        },
+        {
+            "id": "gcp_recon4",
+            "text": "Which regions and GCP services were discovered externally?",
+            "type": "multi-choice",
+            "options": [
+                "Compute Engine",
+                "Cloud Storage",
+                "Cloud SQL",
+                "Cloud Functions",
+                "API Gateway",
+                "Cloud Run",
+                "GKE"
+            ]
+        }
+    ],
+    "Enumeration": [
+        {
+            "id": "gcp_enum1",
+            "text": "Did you enumerate IAM identities (users, service accounts, groups) and role bindings?",
+            "type": "boolean"
+        },
+        {
+            "id": "gcp_enum2",
+            "text": "Which gcloud or API commands were used for enumeration?",
+            "type": "multi-choice",
+            "options": [
+                "gcloud iam service-accounts list",
+                "gcloud projects get-iam-policy",
+                "Cloud Resource Manager API",
+                "Terraform state file analysis",
+                "Google Cloud SDK scripts"
+            ]
+        },
+        {
+            "id": "gcp_enum3",
+            "text": "Have you enumerated Cloud Storage buckets and ACL configurations?",
+            "type": "boolean"
+        },
+        {
+            "id": "gcp_enum4",
+            "text": "Did you identify default service accounts and their permissions?",
+            "type": "boolean"
+        }
+    ],
+    "Exploitation": [
+        {
+            "id": "gcp_exploit1",
+            "text": "Did you find misconfigured Cloud Storage buckets allowing public read or write?",
+            "type": "boolean"
+        },
+        {
+            "id": "gcp_exploit2",
+            "text": "Which exploitation techniques did you attempt?",
+            "type": "multi-choice",
+            "options": [
+                "SSRF to metadata server",
+                "Public bucket ACL abuse",
+                "Cloud Function injection",
+                "API Gateway misconfig",
+                "SQL injection in Cloud SQL"
+            ]
+        },
+        {
+            "id": "gcp_exploit3",
+            "text": "Were you able to retrieve metadata server tokens from Compute Engine instances?",
+            "type": "boolean"
+        },
+        {
+            "id": "gcp_exploit4",
+            "text": "Have you exploited misconfigured Cloud Functions or Cloud Run services for code execution?",
+            "type": "boolean"
+        }
+    ],
+    "Privilege Escalation": [
+        {
+            "id": "gcp_privesc1",
+            "text": "Did you identify overly permissive IAM roles or custom roles?",
+            "type": "boolean"
+        },
+        {
+            "id": "gcp_privesc2",
+            "text": "Which escalation methods were used?",
+            "type": "multi-choice",
+            "options": [
+                "Service account impersonation",
+                "IAM role binding modification",
+                "Organization policy bypass",
+                "Cloud Build impersonation",
+                "Confused deputy (KMS/IAM)"
+            ]
+        },
+        {
+            "id": "gcp_privesc3",
+            "text": "Were you able to escalate to Project Owner or Organization Admin roles?",
+            "type": "boolean"
+        }
+    ],
+    "Persistence": [
+        {
+            "id": "gcp_persist1",
+            "text": "Have you created or modified service accounts, roles, or bindings for persistence?",
+            "type": "boolean"
+        },
+        {
+            "id": "gcp_persist2",
+            "text": "Which persistence mechanisms did you implement?",
+            "type": "multi-choice",
+            "options": [
+                "New service account creation",
+                "IAM binding grant",
+                "Backdoor Cloud Function",
+                "Scheduled Cloud Scheduler job",
+                "Deployment Manager template"
+            ]
+        },
+        {
+            "id": "gcp_persist3",
+            "text": "Did you configure long-lived access tokens or keys for persistence?",
+            "type": "boolean"
+        }
+    ],
+    "Credential Access": [
+        {
+            "id": "gcp_cred1",
+            "text": "Did you discover hardcoded credentials in code repositories or configurations?",
+            "type": "boolean"
+        },
+        {
+            "id": "gcp_cred2",
+            "text": "Which methods did you use to extract credentials or tokens?",
+            "type": "multi-choice",
+            "options": [
+                "SSRF to metadata server",
+                "Terraform state file exposure",
+                "GitHub token leak",
+                "Cloud SDK config file",
+                "Workload Identity federation abuse"
+            ]
+        },
+        {
+            "id": "gcp_cred3",
+            "text": "Were you able to retrieve service account keys from Secret Manager or Storage misconfigs?",
+            "type": "boolean"
+        }
+    ],
+    "Lateral Movement": [
+        {
+            "id": "gcp_latmove1",
+            "text": "Which lateral movement techniques did you employ?",
+            "type": "multi-choice",
+            "options": [
+                "Service account impersonation across projects",
+                "VPC peering pivot",
+                "Shared VPC abuse",
+                "Cloud VPN/Interconnect misuse",
+                "Cross-project API calls"
+            ]
+        },
+        {
+            "id": "gcp_latmove2",
+            "text": "Did you move laterally across projects, folders, or organizations?",
+            "type": "boolean"
+        }
+    ],
+    "Resource Abuse & Exfiltration": [
+        {
+            "id": "gcp_exfil1",
+            "text": "Did you exfiltrate data from Cloud Storage, BigQuery, or Cloud SQL?",
+            "type": "boolean"
+        },
+        {
+            "id": "gcp_exfil2",
+            "text": "Which exfiltration methods were used?",
+            "type": "multi-choice",
+            "options": [
+                "Signed URLs",
+                "BigQuery export",
+                "Database dump export",
+                "Pub/Sub topic exfil",
+                "GKE egress"
+            ]
+        },
+        {
+            "id": "gcp_exfil3",
+            "text": "Did you monitor or tamper with Audit Logs to cover exfiltration?",
+            "type": "boolean"
+        }
+    ],
+    "Cleanup & Remediation": [
+        {
+            "id": "gcp_cleanup1",
+            "text": "Have you removed or disabled created service accounts, keys, or scheduler jobs?",
+            "type": "boolean"
+        },
+        {
+            "id": "gcp_cleanup2",
+            "text": "Did you restore original IAM bindings and permissions?",
+            "type": "boolean"
+        },
+        {
+            "id": "gcp_cleanup3",
+            "text": "Were audit logs and logging configurations returned to their initial state?",
+            "type": "boolean"
+        }
+    ]
+}

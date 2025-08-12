@@ -1,0 +1,25 @@
+{
+  "target_name": "HTB-Code",
+  "primary_target": "10.10.11.62",
+  "scope": "10.10.11.62",
+  "subdomains": "",
+  "cloud_assets": "",
+  "out_scope": "",
+  "restrictions": "",
+  "dos_allowed": false,
+  "social_eng_allowed": false,
+  "physical_allowed": false,
+  "credentials": {
+    "credentials": [
+      {
+        "username": "Martin",
+        "password": "nafeelswordsmaster",
+        "domain": "",
+        "service": "SSH",
+        "notes": "",
+        "source": "manual",
+        "credential_type": "Username/Password"
+      }
+    ]
+  }
+}

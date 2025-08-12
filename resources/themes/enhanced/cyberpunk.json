@@ -1,0 +1,23 @@
+{
+  "name": "Cyberpunk",
+  "description": "Neon-lit cyberpunk aesthetic with animated effects",
+  "license_required": "professional",
+  "colors": {
+    "background": "#0a0a0a",
+    "surface": "#1a0a1a",
+    "accent": "#ff00ff",
+    "text": "#00ffff",
+    "success": "#00ff41",
+    "warning": "#ffaa00",
+    "error": "#ff0040"
+  },
+  "animations": {
+    "neon_glow": true,
+    "matrix_rain": false,
+    "particle_field": true
+  },
+  "fonts": {
+    "primary": "Neuropol X",
+    "monospace": "Consolas"
+  }
+}

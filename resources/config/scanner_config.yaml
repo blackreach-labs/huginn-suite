@@ -1,0 +1,48 @@
+scan_profile: "normal"
+
+profiles:
+  light:
+    max_concurrent: 20
+    timeout: 5
+    modules: ["banner", "tech_fingerprint", "security_headers"]
+    payload_limit: 2
+    deep_crawl: false
+  
+  normal:
+    max_concurrent: 50
+    timeout: 10
+    modules: ["all"]
+    payload_limit: 3
+    deep_crawl: false
+  
+  aggressive:
+    max_concurrent: 100
+    timeout: 15
+    modules: ["all"]
+    payload_limit: 5
+    deep_crawl: true
+  
+  insane:
+    max_concurrent: 200
+    timeout: 20
+    modules: ["all", "deep_crawl", "bruteforce_extended"]
+    payload_limit: 8
+    deep_crawl: true
+
+authentication:
+  method: null
+  token: null
+  username: null
+  password: null
+  cookies: {}
+
+custom_headers: {}
+
+proxy:
+  enabled: false
+  url: null
+
+wordlists:
+  directories: "resources/wordlists/directories.txt"
+  files: "resources/wordlists/files.txt"
+  parameters: "resources/wordlists/parameters.txt"

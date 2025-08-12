@@ -1,0 +1,621 @@
+{
+  "dns": {
+    "rows": [
+      {
+        "label": "Types:",
+        "controls": [
+          {"type": "checkbox", "name": "all_checkbox", "text": "ALL"},
+          {"type": "checkbox", "name": "a_checkbox", "text": "A"},
+          {"type": "checkbox", "name": "cname_checkbox", "text": "CNAME"},
+          {"type": "checkbox", "name": "mx_checkbox", "text": "MX"},
+          {"type": "checkbox", "name": "txt_checkbox", "text": "TXT"},
+          {"type": "checkbox", "name": "ns_checkbox", "text": "NS"},
+          {"type": "checkbox", "name": "ptr_checkbox", "text": "PTR", "visible": false}
+        ]
+      },
+      {
+        "label": "DNS:",
+        "controls": [
+          {"type": "lineedit", "name": "dns_input", "placeholder": "DNS Server (optional)", "width": 400}
+        ]
+      },
+      {
+        "label": "Method:",
+        "controls": [
+          {"type": "combobox", "name": "method_combo", "items": ["Wordlist", "Bruteforce"], "width": 150},
+          {"type": "combobox", "name": "wordlist_combo", "items": [], "stretch": true}
+        ]
+      }
+    ]
+  },
+
+  "smb": {
+    "rows": [
+      {
+        "label": "Scan Type:",
+        "controls": [
+          {"type": "combobox", "name": "smb_scan_type", "items": ["Basic Info", "Share Enumeration", "Vulnerability Scan"], "width": 270},
+          {"type": "label", "name": "auth_label", "text": "Auth:", "width": 75},
+          {"type": "combobox", "name": "smb_auth_combo", "items": ["Anonymous", "Credentials"], "width": 190}
+        ]
+      },
+      {
+        "label": "Domain:",
+        "controls": [
+          {"type": "lineedit", "name": "smb_domain", "placeholder": "Domain name (e.g., CONTOSO.COM)", "stretch": true, "visible": false}
+        ]
+      },
+      {
+        "label": "Username:",
+        "controls": [
+          {"type": "lineedit", "name": "smb_username", "placeholder": "Domain username", "stretch": true, "visible": false}
+        ]
+      },
+      {
+        "label": "Password:",
+        "controls": [
+          {"type": "lineedit", "name": "smb_password", "placeholder": "Password", "password": true, "stretch": true, "visible": false}
+        ]
+      },
+      {
+        "label": "Credentials:",
+        "controls": [
+          {"type": "button", "name": "cred_manager_btn", "text": "📋 Load from Credential Manager", "stretch": true, "visible": false}
+        ]
+      },
+      {
+        "label": "Wordlist:",
+        "controls": [
+          {"type": "combobox", "name": "smb_wordlist", "items": [], "stretch": true, "visible": false}
+        ]
+      }
+    ]
+  },
+  "smtp": {
+    "rows": [
+      {
+        "label": "Port:",
+        "controls": [
+          {"type": "lineedit", "name": "smtp_port", "default": "25", "width": 100}
+        ]
+      },
+      {
+        "label": "Domain:",
+        "controls": [
+          {"type": "lineedit", "name": "smtp_domain", "placeholder": "Target domain for RCPT TO (optional)", "stretch": true}
+        ]
+      },
+      {
+        "label": "HELO Name:",
+        "controls": [
+          {"type": "lineedit", "name": "smtp_helo", "default": "test.local", "placeholder": "HELO/EHLO identifier", "stretch": true}
+        ]
+      },
+      {
+        "label": "Wordlist:",
+        "controls": [
+          {"type": "combobox", "name": "smtp_wordlist", "items": [], "stretch": true}
+        ]
+      }
+    ]
+  },
+  "snmp": {
+    "rows": [
+      {
+        "label": "Version:",
+        "controls": [
+          {"type": "combobox", "name": "snmp_version", "items": ["2c", "1", "3"], "width": 100}
+        ]
+      },
+      {
+        "label": "Scan Type:",
+        "controls": [
+          {"type": "combobox", "name": "snmp_scan_type", "items": ["Basic Info", "Users", "Processes", "Software", "Network", "Full Enumeration"], "width": 150}
+        ]
+      },
+      {
+        "label": "Communities:",
+        "controls": [
+          {"type": "lineedit", "name": "snmp_communities", "default": "public,private,community", "placeholder": "Comma-separated community strings", "stretch": true}
+        ]
+      },
+      {
+        "label": "Quick:",
+        "buttons": [
+          {"text": "Default"},
+          {"text": "Extended"}
+        ]
+      }
+    ]
+  },
+  "http": {
+    "rows": [
+      {
+        "label": "Scan Type:",
+        "controls": [
+          {"type": "combobox", "name": "http_scan_type", "items": ["Fingerprinting", "Source Code", "Crawler", "Directory Enum", "Enterprise Scripts", "Full Scan"], "width": 220},
+          {"type": "checkbox", "name": "enable_listener", "text": "Enable Listener", "style": "margin-left: 20px;"}
+        ]
+      },
+      {
+        "label": "Listener:",
+        "controls": [
+          {"type": "combobox", "name": "listener_combo", "items": ["No listeners available"], "width": 200, "enabled": false},
+          {"type": "button", "name": "add_listener_btn", "text": "Add Listener", "width": 100}
+        ],
+        "visible": false
+      },
+      {
+        "label": "Preset:",
+        "controls": [
+          {"type": "combobox", "name": "http_preset", "items": ["Manual", "PHP Apps", "API-focused", "Login Pages", "Backup Files", "CMS Common"], "width": 170, "default": "Manual"},
+          {"type": "label", "name": "size_label", "text": "Size:", "width": 50, "visible": false},
+          {"type": "combobox", "name": "wordlist_size", "items": ["Small", "Medium", "Large"], "width": 120, "default": "Medium", "visible": false}
+        ],
+        "visible": false
+      },
+      {
+        "label": "PHP:",
+        "controls": [
+          {"type": "checkbox", "name": "ext_php", "text": ".php", "checked": true},
+          {"type": "checkbox", "name": "ext_php3", "text": ".php3"},
+          {"type": "checkbox", "name": "ext_php4", "text": ".php4"},
+          {"type": "checkbox", "name": "ext_php5", "text": ".php5"},
+          {"type": "checkbox", "name": "ext_phtml", "text": ".phtml"}
+        ],
+        "visible": false
+      },
+      {
+        "label": "ASP:",
+        "controls": [
+          {"type": "checkbox", "name": "ext_asp", "text": ".asp"},
+          {"type": "checkbox", "name": "ext_aspx", "text": ".aspx"},
+          {"type": "checkbox", "name": "ext_ascx", "text": ".ascx"},
+          {"type": "checkbox", "name": "ext_ashx", "text": ".ashx"}
+        ],
+        "visible": false
+      },
+      {
+        "label": "JSP:",
+        "controls": [
+          {"type": "checkbox", "name": "ext_jsp", "text": ".jsp"},
+          {"type": "checkbox", "name": "ext_jspx", "text": ".jspx"},
+          {"type": "checkbox", "name": "ext_do", "text": ".do"},
+          {"type": "checkbox", "name": "ext_action", "text": ".action"}
+        ],
+        "visible": false
+      },
+      {
+        "label": "HTML:",
+        "controls": [
+          {"type": "checkbox", "name": "ext_html", "text": ".html", "checked": true},
+          {"type": "checkbox", "name": "ext_htm", "text": ".htm"},
+          {"type": "checkbox", "name": "ext_xhtml", "text": ".xhtml"}
+        ],
+        "visible": false
+      },
+      {
+        "label": "JS:",
+        "controls": [
+          {"type": "checkbox", "name": "ext_js", "text": ".js"},
+          {"type": "checkbox", "name": "ext_json", "text": ".json"},
+          {"type": "checkbox", "name": "ext_jsx", "text": ".jsx"}
+        ],
+        "visible": false
+      },
+      {
+        "label": "Config:",
+        "controls": [
+          {"type": "checkbox", "name": "ext_env", "text": ".env"},
+          {"type": "checkbox", "name": "ext_config", "text": ".config"},
+          {"type": "checkbox", "name": "ext_conf", "text": ".conf"},
+          {"type": "checkbox", "name": "ext_ini", "text": ".ini"}
+        ],
+        "visible": false
+      },
+      {
+        "label": "Backup:",
+        "controls": [
+          {"type": "checkbox", "name": "ext_bak", "text": ".bak"},
+          {"type": "checkbox", "name": "ext_old", "text": ".old"},
+          {"type": "checkbox", "name": "ext_tmp", "text": ".tmp"},
+          {"type": "checkbox", "name": "ext_backup", "text": ".backup"}
+        ],
+        "visible": false
+      },
+      {
+        "label": "Wordlist:",
+        "controls": [
+          {"type": "combobox", "name": "http_wordlist", "items": [], "stretch": true, "visible": true, "default_file": "common.txt"}
+        ],
+        "visible": false
+      },
+      {
+        "label": "Auth Method:",
+        "controls": [
+          {"type": "combobox", "name": "http_auth_method", "items": ["None", "Basic Auth"], "width": 150, "default": "None"}
+        ],
+        "visible": false
+      },
+      {
+        "label": "Username:",
+        "controls": [
+          {"type": "lineedit", "name": "http_username", "placeholder": "Username", "stretch": true, "visible": false}
+        ],
+        "visible": false
+      },
+      {
+        "label": "Password:",
+        "controls": [
+          {"type": "lineedit", "name": "http_password", "placeholder": "Password", "password": true, "stretch": true, "visible": false}
+        ],
+        "visible": false
+      },
+      {
+        "label": "Credentials:",
+        "controls": [
+          {"type": "button", "name": "http_cred_manager_btn", "text": "📋 Load from Credential Manager", "stretch": true, "visible": false}
+        ],
+        "visible": false
+      }
+
+    ]
+  },
+  "api": {
+    "rows": [
+      {
+        "label": "Scan Type:",
+        "controls": [
+          {"type": "combobox", "name": "api_scan_type", "items": ["Basic Discovery", "Gobuster Enum", "HTTP Methods", "Auth Bypass", "Vulnerability Test", "Full Scan"], "width": 220}
+        ]
+      },
+      {
+        "label": "Preset:",
+        "controls": [
+          {"type": "combobox", "name": "api_preset", "items": ["None", "API-focused", "Login Pages", "Backup Files"], "width": 150},
+          {"type": "label", "name": "size_label", "text": "Size:", "width": 40},
+          {"type": "combobox", "name": "api_wordlist_size", "items": ["Small", "Medium", "Large"], "width": 80, "default": "Medium"}
+        ]
+      },
+      {
+        "label": "Wordlist:",
+        "controls": [
+          {"type": "combobox", "name": "api_wordlist", "items": [], "stretch": true}
+        ]
+      },
+      {
+        "label": "Patterns:",
+        "controls": [
+          {"type": "label", "name": "patterns_text", "text": "/api, /api/v1, /rest, /graphql, /swagger", "style": "color: #888; font-size: 10pt;"}
+        ]
+      }
+    ]
+  },
+  "ldap": {
+    "rows": [
+      {
+        "label": "Port:",
+        "controls": [
+          {"type": "lineedit", "name": "ldap_port", "default": "389", "width": 100},
+          {"type": "checkbox", "name": "ldap_ssl_checkbox", "text": "Use SSL/TLS (636)"}
+        ]
+      },
+      {
+        "label": "Scan Type:",
+        "controls": [
+          {"type": "combobox", "name": "ldap_scan_type", "items": ["Basic Info", "Anonymous Enum", "Authenticated Enum", "Full Scan"], "width": 150}
+        ]
+      },
+      {
+        "label": "Base DN:",
+        "controls": [
+          {"type": "lineedit", "name": "ldap_base_dn", "placeholder": "DC=domain,DC=com (auto-detected if empty)", "stretch": true}
+        ]
+      },
+      {
+        "label": "Authentication (for Authenticated Enum):",
+        "controls": [
+          {"type": "label", "name": "auth_header", "text": "", "style": "color: #87CEEB; font-weight: bold;"}
+        ]
+      },
+      {
+        "label": "Username:",
+        "controls": [
+          {"type": "lineedit", "name": "ldap_username", "placeholder": "Domain\\username or username@domain.com", "stretch": true, "visible": false}
+        ]
+      },
+      {
+        "label": "Password:",
+        "controls": [
+          {"type": "lineedit", "name": "ldap_password", "placeholder": "Password", "password": true, "stretch": true, "visible": false}
+        ]
+      }
+    ]
+  },
+  "db": {
+    "rows": [
+      {
+        "label": "DB Type:",
+        "controls": [
+          {"type": "combobox", "name": "db_type_combo", "items": ["MSSQL", "MySQL", "Oracle", "PostgreSQL"], "width": 150},
+          {"type": "label", "name": "port_label", "text": "Port:", "width": 50},
+          {"type": "lineedit", "name": "db_port", "default": "1433", "width": 100}
+        ]
+      },
+      {
+        "label": "Scan Type:",
+        "controls": [
+          {"type": "combobox", "name": "db_scan_type", "items": ["Basic Info", "Scripts", "Custom Query", "Full Scan"], "width": 150}
+        ]
+      },
+      {
+        "label": "Oracle SID:",
+        "controls": [
+          {"type": "lineedit", "name": "oracle_sid", "default": "DB11g", "placeholder": "Oracle SID for brute force", "stretch": true, "visible": false}
+        ]
+      },
+      {
+        "label": "Query:",
+        "controls": [
+          {"type": "lineedit", "name": "db_query", "placeholder": "SELECT name FROM sys.databases", "stretch": true, "visible": false}
+        ]
+      },
+      {
+        "label": "Quick:",
+        "buttons": [
+          {"text": "List DBs", "visible": false},
+          {"text": "List Users", "visible": false},
+          {"text": "Version", "visible": false}
+        ]
+      },
+      {
+        "label": "Authentication (for Scripts/Query):",
+        "controls": [
+          {"type": "label", "name": "auth_header", "text": "", "style": "color: #87CEEB; font-weight: bold;"}
+        ]
+      },
+      {
+        "label": "Username:",
+        "controls": [
+          {"type": "lineedit", "name": "db_username", "placeholder": "sa", "width": 200},
+          {"type": "label", "name": "password_label", "text": "Password:", "width": 80},
+          {"type": "lineedit", "name": "db_password", "placeholder": "Password", "password": true, "stretch": true}
+        ]
+      }
+    ]
+  },
+  "ike": {
+    "rows": [
+      {
+        "label": "Port:",
+        "controls": [
+          {"type": "lineedit", "name": "ike_port", "default": "500", "width": 100}
+        ]
+      },
+      {
+        "label": "Scan Type:",
+        "controls": [
+          {"type": "combobox", "name": "ike_scan_type", "items": ["Basic Info", "Detailed Scan", "Transform Enum", "Full Scan"], "width": 150}
+        ]
+      },
+      {
+        "label": "Mode:",
+        "controls": [
+          {"type": "checkbox", "name": "ike_aggressive_mode", "text": "Aggressive Mode (-M)", "checked": true}
+        ]
+      },
+      {
+        "label": "Tool:",
+        "controls": [
+          {"type": "label", "name": "tool_info", "text": "Requires ike-scan tool", "style": "color: #888; font-size: 10pt;"}
+        ]
+      },
+      {
+        "label": "IPSec Configuration Files:",
+        "controls": [
+          {"type": "label", "name": "config_label", "text": "", "style": "color: #87CEEB; font-weight: bold;"}
+        ]
+      },
+      {
+        "label": "",
+        "controls": [
+          {"type": "label", "name": "config_info", "text": "/etc/ipsec.conf, /etc/ipsec.secrets", "style": "color: #888; font-size: 9pt; margin-left: 20px;"}
+        ]
+      }
+    ]
+  },
+  "av_firewall": {
+    "rows": [
+      {
+        "label": "Detection:",
+        "controls": [
+          {"type": "combobox", "name": "av_detection_type", "items": ["WAF Detection", "Firewall Detection", "Evasion Test", "AV Payload Gen", "Full Detection"], "width": 150}
+        ]
+      },
+      {
+        "label": "Port:",
+        "controls": [
+          {"type": "lineedit", "name": "av_port", "default": "80", "width": 100}
+        ]
+      },
+      {
+        "label": "Payload:",
+        "controls": [
+          {"type": "combobox", "name": "av_payload_type", "items": ["msfvenom", "shellter"], "width": 150, "visible": false}
+        ]
+      },
+      {
+        "label": "Tool Requirements:",
+        "controls": [
+          {"type": "label", "name": "tools_label", "text": "", "style": "color: #87CEEB; font-weight: bold;"}
+        ]
+      },
+      {
+        "label": "",
+        "controls": [
+          {"type": "label", "name": "tools_info", "text": "nmap (firewall detection), msfvenom (payload generation)", "style": "color: #888; font-size: 9pt; margin-left: 20px;"}
+        ]
+      },
+      {
+        "label": "Detection Methods:",
+        "controls": [
+          {"type": "label", "name": "methods_label", "text": "", "style": "color: #87CEEB; font-weight: bold;"}
+        ]
+      },
+      {
+        "label": "",
+        "controls": [
+          {"type": "label", "name": "methods_info", "text": "WAF: HTTP headers/responses, Firewall: nmap ACK/SYN scans", "style": "color: #888; font-size: 9pt; margin-left: 20px;"}
+        ]
+      }
+    ]
+  },
+  "rpc": {
+    "rows": [
+      {
+        "label": "Scan Type:",
+        "controls": [
+          {"type": "combobox", "name": "rpc_scan_type", "items": ["Basic Info", "Full Enumeration", "Vulnerability Scan", "Complete Assessment"], "width": 270},
+          {"type": "label", "name": "auth_label", "text": "Auth:", "width": 75},
+          {"type": "combobox", "name": "rpc_auth_combo", "items": ["Anonymous", "Credentials", "Pass-the-Hash", "Kerberos Ticket", "Kerberos Password"], "width": 190}
+        ]
+      },
+      {
+        "label": "Domain:",
+        "controls": [
+          {"type": "lineedit", "name": "rpc_domain", "placeholder": "Domain name (e.g., CONTOSO.COM)", "stretch": true, "visible": false}
+        ],
+        "visible": false
+      },
+      {
+        "label": "Username:",
+        "controls": [
+          {"type": "lineedit", "name": "rpc_username", "placeholder": "Domain username", "stretch": true, "visible": false}
+        ],
+        "visible": false
+      },
+      {
+        "label": "Password:",
+        "controls": [
+          {"type": "lineedit", "name": "rpc_password", "placeholder": "Password", "password": true, "stretch": true, "visible": false}
+        ],
+        "visible": false
+      },
+      {
+        "label": "NTLM Hash:",
+        "controls": [
+          {"type": "lineedit", "name": "rpc_ntlm_hash", "placeholder": "NTLM hash (alternative to password)", "stretch": true, "visible": false}
+        ],
+        "visible": false
+      },
+      {
+        "label": "Ticket File:",
+        "controls": [
+          {"type": "lineedit", "name": "rpc_ticket_path", "placeholder": "Path to .ccache ticket file", "stretch": true, "visible": false},
+          {"type": "button", "name": "ticket_browse_btn", "text": "Browse", "width": 60, "visible": false}
+        ],
+        "visible": false
+      },
+      {
+        "label": "Credentials:",
+        "controls": [
+          {"type": "button", "name": "cred_manager_btn", "text": "📋 Load from Credential Manager", "stretch": true, "visible": false}
+        ],
+        "visible": false
+      }
+    ]
+  },
+  "ssh": {
+    "rows": [
+      {
+        "label": "Port:",
+        "controls": [
+          {"type": "lineedit", "name": "ssh_port", "default": "22", "width": 100}
+        ]
+      },
+      {
+        "label": "Scan Type:",
+        "controls": [
+          {"type": "combobox", "name": "ssh_scan_type", "items": ["Enumeration", "Banner Grab", "Key Exchange", "Cipher Analysis", "Full Scan"], "width": 150}
+        ]
+      },
+      {
+        "label": "Auth Type:",
+        "controls": [
+          {"type": "combobox", "name": "ssh_auth_type", "items": ["Anonymous", "Password", "Key File", "Bruteforce"], "width": 150}
+        ]
+      },
+      {
+        "label": "Username:",
+        "controls": [
+          {"type": "lineedit", "name": "ssh_username", "placeholder": "Username for authentication", "stretch": true, "visible": false}
+        ]
+      },
+      {
+        "label": "Password:",
+        "controls": [
+          {"type": "lineedit", "name": "ssh_password", "placeholder": "Password", "password": true, "stretch": true, "visible": false}
+        ]
+      },
+      {
+        "label": "Key Path:",
+        "controls": [
+          {"type": "lineedit", "name": "ssh_key_path", "placeholder": "Path to private key file", "stretch": true, "visible": false},
+          {"type": "button", "name": "ssh_key_browse", "text": "Browse", "width": 60, "visible": false}
+        ]
+      },
+      {
+        "label": "Wordlist:",
+        "controls": [
+          {"type": "combobox", "name": "ssh_wordlist", "items": [], "stretch": true, "visible": false}
+        ]
+      }
+    ]
+  },
+  "azure_toolkit": {
+    "rows": [
+      {
+        "label": "Module:",
+        "controls": [
+          {"type": "combobox", "name": "azure_module", "items": ["DNS Enumeration", "Azure AD", "ARM Resources", "Storage", "Comprehensive"], "width": 200}
+        ]
+      },
+      {
+        "label": "Domain:",
+        "controls": [
+          {"type": "lineedit", "name": "azure_domain", "placeholder": "company.com (for DNS enumeration)", "stretch": true}
+        ]
+      },
+      {
+        "label": "Subscription:",
+        "controls": [
+          {"type": "lineedit", "name": "azure_subscription", "placeholder": "Azure subscription ID (optional)", "stretch": true}
+        ]
+      },
+      {
+        "label": "Auth Method:",
+        "controls": [
+          {"type": "combobox", "name": "azure_auth_method", "items": ["Default Credential", "Interactive Browser", "Client Secret"], "width": 200}
+        ]
+      },
+      {
+        "label": "Tenant ID:",
+        "controls": [
+          {"type": "lineedit", "name": "azure_tenant_id", "placeholder": "Azure tenant ID (for client secret auth)", "stretch": true, "visible": false}
+        ]
+      },
+      {
+        "label": "Client ID:",
+        "controls": [
+          {"type": "lineedit", "name": "azure_client_id", "placeholder": "Application client ID", "stretch": true, "visible": false}
+        ]
+      },
+      {
+        "label": "Client Secret:",
+        "controls": [
+          {"type": "lineedit", "name": "azure_client_secret", "placeholder": "Application client secret", "password": true, "stretch": true, "visible": false}
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,246 @@
+{
+    "Reconnaissance": [
+        {
+            "id": "aws_recon1",
+            "text": "Do you have the AWS account ID(s) and known domain names for the target environment?",
+            "type": "boolean"
+        },
+        {
+            "id": "aws_recon2",
+            "text": "Which external enumeration techniques or tools have you used?",
+            "type": "multi-choice",
+            "options": [
+                "Subdomain enumeration (e.g., Amass)",
+                "Certificate transparency logs",
+                "Public S3 bucket scan",
+                "Shodan/FoFa",
+                "GitHub leackage search"
+            ]
+        },
+        {
+            "id": "aws_recon3",
+            "text": "Have you identified exposed management endpoints (e.g., exposed ELB/API gateways)?",
+            "type": "boolean"
+        },
+        {
+            "id": "aws_recon4",
+            "text": "Which AWS regions and services did you discover via public sources?",
+            "type": "multi-choice",
+            "options": [
+                "EC2",
+                "S3",
+                "RDS",
+                "Lambda",
+                "API Gateway",
+                "ELB",
+                "CloudFront",
+                "EKS"
+            ]
+        }
+    ],
+    "Enumeration": [
+        {
+            "id": "aws_enum1",
+            "text": "Have you enumerated IAM identities (users, roles, groups) and attached policies?",
+            "type": "boolean"
+        },
+        {
+            "id": "aws_enum2",
+            "text": "Which AWS CLI or SDK commands were used for enumeration?",
+            "type": "multi-choice",
+            "options": [
+                "aws iam list-users",
+                "aws iam list-roles",
+                "aws iam get-policy",
+                "aws sts get-caller-identity",
+                "CloudFormation drift detection"
+            ]
+        },
+        {
+            "id": "aws_enum3",
+            "text": "Did you enumerate S3 buckets, configurations, and access controls?",
+            "type": "boolean"
+        },
+        {
+            "id": "aws_enum4",
+            "text": "Have you discovered EC2 instances and their associated IAM roles?",
+            "type": "boolean"
+        },
+        {
+            "id": "aws_enum5",
+            "text": "Did you enumerate Lambda functions and their execution roles?",
+            "type": "boolean"
+        }
+    ],
+    "Exploitation": [
+        {
+            "id": "aws_exploit1",
+            "text": "Did you find any misconfigured S3 buckets allowing public write or read?",
+            "type": "boolean"
+        },
+        {
+            "id": "aws_exploit2",
+            "text": "Which exploitation techniques did you attempt?",
+            "type": "multi-choice",
+            "options": [
+                "S3 object upload -> Lambda trigger",
+                "SSRF to metadata service",
+                "Open RDS endpoint brute force",
+                "Command injection via API Gateway",
+                "Privilege misconfig via CloudTrail"
+            ]
+        },
+        {
+            "id": "aws_exploit3",
+            "text": "Were you able to retrieve IAM credentials from metadata service or environment variables?",
+            "type": "boolean"
+        },
+        {
+            "id": "aws_exploit4",
+            "text": "Have you exploited misconfigured Lambda permissions to achieve code execution?",
+            "type": "boolean"
+        }
+    ],
+    "Privilege Escalation": [
+        {
+            "id": "aws_privesc1",
+            "text": "Did you identify overly permissive IAM policies allowing privilege escalation?",
+            "type": "boolean"
+        },
+        {
+            "id": "aws_privesc2",
+            "text": "Which escalation methods did you use?",
+            "type": "multi-choice",
+            "options": [
+                "IAM policy policy escalation via iam:PassRole",
+                "Role chaining via AssumeRole",
+                "CloudTrail log presign-url abuse",
+                "Resource-based policy abuse",
+                "STS:AssumeRole with externalId"
+            ]
+        },
+        {
+            "id": "aws_privesc3",
+            "text": "Were you able to escalate from a limited IAM role to Administrator privileges?",
+            "type": "boolean"
+        },
+        {
+            "id": "aws_privesc4",
+            "text": "Did you identify any resource-based policies that allowed privilege escalation?",
+            "type": "boolean"
+        }
+    ],
+    "Persistence": [
+        {
+            "id": "aws_persist1",
+            "text": "Have you created or modified roles, users, or policies for persistence?",
+            "type": "boolean"
+        },
+        {
+            "id": "aws_persist2",
+            "text": "Which persistence mechanisms did you implement?",
+            "type": "multi-choice",
+            "options": [
+                "Create backdoor IAM user",
+                "Modify existing role permissions",
+                "Deploy malicious Lambda function",
+                "Register new CloudWatch events/rules",
+                "Create unauthorized CloudFormation stack"
+            ]
+        },
+        {
+            "id": "aws_persist3",
+            "text": "Did you configure long-lived access keys or sessions for persistence?",
+            "type": "boolean"
+        }
+    ],
+    "Credential Access": [
+        {
+            "id": "aws_cred1",
+            "text": "Did you discover hardcoded credentials in code repositories or configurations?",
+            "type": "boolean"
+        },
+        {
+            "id": "aws_cred2",
+            "text": "Which methods did you use to extract AWS credentials?",
+            "type": "multi-choice",
+            "options": [
+                "SSRF to metadata service",
+                "EKS/Kubernetes metadata abuse",
+                "Terraform state file exposure",
+                "GitHub token leak",
+                "CloudFormation template leakage"
+            ]
+        },
+        {
+            "id": "aws_cred3",
+            "text": "Were you able to retrieve credentials from AWS Config or Secrets Manager misconfigurations?",
+            "type": "boolean"
+        }
+    ],
+    "Lateral Movement": [
+        {
+            "id": "aws_latmove1",
+            "text": "Which lateral movement techniques did you employ?",
+            "type": "multi-choice",
+            "options": [
+                "AssumeRole across accounts",
+                "Cross-account Lambda invocation",
+                "S3 replication abuse",
+                "EventBridge Event Bus misuse",
+                "Step Functions invocation"
+            ]
+        },
+        {
+            "id": "aws_latmove2",
+            "text": "Did you move laterally across AWS accounts or regions?",
+            "type": "boolean"
+        },
+        {
+            "id": "aws_latmove3",
+            "text": "Were you able to compromise additional IAM roles or resources in other accounts?",
+            "type": "boolean"
+        }
+    ],
+    "Resource Abuse & Exfiltration": [
+        {
+            "id": "aws_exfil1",
+            "text": "Did you exfiltrate data from S3, RDS, or EFS?",
+            "type": "boolean"
+        },
+        {
+            "id": "aws_exfil2",
+            "text": "Which data exfiltration methods were used?",
+            "type": "multi-choice",
+            "options": [
+                "Signed S3 URLs",
+                "Snowball export",
+                "Database snapshot export",
+                "AWS DataSync misconfig",
+                "Egress via EC2 instance"
+            ]
+        },
+        {
+            "id": "aws_exfil3",
+            "text": "Did you monitor or modify CloudTrail logs to cover exfiltration?",
+            "type": "boolean"
+        }
+    ],
+    "Cleanup & Remediation": [
+        {
+            "id": "aws_cleanup1",
+            "text": "Have you removed or disabled created IAM users, roles, or keys?",
+            "type": "boolean"
+        },
+        {
+            "id": "aws_cleanup2",
+            "text": "Did you restore original IAM policies and permissions?",
+            "type": "boolean"
+        },
+        {
+            "id": "aws_cleanup3",
+            "text": "Were logs and CloudTrail events returned to their initial state?",
+            "type": "boolean"
+        }
+    ]
+}

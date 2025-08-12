@@ -1,0 +1,258 @@
+{
+    "Reconnaissance": [
+        {
+            "id": "recon1",
+            "text": "Do you have a defined scope including domain names, IP ranges, or subnets?",
+            "type": "boolean"
+        },
+        {
+            "id": "recon2",
+            "text": "Which methods did you use to enumerate domain names?",
+            "type": "multi-choice",
+            "options": [
+                "WHOIS",
+                "nslookup",
+                "dig",
+                "recon-ng",
+                "theHarvester",
+                "crt.sh"
+            ]
+        },
+        {
+            "id": "recon3",
+            "text": "Have you identified publicly exposed endpoints or services?",
+            "type": "boolean"
+        },
+        {
+            "id": "recon4",
+            "text": "Which DNS enumeration techniques were used?",
+            "type": "multi-choice",
+            "options": [
+                "Zone transfer",
+                "Brute force",
+                "Reverse lookup",
+                "Subdomain enumeration"
+            ]
+        },
+        {
+            "id": "recon5",
+            "text": "Did you identify domain controllers or internal infrastructure from public sources?",
+            "type": "boolean"
+        }
+    ],
+    "Enumeration": [
+        {
+            "id": "enum1",
+            "text": "Did you use NetBIOS or SMB enumeration to gather hostnames and shares?",
+            "type": "boolean"
+        },
+        {
+            "id": "enum2",
+            "text": "Which tools were used for LDAP and AD enumeration?",
+            "type": "multi-choice",
+            "options": [
+                "ldapsearch",
+                "ADExplorer",
+                "BloodHound",
+                "PowerView",
+                "SharpHound"
+            ]
+        },
+        {
+            "id": "enum3",
+            "text": "Were you able to enumerate users and groups?",
+            "type": "boolean"
+        },
+        {
+            "id": "enum4",
+            "text": "Did you identify any accounts with SPNs (Service Principal Names)?",
+            "type": "boolean"
+        },
+        {
+            "id": "enum5",
+            "text": "Did you identify trusts with other domains or forests?",
+            "type": "boolean"
+        }
+    ],
+    "Exploitation": [
+        {
+            "id": "exploit1",
+            "text": "Did you identify exploitable services or misconfigurations?",
+            "type": "boolean"
+        },
+        {
+            "id": "exploit2",
+            "text": "Which exploitation techniques did you attempt?",
+            "type": "multi-choice",
+            "options": [
+                "AS-REP Roasting",
+                "Kerberoasting",
+                "NTLM Relay",
+                "SMB Signing Disabled",
+                "Misconfigured ACLs"
+            ]
+        },
+        {
+            "id": "exploit3",
+            "text": "Did you achieve code execution on a domain-joined host?",
+            "type": "boolean"
+        },
+        {
+            "id": "exploit4",
+            "text": "Have you exploited writable GPOs or SYSVOL shares?",
+            "type": "boolean"
+        }
+    ],
+    "Privilege Escalation": [
+        {
+            "id": "privesc1",
+            "text": "Did you identify local privilege escalation opportunities?",
+            "type": "boolean"
+        },
+        {
+            "id": "privesc2",
+            "text": "Which privilege escalation techniques did you attempt?",
+            "type": "multi-choice",
+            "options": [
+                "Unquoted Service Paths",
+                "AlwaysInstallElevated",
+                "DLL Hijacking",
+                "Token Impersonation",
+                "UAC Bypass"
+            ]
+        },
+        {
+            "id": "privesc3",
+            "text": "Did you escalate to a domain admin or enterprise admin role?",
+            "type": "boolean"
+        },
+        {
+            "id": "privesc4",
+            "text": "Were you able to access or modify sensitive Group Policy Objects (GPOs)?",
+            "type": "boolean"
+        }
+    ],
+    "Persistence": [
+        {
+            "id": "persist1",
+            "text": "Did you establish persistence mechanisms on compromised hosts?",
+            "type": "boolean"
+        },
+        {
+            "id": "persist2",
+            "text": "Which persistence methods were implemented?",
+            "type": "multi-choice",
+            "options": [
+                "Scheduled Tasks",
+                "WMI Event Subscription",
+                "Startup Folder",
+                "DLL Hijacking",
+                "AdminSDHolder Abuse"
+            ]
+        },
+        {
+            "id": "persist3",
+            "text": "Did you create new user accounts or modify existing ones for persistence?",
+            "type": "boolean"
+        }
+    ],
+    "Credential Access": [
+        {
+            "id": "cred1",
+            "text": "Did you capture or extract cleartext or hashed credentials?",
+            "type": "boolean"
+        },
+        {
+            "id": "cred2",
+            "text": "Which tools or techniques were used to access credentials?",
+            "type": "multi-choice",
+            "options": [
+                "Mimikatz",
+                "LSASS dump",
+                "NTDS.dit extraction",
+                "DCSync",
+                "LAPS Dump",
+                "SAM/SECURITY registry hives"
+            ]
+        },
+        {
+            "id": "cred3",
+            "text": "Were credentials reused across multiple systems or domains?",
+            "type": "boolean"
+        }
+    ],
+    "Lateral Movement": [
+        {
+            "id": "latmove1",
+            "text": "Which lateral movement techniques were successfully used?",
+            "type": "multi-choice",
+            "options": [
+                "PsExec",
+                "WinRM",
+                "WMI",
+                "RDP",
+                "Token Impersonation",
+                "Remote PowerShell"
+            ]
+        },
+        {
+            "id": "latmove2",
+            "text": "Did lateral movement result in compromise of additional privileged accounts?",
+            "type": "boolean"
+        },
+        {
+            "id": "latmove3",
+            "text": "Were you able to compromise systems across trusted domains or forests?",
+            "type": "boolean"
+        }
+    ],
+    "Domain Dominance": [
+        {
+            "id": "domdom1",
+            "text": "Which techniques were used to gain or maintain domain dominance?",
+            "type": "multi-choice",
+            "options": [
+                "Golden Ticket",
+                "Silver Ticket",
+                "KRBTGT compromise",
+                "SIDHistory Injection",
+                "DCShadow",
+                "AdminSDHolder persistence"
+            ]
+        },
+        {
+            "id": "domdom2",
+            "text": "Was the KRBTGT account compromised?",
+            "type": "boolean"
+        },
+        {
+            "id": "domdom3",
+            "text": "Did you deploy a rogue Domain Controller (DCShadow)?",
+            "type": "boolean"
+        }
+    ],
+    "Clearing Tracks": [
+        {
+            "id": "cleanup1",
+            "text": "Were logs or event traces deleted or modified?",
+            "type": "boolean"
+        },
+        {
+            "id": "cleanup2",
+            "text": "Which anti-forensics techniques were used?",
+            "type": "multi-choice",
+            "options": [
+                "Clear logs",
+                "Timestamp modification",
+                "Script obfuscation",
+                "Remove tools",
+                "Remove user accounts"
+            ]
+        },
+        {
+            "id": "cleanup3",
+            "text": "Were you able to remove created persistence mechanisms?",
+            "type": "boolean"
+        }
+    ]
+}

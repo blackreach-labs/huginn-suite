@@ -1,0 +1,82 @@
+{
+  "tools": [
+    {
+      "id": "dns_enum",
+      "title": "DNS Enumeration",
+      "desc": "Discover domains, subdomains, and IPs.",
+      "icon": "resources/icons/1A.png"
+    },
+    {
+      "id": "port_scan",
+      "title": "Port Scanning",
+      "desc": "Identify open ports and services running.",
+      "icon": "resources/icons/1B.png"
+    },
+    {
+      "id": "rpc_enum",
+      "title": "RPC Enumeration",
+      "desc": "Enumerate RPC services and endpoints.",
+      "icon": "resources/icons/1C.png"
+    },
+    {
+      "id": "smb_enum",
+      "title": "SMB Enumeration",
+      "desc": "Discover SMB shares and NetBIOS info.",
+      "icon": "resources/icons/1D.png"
+    },
+    {
+      "id": "smtp_enum",
+      "title": "SMTP Enumeration",
+      "desc": "Enumerate email users via SMTP.",
+      "icon": "resources/icons/1E.png"
+    },
+    {
+      "id": "snmp_enum",
+      "title": "SNMP Enumeration",
+      "desc": "Query SNMP for device information.",
+      "icon": "resources/icons/1F.png"
+    },
+    {
+      "id": "http_enum",
+      "title": "HTTP/S Fingerprinting",
+      "desc": "Web server identification and analysis.",
+      "icon": "resources/icons/1G.png"
+    },
+    {
+      "id": "api_enum",
+      "title": "API Enumeration",
+      "desc": "Discover and test API endpoints.",
+      "icon": "resources/icons/1H.png"
+    },
+    {
+      "id": "ldap_enum",
+      "title": "LDAP/S Enumeration",
+      "desc": "Query LDAP directory services.",
+      "icon": "resources/icons/1I.png"
+    },
+    {
+      "id": "db_enum",
+      "title": "Database Enumeration",
+      "desc": "Scan for database services and info.",
+      "icon": "resources/icons/1J.png"
+    },
+    {
+      "id": "ike_enum",
+      "title": "IKE Enumeration",
+      "desc": "Scan IKE/IPSec configurations.",
+      "icon": "resources/icons/1K.png"
+    },
+    {
+      "id": "av_detect",
+      "title": "AV/Firewall Detection",
+      "desc": "Detect security controls and evasion.",
+      "icon": "resources/icons/1M.png"
+    },
+    {
+      "id": "cloud_assets",
+      "title": "Cloud Assets",
+      "desc": "Discover S3 buckets, Azure blobs, and cloud metadata.",
+      "icon": "resources/icons/1H.png"
+    }
+  ]
+}

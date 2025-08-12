@@ -1,0 +1,377 @@
+2025-08-11 00:30:26 - INFO - License saved successfully
+2025-08-11 00:30:26 - INFO - License loaded and validated successfully
+2025-08-11 00:30:26 - INFO - Application starting...
+2025-08-11 00:30:26 - INFO - Font loaded successfully
+2025-08-11 00:30:26 - INFO - Stylesheet loaded successfully
+2025-08-11 00:30:26 - INFO - Creating main window...
+2025-08-11 00:30:26 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 00:30:27 - DEBUG - Session token generated
+2025-08-11 00:31:43 - ERROR - Unexpected error in open_wireless_security: 'LicenseManager' object has no attribute 'validate_feature_access'
+2025-08-11 00:36:56 - INFO - Update manager stopped during cleanup
+2025-08-11 00:40:34 - INFO - License saved successfully
+2025-08-11 00:40:34 - INFO - License loaded and validated successfully
+2025-08-11 00:40:34 - INFO - Application starting...
+2025-08-11 00:40:34 - INFO - Font loaded successfully
+2025-08-11 00:40:34 - INFO - Stylesheet loaded successfully
+2025-08-11 00:40:34 - INFO - Creating main window...
+2025-08-11 00:40:34 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 00:40:36 - DEBUG - Session token generated
+2025-08-11 00:43:08 - INFO - Update manager stopped during cleanup
+2025-08-11 00:43:34 - INFO - License saved successfully
+2025-08-11 00:43:34 - INFO - License loaded and validated successfully
+2025-08-11 00:43:34 - INFO - Application starting...
+2025-08-11 00:43:34 - INFO - Font loaded successfully
+2025-08-11 00:43:34 - INFO - Stylesheet loaded successfully
+2025-08-11 00:43:34 - INFO - Creating main window...
+2025-08-11 00:43:34 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 00:43:35 - DEBUG - Session token generated
+2025-08-11 00:46:18 - INFO - Update manager stopped during cleanup
+2025-08-11 00:47:00 - INFO - License saved successfully
+2025-08-11 00:47:00 - INFO - License loaded and validated successfully
+2025-08-11 00:47:00 - INFO - Application starting...
+2025-08-11 00:47:00 - INFO - Font loaded successfully
+2025-08-11 00:47:00 - INFO - Stylesheet loaded successfully
+2025-08-11 00:47:00 - INFO - Creating main window...
+2025-08-11 00:47:00 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 00:47:02 - DEBUG - Session token generated
+2025-08-11 00:48:29 - ERROR - Unhandled exception:
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin\app\pages\post_exploitation_page.py", line 716, in enumerate_system
+    selected_rows = self.session_table.selectionModel().selectedRows()
+                    ^^^^^^^^^^^^^^^^^^
+AttributeError: 'PostExploitationPage' object has no attribute 'session_table'
+
+2025-08-11 00:48:37 - ERROR - Unhandled exception:
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin\app\pages\post_exploitation_page.py", line 743, in enumerate_network
+    selected_rows = self.session_table.selectionModel().selectedRows()
+                    ^^^^^^^^^^^^^^^^^^
+AttributeError: 'PostExploitationPage' object has no attribute 'session_table'
+
+2025-08-11 00:48:39 - ERROR - Unhandled exception:
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin\app\pages\post_exploitation_page.py", line 767, in enumerate_users
+    selected_rows = self.session_table.selectionModel().selectedRows()
+                    ^^^^^^^^^^^^^^^^^^
+AttributeError: 'PostExploitationPage' object has no attribute 'session_table'
+
+2025-08-11 00:50:57 - INFO - Local DNS server started on port 53530
+2025-08-11 00:50:59 - INFO - DNS server changed to: LocalDNS
+2025-08-11 00:51:08 - INFO - DNS server changed to: 192.168.1.106
+2025-08-11 01:00:03 - INFO - Local DNS server stopped
+2025-08-11 01:00:03 - INFO - local_dns_server stopped
+2025-08-11 01:00:03 - INFO - Update manager stopped during cleanup
+2025-08-11 01:03:52 - INFO - License saved successfully
+2025-08-11 01:03:52 - INFO - License loaded and validated successfully
+2025-08-11 01:03:52 - INFO - Application starting...
+2025-08-11 01:03:52 - INFO - Font loaded successfully
+2025-08-11 01:03:52 - INFO - Stylesheet loaded successfully
+2025-08-11 01:03:52 - INFO - Creating main window...
+2025-08-11 01:03:52 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 01:03:54 - DEBUG - Session token generated
+2025-08-11 01:05:01 - INFO - Update manager stopped during cleanup
+2025-08-11 09:15:55 - INFO - License saved successfully
+2025-08-11 09:15:55 - INFO - License loaded and validated successfully
+2025-08-11 09:15:55 - INFO - Application starting...
+2025-08-11 09:15:55 - INFO - Font loaded successfully
+2025-08-11 09:15:55 - INFO - Stylesheet loaded successfully
+2025-08-11 09:15:55 - INFO - Creating main window...
+2025-08-11 09:15:55 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 09:15:57 - DEBUG - Session token generated
+2025-08-11 09:48:04 - INFO - Update manager stopped during cleanup
+2025-08-11 10:25:30 - INFO - License saved successfully
+2025-08-11 10:25:30 - INFO - License loaded and validated successfully
+2025-08-11 10:25:30 - INFO - Application starting...
+2025-08-11 10:25:30 - INFO - Font loaded successfully
+2025-08-11 10:25:30 - INFO - Stylesheet loaded successfully
+2025-08-11 10:25:30 - INFO - Creating main window...
+2025-08-11 10:25:30 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 10:25:31 - DEBUG - Session token generated
+2025-08-11 10:47:56 - INFO - Update manager stopped during cleanup
+2025-08-11 10:54:45 - INFO - License saved successfully
+2025-08-11 10:54:45 - INFO - License loaded and validated successfully
+2025-08-11 10:54:45 - INFO - Application starting...
+2025-08-11 10:54:45 - INFO - Font loaded successfully
+2025-08-11 10:54:45 - INFO - Stylesheet loaded successfully
+2025-08-11 10:54:45 - INFO - Creating main window...
+2025-08-11 10:54:45 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 10:54:47 - DEBUG - Session token generated
+2025-08-11 10:57:08 - INFO - DNS server changed to: LocalDNS
+2025-08-11 10:57:09 - INFO - Local DNS server started on port 53530
+2025-08-11 13:42:01 - INFO - Local DNS server stopped
+2025-08-11 13:42:01 - INFO - local_dns_server stopped
+2025-08-11 13:42:01 - INFO - Update manager stopped during cleanup
+2025-08-11 13:42:09 - INFO - License saved successfully
+2025-08-11 13:42:09 - INFO - License loaded and validated successfully
+2025-08-11 13:42:09 - INFO - Application starting...
+2025-08-11 13:42:09 - INFO - Font loaded successfully
+2025-08-11 13:42:09 - INFO - Stylesheet loaded successfully
+2025-08-11 13:42:09 - INFO - Creating main window...
+2025-08-11 13:42:09 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 13:42:11 - DEBUG - Session token generated
+2025-08-11 13:46:43 - INFO - Update manager stopped during cleanup
+2025-08-11 13:55:00 - INFO - License saved successfully
+2025-08-11 13:55:00 - INFO - License loaded and validated successfully
+2025-08-11 13:55:00 - INFO - Application starting...
+2025-08-11 13:55:00 - INFO - Font loaded successfully
+2025-08-11 13:55:00 - INFO - Stylesheet loaded successfully
+2025-08-11 13:55:00 - INFO - Creating main window...
+2025-08-11 13:55:00 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 13:55:02 - DEBUG - Session token generated
+2025-08-11 14:00:24 - INFO - OpenVPN connection started with config: C:/Users/allie/Downloads/Unified.ovpn
+2025-08-11 14:02:24 - INFO - VPN connection terminated
+2025-08-11 14:02:24 - INFO - vpn_manager stopped
+2025-08-11 14:02:24 - INFO - Update manager stopped during cleanup
+2025-08-11 14:21:02 - INFO - License saved successfully
+2025-08-11 14:21:02 - INFO - License loaded and validated successfully
+2025-08-11 14:21:02 - INFO - Application starting...
+2025-08-11 14:21:02 - INFO - Font loaded successfully
+2025-08-11 14:21:02 - INFO - Stylesheet loaded successfully
+2025-08-11 14:21:02 - INFO - Creating main window...
+2025-08-11 14:21:02 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 14:21:03 - DEBUG - Session token generated
+2025-08-11 14:22:21 - INFO - OpenVPN connection started with config: C:/Users/allie/Downloads/TryHackMe.ovpn
+2025-08-11 14:27:40 - INFO - VPN connection terminated
+2025-08-11 14:27:40 - INFO - vpn_manager stopped
+2025-08-11 14:27:40 - INFO - Update manager stopped during cleanup
+2025-08-11 14:29:12 - INFO - License saved successfully
+2025-08-11 14:29:12 - INFO - License loaded and validated successfully
+2025-08-11 14:29:13 - INFO - Application starting...
+2025-08-11 14:29:13 - INFO - Font loaded successfully
+2025-08-11 14:29:13 - INFO - Stylesheet loaded successfully
+2025-08-11 14:29:13 - INFO - Creating main window...
+2025-08-11 14:29:13 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 14:29:14 - DEBUG - Session token generated
+2025-08-11 14:31:25 - INFO - OpenVPN connection started with config: C:/Users/allie/Downloads/TryHackMe.ovpn
+2025-08-11 15:22:27 - INFO - VPN connection terminated
+2025-08-11 15:22:27 - INFO - vpn_manager stopped
+2025-08-11 15:29:17 - INFO - License saved successfully
+2025-08-11 15:29:17 - INFO - License loaded and validated successfully
+2025-08-11 15:29:17 - INFO - Application starting...
+2025-08-11 15:29:17 - INFO - Font loaded successfully
+2025-08-11 15:29:17 - INFO - Stylesheet loaded successfully
+2025-08-11 15:29:17 - INFO - Creating main window...
+2025-08-11 15:29:17 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 15:29:18 - DEBUG - Session token generated
+2025-08-11 15:31:17 - INFO - OpenVPN connection started with config: C:/Users/allie/Downloads/TryHackMe.ovpn
+2025-08-11 15:43:41 - INFO - VPN connection terminated
+2025-08-11 15:43:41 - INFO - vpn_manager stopped
+2025-08-11 15:43:41 - INFO - Update manager stopped during cleanup
+2025-08-11 15:45:30 - INFO - License saved successfully
+2025-08-11 15:45:30 - INFO - License loaded and validated successfully
+2025-08-11 15:45:30 - INFO - Application starting...
+2025-08-11 15:45:30 - INFO - Font loaded successfully
+2025-08-11 15:45:30 - INFO - Stylesheet loaded successfully
+2025-08-11 15:45:30 - INFO - Creating main window...
+2025-08-11 15:45:30 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 15:45:31 - DEBUG - Session token generated
+2025-08-11 15:46:40 - INFO - Update manager stopped during cleanup
+2025-08-11 16:26:54 - INFO - License saved successfully
+2025-08-11 16:26:54 - INFO - License loaded and validated successfully
+2025-08-11 16:26:54 - INFO - Application starting...
+2025-08-11 16:26:54 - INFO - Font loaded successfully
+2025-08-11 16:26:54 - INFO - Stylesheet loaded successfully
+2025-08-11 16:26:54 - INFO - Creating main window...
+2025-08-11 16:26:54 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 16:30:28 - INFO - Update manager stopped during cleanup
+2025-08-11 16:45:57 - INFO - License saved successfully
+2025-08-11 16:45:57 - INFO - License loaded and validated successfully
+2025-08-11 16:45:58 - INFO - Application starting...
+2025-08-11 16:45:58 - INFO - Font loaded successfully
+2025-08-11 16:45:58 - INFO - Stylesheet loaded successfully
+2025-08-11 16:45:58 - INFO - Creating main window...
+2025-08-11 16:45:58 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-11 17:09:04 - INFO - Update manager stopped during cleanup
+2025-08-12 10:16:24 - INFO - License saved successfully
+2025-08-12 10:16:24 - INFO - License loaded and validated successfully
+2025-08-12 10:16:24 - INFO - Application starting...
+2025-08-12 10:16:24 - INFO - Font loaded successfully
+2025-08-12 10:16:24 - INFO - Stylesheet loaded successfully
+2025-08-12 10:16:24 - INFO - Creating main window...
+2025-08-12 10:16:24 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-12 10:27:46 - INFO - Update manager stopped during cleanup
+2025-08-12 10:37:46 - INFO - License saved successfully
+2025-08-12 10:37:46 - INFO - License loaded and validated successfully
+2025-08-12 10:37:46 - INFO - Application starting...
+2025-08-12 10:37:46 - INFO - Font loaded successfully
+2025-08-12 10:37:46 - INFO - Stylesheet loaded successfully
+2025-08-12 10:37:46 - INFO - Creating main window...
+2025-08-12 10:37:46 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-12 10:39:12 - INFO - Update manager stopped during cleanup
+2025-08-12 10:39:23 - INFO - License saved successfully
+2025-08-12 10:39:23 - INFO - License loaded and validated successfully
+2025-08-12 10:39:23 - INFO - Application starting...
+2025-08-12 10:39:23 - INFO - Font loaded successfully
+2025-08-12 10:39:23 - INFO - Stylesheet loaded successfully
+2025-08-12 10:39:23 - INFO - Creating main window...
+2025-08-12 10:39:23 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-12 10:40:27 - INFO - Update manager stopped during cleanup
+2025-08-12 10:40:39 - INFO - License saved successfully
+2025-08-12 10:40:39 - INFO - License loaded and validated successfully
+2025-08-12 10:40:39 - INFO - Application starting...
+2025-08-12 10:40:39 - INFO - Font loaded successfully
+2025-08-12 10:40:39 - INFO - Stylesheet loaded successfully
+2025-08-12 10:40:39 - INFO - Creating main window...
+2025-08-12 10:40:39 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-12 10:43:48 - INFO - Update manager stopped during cleanup
+2025-08-12 10:44:03 - INFO - License saved successfully
+2025-08-12 10:44:03 - INFO - License loaded and validated successfully
+2025-08-12 10:44:03 - INFO - Application starting...
+2025-08-12 10:44:03 - INFO - Font loaded successfully
+2025-08-12 10:44:03 - INFO - Stylesheet loaded successfully
+2025-08-12 10:44:03 - INFO - Creating main window...
+2025-08-12 10:44:03 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-12 10:45:02 - INFO - Update manager stopped during cleanup
+2025-08-12 10:46:41 - INFO - License saved successfully
+2025-08-12 10:46:41 - INFO - License loaded and validated successfully
+2025-08-12 10:46:41 - INFO - Application starting...
+2025-08-12 10:46:41 - INFO - Font loaded successfully
+2025-08-12 10:46:41 - INFO - Stylesheet loaded successfully
+2025-08-12 10:46:41 - INFO - Creating main window...
+2025-08-12 10:46:41 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-12 10:46:58 - INFO - Update manager stopped during cleanup
+2025-08-12 10:47:20 - INFO - License saved successfully
+2025-08-12 10:47:20 - INFO - License loaded and validated successfully
+2025-08-12 10:47:20 - INFO - Application starting...
+2025-08-12 10:47:20 - INFO - Font loaded successfully
+2025-08-12 10:47:20 - INFO - Stylesheet loaded successfully
+2025-08-12 10:47:20 - INFO - Creating main window...
+2025-08-12 10:47:20 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-12 10:48:34 - INFO - Update manager stopped during cleanup
+2025-08-12 10:48:39 - INFO - License saved successfully
+2025-08-12 10:48:39 - INFO - License loaded and validated successfully
+2025-08-12 10:48:39 - INFO - Application starting...
+2025-08-12 10:48:39 - INFO - Font loaded successfully
+2025-08-12 10:48:39 - INFO - Stylesheet loaded successfully
+2025-08-12 10:48:39 - INFO - Creating main window...
+2025-08-12 10:48:39 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-12 10:50:27 - INFO - Update manager stopped during cleanup
+2025-08-12 10:56:16 - INFO - License saved successfully
+2025-08-12 10:56:16 - INFO - License loaded and validated successfully
+2025-08-12 10:56:16 - INFO - Application starting...
+2025-08-12 10:56:16 - INFO - Font loaded successfully
+2025-08-12 10:56:16 - INFO - Stylesheet loaded successfully
+2025-08-12 10:56:16 - INFO - Creating main window...
+2025-08-12 10:56:16 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-12 11:17:25 - INFO - Update manager stopped during cleanup
+2025-08-12 11:17:35 - INFO - License saved successfully
+2025-08-12 11:17:35 - INFO - License loaded and validated successfully
+2025-08-12 11:17:35 - INFO - Application starting...
+2025-08-12 11:17:35 - INFO - Font loaded successfully
+2025-08-12 11:17:35 - INFO - Stylesheet loaded successfully
+2025-08-12 11:17:35 - INFO - Creating main window...
+2025-08-12 11:17:35 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-12 11:18:04 - INFO - Update manager stopped during cleanup
+2025-08-12 11:18:29 - INFO - License saved successfully
+2025-08-12 11:18:29 - INFO - License loaded and validated successfully
+2025-08-12 11:18:29 - INFO - Application starting...
+2025-08-12 11:18:29 - INFO - Font loaded successfully
+2025-08-12 11:18:29 - INFO - Stylesheet loaded successfully
+2025-08-12 11:18:29 - INFO - Creating main window...
+2025-08-12 11:18:29 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-12 11:18:40 - INFO - Update manager stopped during cleanup
+2025-08-12 11:21:45 - INFO - License saved successfully
+2025-08-12 11:21:45 - INFO - License loaded and validated successfully
+2025-08-12 11:21:45 - INFO - Application starting...
+2025-08-12 11:21:45 - INFO - Font loaded successfully
+2025-08-12 11:21:45 - INFO - Stylesheet loaded successfully
+2025-08-12 11:21:45 - INFO - Creating main window...
+2025-08-12 11:21:45 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-12 11:22:23 - INFO - Update manager stopped during cleanup
+2025-08-12 11:24:34 - INFO - License saved successfully
+2025-08-12 11:24:34 - INFO - License loaded and validated successfully
+2025-08-12 11:24:35 - INFO - Application starting...
+2025-08-12 11:24:35 - INFO - Font loaded successfully
+2025-08-12 11:24:35 - INFO - Stylesheet loaded successfully
+2025-08-12 11:24:35 - INFO - Creating main window...
+2025-08-12 11:24:35 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-12 11:27:54 - INFO - Update manager stopped during cleanup
+2025-08-12 11:27:58 - INFO - License saved successfully
+2025-08-12 11:27:58 - INFO - License loaded and validated successfully
+2025-08-12 11:27:58 - INFO - Application starting...
+2025-08-12 11:27:58 - INFO - Font loaded successfully
+2025-08-12 11:27:58 - INFO - Stylesheet loaded successfully
+2025-08-12 11:27:58 - INFO - Creating main window...
+2025-08-12 11:27:58 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-12 11:29:08 - INFO - Update manager stopped during cleanup
+2025-08-12 11:39:53 - INFO - License saved successfully
+2025-08-12 11:39:53 - INFO - License loaded and validated successfully
+2025-08-12 11:39:53 - INFO - Application starting...
+2025-08-12 11:39:53 - INFO - Font loaded successfully
+2025-08-12 11:39:53 - INFO - Stylesheet loaded successfully
+2025-08-12 11:39:53 - INFO - Creating main window...
+2025-08-12 11:39:53 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-12 11:41:10 - INFO - Update manager stopped during cleanup
+2025-08-12 11:53:55 - INFO - License saved successfully
+2025-08-12 11:53:55 - INFO - License loaded and validated successfully
+2025-08-12 11:53:56 - INFO - Application starting...
+2025-08-12 11:53:56 - INFO - Font loaded successfully
+2025-08-12 11:53:56 - INFO - Stylesheet loaded successfully
+2025-08-12 11:53:56 - INFO - Creating main window...
+2025-08-12 11:53:56 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-12 11:54:13 - INFO - Update manager stopped during cleanup
+2025-08-12 12:44:22 - INFO - License saved successfully
+2025-08-12 12:44:22 - INFO - License loaded and validated successfully
+2025-08-12 12:44:22 - INFO - Application starting...
+2025-08-12 12:44:22 - INFO - Font loaded successfully
+2025-08-12 12:44:22 - INFO - Stylesheet loaded successfully
+2025-08-12 12:44:22 - INFO - Creating main window...
+2025-08-12 12:44:22 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-12 12:48:04 - DEBUG - Session token generated
+2025-08-12 12:48:14 - INFO - Update manager stopped during cleanup
+2025-08-12 12:49:33 - INFO - License saved successfully
+2025-08-12 12:49:33 - INFO - License loaded and validated successfully
+2025-08-12 12:49:33 - INFO - Application starting...
+2025-08-12 12:49:33 - INFO - Font loaded successfully
+2025-08-12 12:49:33 - INFO - Stylesheet loaded successfully
+2025-08-12 12:49:33 - INFO - Creating main window...
+2025-08-12 12:49:33 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-12 12:52:27 - INFO - Update manager stopped during cleanup
+2025-08-12 12:52:35 - INFO - License saved successfully
+2025-08-12 12:52:35 - INFO - License loaded and validated successfully
+2025-08-12 12:52:35 - INFO - Application starting...
+2025-08-12 12:52:35 - INFO - Font loaded successfully
+2025-08-12 12:52:35 - INFO - Stylesheet loaded successfully
+2025-08-12 12:52:35 - INFO - Creating main window...
+2025-08-12 12:52:35 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-12 12:54:57 - INFO - Update manager stopped during cleanup
+2025-08-12 12:57:13 - INFO - License saved successfully
+2025-08-12 12:57:13 - INFO - License loaded and validated successfully
+2025-08-12 12:57:13 - INFO - Application starting...
+2025-08-12 12:57:13 - INFO - Font loaded successfully
+2025-08-12 12:57:13 - INFO - Stylesheet loaded successfully
+2025-08-12 12:57:13 - INFO - Creating main window...
+2025-08-12 12:57:13 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-12 13:02:09 - INFO - Update manager stopped during cleanup
+2025-08-12 13:05:35 - INFO - License saved successfully
+2025-08-12 13:05:35 - INFO - License loaded and validated successfully
+2025-08-12 13:05:35 - INFO - Application starting...
+2025-08-12 13:05:35 - INFO - Font loaded successfully
+2025-08-12 13:05:35 - INFO - Stylesheet loaded successfully
+2025-08-12 13:05:35 - INFO - Creating main window...
+2025-08-12 13:05:35 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-12 13:05:44 - ERROR - Failed to create database management page: name 'QLineEdit' is not defined
+2025-08-12 13:06:11 - INFO - License saved successfully
+2025-08-12 13:06:11 - INFO - License loaded and validated successfully
+2025-08-12 13:06:11 - INFO - Application starting...
+2025-08-12 13:06:11 - INFO - Font loaded successfully
+2025-08-12 13:06:11 - INFO - Stylesheet loaded successfully
+2025-08-12 13:06:11 - INFO - Creating main window...
+2025-08-12 13:06:11 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-12 13:09:38 - INFO - Update manager stopped during cleanup
+2025-08-12 13:09:42 - INFO - License saved successfully
+2025-08-12 13:09:42 - INFO - License loaded and validated successfully
+2025-08-12 13:09:42 - INFO - Application starting...
+2025-08-12 13:09:42 - INFO - Font loaded successfully
+2025-08-12 13:09:42 - INFO - Stylesheet loaded successfully
+2025-08-12 13:09:42 - INFO - Creating main window...
+2025-08-12 13:09:42 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-12 13:13:06 - INFO - Update manager stopped during cleanup
+2025-08-12 13:14:43 - INFO - License saved successfully
+2025-08-12 13:14:43 - INFO - License loaded and validated successfully
+2025-08-12 13:14:43 - INFO - Application starting...
+2025-08-12 13:14:43 - INFO - Font loaded successfully
+2025-08-12 13:14:43 - INFO - Stylesheet loaded successfully
+2025-08-12 13:14:43 - INFO - Creating main window...
+2025-08-12 13:14:43 - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2025-08-12 13:16:12 - INFO - Update manager stopped during cleanup

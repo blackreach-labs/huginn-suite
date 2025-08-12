@@ -1,0 +1,410 @@
+/* ============================================================================
+   Huggin Layout-Based Qt Stylesheet (layout_style.qss)
+   Enhanced styling for responsive layout version
+   ============================================================================ */
+
+/* ----------------------------------------
+   1. Main Application Styling
+----------------------------------------- */
+QMainWindow {
+    background-color: #0A0A0A;
+    color: #DCDCDC;
+}
+
+QWidget {
+    font-family: "Consolas", "Monaco", monospace;
+    font-size: 11pt;
+}
+
+/* ----------------------------------------
+   2. Page Widgets
+----------------------------------------- */
+QWidget#HomePage, QWidget#EnumerationPage {
+    background-color: transparent;
+}
+
+/* ----------------------------------------
+   3. Labels and Text
+----------------------------------------- */
+QLabel#TitleLabel {
+    font-family: "Arial", sans-serif;
+    font-size: 24pt;
+    font-weight: bold;
+    color: #64C8FF;
+    background-color: transparent;
+}
+
+QLabel {
+    color: #DCDCDC;
+    background-color: transparent;
+}
+
+/* ----------------------------------------
+   4. Input Fields
+----------------------------------------- */
+QLineEdit#TargetInput {
+    background-color: rgba(20, 30, 40, 180);
+    border: 2px solid #506478;
+    border-radius: 8px;
+    font-family: "Consolas", "Monaco", monospace;
+    font-size: 14pt;
+    color: #DCDCDC;
+    padding: 8px 12px;
+    min-height: 20px;
+}
+
+QLineEdit#TargetInput:focus {
+    border: 2px solid #64C8FF;
+    background-color: rgba(30, 40, 50, 200);
+}
+
+QLineEdit#TargetInput:hover {
+    border: 2px solid rgba(100, 200, 255, 150);
+}
+
+/* ----------------------------------------
+   5. Text Areas and Output
+----------------------------------------- */
+QTextEdit#InfoPanel, QTextEdit#InfoTextArea {
+    background-color: rgba(0, 0, 0, 180);
+    border: 2px solid rgba(100, 200, 255, 100);
+    border-radius: 10px;
+    font-family: "Consolas", "Monaco", monospace;
+    font-size: 12pt;
+    color: #DCDCDC;
+    padding: 15px;
+    selection-background-color: rgba(100, 200, 255, 100);
+}
+
+QTextEdit#InfoPanel:focus, QTextEdit#InfoTextArea:focus {
+    border: 2px solid #64C8FF;
+}
+
+/* ----------------------------------------
+   6. Buttons - General
+----------------------------------------- */
+QPushButton {
+    background-color: rgba(50, 70, 90, 180);
+    border: 2px solid rgba(100, 200, 255, 100);
+    border-radius: 8px;
+    color: #DCDCDC;
+    font-size: 12pt;
+    font-weight: bold;
+    padding: 8px 16px;
+    min-height: 20px;
+}
+
+QPushButton:hover {
+    background-color: rgba(70, 100, 130, 200);
+    border: 2px solid #64C8FF;
+    color: #FFFFFF;
+}
+
+QPushButton:pressed {
+    background-color: rgba(90, 130, 170, 220);
+    border: 2px solid #88DFFF;
+}
+
+QPushButton:disabled {
+    background-color: rgba(40, 40, 40, 100);
+    border: 2px solid #555555;
+    color: #888888;
+}
+
+/* ----------------------------------------
+   7. Specialized Buttons
+----------------------------------------- */
+QPushButton[class="backButton"] {
+    background-color: rgba(60, 40, 40, 180);
+    border: 2px solid rgba(255, 100, 100, 100);
+    color: #FFCCCC;
+}
+
+QPushButton[class="backButton"]:hover {
+    background-color: rgba(100, 60, 60, 200);
+    border: 2px solid #FF6666;
+    color: #FFFFFF;
+}
+
+QPushButton[class="dnsToolButton"] {
+    background-color: rgba(40, 60, 80, 180);
+    border: 2px solid rgba(100, 200, 255, 80);
+    border-radius: 6px;
+    font-size: 10pt;
+    padding: 6px 12px;
+    min-height: 16px;
+}
+
+QPushButton[class="dnsToolButton"]:hover {
+    background-color: rgba(60, 90, 120, 200);
+    border: 2px solid #64C8FF;
+}
+
+QPushButton[class="exportButton"] {
+    background-color: rgba(40, 80, 40, 180);
+    border: 2px solid rgba(100, 255, 100, 100);
+    color: #CCFFCC;
+}
+
+QPushButton[class="exportButton"]:hover {
+    background-color: rgba(60, 120, 60, 200);
+    border: 2px solid #66FF66;
+    color: #FFFFFF;
+}
+
+QPushButton[class="exportButton"]:disabled {
+    background-color: rgba(40, 40, 40, 100);
+    border: 2px solid #555555;
+    color: #888888;
+}
+
+/* ----------------------------------------
+   8. Combo Boxes
+----------------------------------------- */
+QComboBox {
+    background-color: rgba(30, 40, 50, 180);
+    border: 2px solid rgba(100, 200, 255, 100);
+    border-radius: 6px;
+    color: #DCDCDC;
+    font-size: 11pt;
+    padding: 6px 12px;
+    min-height: 16px;
+}
+
+QComboBox:hover {
+    border: 2px solid #64C8FF;
+    background-color: rgba(40, 50, 60, 200);
+}
+
+QComboBox:focus {
+    border: 2px solid #64C8FF;
+}
+
+QComboBox::drop-down {
+    border: none;
+    width: 20px;
+}
+
+QComboBox::down-arrow {
+    image: none;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #64C8FF;
+    margin-right: 5px;
+}
+
+QComboBox QAbstractItemView {
+    background-color: rgba(30, 40, 50, 240);
+    border: 2px solid rgba(100, 200, 255, 150);
+    border-radius: 6px;
+    color: #DCDCDC;
+    selection-background-color: rgba(100, 200, 255, 150);
+    selection-color: #000000;
+}
+
+/* ----------------------------------------
+   9. Check Boxes
+----------------------------------------- */
+QCheckBox {
+    color: #DCDCDC;
+    font-size: 11pt;
+    spacing: 8px;
+}
+
+QCheckBox::indicator {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(100, 200, 255, 100);
+    border-radius: 3px;
+    background-color: rgba(20, 30, 40, 180);
+}
+
+QCheckBox::indicator:hover {
+    border: 2px solid #64C8FF;
+    background-color: rgba(30, 40, 50, 200);
+}
+
+QCheckBox::indicator:checked {
+    background-color: rgba(100, 200, 255, 150);
+    border: 2px solid #64C8FF;
+}
+
+QCheckBox::indicator:checked:hover {
+    background-color: rgba(100, 200, 255, 200);
+}
+
+/* ----------------------------------------
+   10. Frames and Panels
+----------------------------------------- */
+QFrame {
+    border-radius: 8px;
+}
+
+QFrame#NavigationPanel {
+    background-color: rgba(10, 20, 30, 150);
+    border: 2px solid rgba(100, 200, 255, 80);
+}
+
+QFrame#InfoPanel {
+    background-color: rgba(0, 0, 0, 120);
+    border: 2px solid rgba(100, 200, 255, 60);
+}
+
+/* ----------------------------------------
+   11. Scroll Bars
+----------------------------------------- */
+QScrollBar:vertical {
+    background-color: rgba(30, 30, 30, 150);
+    width: 14px;
+    border-radius: 7px;
+    margin: 0px;
+}
+
+QScrollBar::handle:vertical {
+    background-color: rgba(100, 200, 255, 150);
+    border-radius: 7px;
+    min-height: 30px;
+    margin: 2px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background-color: rgba(100, 200, 255, 200);
+}
+
+QScrollBar::handle:vertical:pressed {
+    background-color: rgba(100, 200, 255, 250);
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+    background: transparent;
+}
+
+QScrollBar:horizontal {
+    background-color: rgba(30, 30, 30, 150);
+    height: 14px;
+    border-radius: 7px;
+    margin: 0px;
+}
+
+QScrollBar::handle:horizontal {
+    background-color: rgba(100, 200, 255, 150);
+    border-radius: 7px;
+    min-width: 30px;
+    margin: 2px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background-color: rgba(100, 200, 255, 200);
+}
+
+QScrollBar::handle:horizontal:pressed {
+    background-color: rgba(100, 200, 255, 250);
+}
+
+QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+    width: 0px;
+}
+
+QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
+    background: transparent;
+}
+
+/* ----------------------------------------
+   12. Status Bar
+----------------------------------------- */
+QStatusBar {
+    background-color: rgba(20, 30, 40, 200);
+    color: #64C8FF;
+    border-top: 1px solid rgba(100, 200, 255, 100);
+    font-size: 11pt;
+    padding: 4px;
+}
+
+QStatusBar::item {
+    border: none;
+}
+
+/* ----------------------------------------
+   13. Menu Bar and Menus
+----------------------------------------- */
+QMenuBar {
+    background-color: rgba(20, 30, 40, 200);
+    color: #DCDCDC;
+    border-bottom: 1px solid rgba(100, 200, 255, 100);
+    font-size: 11pt;
+    padding: 2px;
+}
+
+QMenuBar::item {
+    background-color: transparent;
+    padding: 6px 12px;
+    border-radius: 4px;
+}
+
+QMenuBar::item:selected {
+    background-color: rgba(100, 200, 255, 100);
+    color: #000000;
+}
+
+QMenuBar::item:pressed {
+    background-color: rgba(100, 200, 255, 150);
+}
+
+QMenu {
+    background-color: rgba(30, 40, 50, 240);
+    color: #DCDCDC;
+    border: 2px solid rgba(100, 200, 255, 100);
+    border-radius: 6px;
+    padding: 4px;
+}
+
+QMenu::item {
+    padding: 8px 16px;
+    border-radius: 4px;
+}
+
+QMenu::item:selected {
+    background-color: rgba(100, 200, 255, 150);
+    color: #000000;
+}
+
+QMenu::separator {
+    height: 1px;
+    background-color: rgba(100, 200, 255, 100);
+    margin: 4px 8px;
+}
+
+/* ----------------------------------------
+   14. Tool Tips
+----------------------------------------- */
+QToolTip {
+    background-color: rgba(30, 40, 50, 240);
+    color: #DCDCDC;
+    border: 2px solid rgba(100, 200, 255, 150);
+    border-radius: 6px;
+    padding: 8px;
+    font-size: 11pt;
+}
+
+/* ----------------------------------------
+   15. Progress Bars (if used)
+----------------------------------------- */
+QProgressBar {
+    background-color: rgba(30, 30, 30, 180);
+    border: 2px solid rgba(100, 200, 255, 100);
+    border-radius: 8px;
+    text-align: center;
+    color: #DCDCDC;
+    font-weight: bold;
+}
+
+QProgressBar::chunk {
+    background-color: rgba(100, 200, 255, 150);
+    border-radius: 6px;
+    margin: 2px;
+}
+
