@@ -557,12 +557,10 @@ class ServiceScannersMixin:
             from PyQt6.QtCore import QThreadPool
             from app.tools.db_utils import DatabaseEnumWorker
             
-            self.append_service_output(tool_key, f"<p style='color: #00BFFF;'>[DB SCAN] Starting enumeration for {target}</p><br>")
-            
             control_panel = getattr(self, f"{tool_key}_control_panel", None)
             db_type = "mssql"
             port = "1433"
-            scan_type = "basic"
+            scan_type = "Basic Info"
             username = ""
             password = ""
             custom_query = ""
@@ -572,11 +570,21 @@ class ServiceScannersMixin:
                 controls = control_panel.controls
                 db_type = controls['db_type_combo'].currentText().lower() if 'db_type_combo' in controls else "mssql"
                 port = controls['db_port'].text() if 'db_port' in controls else ("1433" if db_type == "mssql" else "1521")
-                scan_type = controls['db_scan_type'].currentText().lower().replace(" ", "_") if 'db_scan_type' in controls else "basic"
-                username = controls['db_username'].text() if 'db_username' in controls else ""
-                password = controls['db_password'].text() if 'db_password' in controls else ""
+                scan_type = controls['db_scan_type'].currentText() if 'db_scan_type' in controls else "Basic Info"
+                auth_type = controls['db_auth_combo'].currentText() if 'db_auth_combo' in controls else "None"
+                username = controls['db_username'].text() if 'db_username' in controls and auth_type != "None" else ""
+                password = controls['db_password'].text() if 'db_password' in controls and auth_type != "None" else ""
                 custom_query = controls['db_custom_query'].text() if 'db_custom_query' in controls else ""
                 oracle_sid = controls['oracle_sid'].text() if 'oracle_sid' in controls else "DB11g"
+            
+            # Set current scan type and switch to appropriate terminal
+            setattr(self, f"{tool_key}_current_scan_type", scan_type)
+            
+            # Switch to the correct terminal view for this scan type
+            if hasattr(self, 'switch_db_scan_view'):
+                self.switch_db_scan_view(tool_key, scan_type)
+            
+            self.append_service_output(tool_key, f"<p style='color: #00BFFF;'>[DB SCAN] Starting {scan_type} on {target}:{port} ({db_type.upper()})</p><br>")
             
             # Create database worker with same parameters as enumeration page
             worker = DatabaseEnumWorker(
@@ -588,13 +596,18 @@ class ServiceScannersMixin:
                 password=password if password else None,
                 custom_query=custom_query if custom_query else None,
                 oracle_sid=oracle_sid,
-                output_callback=lambda text: self.append_service_output(tool_key, text + "<br>"),
+                output_callback=lambda text: self.safe_append_db_output(tool_key, text),
                 results_callback=lambda results: self.store_service_results(tool_key, results)
             )
             
-            # Connect signals like enumeration page
-            worker.signals.finished.connect(lambda: self.on_service_scan_finished(tool_key))
-            worker.signals.error.connect(lambda error: self.append_service_output(tool_key, f"<p style='color: #FF6B6B;'>[ERROR] {error}</p><br>"))
+            # Connect signals safely
+            try:
+                worker.signals.finished.connect(lambda: self.on_service_scan_finished(tool_key))
+                worker.signals.error.connect(lambda error: self.append_service_output(tool_key, f"<p style='color: #FF6B6B;'>[ERROR] {error}</p><br>"))
+                if hasattr(worker.signals, 'results'):
+                    worker.signals.results.connect(lambda results: self.store_service_results(tool_key, results))
+            except Exception as e:
+                print(f"Signal connection error: {e}")
             
             # Store worker reference
             setattr(self, f"{tool_key}_worker", worker)
@@ -612,6 +625,9 @@ class ServiceScannersMixin:
                 'status': 'Database enumeration completed (simulated)'
             }
             self.store_service_results(tool_key, results)
+            self.on_service_scan_finished(tool_key)
+        except Exception as e:
+            self.append_service_output(tool_key, f"<p style='color: #FF6B6B;'>[ERROR] Failed to start database scan: {e}</p><br>")
             self.on_service_scan_finished(tool_key)
     
     def run_ike_enumeration(self, target, tool_key):
@@ -928,6 +944,10 @@ class ServiceScannersMixin:
     def store_service_results(self, tool_key, results):
         """Store generic service results"""
         setattr(self, f"{tool_key}_results", results)
+        
+        # Update table and tree views for database enumeration
+        if tool_key == 'db_enum':
+            self.update_db_table_view(tool_key, results)
     
     def update_rpc_table_view(self, tool_key, table_data):
         """Update RPC table view with scan data"""
@@ -1064,18 +1084,23 @@ class ServiceScannersMixin:
         """Append text to service terminal output"""
         terminal = None
         
-        # Handle HTTP, RPC, and SSH with multiple terminals (stored in dictionary)
-        if tool_key in ["http_enum", "rpc_enum", "ssh_enum"]:
+        # Handle HTTP, RPC, SSH, and DB with multiple terminals (stored in dictionary)
+        if tool_key in ["http_enum", "rpc_enum", "ssh_enum", "db_enum"]:
             terminals = getattr(self, f"{tool_key}_terminals", {})
             if tool_key == "http_enum":
                 current_scan_type = getattr(self, f"{tool_key}_current_scan_type", "Fingerprinting")
+                terminal = terminals.get(current_scan_type)
             elif tool_key == "rpc_enum":
                 current_scan_type = getattr(self, f"{tool_key}_current_scan_type", "Basic Info")
+                terminal = terminals.get(current_scan_type)
             elif tool_key == "ssh_enum":
                 current_scan_type = getattr(self, f"{tool_key}_current_scan_type", "Enumeration")
+                terminal = terminals.get(current_scan_type)
+            elif tool_key == "db_enum":
+                current_scan_type = getattr(self, f"{tool_key}_current_scan_type", "Basic Info")
+                terminal = terminals.get(current_scan_type)
             
-            terminal = terminals.get(current_scan_type)
-            # Fallback to any available terminal if current scan type not found
+            # Fallback to any available terminal if current type not found
             if not terminal and terminals:
                 terminal = next(iter(terminals.values()))
         else:
@@ -1083,23 +1108,138 @@ class ServiceScannersMixin:
             terminal = getattr(self, f"{tool_key}_terminal", None)
         
         if terminal and hasattr(terminal, 'insertHtml'):
-            # Apply theme-specific font styling
-            current_theme = getattr(self.main_window, 'current_theme', 'dark_blue')
-            font_family = 'Share Tech Mono' if current_theme == 'matrix' else 'Neuropol X'
-            
-            if not text.startswith('<div style="font-family:'):
-                text = f'<div style="font-family: {font_family}, monospace;">{text}</div>'
-            
-            terminal.insertHtml(text)
-            
-            # Scroll to bottom with delay
-            from PyQt6.QtCore import QTimer
-            QTimer.singleShot(10, lambda: terminal.verticalScrollBar().setValue(
-                terminal.verticalScrollBar().maximum()
-            ))
+            try:
+                # Apply theme-specific font styling
+                current_theme = getattr(self.main_window, 'current_theme', 'dark_blue')
+                font_family = 'Share Tech Mono' if current_theme == 'matrix' else 'Neuropol X'
+                
+                if not text.startswith('<div style="font-family:'):
+                    text = f'<div style="font-family: {font_family}, monospace;">{text}</div>'
+                
+                terminal.insertHtml(text)
+                terminal.verticalScrollBar().setValue(terminal.verticalScrollBar().maximum())
+                
+            except Exception as e:
+                # Fallback to console if terminal operations fail
+                print(f"SERVICE OUTPUT [{tool_key}]: {text.strip()} (Terminal error: {e})")
         else:
             # Fallback to console for debugging
             print(f"SERVICE OUTPUT [{tool_key}]: {text.strip()}")
+    
+    def update_db_table_view(self, tool_key, results):
+        """Update database table view with scan results"""
+        try:
+            from PyQt6.QtWidgets import QTableWidgetItem, QTreeWidgetItem
+            
+            tables = getattr(self, f"{tool_key}_tables", {})
+            trees = getattr(self, f"{tool_key}_trees", {})
+            current_scan_type = getattr(self, f"{tool_key}_current_scan_type", "Basic Info")
+            table = tables.get(current_scan_type)
+            tree = trees.get(current_scan_type)
+            
+            # Update table view
+            if table:
+                table.setRowCount(0)
+                table.setColumnCount(3)
+                table.setHorizontalHeaderLabels(["Property", "Value", "Details"])
+                
+                row = 0
+                
+                # Add basic info
+                if 'db_type' in results:
+                    table.insertRow(row)
+                    table.setItem(row, 0, QTableWidgetItem("Database Type"))
+                    table.setItem(row, 1, QTableWidgetItem(results['db_type'].upper()))
+                    table.setItem(row, 2, QTableWidgetItem(f"{results['target']}:{results['port']}"))
+                    row += 1
+                
+                # Add accessibility status
+                if 'accessible' in results:
+                    table.insertRow(row)
+                    table.setItem(row, 0, QTableWidgetItem("Service Status"))
+                    status = "Accessible" if results.get('accessible') else "Not Accessible"
+                    table.setItem(row, 1, QTableWidgetItem(status))
+                    table.setItem(row, 2, QTableWidgetItem(results.get('error', '')))
+                    row += 1
+                
+                # Add server info if available
+                if 'server_info' in results:
+                    server_info = results['server_info']
+                    for key, value in server_info.items():
+                        table.insertRow(row)
+                        table.setItem(row, 0, QTableWidgetItem(key.replace('_', ' ').title()))
+                        table.setItem(row, 1, QTableWidgetItem(str(value)))
+                        table.setItem(row, 2, QTableWidgetItem("Server Information"))
+                        row += 1
+                
+                # Add security findings
+                if 'security_findings' in results:
+                    for finding in results['security_findings']:
+                        table.insertRow(row)
+                        table.setItem(row, 0, QTableWidgetItem("Security Finding"))
+                        table.setItem(row, 1, QTableWidgetItem(finding.get('finding', '')))
+                        table.setItem(row, 2, QTableWidgetItem(f"Severity: {finding.get('severity', 'Unknown')}"))
+                        row += 1
+                
+                # Add info from scripts scan
+                if 'info' in results:
+                    for key, value in results['info'].items():
+                        table.insertRow(row)
+                        table.setItem(row, 0, QTableWidgetItem(key.replace('_', ' ').title()))
+                        table.setItem(row, 1, QTableWidgetItem(str(value)))
+                        table.setItem(row, 2, QTableWidgetItem("Database Information"))
+                        row += 1
+                
+                table.resizeColumnsToContents()
+            
+            # Update tree view
+            if tree:
+                tree.clear()
+                
+                # Create main database node
+                db_type = results.get('db_type', 'Database').upper()
+                target = results.get('target', 'Unknown')
+                port = results.get('port', 'Unknown')
+                main_item = QTreeWidgetItem(tree, [f"{db_type} Database", "1", f"{target}:{port}"])
+                
+                # Add server information
+                if 'server_info' in results:
+                    server_item = QTreeWidgetItem(main_item, ["Server Information", str(len(results['server_info'])), ""])
+                    for key, value in results['server_info'].items():
+                        QTreeWidgetItem(server_item, [key.replace('_', ' ').title(), str(value), ""])
+                    server_item.setExpanded(True)
+                
+                # Add security findings
+                if 'security_findings' in results:
+                    security_item = QTreeWidgetItem(main_item, ["Security Findings", str(len(results['security_findings'])), ""])
+                    for finding in results['security_findings']:
+                        severity = finding.get('severity', 'Unknown')
+                        finding_text = finding.get('finding', '')
+                        QTreeWidgetItem(security_item, [finding_text, severity, finding.get('description', '')])
+                    security_item.setExpanded(True)
+                
+                # Add database info
+                if 'info' in results:
+                    info_item = QTreeWidgetItem(main_item, ["Database Information", str(len(results['info'])), ""])
+                    for key, value in results['info'].items():
+                        QTreeWidgetItem(info_item, [key.replace('_', ' ').title(), str(value), ""])
+                    info_item.setExpanded(True)
+                
+                # Add vulnerabilities
+                if 'vulnerabilities' in results:
+                    vuln_item = QTreeWidgetItem(main_item, ["Vulnerabilities", str(len(results['vulnerabilities'])), ""])
+                    for vuln in results['vulnerabilities']:
+                        severity = vuln.get('severity', 'Unknown')
+                        finding_text = vuln.get('finding', '')
+                        QTreeWidgetItem(vuln_item, [finding_text, severity, vuln.get('description', '')])
+                    vuln_item.setExpanded(True)
+                
+                main_item.setExpanded(True)
+                tree.resizeColumnToContents(0)
+                tree.resizeColumnToContents(1)
+            
+        except Exception as e:
+            print(f"Error updating DB table view: {e}")
     
     def handle_http_realtime_results(self, tool_key, scan_type, results):
         """Handle real-time HTTP enumeration results"""
@@ -1319,6 +1459,15 @@ class ServiceScannersMixin:
             
         except Exception as e:
             print(f"DEBUG: Error updating SSH table view: {e}")
+    
+    def safe_append_db_output(self, tool_key, text):
+        """Safely append database output with minimal processing"""
+        try:
+            if not text.endswith('<br>'):
+                text += '<br>'
+            self.append_service_output(tool_key, text)
+        except Exception as e:
+            print(f"DB OUTPUT ERROR: {e}")
     
     def on_http_oob_changed(self, tool_key, enabled, listener_id):
         """Handle HTTP OOB listener enable/disable"""

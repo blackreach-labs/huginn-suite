@@ -62,6 +62,18 @@ class ServiceFieldVisibilityMixin:
             control_widgets['db_type_combo'].currentTextChanged.connect(
                 lambda db_type: self.toggle_db_fields(tool_key, db_type)
             )
+            if 'db_scan_type' in control_widgets:
+                control_widgets['db_scan_type'].currentTextChanged.connect(
+                    lambda scan_type: self.on_db_scan_type_changed(tool_key, scan_type)
+                )
+            if 'db_auth_combo' in control_widgets:
+                control_widgets['db_auth_combo'].currentTextChanged.connect(
+                    lambda auth_type: self.toggle_db_auth_fields(tool_key, auth_type)
+                )
+            if 'db_cred_manager_btn' in control_widgets:
+                control_widgets['db_cred_manager_btn'].clicked.connect(
+                    lambda: self.open_db_credential_manager(tool_key)
+                )
         
         # AV/Firewall detection field interactions
         elif tool_key == 'av_detect' and 'av_detection_type' in control_widgets:
@@ -733,12 +745,42 @@ class ServiceFieldVisibilityMixin:
                 port_defaults = {
                     'MSSQL': '1433',
                     'MYSQL': '3306',
+                    'MARIADB': '3306',
                     'ORACLE': '1521',
                     'POSTGRESQL': '5432'
                 }
                 default_port = port_defaults.get(db_type.upper(), '1433')
-                if not controls['db_port'].text():
-                    controls['db_port'].setText(default_port)
+                controls['db_port'].setText(default_port)
+            except RuntimeError:
+                pass
+        
+        # Update authentication options based on database type
+        if 'db_auth_combo' in controls and controls['db_auth_combo'] is not None:
+            try:
+                auth_combo = controls['db_auth_combo']
+                current_auth = auth_combo.currentText()
+                auth_combo.clear()
+                
+                # Database-specific authentication types
+                if db_type.upper() == 'POSTGRESQL':
+                    auth_options = ["None", "SCRAM-SHA-256", "MD5", "Plain Password", "Kerberos", "Windows", "Certificate"]
+                elif db_type.upper() in ['MYSQL', 'MARIADB']:
+                    auth_options = ["None", "mysql_native_password", "caching_sha2_password", "PAM/LDAP/Kerberos"]
+                elif db_type.upper() == 'MSSQL':
+                    auth_options = ["None", "Windows Auth", "SQL Server Auth"]
+                elif db_type.upper() == 'ORACLE':
+                    auth_options = ["None", "Database Auth", "External Auth", "Password File Auth"]
+                else:
+                    auth_options = ["None"]
+                
+                auth_combo.addItems(auth_options)
+                
+                # Try to restore previous selection if it exists in new options
+                if current_auth in auth_options:
+                    auth_combo.setCurrentText(current_auth)
+                else:
+                    auth_combo.setCurrentText("None")
+                    
             except RuntimeError:
                 pass
         
@@ -749,6 +791,68 @@ class ServiceFieldVisibilityMixin:
                     control_panel.row_widgets['Oracle SID:'].setVisible(show_oracle_sid)
                 except RuntimeError:
                     pass
+    
+    def toggle_db_auth_fields(self, tool_key, auth_type):
+        """Toggle database authentication fields based on method selection"""
+        control_panel = getattr(self, f"{tool_key}_control_panel", None)
+        if not control_panel or not hasattr(control_panel, 'controls'):
+            return
+            
+        controls = control_panel.controls
+        
+        # Define field visibility based on auth type
+        show_domain = (auth_type in ["Windows Auth", "Windows", "External Auth"])
+        show_creds = (auth_type not in ["None", "Certificate"])
+        
+        # Show/hide individual controls
+        if 'db_domain' in controls and controls['db_domain'] is not None:
+            try:
+                controls['db_domain'].setVisible(show_domain)
+            except RuntimeError:
+                pass
+        if 'db_username' in controls and controls['db_username'] is not None:
+            try:
+                controls['db_username'].setVisible(show_creds)
+            except RuntimeError:
+                pass
+        if 'db_password' in controls and controls['db_password'] is not None:
+            try:
+                controls['db_password'].setVisible(show_creds)
+            except RuntimeError:
+                pass
+        if 'password_label' in controls and controls['password_label'] is not None:
+            try:
+                controls['password_label'].setVisible(show_creds)
+            except RuntimeError:
+                pass
+        if 'db_cred_manager_btn' in controls and controls['db_cred_manager_btn'] is not None:
+            try:
+                controls['db_cred_manager_btn'].setVisible(show_creds)
+            except RuntimeError:
+                pass
+        
+        # Hide/show rows if available
+        if hasattr(control_panel, 'row_widgets'):
+            row_visibility = {
+                'Domain:': show_domain,
+                'Username:': show_creds,
+                'Credentials:': show_creds
+            }
+            
+            for row_label, should_show in row_visibility.items():
+                if row_label in control_panel.row_widgets and control_panel.row_widgets[row_label] is not None:
+                    try:
+                        row_widget = control_panel.row_widgets[row_label]
+                        if should_show:
+                            row_widget.setVisible(True)
+                            row_widget.setMaximumHeight(30)
+                            row_widget.setMinimumHeight(30)
+                        else:
+                            row_widget.setVisible(False)
+                            row_widget.setMaximumHeight(0)
+                            row_widget.setMinimumHeight(0)
+                    except RuntimeError:
+                        pass
     
     def toggle_av_fields(self, tool_key, detection_type):
         """Toggle AV/Firewall detection specific fields"""
@@ -1127,6 +1231,137 @@ class ServiceFieldVisibilityMixin:
             
         except Exception as e:
             self.status_updated.emit(f"Error processing Huggin results: {e}")
+    
+
+    
+    def open_db_credential_manager(self, tool_key):
+        """Open credential manager for database authentication"""
+        try:
+            from app.core.credential_manager import credential_manager
+            from PyQt6.QtWidgets import QDialog, QVBoxLayout, QListWidget, QPushButton, QHBoxLayout
+            
+            dialog = QDialog(self)
+            dialog.setWindowTitle("Select Database Credentials")
+            dialog.resize(400, 300)
+            
+            layout = QVBoxLayout(dialog)
+            
+            # Get database credentials
+            db_creds = credential_manager.get_mssql_credentials()
+            
+            if not db_creds:
+                from PyQt6.QtWidgets import QLabel
+                layout.addWidget(QLabel("No database credentials found."))
+                close_btn = QPushButton("Close")
+                close_btn.clicked.connect(dialog.close)
+                layout.addWidget(close_btn)
+            else:
+                # Create list of credentials
+                cred_list = QListWidget()
+                for cred in db_creds:
+                    display_text = f"{getattr(cred, 'username', 'Unknown')} ({getattr(cred, 'type', 'Unknown')}) - {getattr(cred, 'description', 'No description')}"
+                    cred_list.addItem(display_text)
+                layout.addWidget(cred_list)
+                
+                # Buttons
+                btn_layout = QHBoxLayout()
+                select_btn = QPushButton("Select")
+                cancel_btn = QPushButton("Cancel")
+                
+                def apply_credential():
+                    current_row = cred_list.currentRow()
+                    if current_row >= 0:
+                        selected_cred = db_creds[current_row]
+                        self.apply_db_credentials(tool_key, selected_cred)
+                        dialog.accept()
+                
+                select_btn.clicked.connect(apply_credential)
+                cancel_btn.clicked.connect(dialog.reject)
+                
+                btn_layout.addWidget(select_btn)
+                btn_layout.addWidget(cancel_btn)
+                layout.addLayout(btn_layout)
+            
+            dialog.exec()
+            
+        except Exception as e:
+            print(f"Error opening credential manager: {e}")
+            if hasattr(self, 'status_updated'):
+                self.status_updated.emit(f"Error: {e}")
+    
+    def apply_db_credentials(self, tool_key, cred_data):
+        """Apply selected database credentials to form fields"""
+        try:
+            control_panel = getattr(self, f"{tool_key}_control_panel", None)
+            if not control_panel or not hasattr(control_panel, 'controls'):
+                return
+            
+            controls = control_panel.controls
+            
+            # Apply credentials to fields
+            if hasattr(cred_data, 'username') and 'db_username' in controls:
+                controls['db_username'].setText(getattr(cred_data, 'username', ''))
+            if hasattr(cred_data, 'password') and 'db_password' in controls:
+                controls['db_password'].setText(getattr(cred_data, 'password', ''))
+            if hasattr(cred_data, 'domain') and 'db_domain' in controls:
+                controls['db_domain'].setText(getattr(cred_data, 'domain', ''))
+            
+            # Set auth type
+            if 'db_auth_combo' in controls:
+                cred_type = getattr(cred_data, 'type', '')
+                if cred_type == 'Windows Auth':
+                    controls['db_auth_combo'].setCurrentText('Windows Auth')
+                elif cred_type == 'SQL Server Auth':
+                    controls['db_auth_combo'].setCurrentText('MSSQL Auth')
+            
+            if hasattr(self, 'status_updated'):
+                self.status_updated.emit(f"Applied credentials for {getattr(cred_data, 'username', 'user')}")
+                
+        except Exception as e:
+            print(f"Error applying credentials: {e}")
+    
+    def switch_db_terminal(self, tool_key, scan_type):
+        """Switch database terminal to the specified scan type"""
+        try:
+            results_stack = getattr(self, f"{tool_key}_results_stack", None)
+            terminals = getattr(self, f"{tool_key}_terminals", {})
+            tables = getattr(self, f"{tool_key}_tables", {})
+            
+            if not results_stack:
+                return
+            
+            # Store current scan type
+            setattr(self, f"{tool_key}_current_scan_type", scan_type)
+            
+            # Only switch if the scan type exists in terminals
+            if scan_type in terminals:
+                # Clear and rebuild stack with current scan type views
+                while results_stack.count() > 0:
+                    widget = results_stack.widget(0)
+                    results_stack.removeWidget(widget)
+                
+                # Add terminal and table for this scan type
+                results_stack.addWidget(terminals[scan_type])  # Text view
+                if scan_type in tables:
+                    results_stack.addWidget(tables[scan_type])     # Table view
+                
+                # Set current view to text by default
+                results_stack.setCurrentIndex(0)
+                current_view = getattr(self, f"current_{tool_key}_view", "text")
+                if current_view == "table" and results_stack.count() > 1:
+                    results_stack.setCurrentIndex(1)
+        except Exception as e:
+            print(f"Error in switch_db_terminal: {e}")
+    
+    def on_db_scan_type_changed(self, tool_key, scan_type):
+        """Handle database scan type change to switch terminal views"""
+        try:
+            setattr(self, f"{tool_key}_current_scan_type", scan_type)
+            self.switch_db_scan_view(tool_key, scan_type)
+        except Exception as e:
+            print(f"Error switching DB terminal: {e}")
+    
+
     
     def on_http_oob_changed(self, tool_key, enabled, listener_id):
         """Handle OOB listener state change"""

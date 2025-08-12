@@ -31,6 +31,8 @@ class DatabaseEnumerationWorker(QThread):
                 self._execute_mssql_query()
             elif self.connection_config['db_type'].lower() == 'mysql':
                 self._execute_mysql_query()
+            elif self.connection_config['db_type'].lower() == 'mariadb':
+                self._execute_mariadb_query()
             elif self.connection_config['db_type'].lower() == 'oracle':
                 self._execute_oracle_query()
             elif self.connection_config['db_type'].lower() == 'postgresql':
@@ -89,6 +91,29 @@ class DatabaseEnumerationWorker(QThread):
             columns = ["result"]
         
         self.connection_status.emit("Connected to MySQL server")
+        self.query_completed.emit(results, columns)
+    
+    def _execute_mariadb_query(self):
+        """Execute MariaDB-specific queries"""
+        if "SHOW DATABASES" in self.query.upper():
+            results = [
+                ("information_schema",), ("mysql",), ("performance_schema",), 
+                ("test",), ("sakila",), ("world",), ("sys",)
+            ]
+            columns = ["Database"]
+        elif "SHOW TABLES" in self.query.upper():
+            results = [
+                ("users",), ("products",), ("orders",), ("customers",), ("inventory",)
+            ]
+            columns = ["Tables_in_database"]
+        elif "SELECT VERSION()" in self.query.upper():
+            results = [("10.6.12-MariaDB-0ubuntu0.22.04.1",)]
+            columns = ["version()"]
+        else:
+            results = [("Query executed successfully",)]
+            columns = ["result"]
+        
+        self.connection_status.emit("Connected to MariaDB server")
         self.query_completed.emit(results, columns)
     
     def _execute_oracle_query(self):
@@ -187,7 +212,7 @@ class DatabaseEnumerationComponent(QWidget):
         
         port_layout = QHBoxLayout()
         self.db_type_combo = QComboBox()
-        self.db_type_combo.addItems(["MSSQL", "MySQL", "Oracle", "PostgreSQL"])
+        self.db_type_combo.addItems(["MSSQL", "MySQL", "MariaDB", "Oracle", "PostgreSQL"])
         self.db_type_combo.currentTextChanged.connect(self.update_default_port)
         
         self.port_input = QSpinBox()
@@ -544,7 +569,7 @@ class DatabaseEnumerationComponent(QWidget):
     
     def update_default_port(self):
         """Update default port based on database type"""
-        ports = {"MSSQL": 1433, "MySQL": 3306, "Oracle": 1521, "PostgreSQL": 5432}
+        ports = {"MSSQL": 1433, "MySQL": 3306, "MariaDB": 3306, "Oracle": 1521, "PostgreSQL": 5432}
         self.port_input.setValue(ports.get(self.db_type_combo.currentText(), 1433))
     
     def test_connection(self):
@@ -664,6 +689,14 @@ class DatabaseEnumerationComponent(QWidget):
                 'version': "SELECT VERSION();",
                 'config': "SHOW VARIABLES;"
             },
+            'mariadb': {
+                'databases': "SHOW DATABASES;",
+                'tables': "SHOW TABLES;",
+                'users': "SELECT user, host FROM mysql.user;",
+                'permissions': "SHOW GRANTS;",
+                'version': "SELECT VERSION();",
+                'config': "SHOW VARIABLES;"
+            },
             'oracle': {
                 'databases': "SELECT name FROM v$database;",
                 'tables': "SELECT table_name FROM all_tables;",
@@ -768,6 +801,18 @@ class DatabaseEnumerationComponent(QWidget):
                 "SELECT VERSION();",
                 "SHOW VARIABLES LIKE 'version%';",
                 "SHOW PROCESSLIST;"
+            ]
+        elif db_type.lower() == 'mariadb':
+            queries = [
+                "Select Quick Query...",
+                "SHOW DATABASES;",
+                "SHOW TABLES;",
+                "SELECT user, host FROM mysql.user;",
+                "SELECT VERSION();",
+                "SHOW VARIABLES LIKE 'version%';",
+                "SHOW PROCESSLIST;",
+                "SHOW ENGINES;",
+                "SELECT * FROM information_schema.plugins WHERE plugin_status='ACTIVE';"
             ]
         elif db_type.lower() == 'oracle':
             queries = [

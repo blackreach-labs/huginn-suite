@@ -337,15 +337,17 @@
       {
         "label": "DB Type:",
         "controls": [
-          {"type": "combobox", "name": "db_type_combo", "items": ["MSSQL", "MySQL", "Oracle", "PostgreSQL"], "width": 150},
-          {"type": "label", "name": "port_label", "text": "Port:", "width": 50},
+          {"type": "combobox", "name": "db_type_combo", "items": ["MSSQL", "MySQL", "MariaDB", "Oracle", "PostgreSQL"], "width": 150},
+          {"type": "label", "name": "port_label", "text": "Port:", "width": 70},
           {"type": "lineedit", "name": "db_port", "default": "1433", "width": 100}
         ]
       },
       {
         "label": "Scan Type:",
         "controls": [
-          {"type": "combobox", "name": "db_scan_type", "items": ["Basic Info", "Scripts", "Custom Query", "Full Scan"], "width": 150}
+          {"type": "combobox", "name": "db_scan_type", "items": ["Basic Info", "Scripts", "Full Scan"], "width": 150},
+          {"type": "label", "name": "auth_label", "text": "Auth:", "width": 70},
+          {"type": "combobox", "name": "db_auth_combo", "items": ["None"], "width": 200, "default": "None"}
         ]
       },
       {
@@ -354,33 +356,29 @@
           {"type": "lineedit", "name": "oracle_sid", "default": "DB11g", "placeholder": "Oracle SID for brute force", "stretch": true, "visible": false}
         ]
       },
+
       {
-        "label": "Query:",
+        "label": "Domain:",
         "controls": [
-          {"type": "lineedit", "name": "db_query", "placeholder": "SELECT name FROM sys.databases", "stretch": true, "visible": false}
-        ]
-      },
-      {
-        "label": "Quick:",
-        "buttons": [
-          {"text": "List DBs", "visible": false},
-          {"text": "List Users", "visible": false},
-          {"text": "Version", "visible": false}
-        ]
-      },
-      {
-        "label": "Authentication (for Scripts/Query):",
-        "controls": [
-          {"type": "label", "name": "auth_header", "text": "", "style": "color: #87CEEB; font-weight: bold;"}
-        ]
+          {"type": "lineedit", "name": "db_domain", "placeholder": "Domain name (e.g., CONTOSO.COM)", "stretch": true, "visible": false}
+        ],
+        "visible": false
       },
       {
         "label": "Username:",
         "controls": [
-          {"type": "lineedit", "name": "db_username", "placeholder": "sa", "width": 200},
-          {"type": "label", "name": "password_label", "text": "Password:", "width": 80},
-          {"type": "lineedit", "name": "db_password", "placeholder": "Password", "password": true, "stretch": true}
-        ]
+          {"type": "lineedit", "name": "db_username", "placeholder": "sa", "width": 200, "visible": false},
+          {"type": "label", "name": "password_label", "text": "Password:", "width": 80, "visible": false},
+          {"type": "lineedit", "name": "db_password", "placeholder": "Password", "password": true, "stretch": true, "visible": false}
+        ],
+        "visible": false
+      },
+      {
+        "label": "Credentials:",
+        "controls": [
+          {"type": "button", "name": "db_cred_manager_btn", "text": "📋 Load from Credential Manager", "stretch": true, "visible": false}
+        ],
+        "visible": false
       }
     ]
   },

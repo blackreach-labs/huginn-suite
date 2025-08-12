@@ -1,2 +1,0 @@
-2025-08-11 00:31:43 - huggin - ERROR - Unexpected error in open_wireless_security: 'LicenseManager' object has no attribute 'validate_feature_access'
-2025-08-12 13:05:44 - huggin - ERROR - Failed to create database management page: name 'QLineEdit' is not defined

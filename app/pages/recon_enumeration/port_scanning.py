@@ -29,7 +29,7 @@ class PortScanningMixin:
         scan_type_label = QLabel("Type:")
         row2_layout.addWidget(scan_type_label)
         self.port_scan_type = QComboBox()
-        self.port_scan_type.addItems(["Ping Sweep", "Huggin Sweep", "Targeted Scan"])
+        self.port_scan_type.addItems(["Ping Sweep", "Huggin Sweep", "TCP Scan", "UDP Scan"])
         self.port_scan_type.currentTextChanged.connect(self.on_port_scan_type_changed)
         row2_layout.addWidget(self.port_scan_type)
         
@@ -140,7 +140,7 @@ class PortScanningMixin:
     def on_port_scan_type_changed(self, scan_type):
         """Handle port scan type change"""
         # Hide port row for Ping Sweep and Huggin Sweep
-        show_ports = (scan_type == "Targeted Scan")
+        show_ports = (scan_type in ["TCP Scan", "UDP Scan"])
         if hasattr(self, 'port_label'):
             self.port_label.setVisible(show_ports)
         if hasattr(self, 'port_input'):
@@ -152,13 +152,13 @@ class PortScanningMixin:
         if hasattr(self, 'all_btn'):
             self.all_btn.setVisible(show_ports)
         
-        # Show detection options only for Targeted Scan
+        # Show detection options only for TCP/UDP Scan
         if hasattr(self, 'os_detection_cb'):
             self.os_detection_cb.setVisible(show_ports)
         if hasattr(self, 'service_detection_cb'):
             self.service_detection_cb.setVisible(show_ports)
         
-        # Show tree view button only for Targeted Scan
+        # Show tree view button only for TCP/UDP Scan
         if hasattr(self, 'port_tree_view_btn'):
             self.port_tree_view_btn.setVisible(show_ports)
         
@@ -189,7 +189,7 @@ class PortScanningMixin:
             return
         
         scan_type = self.port_scan_type.currentText()
-        ports = self.port_input.text().strip() if scan_type == "Targeted Scan" else ""
+        ports = self.port_input.text().strip() if scan_type in ["TCP Scan", "UDP Scan"] else ""
         
         # Clear current scan type terminal before starting new scan
         current_terminal = self.get_current_port_terminal()
@@ -240,7 +240,7 @@ class PortScanningMixin:
                     progress_start_callback=self.start_port_progress,
                     tenant_id=tenant_id
                 )
-            else:  # Targeted Scan
+            elif scan_type == "TCP Scan":
                 os_detection = self.os_detection_cb.isChecked()
                 service_detection = self.service_detection_cb.isChecked()
                 
@@ -258,10 +258,28 @@ class PortScanningMixin:
                     progress_start_callback=self.start_port_progress,
                     tenant_id=tenant_id
                 )
+            else:  # UDP Scan
+                os_detection = self.os_detection_cb.isChecked()
+                service_detection = self.service_detection_cb.isChecked()
+                
+                # Use enhanced port scan for UDP ports
+                self.current_worker = port_utils.enhanced_targeted_scan(
+                    target,
+                    ports or "53,67,68,69,123,135,137,138,161,162,389,445,500,514,520,631,1434,1900,4500,5353",
+                    os_detection=os_detection,
+                    service_detection=service_detection,
+                    output_callback=self.append_port_output,
+                    status_callback=self.status_updated.emit,
+                    finished_callback=self.on_port_scan_finished,
+                    results_callback=self.store_port_results,
+                    progress_callback=self.update_port_progress,
+                    progress_start_callback=self.start_port_progress,
+                    tenant_id=tenant_id
+                )
             
             # Show detection options in output if enabled
             detection_info = ""
-            if scan_type == "Targeted Scan":
+            if scan_type in ["TCP Scan", "UDP Scan"]:
                 if self.os_detection_cb.isChecked():
                     detection_info += " with OS Detection"
                 if self.service_detection_cb.isChecked():
@@ -329,7 +347,7 @@ class PortScanningMixin:
                     'os_detection': os_detection,
                     'server_type': server_type
                 },
-                'scan_type': 'targeted_scan',
+                'scan_type': scan_type.lower().replace(' ', '_'),
                 'target': target
             }
         
@@ -420,7 +438,7 @@ class PortScanningMixin:
             elif scan_type == "Huggin Sweep":
                 current_table.setColumnCount(3)
                 current_table.setHorizontalHeaderLabels(["IP Address", "Open Ports", "Services"])
-            else:  # Targeted Scan
+            else:  # TCP/UDP Scan
                 current_table.setColumnCount(4)
                 current_table.setHorizontalHeaderLabels(["IP Address", "Port", "State", "Service"])
     
@@ -584,7 +602,7 @@ class PortScanningMixin:
                 services_item = QTreeWidgetItem(host_item, ["Services", "HTTP, HTTPS"])
                 host_item.setExpanded(True)
         
-        else:  # Targeted Scan (including Fingerprinting, Source Code, Full Scan)
+        else:  # TCP/UDP Scan
             for host, data in results.items():
                 if isinstance(data, dict) and host != 'scan_type' and host != 'target':
                     host_item = QTreeWidgetItem(tree, [host, "Target Host"])

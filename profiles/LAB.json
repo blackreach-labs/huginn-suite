@@ -28,6 +28,15 @@
         "notes": "",
         "source": "manual",
         "credential_type": "Username/Password"
+      },
+      {
+        "username": "Administrator",
+        "password": "Arkar00la!",
+        "domain": "LAB",
+        "service": "MSSQL",
+        "notes": "",
+        "source": "manual",
+        "credential_type": "Windows Auth"
       }
     ]
   }
