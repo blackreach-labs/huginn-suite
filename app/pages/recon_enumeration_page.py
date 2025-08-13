@@ -254,7 +254,7 @@ class ReconEnumerationPage(QWidget, ServiceScannersMixin, ServiceUIComponentsMix
             self.port_main_container = QWidget()
             container_layout = QVBoxLayout(self.port_main_container)
             
-            for scan_type in ["Ping Sweep", "Huggin Sweep", "TCP Scan", "UDP Scan"]:
+            for scan_type in ["Ping Sweep", "Huggin Sweep", "Layer2 Sweep", "TCP Scan", "UDP Scan"]:
                 # Create stack for this scan type
                 stack = QStackedWidget()
                 
@@ -273,6 +273,9 @@ class ReconEnumerationPage(QWidget, ServiceScannersMixin, ServiceUIComponentsMix
                 elif scan_type == "Huggin Sweep":
                     table.setColumnCount(3)
                     table.setHorizontalHeaderLabels(["IP Address", "Open Ports", "Services"])
+                elif scan_type == "Layer2 Sweep":
+                    table.setColumnCount(4)
+                    table.setHorizontalHeaderLabels(["IP Address", "MAC Address", "Vendor", "Protocol"])
                 else:  # TCP/UDP Scan
                     table.setColumnCount(4)
                     table.setHorizontalHeaderLabels(["IP Address", "Port", "State", "Service"])

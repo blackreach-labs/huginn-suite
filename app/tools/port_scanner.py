@@ -2,6 +2,8 @@
 import socket
 import threading
 import concurrent.futures
+import ipaddress
+import time
 from PyQt6.QtCore import QObject, pyqtSignal, QRunnable
 
 class PortScannerSignals(QObject):
@@ -846,6 +848,209 @@ class LegacyEnhancedPortScanWorker(QRunnable):
 def get_common_ports():
     """Get list of common ports to scan"""
     return [20,21,22,23,25,53,67,68,80,88,110,111,135,137,138,139,143,161,389,443,445,464,554,631,636,993,995,1433,1521,1723,1900,2181,2222,2375,2376,2525,27017,27018,27019,3000,3268,3269,3306,3389,3544,500,5000,5001,5040,5050,5432,5671,5672,5984,5985,5986,5987,6378,6379,6443,7000,7001,7474,7680,8000,8042,8080,8081,8086,8200,8443,8500,8787,8880,8883,8888,9000,9001,9042,9090,9093,9200,9220,9221,9222,9223,9224,9225,9226,9227,9228,9229,11211,15672]
+
+class Layer2SweepWorker(QRunnable):
+    """Layer 2 discovery: ARP (IPv4), NDP (IPv6), NetBIOS, mDNS"""
+
+    def __init__(self, target_cidr, interface=None, timeout=2, tenant_id="default"):
+        super().__init__()
+        self.signals = PortScannerSignals()
+        self.target_cidr = target_cidr
+        self.interface = interface
+        self.timeout = timeout
+        self.tenant_id = tenant_id
+        self.is_running = True
+        self.results = {"layer2_hosts": []}
+
+    def run(self):
+        try:
+            self.signals.status.emit(f"Starting Layer 2 sweep on {self.target_cidr}...")
+            self.signals.output.emit(f"<p style='color: #00BFFF;'>Sending ARP, NDP, NetBIOS, and mDNS probes...</p><br>")
+            self.signals.progress_start.emit(4)  # 4 discovery methods
+
+            # ARP IPv4 sweep
+            self.do_arp_sweep()
+            self.signals.progress_update.emit(1, len(self.results["layer2_hosts"]))
+
+            # IPv6 NDP sweep
+            self.do_ndp_sweep()
+            self.signals.progress_update.emit(2, len(self.results["layer2_hosts"]))
+
+            # NetBIOS Name Query
+            self.do_netbios_probe()
+            self.signals.progress_update.emit(3, len(self.results["layer2_hosts"]))
+
+            # mDNS Query
+            self.do_mdns_probe()
+            self.signals.progress_update.emit(4, len(self.results["layer2_hosts"]))
+
+            # Final summary
+            unique_hosts = len(self.results["layer2_hosts"])
+            self.signals.output.emit(f"<br><p style='color: #00FF41;'>Found {unique_hosts} unique devices</p><br>")
+            
+            # Add to inventory
+            try:
+                from app.core.asset_manager import asset_manager
+                added_count = 0
+                for host in self.results["layer2_hosts"]:
+                    asset_data = {
+                        'ip_address': host['ip'],
+                        'mac_address': host.get('mac', ''),
+                        'vendor': host.get('vendor', ''),
+                        'status': 'DISCOVERED',
+                        'confidence': 80,  # High confidence for Layer 2 discovery
+                        'metadata': {
+                            'discovery_method': 'layer2_sweep',
+                            'protocol': host.get('protocol', 'Unknown')
+                        }
+                    }
+                    asset_manager.add_or_update_asset(self.tenant_id, **asset_data)
+                    added_count += 1
+                
+                self.signals.output.emit(f"<p style='color: #87CEEB;'>Updated inventory with {added_count} hosts from Layer 2 sweep</p><br>")
+            except Exception as e:
+                self.signals.output.emit(f"<p style='color: #FFAA00;'>[WARN] Inventory update failed: {e}</p><br>")
+            
+            self.signals.results_ready.emit(self.results)
+            self.signals.status.emit("Layer 2 sweep completed")
+
+        except Exception as e:
+            self.signals.output.emit(f"<p style='color: #FF4500;'>[ERROR] Layer 2 sweep failed: {str(e)}</p>")
+            self.signals.status.emit("Layer 2 sweep error")
+        finally:
+            self.signals.finished.emit()
+
+    def do_arp_sweep(self):
+        """ARP sweep for IPv4 hosts"""
+        try:
+            from scapy.all import ARP, Ether, srp
+            
+            # Normalize target - convert 192.168.1.0 to 192.168.1.0/24
+            target = self.target_cidr
+            if not '/' in target and target.endswith('.0'):
+                target = f"{target}/24"
+            
+            ether = Ether(dst="ff:ff:ff:ff:ff:ff")
+            arp = ARP(pdst=target)
+            answered, _ = srp(ether / arp, timeout=self.timeout, iface=self.interface, verbose=False)
+
+            for _, rcv in answered:
+                if not self.is_running:
+                    break
+                self.add_result(ip=rcv.psrc, mac=rcv.hwsrc, proto="ARP")
+        except Exception as e:
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>[WARN] ARP sweep error: {e}</p><br>")
+
+    def do_ndp_sweep(self):
+        """IPv6 Neighbor Discovery using all-nodes multicast"""
+        try:
+            from scapy.all import Ether, IPv6, ICMPv6ND_NS, ICMPv6NDOptSrcLLAddr, srp
+            import netifaces
+
+            # Use Scapy's interface detection instead
+            from scapy.all import get_if_list, get_if_hwaddr
+            
+            if not self.interface:
+                scapy_interfaces = get_if_list()
+                # Find first non-loopback interface
+                for iface in scapy_interfaces:
+                    if 'loopback' not in iface.lower() and 'tunnel' not in iface.lower():
+                        self.interface = iface
+                        break
+            
+            if not self.interface:
+                return
+
+            # Find our MAC for this interface using Scapy
+            try:
+                mac_addr = get_if_hwaddr(self.interface)
+            except:
+                mac_addr = "00:00:00:00:00:00"
+
+            # Build NDP request to ff02::1 (all-nodes multicast)
+            ether = Ether(dst="33:33:00:00:00:01")
+            ipv6 = IPv6(dst="ff02::1")
+            ns = ICMPv6ND_NS(tgt="fe80::1")  # Dummy target, just to provoke responses
+            opt = ICMPv6NDOptSrcLLAddr(lladdr=mac_addr)
+
+            packet = ether / ipv6 / ns / opt
+
+            # Send and receive at layer 2
+            answered, _ = srp(packet, iface=self.interface, timeout=self.timeout, verbose=False)
+
+            for _, rcv in answered:
+                src_mac = rcv[Ether].src
+                src_ip = rcv[IPv6].src
+                self.add_result(ip=src_ip, mac=src_mac, proto="NDP")
+
+        except Exception as e:
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>[WARN] NDP sweep error: {e}</p>")
+
+    def do_netbios_probe(self):
+        """NetBIOS broadcast probe for Windows hosts"""
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            sock.settimeout(self.timeout)
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+
+            # NetBIOS Name Service query (wildcard "*")
+            netbios_packet = b'\x80\xF0\x00\x10' + b'\x00'*4 + b'\x20CKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' + b'\x00\x00\x21\x00\x01'
+            sock.sendto(netbios_packet, ('255.255.255.255', 137))
+
+            start = time.time()
+            while time.time() - start < self.timeout and self.is_running:
+                try:
+                    data, addr = sock.recvfrom(1024)
+                    self.add_result(ip=addr[0], mac=None, proto="NetBIOS")
+                except socket.timeout:
+                    break
+            sock.close()
+        except Exception as e:
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>[WARN] NetBIOS probe error: {e}</p><br>")
+
+    def do_mdns_probe(self):
+        """mDNS multicast probe for Apple/Linux/IoT devices"""
+        try:
+            from scapy.all import IP, UDP, DNS, DNSQR, sr1
+            
+            # Send mDNS query without Ether layer to avoid warnings
+            query = IP(dst="224.0.0.251")/UDP(sport=5353,dport=5353)/DNS(rd=0,qd=DNSQR(qname="_services._dns-sd._udp.local", qtype="PTR"))
+            ans = sr1(query, timeout=self.timeout, verbose=False)
+            
+            if ans and ans.haslayer(DNS) and ans[DNS].an and ans.haslayer(IP):
+                src_ip = ans[IP].src
+                self.add_result(ip=src_ip, mac=None, proto="mDNS")
+        except Exception as e:
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>[WARN] mDNS probe error: {e}</p><br>")
+
+    def add_result(self, ip, mac=None, proto="Unknown"):
+        """Add discovered host to results (avoid duplicates)"""
+        # Check for duplicates
+        if any(h['ip'] == ip for h in self.results["layer2_hosts"]):
+            return
+        
+        vendor = self.lookup_vendor(mac) if mac else "Unknown"
+        host_info = {
+            "ip": ip, 
+            "mac": mac or "N/A", 
+            "vendor": vendor, 
+            "protocol": proto
+        }
+        
+        self.results["layer2_hosts"].append(host_info)
+        self.signals.output.emit(
+            f"<p style='color: #00FF41;'>[+] {ip} - {mac or 'N/A'} ({vendor}) via {proto}</p><br>"
+        )
+
+    def lookup_vendor(self, mac):
+        """Lookup MAC vendor"""
+        if not mac:
+            return "Unknown"
+        try:
+            from mac_vendor_lookup import MacLookup
+            return MacLookup().lookup(mac)
+        except:
+            return "Unknown Vendor"
 
 def get_top_ports(count=100):
     """Get top N ports - returns full range if count exceeds available ports"""

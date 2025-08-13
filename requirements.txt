@@ -80,6 +80,12 @@ pefile>=2022.5.30
 # Advanced networking for C2
 scapy>=2.4.5
 
+# MAC vendor lookup for Layer 2 discovery
+mac-vendor-lookup>=1.1.16
+
+# Network interface information
+netifaces>=0.11.0
+
 # Steganography for payload hiding
 stegano>=0.10.2
 

@@ -29,7 +29,7 @@ class PortScanningMixin:
         scan_type_label = QLabel("Type:")
         row2_layout.addWidget(scan_type_label)
         self.port_scan_type = QComboBox()
-        self.port_scan_type.addItems(["Ping Sweep", "Huggin Sweep", "TCP Scan", "UDP Scan"])
+        self.port_scan_type.addItems(["Ping Sweep", "Huggin Sweep", "Layer2 Sweep", "TCP Scan", "UDP Scan"])
         self.port_scan_type.currentTextChanged.connect(self.on_port_scan_type_changed)
         row2_layout.addWidget(self.port_scan_type)
         
@@ -139,7 +139,7 @@ class PortScanningMixin:
     
     def on_port_scan_type_changed(self, scan_type):
         """Handle port scan type change"""
-        # Hide port row for Ping Sweep and Huggin Sweep
+        # Hide port row for Ping Sweep, Huggin Sweep, and Layer2 Sweep
         show_ports = (scan_type in ["TCP Scan", "UDP Scan"])
         if hasattr(self, 'port_label'):
             self.port_label.setVisible(show_ports)
@@ -240,6 +240,17 @@ class PortScanningMixin:
                     progress_start_callback=self.start_port_progress,
                     tenant_id=tenant_id
                 )
+            elif scan_type == "Layer2 Sweep":
+                self.current_worker = port_utils.layer2_sweep(
+                    target,
+                    self.append_port_output,
+                    self.status_updated.emit,
+                    self.on_port_scan_finished,
+                    results_callback=self.store_port_results,
+                    progress_callback=self.update_port_progress,
+                    progress_start_callback=self.start_port_progress,
+                    tenant_id=tenant_id
+                )
             elif scan_type == "TCP Scan":
                 os_detection = self.os_detection_cb.isChecked()
                 service_detection = self.service_detection_cb.isChecked()
@@ -313,6 +324,15 @@ class PortScanningMixin:
             results = {
                 'alive_hosts': [target],
                 'scan_type': 'huggin_sweep',
+                'target': target
+            }
+        elif scan_type == "Layer2 Sweep":
+            results = {
+                'layer2_hosts': [
+                    {'ip': target, 'mac': '00:11:22:33:44:55', 'vendor': 'Example Corp', 'protocol': 'ARP'},
+                    {'ip': '192.168.1.1', 'mac': '00:aa:bb:cc:dd:ee', 'vendor': 'Router Vendor', 'protocol': 'mDNS'}
+                ],
+                'scan_type': 'layer2_sweep',
                 'target': target
             }
         else:  # Targeted Scan
@@ -438,6 +458,9 @@ class PortScanningMixin:
             elif scan_type == "Huggin Sweep":
                 current_table.setColumnCount(3)
                 current_table.setHorizontalHeaderLabels(["IP Address", "Open Ports", "Services"])
+            elif scan_type == "Layer2 Sweep":
+                current_table.setColumnCount(4)
+                current_table.setHorizontalHeaderLabels(["IP Address", "MAC Address", "Vendor", "Protocol"])
             else:  # TCP/UDP Scan
                 current_table.setColumnCount(4)
                 current_table.setHorizontalHeaderLabels(["IP Address", "Port", "State", "Service"])
@@ -488,6 +511,20 @@ class PortScanningMixin:
                 table.setItem(row, 0, QTableWidgetItem(host))
                 table.setItem(row, 1, QTableWidgetItem("80,443"))
                 table.setItem(row, 2, QTableWidgetItem("HTTP, HTTPS"))
+        
+        # Handle Layer2 sweep results
+        elif scan_type == 'Layer2 Sweep' or 'layer2_hosts' in results:
+            table.setColumnCount(4)
+            table.setHorizontalHeaderLabels(["IP Address", "MAC Address", "Vendor", "Protocol"])
+            layer2_hosts = results.get('layer2_hosts', [])
+            for host in layer2_hosts:
+                row = table.rowCount()
+                table.insertRow(row)
+                table.setItem(row, 0, QTableWidgetItem(host.get('ip', 'N/A')))
+                table.setItem(row, 1, QTableWidgetItem(host.get('mac', 'N/A')))
+                table.setItem(row, 2, QTableWidgetItem(host.get('vendor', 'Unknown')))
+                table.setItem(row, 3, QTableWidgetItem(host.get('protocol', 'Unknown')))
+        
         # Handle targeted scan results
         else:
             table.setColumnCount(4)
@@ -600,6 +637,15 @@ class PortScanningMixin:
                 host_item = QTreeWidgetItem(tree, [host, "Host Information"])
                 ports_item = QTreeWidgetItem(host_item, ["Open Ports", "80, 443"])
                 services_item = QTreeWidgetItem(host_item, ["Services", "HTTP, HTTPS"])
+                host_item.setExpanded(True)
+        
+        elif scan_type == 'Layer2 Sweep' or 'layer2_hosts' in results:
+            layer2_hosts = results.get('layer2_hosts', [])
+            for host in layer2_hosts:
+                host_item = QTreeWidgetItem(tree, [host.get('ip', 'N/A'), "Layer 2 Device"])
+                mac_item = QTreeWidgetItem(host_item, ["MAC Address", host.get('mac', 'N/A')])
+                vendor_item = QTreeWidgetItem(host_item, ["Vendor", host.get('vendor', 'Unknown')])
+                protocol_item = QTreeWidgetItem(host_item, ["Discovery Protocol", host.get('protocol', 'Unknown')])
                 host_item.setExpanded(True)
         
         else:  # TCP/UDP Scan

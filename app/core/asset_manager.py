@@ -63,6 +63,8 @@ class AssetManager:
                     ip_address TEXT NOT NULL,
                     hostname TEXT DEFAULT '',
                     fqdn TEXT DEFAULT '',
+                    mac_address TEXT DEFAULT '',
+                    vendor TEXT DEFAULT '',
                     os_type TEXT DEFAULT 'Unknown',
                     os_version TEXT DEFAULT '',
                     status TEXT DEFAULT 'DISCOVERED',
@@ -95,6 +97,18 @@ class AssetManager:
                 # Add fqdn column if it doesn't exist
             try:
                 conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+            except sqlite3.OperationalError:
+                pass  # Column already exists
+            
+            # Add mac_address column if it doesn't exist
+            try:
+                conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+            except sqlite3.OperationalError:
+                pass  # Column already exists
+            
+            # Add vendor column if it doesn't exist
+            try:
+                conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
             except sqlite3.OperationalError:
                 pass  # Column already exists
             
@@ -153,6 +167,8 @@ class AssetManager:
         """Create new asset entry"""
         hostname = kwargs.get('hostname', '')
         fqdn = kwargs.get('fqdn', '')
+        mac_address = kwargs.get('mac_address', '')
+        vendor = kwargs.get('vendor', '')
         os_type = kwargs.get('os_type', 'Unknown')
         os_version = kwargs.get('os_version', '')
         status = kwargs.get('status', 'DISCOVERED')
@@ -165,11 +181,11 @@ class AssetManager:
         
         conn.execute("""
             INSERT INTO assets 
-            (asset_id, tenant_id, ip_address, hostname, fqdn, os_type, os_version, 
+            (asset_id, tenant_id, ip_address, hostname, fqdn, mac_address, vendor, os_type, os_version, 
              status, confidence, first_seen, last_seen, open_ports, services, 
              vulnerabilities, metadata, notes)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (asset_id, tenant_id, ip_address, hostname, fqdn, os_type, os_version,
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (asset_id, tenant_id, ip_address, hostname, fqdn, mac_address, vendor, os_type, os_version,
               status, confidence, timestamp, timestamp, open_ports, services,
               vulnerabilities, metadata, notes))
         
@@ -180,7 +196,7 @@ class AssetManager:
         """Update existing asset with new information"""
         # Get current asset data
         cursor = conn.execute("""
-            SELECT hostname, fqdn, os_type, os_version, status, confidence, open_ports, services, vulnerabilities, metadata, notes
+            SELECT hostname, fqdn, mac_address, vendor, os_type, os_version, status, confidence, open_ports, services, vulnerabilities, metadata, notes
             FROM assets WHERE tenant_id = ? AND ip_address = ?
         """, (tenant_id, ip_address))
         
@@ -192,15 +208,17 @@ class AssetManager:
         current_data = {
             'hostname': current[0],
             'fqdn': current[1],
-            'os_type': current[2],
-            'os_version': current[3],
-            'status': current[4],
-            'confidence': current[5],
-            'open_ports': json.loads(current[6]),
-            'services': json.loads(current[7]),
-            'vulnerabilities': json.loads(current[8]),
-            'metadata': json.loads(current[9]),
-            'notes': current[10] if len(current) > 10 else ''
+            'mac_address': current[2],
+            'vendor': current[3],
+            'os_type': current[4],
+            'os_version': current[5],
+            'status': current[6],
+            'confidence': current[7],
+            'open_ports': json.loads(current[8]),
+            'services': json.loads(current[9]),
+            'vulnerabilities': json.loads(current[10]),
+            'metadata': json.loads(current[11]),
+            'notes': current[12] if len(current) > 12 else ''
         }
         
         # Merge new data
@@ -209,12 +227,12 @@ class AssetManager:
         # Update database
         conn.execute("""
             UPDATE assets SET 
-                hostname = ?, fqdn = ?, os_type = ?, os_version = ?, status = ?, confidence = ?,
+                hostname = ?, fqdn = ?, mac_address = ?, vendor = ?, os_type = ?, os_version = ?, status = ?, confidence = ?,
                 last_seen = ?, open_ports = ?, services = ?, vulnerabilities = ?, metadata = ?, notes = ?
             WHERE tenant_id = ? AND ip_address = ?
         """, (
-            updated_data['hostname'], updated_data['fqdn'], updated_data['os_type'], updated_data['os_version'],
-            updated_data['status'], updated_data['confidence'], timestamp,
+            updated_data['hostname'], updated_data['fqdn'], updated_data['mac_address'], updated_data['vendor'],
+            updated_data['os_type'], updated_data['os_version'], updated_data['status'], updated_data['confidence'], timestamp,
             json.dumps(updated_data['open_ports']), json.dumps(updated_data['services']),
             json.dumps(updated_data['vulnerabilities']), json.dumps(updated_data['metadata']),
             updated_data.get('notes', ''), tenant_id, ip_address
@@ -236,6 +254,16 @@ class AssetManager:
         if new.get('fqdn'):
             if not current['fqdn'] or len(new['fqdn']) > len(current['fqdn']):
                 merged['fqdn'] = new['fqdn']
+        
+        # Update MAC address - prefer non-empty values
+        if new.get('mac_address'):
+            if not current.get('mac_address') or current['mac_address'] == 'N/A':
+                merged['mac_address'] = new['mac_address']
+        
+        # Update vendor - prefer non-empty values
+        if new.get('vendor'):
+            if not current.get('vendor') or current['vendor'] == 'Unknown':
+                merged['vendor'] = new['vendor']
         
         if new.get('os_type') and new['os_type'] != 'Unknown':
             if current['os_type'] == 'Unknown' or new.get('confidence', 0) > current['confidence']:

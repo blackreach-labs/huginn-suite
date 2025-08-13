@@ -1,6 +1,6 @@
 # app/tools/port_utils.py
 from PyQt6.QtCore import QThreadPool
-from .port_scanner import PortScanWorker, NetworkSweepWorker, EnhancedPortScanWorker, get_common_ports, get_top_ports
+from .port_scanner import PortScanWorker, NetworkSweepWorker, EnhancedPortScanWorker, Layer2SweepWorker, get_common_ports, get_top_ports
 
 def run_port_scan(target, ports, output_callback, status_callback, finished_callback, results_callback, progress_callback=None, progress_start_callback=None):
     """Run TCP port scan on target"""
@@ -398,6 +398,26 @@ def enhanced_targeted_scan(target, ports, os_detection=False, service_detection=
         if finished_callback:
             finished_callback()
         return None
+
+def layer2_sweep(target, output_callback, status_callback, finished_callback, results_callback=None, progress_callback=None, progress_start_callback=None, tenant_id="default"):
+    """Run Layer 2 sweep using ARP, NDP, NetBIOS, and mDNS"""
+    worker = Layer2SweepWorker(target, timeout=2, tenant_id=tenant_id)
+    
+    # Connect signals
+    worker.signals.output.connect(output_callback)
+    worker.signals.status.connect(status_callback)
+    worker.signals.finished.connect(finished_callback)
+    if results_callback:
+        worker.signals.results_ready.connect(results_callback)
+    
+    if progress_callback:
+        worker.signals.progress_update.connect(progress_callback)
+    if progress_start_callback:
+        worker.signals.progress_start.connect(progress_start_callback)
+    
+    from PyQt6.QtCore import QThreadPool
+    QThreadPool.globalInstance().start(worker)
+    return worker
 
 def targeted_port_scan(target, ports, output_callback, status_callback, finished_callback, results_callback=None, progress_callback=None, progress_start_callback=None, tenant_id="default"):
     """Legacy targeted port scan - redirects to enhanced scan"""
