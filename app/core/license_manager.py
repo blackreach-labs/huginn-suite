@@ -127,6 +127,10 @@ class LicenseManager(QObject):
         """Check if a specific feature is enabled"""
         return self.features_enabled.get(feature, False)
         
+    def validate_feature_access(self, feature: str, server_side: bool = False) -> bool:
+        """Validate access to a specific feature"""
+        return self.is_feature_enabled(feature)
+        
     def get_enabled_features(self) -> List[str]:
         """Get list of enabled features"""
         return [feature for feature, enabled in self.features_enabled.items() if enabled]

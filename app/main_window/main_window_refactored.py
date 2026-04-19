@@ -431,7 +431,7 @@ class MainWindow(QMainWindow):
     def closeEvent(self, event):
         """Handle application close event."""
         try:
-            if hasattr(self, 'tray_manager') and self.tray_manager.handle_close_event(event):
+            if hasattr(self, 'tray_manager') and self.tray_manager and self.tray_manager.handle_close_event(event):
                 return
             
             self.status_bar.showMessage("Closing application...")
@@ -442,7 +442,7 @@ class MainWindow(QMainWindow):
             memory_manager.stop_monitoring()
             
             # Cleanup tray
-            if hasattr(self, 'tray_manager'):
+            if hasattr(self, 'tray_manager') and self.tray_manager:
                 self.tray_manager.cleanup()
             
             event.accept()

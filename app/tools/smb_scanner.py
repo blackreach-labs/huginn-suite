@@ -1,7 +1,10 @@
 # app/tools/smb_scanner.py
-import subprocess
+import socket
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 from PyQt6.QtCore import QObject, pyqtSignal, QRunnable
 from ..core.smb_data_collector import create_smb_collector
+from .smb_raw_proto import enumerate_smb_comprehensive, scan_smb_ports, SMBRawClient, _probe_smb1_support
 
 class SMBWorkerSignals(QObject):
     output = pyqtSignal(str)
@@ -27,7 +30,7 @@ class SMBWorker(QRunnable):
     
     def run(self):
         try:
-            self.signals.output.emit(f"<p style='color: #87CEEB;'>Starting SMB enumeration on {self.target}...</p><br>")
+            self.signals.output.emit(f"<p style='color: #87CEEB;'>🚀 Starting advanced SMB enumeration with hardened DC detection on {self.target}...</p><br>")
             
             # Start scan in centralized data
             scan_id = self.data_collector.start_smb_scan(self.target, "smb_scanner")
@@ -35,28 +38,51 @@ class SMBWorker(QRunnable):
             results = {}
             total_results = 0
             
-            # Check SMB availability
-            self._check_smb_ports(results)
+            # Stage 1: Advanced SMB2/3 Protocol Negotiation with Hardened DC Detection
+            self._perform_smb_protocol_analysis(results)
             if 'smb_ports' in results:
                 self.data_collector.collect_ports(self.target, results['smb_ports'])
                 total_results += len(results['smb_ports'])
             
-            # Enumerate shares based on scan type
-            if self.scan_type in ["Share Enumeration", "Vulnerability Scan"]:
+            # Collect SMB metadata and assessment results
+            if 'metadata' in results:
+                metadata = results['metadata']
+                if metadata.get('negotiated_dialect'):
+                    self.data_collector.collect_smb_capabilities(self.target, metadata)
+                    total_results += 1
+            
+            # Collect domain information from NTLM handshake
+            if 'domain_info' in results and results['domain_info']:
+                domain_info = results['domain_info']
+                if domain_info.get('domain_name') or domain_info.get('dns_domain'):
+                    self.signals.output.emit(f"<p style='color: #00BFFF;'>🏛️ Domain Discovery via NTLM:</p>")
+                    if domain_info.get('domain_name'):
+                        self.signals.output.emit(f"<p style='color: #87CEEB;'>• NetBIOS Domain: {domain_info['domain_name']}</p>")
+                    if domain_info.get('dns_domain'):
+                        self.signals.output.emit(f"<p style='color: #87CEEB;'>• DNS Domain: {domain_info['dns_domain']}</p>")
+                    if domain_info.get('forest_name'):
+                        self.signals.output.emit(f"<p style='color: #87CEEB;'>• Forest Name: {domain_info['forest_name']}</p>")
+                    if domain_info.get('computer_name'):
+                        self.signals.output.emit(f"<p style='color: #87CEEB;'>• Computer Name: {domain_info['computer_name']}</p>")
+                    self.signals.output.emit("<br>")
+                    total_results += 1
+            
+            # Enumerate shares for Share Enumeration scan type
+            if self.scan_type == "Share Enumeration":
                 self._enumerate_shares(results)
                 if 'shares' in results:
                     self.data_collector.collect_shares(self.target, results['shares'])
                     total_results += len(results['shares'])
                 
-                # If Share Enumeration and wordlist provided, do brute force
-                if self.scan_type == "Share Enumeration" and self.wordlist_path:
+                # Brute force shares if wordlist provided
+                if self.wordlist_path:
                     self._bruteforce_shares(results)
                     if 'bruteforce_shares' in results:
-                        self.data_collector.collect_shares(self.target, results['bruteforce_shares'])
-                        total_results += len(results['bruteforce_shares'])
+                        bf_shares = results['bruteforce_shares']
+                        self.data_collector.collect_shares(self.target, bf_shares)
+                        total_results += len(bf_shares)
             
-            # Check for vulnerabilities
-            self._check_vulnerabilities(results)
+            # Stage 2: Advanced vulnerability assessment (already done in protocol analysis)
             if 'vulnerabilities' in results:
                 self.data_collector.collect_vulnerabilities(self.target, results['vulnerabilities'])
                 total_results += len(results['vulnerabilities'])
@@ -66,270 +92,340 @@ class SMBWorker(QRunnable):
             
             # Update asset inventory
             from ..core.scan_asset_integration import scan_asset_integrator
-            # Add target IP to results for asset processing
             results['target_ip'] = self.target
             scan_asset_integrator.process_smb_results(results)
             
             self.signals.results.emit(results)
-            self.signals.output.emit(f"<p style='color: #00FF41;'>SMB enumeration completed. {total_results} results collected and assets updated.</p><br>")
+            if results.get('metadata', {}).get('smb_blocked') or results.get('metadata', {}).get('connection_reset'):
+                self.signals.output.emit(f"<p style='color: #00FF41;'>✅ SMB security assessment completed. Target demonstrates excellent security posture with SMB properly blocked.</p><br>")
+            else:
+                self.signals.output.emit(f"<p style='color: #00FF41;'>✅ Advanced SMB enumeration completed. {total_results} results collected and assets updated.</p><br>")
             
         except Exception as e:
             self.data_collector.complete_smb_scan(0, str(e))
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>Error: {str(e)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>❌ Error: {str(e)}</p><br>")
         finally:
             self.signals.finished.emit()
     
-    def _check_smb_ports(self, results):
-        """Check SMB ports availability"""
+    def _perform_smb_protocol_analysis(self, results):
+        """Perform comprehensive SMB2/3 protocol analysis with security assessment"""
         try:
-            self.signals.output.emit("<p style='color: #FFD700;'>Checking SMB ports...</p><br>")
+            self.signals.output.emit("<p style='color: #FFD700;'>🔍 Stage 1: Advanced SMB Protocol Intelligence (Hardened DC Detection)...</p><br>")
             
-            # Use nmap or telnet to check ports on target
-            import socket
-            smb_ports = []
+            # Comprehensive SMB security assessment
+            assessment = enumerate_smb_comprehensive(self.target, timeout=3.0)
             
-            # Check common SMB ports
-            ports_to_check = [445, 139]
-            
-            for port in ports_to_check:
-                try:
-                    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                    sock.settimeout(3)
-                    result = sock.connect_ex((self.target, port))
-                    sock.close()
-                    
-                    if result == 0:
-                        if port == 445:
-                            smb_ports.append('445 (SMB over TCP)')
-                        elif port == 139:
-                            smb_ports.append('139 (NetBIOS Session)')
-                except:
-                    pass
-            
-            if smb_ports:
-                results['smb_ports'] = smb_ports
-                self.signals.output.emit(f"<p style='color: #00FF41;'>Found SMB ports: {', '.join(smb_ports)}</p><br>")
-            else:
-                self.signals.output.emit("<p style='color: #FFAA00;'>No SMB ports detected on target</p><br>")
+            # Port information
+            port_scan = scan_smb_ports(self.target, timeout=2.0)
+            if port_scan['tcp_ports']:
+                port_info = [f"{port} (SMB/TCP)" for port in port_scan['tcp_ports']]
+                results['smb_ports'] = port_info
                 
+                if port_scan['quic_detected']:
+                    self.signals.output.emit("<p style='color: #00BFFF;'>🚀 SMB over QUIC detected (Windows Server 2025+ feature)</p><br>")
+            
+            # Display overall risk assessment
+            risk_level = assessment.get('overall_risk', 'UNKNOWN')
+            risk_colors = {'CRITICAL': '#FF0000', 'HIGH': '#FF6600', 'MEDIUM': '#FFAA00', 'LOW': '#00FF41'}
+            risk_color = risk_colors.get(risk_level, '#CCCCCC')
+            
+            self.signals.output.emit(f"<p style='color: {risk_color};'>🎯 Target: {assessment.get('target', self.target)}</p>")
+            self.signals.output.emit(f"<p style='color: {risk_color};'>🛡️ Overall Risk: {risk_level}</p>")
+            
+            if assessment.get('risk_summary'):
+                self.signals.output.emit(f"<p style='color: {risk_color};'>📊 {assessment['risk_summary']}</p><br>")
+            
+            # Handle SMB blocking detection
+            if assessment.get('metadata', {}).get('smb_blocked') or assessment.get('metadata', {}).get('connection_reset'):
+                self.signals.output.emit("<p style='color: #00FF41;'>🛡️ SMB Security Analysis:</p>")
+                blocking_method = assessment.get('metadata', {}).get('blocking_method', 'unknown')
+                if blocking_method == 'immediate_reset':
+                    self.signals.output.emit("<p style='color: #00FF41;'>• ✅ Advanced SMB Blocking: Connection reset on SMB traffic</p>")
+                elif blocking_method == 'port_closed':
+                    self.signals.output.emit("<p style='color: #00FF41;'>• ✅ SMB Port Closed: Port 445 is not accessible</p>")
+                
+                security_posture = assessment.get('metadata', {}).get('security_posture', 'unknown')
+                if security_posture == 'hardened':
+                    self.signals.output.emit("<p style='color: #00FF41;'>• ✅ Security Posture: Hardened (Excellent)</p>")
+                
+                self.signals.output.emit("<p style='color: #00FF41;'>• ✅ Attack Prevention: SMB enumeration and lateral movement blocked</p>")
+                self.signals.output.emit("<br>")
+                
+                # Skip further analysis since SMB is blocked
+                results.update(assessment)
+                return
+            
+            # Display protocol intelligence (only if SMB is not blocked)
+            metadata = assessment.get('metadata', {})
+            if metadata and not metadata.get('smb_blocked') and not metadata.get('connection_reset'):
+                self.signals.output.emit("<p style='color: #00BFFF;'>📋 Advanced SMB Protocol Intelligence:</p>")
+                
+                if metadata.get('negotiated_dialect'):
+                    dialect = metadata['negotiated_dialect']
+                    if dialect == '3.1.1' and metadata.get('hardened_negotiate'):
+                        self.signals.output.emit(f"<p style='color: #00FF41;'>• Negotiated Dialect: SMB {dialect} (Hardened Detection)</p>")
+                    else:
+                        self.signals.output.emit(f"<p style='color: #87CEEB;'>• Negotiated Dialect: SMB {dialect}</p>")
+                
+                signing_status = "✅ Required" if metadata.get('signing_required') else "⚠️ Optional"
+                signing_color = "#00FF41" if metadata.get('signing_required') else "#FFAA00"
+                self.signals.output.emit(f"<p style='color: {signing_color};'>• SMB Signing: {signing_status}</p>")
+                
+                if metadata.get('encryption_required'):
+                    self.signals.output.emit(f"<p style='color: #00FF41;'>• SMB Encryption: ✅ Required</p>")
+                elif '3.' in str(metadata.get('negotiated_dialect', '')):
+                    self.signals.output.emit(f"<p style='color: #FFAA00;'>• SMB Encryption: ⚠️ Optional</p>")
+                
+                if metadata.get('preauth_integrity'):
+                    self.signals.output.emit(f"<p style='color: #00FF41;'>• Preauth Integrity: ✅ SHA-512 Enabled</p>")
+                
+                # Show hardened detection status
+                if metadata.get('hardened_negotiate'):
+                    self.signals.output.emit(f"<p style='color: #00FF41;'>• Hardened DC Detection: ✅ Successfully bypassed strict policies</p>")
+                
+                if metadata.get('smb1_enabled'):
+                    self.signals.output.emit(f"<p style='color: #FF0000;'>• SMB1 Support: 🔴 ENABLED (Critical Risk)</p>")
+                
+                self.signals.output.emit("<br>")
+            
+            # Display domain intelligence (only if SMB is not blocked)
+            domain_info = metadata.get('domain_info', {})
+            if domain_info and not domain_info.get('error') and not metadata.get('smb_blocked') and not metadata.get('connection_reset'):
+                self.signals.output.emit("<p style='color: #00BFFF;'>🏛️ Enhanced Domain Intelligence (NTLM Type-2 Parsing):</p>")
+                if domain_info.get('domain_name'):
+                    self.signals.output.emit(f"<p style='color: #87CEEB;'>• NetBIOS Domain: {domain_info['domain_name']}</p>")
+                if domain_info.get('dns_domain'):
+                    self.signals.output.emit(f"<p style='color: #87CEEB;'>• DNS Domain: {domain_info['dns_domain']}</p>")
+                if domain_info.get('computer_name'):
+                    self.signals.output.emit(f"<p style='color: #87CEEB;'>• Computer Name: {domain_info['computer_name']}</p>")
+                if domain_info.get('forest_name'):
+                    self.signals.output.emit(f"<p style='color: #87CEEB;'>• Forest Name: {domain_info['forest_name']}</p>")
+                
+                # Show if this was obtained via hardened method
+                if metadata.get('hardened_negotiate'):
+                    self.signals.output.emit(f"<p style='color: #00FF41;'>• Intelligence Source: Hardened SMB 3.1.1 + Signed SESSION_SETUP</p>")
+                
+                self.signals.output.emit("<br>")
+            
+            # Display share enumeration results (only if SMB is not blocked)
+            shares = metadata.get('shares', [])
+            if shares and not isinstance(shares, dict) and not metadata.get('smb_blocked') and not metadata.get('connection_reset'):
+                self.signals.output.emit("<p style='color: #00BFFF;'>📁 Share Enumeration:</p>")
+                accessible_shares = []
+                for share in shares:
+                    if isinstance(share, dict):
+                        share_name = share.get('name', 'Unknown')
+                        if share.get('accessible'):
+                            accessible_shares.append(share_name)
+                            self.signals.output.emit(f"<p style='color: #00FF41;'>• ✅ {share_name} - Accessible</p>")
+                        elif share.get('exists'):
+                            self.signals.output.emit(f"<p style='color: #FFAA00;'>• 🔒 {share_name} - Access Denied</p>")
+                        else:
+                            self.signals.output.emit(f"<p style='color: #888888;'>• ❓ {share_name} - Not Found</p>")
+                
+                if accessible_shares:
+                    results['accessible_shares'] = accessible_shares
+                
+                results['shares'] = shares
+                self.signals.output.emit("<br>")
+            
+            # Display security vulnerabilities (only if SMB is not blocked)
+            vulnerabilities = assessment.get('vulnerabilities', [])
+            if vulnerabilities and not metadata.get('smb_blocked') and not metadata.get('connection_reset'):
+                self.signals.output.emit("<p style='color: #FF6B6B;'>🚨 Security Vulnerabilities:</p>")
+                for vuln in vulnerabilities:
+                    severity = vuln.get('severity', 'UNKNOWN')
+                    severity_colors = {'CRITICAL': '#FF0000', 'HIGH': '#FF6600', 'MEDIUM': '#FFAA00', 'LOW': '#0099FF'}
+                    severity_color = severity_colors.get(severity, '#CCCCCC')
+                    
+                    self.signals.output.emit(f"<p style='color: {severity_color};'>• 🔴 {vuln.get('type', 'Unknown Vulnerability')} [{severity}]</p>")
+                    if vuln.get('description'):
+                        self.signals.output.emit(f"<p style='color: #CCCCCC;'>  Description: {vuln['description']}</p>")
+                    if vuln.get('cve'):
+                        self.signals.output.emit(f"<p style='color: #CCCCCC;'>  CVE: {vuln['cve']}</p>")
+                
+                results['vulnerabilities'] = vulnerabilities
+                self.signals.output.emit("<br>")
+            
+            # Display security findings
+            findings = assessment.get('security_findings', [])
+            if findings:
+                self.signals.output.emit("<p style='color: #00BFFF;'>🔍 Security Assessment:</p>")
+                for finding in findings:
+                    severity = finding.get('severity', 'INFO')
+                    severity_colors = {'HIGH': '#FF6600', 'MEDIUM': '#FFAA00', 'LOW': '#0099FF', 'INFO': '#87CEEB'}
+                    severity_color = severity_colors.get(severity, '#CCCCCC')
+                    
+                    self.signals.output.emit(f"<p style='color: {severity_color};'>• ℹ️ {finding.get('type', 'Security Finding')}</p>")
+                    if finding.get('description'):
+                        self.signals.output.emit(f"<p style='color: #CCCCCC;'>  {finding['description']}</p>")
+                
+                self.signals.output.emit("<br>")
+            
+            # Display recommendations
+            recommendations = assessment.get('recommendations', [])
+            if recommendations:
+                rec_color = '#00FF41' if metadata.get('smb_blocked') or metadata.get('connection_reset') else '#00BFFF'
+                self.signals.output.emit(f"<p style='color: {rec_color};'>💡 Security Assessment:</p>")
+                for rec in recommendations:
+                    self.signals.output.emit(f"<p style='color: #87CEEB;'>• {rec}</p>")
+                self.signals.output.emit("<br>")
+            
+            # Store assessment results
+            results.update(assessment)
+            
+            # Error handling
+            if 'error' in assessment:
+                self.signals.output.emit(f"<p style='color: #FF6B6B;'>❌ {assessment['error']}</p><br>")
+            
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>Port check failed: {str(e)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>❌ Advanced SMB protocol analysis failed: {str(e)}</p><br>")
+            # Try fallback to basic detection
+            try:
+                self.signals.output.emit("<p style='color: #FFAA00;'>🔄 Attempting fallback to basic SMB detection...</p><br>")
+                from .smb_raw_proto import SMBRawClient
+                client = SMBRawClient(self.target, timeout=2.0)
+                client.connect()
+                basic_result = client._negotiate_smb302_simple()
+                if basic_result.get('dialect') != 'Unknown':
+                    self.signals.output.emit(f"<p style='color: #87CEEB;'>✅ Fallback successful: SMB {basic_result['dialect']} detected</p><br>")
+                    results['metadata'] = {'negotiated_dialect': basic_result['dialect'], 'fallback_method': True}
+                client.close()
+            except Exception:
+                import traceback
+                self.signals.output.emit(f"<p style='color: #888888;'>Debug: {traceback.format_exc()}</p><br>")
     
     def _enumerate_shares(self, results):
-        """Enumerate SMB shares"""
+        """Enhanced SMB share enumeration using existing protocol analysis results"""
         try:
-            self.signals.output.emit("<p style='color: #FFD700;'>Enumerating SMB shares...</p><br>")
+            # Check if SMB is blocked first
+            if results.get('metadata', {}).get('smb_blocked') or results.get('metadata', {}).get('connection_reset'):
+                self.signals.output.emit("<p style='color: #FFAA00;'>⚠️ Share enumeration skipped - SMB traffic is blocked by security policy</p><br>")
+                return
             
-            # Build command based on auth type
-            if self.auth_type == "Credentials" and self.username and self.password:
-                # Use domain\username format if domain is provided
-                if self.domain:
-                    user_format = f"{self.domain}\\{self.username}"
-                else:
-                    user_format = self.username
+            self.signals.output.emit("<p style='color: #FFD700;'>📂 Stage 2: Advanced SMB Share Enumeration (Hardened DC Compatible)...</p><br>")
+            
+            # Use shares already discovered in protocol analysis
+            if 'shares' in results:
+                shares_data = results['shares']
+                accessible_shares = [s['name'] for s in shares_data if s.get('accessible', False)]
                 
-                # First establish connection with credentials
-                auth_cmd = ["net", "use", f"\\\\{self.target}\\IPC$", self.password, f"/USER:{user_format}"]
-                auth_result = subprocess.run(auth_cmd, capture_output=True, text=True, timeout=10)
+                # Detailed share analysis
+                for share_info in shares_data:
+                    share_name = share_info['name']
+                    accessible = share_info.get('accessible', False)
+                    exists = share_info.get('exists', False)
+                    description = share_info.get('description', 'Unknown status')
+                    
+                    if accessible:
+                        self.signals.output.emit(f"<p style='color: #00FF41;'>✅ {share_name}: Accessible (Anonymous) - {description}</p>")
+                    elif exists:
+                        self.signals.output.emit(f"<p style='color: #FFAA00;'>🔒 {share_name}: Exists (Access Denied) - {description}</p>")
+                    else:
+                        self.signals.output.emit(f"<p style='color: #888888;'>❌ {share_name}: Not Found - {description}</p>")
                 
-                if auth_result.returncode != 0:
-                    self.signals.output.emit(f"<p style='color: #FFAA00;'>Authentication failed: {auth_result.stderr.strip()}</p><br>")
-                    return
+                # Security assessment
+                if accessible_shares:
+                    self.signals.output.emit(f"<p style='color: #FF6B6B;'>⚠️ Security Risk: {len(accessible_shares)} shares allow anonymous access</p>")
+                    self.signals.output.emit(f"<p style='color: #FF6B6B;'>• Accessible shares: {', '.join(accessible_shares)}</p>")
                 
-                # Now enumerate shares
-                cmd = ["net", "view", f"\\\\{self.target}"]
+                self.signals.output.emit("<br>")
             else:
-                cmd = ["net", "view", f"\\\\{self.target}"]
-            
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
-            
-            if result.returncode == 0 and result.stdout:
-                shares = []
-                lines = result.stdout.split('\n')
-                in_shares_section = False
-                
-                for line in lines:
-                    line = line.strip()
-                    if 'Shared resources' in line:
-                        in_shares_section = True
-                        continue
-                    if in_shares_section and line and not line.startswith('-') and not line.startswith('The command'):
-                        parts = line.split()
-                        if len(parts) >= 1 and not parts[0].startswith('\\'):
-                            share_name = parts[0]
-                            if share_name not in ['Name', 'Type', 'Used', 'Comment']:
-                                shares.append(share_name)
-                
-                if shares:
-                    results['shares'] = shares
-                    self.signals.output.emit(f"<p style='color: #00FF41;'>Found {len(shares)} shares</p><br>")
-                    for share in shares:
-                        self.signals.output.emit(f"<p>Share: {share}</p><br>")
-                else:
-                    self.signals.output.emit("<p style='color: #FFAA00;'>No shares found</p><br>")
-            else:
-                error_msg = result.stderr.strip() if result.stderr else "Access denied or target unreachable"
-                self.signals.output.emit(f"<p style='color: #FFAA00;'>Share enumeration failed: {error_msg}</p><br>")
-            
-            # Clean up authenticated connection if used
-            if self.auth_type == "Credentials" and self.username and self.password:
-                try:
-                    subprocess.run(["net", "use", f"\\\\{self.target}\\IPC$", "/delete"], 
-                                 capture_output=True, timeout=5)
-                except:
-                    pass
+                self.signals.output.emit("<p style='color: #FFAA00;'>⚠️ No share information available from protocol analysis</p><br>")
                 
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>Share enumeration failed: {str(e)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>❌ Advanced share enumeration error: {str(e)}</p><br>")
     
-    def _check_vulnerabilities(self, results):
-        """Check for common SMB vulnerabilities"""
-        try:
-            self.signals.output.emit("<p style='color: #FFD700;'>Checking SMB vulnerabilities...</p><br>")
-            
-            vulnerabilities = []
-            
-            # Only check for null session if not using credentials
-            if self.auth_type == "Anonymous":
-                try:
-                    # Check for null session
-                    cmd = ["net", "use", f"\\\\{self.target}\\IPC$", "", "/user:"]
-                    result = subprocess.run(cmd, capture_output=True, text=True, timeout=5)
-                    
-                    if result.returncode == 0:
-                        vulnerabilities.append({
-                            'name': 'Null Session Access',
-                            'severity': 'medium',
-                            'description': 'SMB allows null session connections'
-                        })
-                        self.signals.output.emit("<p style='color: #FFAA00;'>Null session access detected</p><br>")
-                        # Clean up the connection
-                        subprocess.run(["net", "use", f"\\\\{self.target}\\IPC$", "/delete"], 
-                                     capture_output=True, timeout=5)
-                    
-                    # Check for guest access
-                    cmd = ["net", "use", f"\\\\{self.target}\\IPC$", "", "/user:guest"]
-                    result = subprocess.run(cmd, capture_output=True, text=True, timeout=5)
-                    
-                    if result.returncode == 0:
-                        vulnerabilities.append({
-                            'name': 'Guest Account Access',
-                            'severity': 'low',
-                            'description': 'SMB allows guest account access'
-                        })
-                        self.signals.output.emit("<p style='color: #FFAA00;'>Guest account access detected</p><br>")
-                        # Clean up the connection
-                        subprocess.run(["net", "use", f"\\\\{self.target}\\IPC$", "/delete"], 
-                                     capture_output=True, timeout=5)
-                except subprocess.TimeoutExpired:
-                    self.signals.output.emit("<p style='color: #FFAA00;'>Vulnerability check timed out</p><br>")
-                except Exception as vuln_e:
-                    self.signals.output.emit(f"<p style='color: #FFAA00;'>Vulnerability check error: {str(vuln_e)}</p><br>")
-            
-            if vulnerabilities:
-                results['vulnerabilities'] = vulnerabilities
-                self.signals.output.emit(f"<p style='color: #FF6B6B;'>Found {len(vulnerabilities)} potential vulnerabilities</p><br>")
-            else:
-                self.signals.output.emit("<p style='color: #00FF41;'>No obvious vulnerabilities detected</p><br>")
-                
-        except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>Vulnerability check failed: {str(e)}</p><br>")
+    def _get_status_description(self, status_code: int) -> str:
+        """Get human-readable status description"""
+        status_map = {
+            0x00000000: "Success",
+            0xC0000022: "Access Denied",
+            0xC0000034: "Object Not Found",
+            0xC000006D: "Logon Failure",
+            0xC0000001: "Unsuccessful"
+        }
+        return status_map.get(status_code, f"Unknown (0x{status_code:08x})")
     
     def _bruteforce_shares(self, results):
-        """Brute force SMB shares using wordlist"""
+        """Advanced share discovery using wordlist"""
         try:
-            self.signals.output.emit("<p style='color: #FFD700;'>Brute forcing SMB shares with wordlist...</p><br>")
+            # Check if SMB is blocked first
+            if results.get('metadata', {}).get('smb_blocked') or results.get('metadata', {}).get('connection_reset'):
+                self.signals.output.emit("<p style='color: #FFAA00;'>⚠️ Share discovery skipped - SMB traffic is blocked by security policy</p><br>")
+                return
+            
+            self.signals.output.emit("<p style='color: #FFD700;'>🔍 Stage 3: Advanced Share Discovery (Hardened DC Compatible)...</p><br>")
             
             if not self.wordlist_path:
-                # Use default share names
-                share_names = ['ADMIN$', 'C$', 'D$', 'E$', 'IPC$', 'NETLOGON', 'SYSVOL', 'print$', 'fax$', 'Users', 'Public']
-            else:
-                # Read wordlist file
-                try:
-                    with open(self.wordlist_path, 'r', encoding='utf-8', errors='ignore') as f:
-                        share_names = [line.strip() for line in f if line.strip()]
-                except:
-                    share_names = ['ADMIN$', 'C$', 'IPC$', 'NETLOGON', 'SYSVOL']
+                self.signals.output.emit("<p style='color: #FFAA00;'>⚠️ No wordlist provided for share discovery</p><br>")
+                return
             
-            found_shares = []
-            
-            for share_name in share_names[:50]:  # Limit to first 50 to avoid too many requests
-                if not self.is_running:
-                    break
+            # Read wordlist
+            try:
+                with open(self.wordlist_path, 'r', encoding='utf-8', errors='ignore') as f:
+                    wordlist = [line.strip() for line in f if line.strip() and not line.startswith('#')]
                 
-                try:
-                    # Test share access
-                    if self.auth_type == "Credentials" and self.username and self.password:
-                        if self.domain:
-                            user_format = f"{self.domain}\\{self.username}"
-                        else:
-                            user_format = self.username
-                        cmd = ["net", "use", f"\\\\{self.target}\\{share_name}", self.password, f"/user:{user_format}"]
-                    else:
-                        cmd = ["net", "use", f"\\\\{self.target}\\{share_name}"]
+                if not wordlist:
+                    self.signals.output.emit("<p style='color: #FFAA00;'>⚠️ Wordlist is empty</p><br>")
+                    return
                     
-                    result = subprocess.run(cmd, capture_output=True, text=True, timeout=3)
-                    
-                    if result.returncode == 0:
-                        found_shares.append(share_name)
-                        self.signals.output.emit(f"<p style='color: #00FF41;'>Found share: {share_name}</p><br>")
-                        # Clean up connection
-                        subprocess.run(["net", "use", f"\\\\{self.target}\\{share_name}", "/delete"], 
-                                     capture_output=True, timeout=3)
-                    
-                except subprocess.TimeoutExpired:
-                    continue
-                except Exception:
-                    continue
+                self.signals.output.emit(f"<p style='color: #87CEEB;'>📄 Testing {len(wordlist)} share names with hardened detection...</p><br>")
+                
+            except Exception as e:
+                self.signals.output.emit(f"<p style='color: #FFAA00;'>❌ Failed to read wordlist: {str(e)}</p><br>")
+                return
             
+            # Use SMB client for probing
+            found_shares = []
+            tested_count = 0
+            
+            try:
+                client = SMBRawClient(self.target, timeout=1.5)
+                client.connect()
+                # Try hardened negotiate first
+                negotiate_result = client.negotiate_dialects()
+                
+                if negotiate_result.get('metadata', {}).get('hardened_negotiate'):
+                    self.signals.output.emit("<p style='color: #00FF41;'>✅ Using hardened SMB 3.1.1 for share discovery</p><br>")
+                
+                for share_name in wordlist[:100]:  # Limit to first 100 for performance
+                    if not self.is_running:
+                        break
+                    
+                    tested_count += 1
+                    tree_id, status = client.tree_connect(share_name)
+                    
+                    if status in (0, 0xC0000022):  # SUCCESS or ACCESS_DENIED
+                        accessible = (status == 0)
+                        found_shares.append({
+                            'name': share_name,
+                            'exists': True,
+                            'accessible': accessible,
+                            'status': status
+                        })
+                        
+                        status_text = "Accessible" if accessible else "Access Denied"
+                        color = "#00FF41" if accessible else "#FFAA00"
+                        self.signals.output.emit(f"<p style='color: {color};'>✅ {share_name}: {status_text}</p>")
+                
+                client.close()
+                
+            except Exception as e:
+                self.signals.output.emit(f"<p style='color: #FFAA00;'>⚠️ Share discovery error: {str(e)}</p><br>")
+                return
+            
+            # Results
             if found_shares:
                 results['bruteforce_shares'] = found_shares
-                self.signals.output.emit(f"<p style='color: #00FF41;'>Brute force found {len(found_shares)} additional shares</p><br>")
+                accessible_count = len([s for s in found_shares if s['accessible']])
+                self.signals.output.emit(f"<p style='color: #00FF41;'>🎉 Found {len(found_shares)} additional shares, {accessible_count} accessible</p><br>")
             else:
-                self.signals.output.emit("<p style='color: #FFAA00;'>No additional shares found via brute force</p><br>")
+                self.signals.output.emit(f"<p style='color: #FFAA00;'>🔍 No additional shares found (tested {tested_count} names)</p><br>")
                 
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>Share brute force failed: {str(e)}</p><br>")
-
-# Alias for backward compatibility
-class SMBEnumWorker(SMBWorker):
-    """Backward compatibility alias for SMBWorker"""
-    def __init__(self, target, username="", password="", scan_type="basic", tenant_id="default"):
-        # Map old scan_type parameter to new parameters
-        if scan_type == "basic":
-            new_scan_type = "Basic Info"
-            auth_type = "Anonymous" if not username else "Credentials"
-        elif scan_type == "shares":
-            new_scan_type = "Share Enumeration"
-            auth_type = "Anonymous" if not username else "Credentials"
-        elif scan_type == "vuln":
-            new_scan_type = "Vulnerability Scan"
-            auth_type = "Anonymous" if not username else "Credentials"
-        else:
-            new_scan_type = "Basic Info"
-            auth_type = "Anonymous" if not username else "Credentials"
-        
-        super().__init__(
-            target=target,
-            scan_type=new_scan_type,
-            auth_type=auth_type,
-            domain="",
-            username=username,
-            password=password,
-            wordlist_path=None,
-            tenant_id=tenant_id
-        )
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>❌ Advanced share discovery error: {str(e)}</p><br>")
     
-    def run(self):
-        """Override run to emit additional signals for compatibility"""
-        # Connect internal signals to compatibility signals
-        self.signals.results.connect(self.signals.results_ready)
-        
-        # Emit status updates
-        self.signals.status.emit(f"Starting SMB enumeration on {self.target}")
-        
-        # Call parent run method
-        super().run()
-        
-        # Emit final status
-        self.signals.status.emit("SMB enumeration completed")
+    def stop(self):
+        """Stop the SMB enumeration"""
+        self.is_running = False

@@ -34,7 +34,7 @@
       {
         "label": "Scan Type:",
         "controls": [
-          {"type": "combobox", "name": "smb_scan_type", "items": ["Basic Info", "Share Enumeration", "Vulnerability Scan"], "width": 270},
+          {"type": "combobox", "name": "smb_scan_type", "items": ["Basic Info", "Share Enumeration"], "width": 270},
           {"type": "label", "name": "auth_label", "text": "Auth:", "width": 75},
           {"type": "combobox", "name": "smb_auth_combo", "items": ["Anonymous", "Credentials"], "width": 190}
         ]

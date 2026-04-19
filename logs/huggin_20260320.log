@@ -1,0 +1,42 @@
+2026-03-20 15:12:44 - huggin - INFO - License saved successfully
+2026-03-20 15:12:44 - huggin - INFO - License loaded and validated successfully
+2026-03-20 15:12:44 - huggin - INFO - Application starting...
+2026-03-20 15:12:44 - huggin - INFO - Font loaded successfully
+2026-03-20 15:12:44 - huggin - INFO - Stylesheet loaded successfully
+2026-03-20 15:12:44 - huggin - INFO - Creating main window...
+2026-03-20 15:12:44 - huggin - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2026-03-20 15:14:15 - huggin - ERROR - Error during application close: 'NoneType' object has no attribute 'handle_close_event'
+2026-03-20 15:15:28 - huggin - INFO - License saved successfully
+2026-03-20 15:15:28 - huggin - INFO - License loaded and validated successfully
+2026-03-20 15:15:28 - huggin - INFO - Application starting...
+2026-03-20 15:15:28 - huggin - INFO - Font loaded successfully
+2026-03-20 15:15:28 - huggin - INFO - Stylesheet loaded successfully
+2026-03-20 15:15:28 - huggin - INFO - Creating main window...
+2026-03-20 15:15:28 - huggin - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2026-03-20 15:16:12 - huggin - ERROR - Error during application close: 'NoneType' object has no attribute 'handle_close_event'
+2026-03-20 15:17:32 - huggin - ERROR - Error during application close: 'NoneType' object has no attribute 'handle_close_event'
+2026-03-20 15:17:38 - huggin - INFO - Update manager stopped during cleanup
+2026-03-20 15:17:51 - huggin - INFO - License saved successfully
+2026-03-20 15:17:51 - huggin - INFO - License loaded and validated successfully
+2026-03-20 15:17:51 - huggin - INFO - Application starting...
+2026-03-20 15:17:51 - huggin - INFO - Font loaded successfully
+2026-03-20 15:17:51 - huggin - INFO - Stylesheet loaded successfully
+2026-03-20 15:17:51 - huggin - INFO - Creating main window...
+2026-03-20 15:17:51 - huggin - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2026-03-20 15:21:30 - huggin - INFO - Update manager stopped during cleanup
+2026-03-20 15:58:30 - huggin - INFO - License saved successfully
+2026-03-20 15:58:30 - huggin - INFO - License loaded and validated successfully
+2026-03-20 15:58:30 - huggin - INFO - Application starting...
+2026-03-20 15:58:30 - huggin - INFO - Font loaded successfully
+2026-03-20 15:58:30 - huggin - INFO - Stylesheet loaded successfully
+2026-03-20 15:58:30 - huggin - INFO - Creating main window...
+2026-03-20 15:58:30 - huggin - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2026-03-20 16:01:11 - huggin - INFO - Update manager stopped during cleanup
+2026-03-20 17:30:00 - huggin - INFO - License saved successfully
+2026-03-20 17:30:00 - huggin - INFO - License loaded and validated successfully
+2026-03-20 17:30:01 - huggin - INFO - Application starting...
+2026-03-20 17:30:01 - huggin - INFO - Font loaded successfully
+2026-03-20 17:30:01 - huggin - INFO - Stylesheet loaded successfully
+2026-03-20 17:30:01 - huggin - INFO - Creating main window...
+2026-03-20 17:30:01 - huggin - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2026-03-20 22:48:29 - huggin - INFO - Update manager stopped during cleanup

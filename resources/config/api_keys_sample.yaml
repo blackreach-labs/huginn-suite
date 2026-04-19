@@ -1,0 +1,45 @@
+# Sample API Keys Configuration
+# Copy this file to resources/config/api_keys.yaml and add your actual API keys
+
+# Certificate Transparency Sources
+certspotter: "your_certspotter_api_key_here"
+
+# Search Engines & Databases  
+virustotal: "your_virustotal_api_key_here"
+censys_id: "your_censys_api_id_here"
+censys_secret: "your_censys_api_secret_here"
+shodan: "your_shodan_api_key_here"
+securitytrails: "your_securitytrails_api_key_here"
+
+# Threat Intelligence
+binaryedge: "your_binaryedge_api_key_here"
+passivetotal_user: "your_passivetotal_username_here"
+passivetotal_key: "your_passivetotal_api_key_here"
+
+# DNS & Network Intelligence
+dnsdb: "your_farsight_dnsdb_api_key_here"
+
+# Free Sources (no API key required)
+# - crt.sh (Certificate Transparency)
+# - Wayback Machine (Internet Archive)
+# - URLScan.io (limited without key)
+
+# API Key Sources & Instructions:
+# 
+# CertSpotter: https://sslmate.com/certspotter/api/
+# VirusTotal: https://www.virustotal.com/gui/join-us
+# Censys: https://search.censys.io/register
+# Shodan: https://account.shodan.io/register
+# SecurityTrails: https://securitytrails.com/corp/api
+# BinaryEdge: https://app.binaryedge.io/sign-up
+# PassiveTotal: https://community.riskiq.com/registration
+# DNSDB: https://www.farsightsecurity.com/dnsdb-community-edition/
+
+# Rate Limits (requests per minute):
+# CertSpotter: 100/hour (free), 1000/hour (paid)
+# VirusTotal: 4/minute (free), 1000/minute (paid)  
+# Censys: 120/minute (free), 480/minute (paid)
+# Shodan: 1/second (free), 10/second (paid)
+# SecurityTrails: 50/month (free), 2000/month (paid)
+# BinaryEdge: 250/month (free), 10000/month (paid)
+# PassiveTotal: 2000/month (free), 10000/month (paid)

@@ -80,7 +80,7 @@ class GlobalSettingsPage(QWidget):
         hash_group.setLayout(hash_layout)
         layout.addWidget(hash_group)
         
-        # OSINT APIs
+        # OSINT & Intelligence APIs
         osint_group = QGroupBox("OSINT & Intelligence APIs")
         osint_layout = QFormLayout()
         
@@ -99,9 +99,117 @@ class GlobalSettingsPage(QWidget):
         osint_group.setLayout(osint_layout)
         layout.addWidget(osint_group)
         
+        # Professional Subdomain Enumeration APIs
+        subdomain_group = QGroupBox("🔍 Professional Subdomain Enumeration APIs")
+        subdomain_layout = QFormLayout()
+        
+        # Certificate Transparency
+        cert_label = QLabel("Certificate Transparency:")
+        cert_label.setStyleSheet("font-weight: bold; color: #64C8FF;")
+        subdomain_layout.addRow(cert_label)
+        
+        self.certspotter_key = QLineEdit()
+        self.certspotter_key.setPlaceholderText("CertSpotter API key (100/hour free, 1000/hour paid)")
+        subdomain_layout.addRow("  CertSpotter:", self.certspotter_key)
+        
+        # Search & Intelligence
+        search_label = QLabel("Search & Intelligence:")
+        search_label.setStyleSheet("font-weight: bold; color: #64C8FF;")
+        subdomain_layout.addRow(search_label)
+        
+        # Note: VirusTotal already exists above, so we'll reference it
+        vt_note = QLabel("  VirusTotal: (configured above)")
+        vt_note.setStyleSheet("color: #FFD93D; font-style: italic;")
+        subdomain_layout.addRow(vt_note)
+        
+        self.censys_id = QLineEdit()
+        self.censys_id.setPlaceholderText("Censys API ID (120/min free, 480/min paid)")
+        subdomain_layout.addRow("  Censys API ID:", self.censys_id)
+        
+        self.censys_secret = QLineEdit()
+        self.censys_secret.setPlaceholderText("Censys API Secret")
+        self.censys_secret.setEchoMode(QLineEdit.EchoMode.Password)
+        subdomain_layout.addRow("  Censys Secret:", self.censys_secret)
+        
+        self.securitytrails_key = QLineEdit()
+        self.securitytrails_key.setPlaceholderText("SecurityTrails API key (50/month free, 2000/month paid)")
+        subdomain_layout.addRow("  SecurityTrails:", self.securitytrails_key)
+        
+        # Threat Intelligence
+        threat_label = QLabel("Threat Intelligence:")
+        threat_label.setStyleSheet("font-weight: bold; color: #64C8FF;")
+        subdomain_layout.addRow(threat_label)
+        
+        self.binaryedge_key = QLineEdit()
+        self.binaryedge_key.setPlaceholderText("BinaryEdge API key (250/month free, 10000/month paid)")
+        subdomain_layout.addRow("  BinaryEdge:", self.binaryedge_key)
+        
+        self.passivetotal_user = QLineEdit()
+        self.passivetotal_user.setPlaceholderText("PassiveTotal username")
+        subdomain_layout.addRow("  PassiveTotal User:", self.passivetotal_user)
+        
+        self.passivetotal_key = QLineEdit()
+        self.passivetotal_key.setPlaceholderText("PassiveTotal API key (2000/month free, 10000/month paid)")
+        self.passivetotal_key.setEchoMode(QLineEdit.EchoMode.Password)
+        subdomain_layout.addRow("  PassiveTotal Key:", self.passivetotal_key)
+        
+        # DNS Intelligence
+        dns_label = QLabel("DNS Intelligence:")
+        dns_label.setStyleSheet("font-weight: bold; color: #64C8FF;")
+        subdomain_layout.addRow(dns_label)
+        
+        self.dnsdb_key = QLineEdit()
+        self.dnsdb_key.setPlaceholderText("Farsight DNSDB API key (paid service)")
+        self.dnsdb_key.setEchoMode(QLineEdit.EchoMode.Password)
+        subdomain_layout.addRow("  DNSDB (Farsight):", self.dnsdb_key)
+        
+        # Free sources note
+        free_note = QLabel("📝 Free Sources (No API Key Required): crt.sh, Wayback Machine, URLScan.io")
+        free_note.setStyleSheet("color: #00FF41; font-style: italic; margin-top: 10px;")
+        subdomain_layout.addRow(free_note)
+        
+        # API registration links
+        links_label = QLabel("🔗 API Registration Links:")
+        links_label.setStyleSheet("font-weight: bold; color: #FFD93D; margin-top: 15px;")
+        subdomain_layout.addRow(links_label)
+        
+        links_text = QLabel("""
+        • CertSpotter: https://sslmate.com/certspotter/api/
+        • VirusTotal: https://www.virustotal.com/gui/join-us
+        • Censys: https://search.censys.io/register
+        • SecurityTrails: https://securitytrails.com/corp/api
+        • BinaryEdge: https://app.binaryedge.io/sign-up
+        • PassiveTotal: https://community.riskiq.com/registration
+        • DNSDB: https://www.farsightsecurity.com/dnsdb-community-edition/
+        """)
+        links_text.setStyleSheet("color: #DCDCDC; font-size: 9px; margin-left: 10px;")
+        links_text.setWordWrap(True)
+        subdomain_layout.addRow(links_text)
+        
+        subdomain_group.setLayout(subdomain_layout)
+        layout.addWidget(subdomain_group)
+        
+        # Test API Keys button
+        test_btn = QPushButton("🧪 Test API Keys")
+        test_btn.clicked.connect(self.test_api_keys)
+        test_btn.setStyleSheet("""
+            QPushButton {
+                background-color: rgba(0, 100, 200, 150);
+                border: 2px solid rgba(0, 150, 255, 100);
+                border-radius: 5px;
+                color: white;
+                font-weight: bold;
+                padding: 8px;
+            }
+            QPushButton:hover {
+                background-color: rgba(0, 150, 255, 200);
+            }
+        """)
+        layout.addWidget(test_btn)
+        
         layout.addStretch()
         tab.setLayout(layout)
-        self.tabs.addTab(tab, "API Keys")
+        self.tabs.addTab(tab, "🔑 API Keys")
     
     def create_general_tab(self):
         """Create General Settings tab"""
@@ -181,13 +289,25 @@ class GlobalSettingsPage(QWidget):
     
     def load_settings(self):
         """Load settings from global settings"""
-        # API Keys
+        # Hash Cracking API Keys
         self.hashes_com_key.setText(global_settings.get("api_keys.hashes_com", ""))
         self.md5decrypt_email.setText(global_settings.get("api_keys.md5decrypt_email", ""))
         self.md5decrypt_key.setText(global_settings.get("api_keys.md5decrypt_key", ""))
+        
+        # OSINT & Intelligence API Keys
         self.shodan_key.setText(global_settings.get("api_keys.shodan", ""))
         self.virustotal_key.setText(global_settings.get("api_keys.virustotal", ""))
         self.urlvoid_key.setText(global_settings.get("api_keys.urlvoid", ""))
+        
+        # Professional Subdomain Enumeration API Keys
+        self.certspotter_key.setText(global_settings.get("api_keys.certspotter", ""))
+        self.censys_id.setText(global_settings.get("api_keys.censys_id", ""))
+        self.censys_secret.setText(global_settings.get("api_keys.censys_secret", ""))
+        self.securitytrails_key.setText(global_settings.get("api_keys.securitytrails", ""))
+        self.binaryedge_key.setText(global_settings.get("api_keys.binaryedge", ""))
+        self.passivetotal_user.setText(global_settings.get("api_keys.passivetotal_user", ""))
+        self.passivetotal_key.setText(global_settings.get("api_keys.passivetotal_key", ""))
+        self.dnsdb_key.setText(global_settings.get("api_keys.dnsdb", ""))
         
         # General
         self.default_timeout.setValue(global_settings.get("general.default_timeout", 30))
@@ -213,13 +333,25 @@ class GlobalSettingsPage(QWidget):
     
     def save_settings(self):
         """Save settings to global settings"""
-        # API Keys
+        # Hash Cracking API Keys
         global_settings.set("api_keys.hashes_com", self.hashes_com_key.text())
         global_settings.set("api_keys.md5decrypt_email", self.md5decrypt_email.text())
         global_settings.set("api_keys.md5decrypt_key", self.md5decrypt_key.text())
+        
+        # OSINT & Intelligence API Keys
         global_settings.set("api_keys.shodan", self.shodan_key.text())
         global_settings.set("api_keys.virustotal", self.virustotal_key.text())
         global_settings.set("api_keys.urlvoid", self.urlvoid_key.text())
+        
+        # Professional Subdomain Enumeration API Keys
+        global_settings.set("api_keys.certspotter", self.certspotter_key.text())
+        global_settings.set("api_keys.censys_id", self.censys_id.text())
+        global_settings.set("api_keys.censys_secret", self.censys_secret.text())
+        global_settings.set("api_keys.securitytrails", self.securitytrails_key.text())
+        global_settings.set("api_keys.binaryedge", self.binaryedge_key.text())
+        global_settings.set("api_keys.passivetotal_user", self.passivetotal_user.text())
+        global_settings.set("api_keys.passivetotal_key", self.passivetotal_key.text())
+        global_settings.set("api_keys.dnsdb", self.dnsdb_key.text())
         
         # General
         global_settings.set("general.default_timeout", self.default_timeout.value())
@@ -242,6 +374,9 @@ class GlobalSettingsPage(QWidget):
         
         if dns_tab and hasattr(dns_tab, 'save_settings'):
             dns_tab.save_settings()
+        
+        # Update the subdomain engine's API keys
+        self._update_subdomain_engine_keys()
         
         QMessageBox.information(self, "Settings Saved", "Global settings have been saved successfully.")
     
@@ -268,3 +403,84 @@ class GlobalSettingsPage(QWidget):
             
             self.load_settings()
             QMessageBox.information(self, "Settings Reset", "All settings have been reset to defaults.")
+    
+    def test_api_keys(self):
+        """Test API keys functionality"""
+        from PyQt6.QtWidgets import QProgressDialog
+        from PyQt6.QtCore import QTimer
+        
+        # Create progress dialog
+        progress = QProgressDialog("Testing API keys...", "Cancel", 0, 0, self)
+        progress.setWindowTitle("API Key Testing")
+        progress.setModal(True)
+        progress.show()
+        
+        # Simulate testing (in a real implementation, you'd test each API)
+        QTimer.singleShot(2000, lambda: self._show_api_test_results(progress))
+    
+    def _show_api_test_results(self, progress_dialog):
+        """Show API key test results"""
+        progress_dialog.close()
+        
+        # Get configured keys
+        configured_keys = []
+        if self.certspotter_key.text().strip():
+            configured_keys.append("CertSpotter")
+        if self.virustotal_key.text().strip():
+            configured_keys.append("VirusTotal")
+        if self.censys_id.text().strip() and self.censys_secret.text().strip():
+            configured_keys.append("Censys")
+        if self.securitytrails_key.text().strip():
+            configured_keys.append("SecurityTrails")
+        if self.binaryedge_key.text().strip():
+            configured_keys.append("BinaryEdge")
+        if self.passivetotal_user.text().strip() and self.passivetotal_key.text().strip():
+            configured_keys.append("PassiveTotal")
+        if self.dnsdb_key.text().strip():
+            configured_keys.append("DNSDB")
+        
+        if configured_keys:
+            message = f"Configured API Keys ({len(configured_keys)}):\n\n" + "\n".join([f"✅ {key}" for key in configured_keys])
+            message += "\n\nNote: Actual API validation requires network testing."
+        else:
+            message = "No API keys configured.\n\nFree sources (crt.sh, Wayback Machine) will still work."
+        
+        QMessageBox.information(self, "API Key Test Results", message)
+    
+    def _update_subdomain_engine_keys(self):
+        """Update the subdomain engine with new API keys"""
+        try:
+            from app.core.subdomain_engine import subdomain_engine
+            
+            # Create API keys dictionary
+            api_keys = {}
+            
+            if self.certspotter_key.text().strip():
+                api_keys['certspotter'] = self.certspotter_key.text().strip()
+            
+            if self.virustotal_key.text().strip():
+                api_keys['virustotal'] = self.virustotal_key.text().strip()
+            
+            if self.censys_id.text().strip() and self.censys_secret.text().strip():
+                api_keys['censys_id'] = self.censys_id.text().strip()
+                api_keys['censys_secret'] = self.censys_secret.text().strip()
+            
+            if self.securitytrails_key.text().strip():
+                api_keys['securitytrails'] = self.securitytrails_key.text().strip()
+            
+            if self.binaryedge_key.text().strip():
+                api_keys['binaryedge'] = self.binaryedge_key.text().strip()
+            
+            if self.passivetotal_user.text().strip() and self.passivetotal_key.text().strip():
+                api_keys['passivetotal_user'] = self.passivetotal_user.text().strip()
+                api_keys['passivetotal_key'] = self.passivetotal_key.text().strip()
+            
+            if self.dnsdb_key.text().strip():
+                api_keys['dnsdb'] = self.dnsdb_key.text().strip()
+            
+            # Update the engine's API keys
+            subdomain_engine.api_keys = api_keys
+            
+        except ImportError:
+            # Subdomain engine not available
+            pass

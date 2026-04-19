@@ -1,0 +1,10 @@
+2026-03-03 14:42:49 - huggin - INFO - License saved successfully
+2026-03-03 14:42:49 - huggin - INFO - License loaded and validated successfully
+2026-03-03 14:42:49 - huggin - INFO - Application starting...
+2026-03-03 14:42:49 - huggin - INFO - Font loaded successfully
+2026-03-03 14:42:49 - huggin - INFO - Stylesheet loaded successfully
+2026-03-03 14:42:49 - huggin - INFO - Creating main window...
+2026-03-03 14:42:49 - huggin - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin\resources\fonts\neuropol.otf
+2026-03-03 14:44:36 - huggin - ERROR - Error during application close: 'NoneType' object has no attribute 'handle_close_event'
+2026-03-03 14:45:03 - huggin - ERROR - Error during application close: 'NoneType' object has no attribute 'handle_close_event'
+2026-03-03 14:45:07 - huggin - INFO - Update manager stopped during cleanup

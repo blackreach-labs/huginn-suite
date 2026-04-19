@@ -73,6 +73,13 @@ class ServiceScannersMixin:
                 password = controls['smb_password'].text() if 'smb_password' in controls else ""
                 wordlist_path = controls['smb_wordlist'].currentData() if 'smb_wordlist' in controls else None
             
+            # Set current scan type and switch to appropriate terminal
+            setattr(self, f"{tool_key}_current_scan_type", scan_type)
+            
+            # Switch to the correct terminal view for this scan type
+            if hasattr(self, 'switch_smb_scan_view'):
+                self.switch_smb_scan_view(tool_key, scan_type)
+            
             self.run_smb_enumeration(target, tool_key, scan_type, auth_type, domain, username, password, wordlist_path)
         elif tool_key == 'smtp_enum':
             self.run_smtp_enumeration(target, tool_key)
@@ -259,6 +266,10 @@ class ServiceScannersMixin:
             worker.signals.output.connect(lambda text: self.append_service_output(tool_key, text))
             worker.signals.finished.connect(lambda: self.on_rpc_scan_finished(tool_key))
             worker.signals.results.connect(lambda results: self.store_rpc_results(tool_key, results))
+            
+            # Connect progress signals for real-time progress bar updates
+            worker.signals.progress_start.connect(lambda total, msg: self.start_rpc_progress(tool_key, total, msg))
+            worker.signals.progress_update.connect(lambda current, found, msg: self.update_rpc_progress(tool_key, current, found, msg))
             
             # Connect table and graph data signals if available
             if hasattr(worker.signals, 'table_data'):
@@ -1084,13 +1095,16 @@ class ServiceScannersMixin:
         """Append text to service terminal output"""
         terminal = None
         
-        # Handle HTTP, RPC, SSH, and DB with multiple terminals (stored in dictionary)
-        if tool_key in ["http_enum", "rpc_enum", "ssh_enum", "db_enum"]:
+        # Handle HTTP, RPC, SMB, SSH, and DB with multiple terminals (stored in dictionary)
+        if tool_key in ["http_enum", "rpc_enum", "smb_enum", "ssh_enum", "db_enum"]:
             terminals = getattr(self, f"{tool_key}_terminals", {})
             if tool_key == "http_enum":
                 current_scan_type = getattr(self, f"{tool_key}_current_scan_type", "Fingerprinting")
                 terminal = terminals.get(current_scan_type)
             elif tool_key == "rpc_enum":
+                current_scan_type = getattr(self, f"{tool_key}_current_scan_type", "Basic Info")
+                terminal = terminals.get(current_scan_type)
+            elif tool_key == "smb_enum":
                 current_scan_type = getattr(self, f"{tool_key}_current_scan_type", "Basic Info")
                 terminal = terminals.get(current_scan_type)
             elif tool_key == "ssh_enum":
@@ -1280,6 +1294,18 @@ class ServiceScannersMixin:
     
     def update_http_progress(self, tool_key, current, found, message):
         """Update HTTP progress bar"""
+        progress_widget = getattr(self, f"{tool_key}_progress_widget", None)
+        if progress_widget and hasattr(progress_widget, 'update_progress'):
+            progress_widget.update_progress(current, found, message)
+    
+    def start_rpc_progress(self, tool_key, total, message):
+        """Start RPC progress bar"""
+        progress_widget = getattr(self, f"{tool_key}_progress_widget", None)
+        if progress_widget and hasattr(progress_widget, 'start_progress'):
+            progress_widget.start_progress(total, message)
+    
+    def update_rpc_progress(self, tool_key, current, found, message):
+        """Update RPC progress bar"""
         progress_widget = getattr(self, f"{tool_key}_progress_widget", None)
         if progress_widget and hasattr(progress_widget, 'update_progress'):
             progress_widget.update_progress(current, found, message)

@@ -881,7 +881,9 @@ Response Time: {request_data.get('response_time', 0)*1000:.2f}ms"""
         self.decoder_method.addItems([
             "Base64 Encode", "Base64 Decode", "URL Encode", "URL Decode",
             "PowerShell Base64", "PowerShell Decode", "JavaScript CharCode", 
-            "JavaScript Decode", "ROT13", "Hex Encode", "Hex Decode"
+            "JavaScript Decode", "ROT13", "Hex Encode", "Hex Decode",
+            "ASCII Encode", "ASCII Decode",
+            "Emoji Embed (Hide in emoji)", "Emoji Extract (Recover from emoji)"
         ])
         method_layout.addWidget(self.decoder_method)
         
@@ -1049,16 +1051,40 @@ Response Time: {request_data.get('response_time', 0)*1000:.2f}ms"""
         text = self.decoder_input.toPlainText().strip()
         if not text:
             return
-        
+
         method = self.decoder_method.currentText()
-        
+
         try:
-            if "Decode" in method:
-                result = ObfuscationEngine.deobfuscate(text, method)
+            if method == "Emoji Embed (Hide in emoji)":
+                if '|||' not in text:
+                    self.decoder_output.setPlainText(
+                        "Error: to embed, provide input as: <carrier_emojis>|||<secret_text>\n"
+                        "Example: 😀😃😄😁|||Hello World!"
+                    )
+                    return
+                carrier, secret = text.split('|||', 1)
+                carrier = carrier.strip()
+                secret = secret
+                try:
+                    result = ObfuscationEngine.embed_in_emojis(carrier, secret)
+                    self.decoder_output.setPlainText(result)
+                except Exception as e:
+                    self.decoder_output.setPlainText(f"Error embedding: {e}")
+
+            elif method == "Emoji Extract (Recover from emoji)":
+                try:
+                    result = ObfuscationEngine.extract_from_emojis(text)
+                    self.decoder_output.setPlainText(result)
+                except Exception as e:
+                    self.decoder_output.setPlainText(f"Error extracting hidden data: {e}")
+
             else:
-                result = ObfuscationEngine.obfuscate(text, method)
-            
-            self.decoder_output.setPlainText(result)
+                if "Decode" in method or method.endswith("Decode"):
+                    result = ObfuscationEngine.deobfuscate(text, method)
+                else:
+                    result = ObfuscationEngine.obfuscate(text, method)
+
+                self.decoder_output.setPlainText(result)
         except Exception as e:
             self.decoder_output.setPlainText(f"Error: {str(e)}")
     

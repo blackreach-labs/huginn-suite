@@ -18,11 +18,16 @@ class SMBClient:
         self.message_id = 1
         self.dialect = None
         self.debug = False
+        self.negotiate_contexts = {}
+        self.signing_required = False
+        self.encryption_required = False
+        self.compression_supported = False
+        self.preauth_integrity = False
     
     def _debug_log(self, message: str):
         """Debug logging helper"""
-        # Debug logging disabled to prevent console output
-        pass
+        if self.debug:
+            print(f"[SMB DEBUG] {message}")
         
     def connect(self, username: str = "", password: str = "", domain: str = "") -> bool:
         """Connect and authenticate to SMB server with multiple fallback methods"""
@@ -47,12 +52,8 @@ class SMBClient:
                     import time
                     time.sleep(1)
             
-            # Try NetBIOS session request with multiple fallbacks
-            self._debug_log("Attempting NetBIOS session establishment")
-            if not self._establish_netbios_session():
-                self._debug_log("All NetBIOS session methods failed")
-                return False
-            self._debug_log("NetBIOS session established")
+            # Skip NetBIOS session for modern SMB
+            self._debug_log("Using direct SMB connection (no NetBIOS session)")
             
             # SMB negotiate with retries
             self._debug_log("Starting SMB negotiate")
@@ -274,22 +275,10 @@ class SMBClient:
             pass
     
     def _establish_netbios_session(self) -> bool:
-        """Try multiple NetBIOS session establishment methods"""
-        # Method 1: Standard NetBIOS session request
-        self._debug_log("Method 1: Standard NetBIOS session request")
-        if self._netbios_session_request():
-            return True
-        
-        # Method 2: Try with different server names
-        server_names = ['*SMBSERVER', self.target.upper(), 'WINDOWS']
-        for server_name in server_names:
-            self._debug_log(f"Method 2: Trying server name '{server_name}'")
-            if self._netbios_session_request_with_name(server_name):
-                return True
-        
-        # Method 3: Skip NetBIOS session (direct SMB)
-        self._debug_log("Method 3: Attempting direct SMB without NetBIOS session")
-        return True  # Allow direct SMB connection
+        """Skip NetBIOS session for direct SMB connection"""
+        # Modern SMB servers support direct SMB over TCP without NetBIOS session
+        self._debug_log("Skipping NetBIOS session - using direct SMB over TCP")
+        return True
     
     def _netbios_session_request_with_name(self, server_name: str) -> bool:
         """NetBIOS session request with custom server name"""
@@ -319,20 +308,24 @@ class SMBClient:
     def _negotiate_with_retries(self) -> bool:
         """SMB negotiate with multiple retry strategies"""
         try:
-            # Strategy 1: Direct SMB2 negotiate
-            self._debug_log("Strategy 1: Direct SMB2 negotiate")
+            # Strategy 1: SMB 3.1.1 with contexts
+            self._debug_log("Strategy 1: SMB 3.1.1 with contexts")
             if self._negotiate_smb2():
                 return True
             
-            # Strategy 2: SMB1 then SMB2
-            self._debug_log("Strategy 2: SMB1 then SMB2")
-            if self._negotiate_smb1():
-                self._debug_log("SMB1 negotiate successful, upgrading to SMB2")
-                return self._negotiate_smb2()
+            # Strategy 2: SMB 3.0 without contexts
+            self._debug_log("Strategy 2: SMB 3.0 without contexts")
+            if self._negotiate_smb3_fallback():
+                return True
             
-            # Strategy 3: SMB2 with different dialects
-            self._debug_log("Strategy 3: SMB2 with minimal dialects")
-            return self._negotiate_smb2_minimal()
+            # Strategy 3: SMB2 minimal dialects
+            self._debug_log("Strategy 3: SMB2 minimal dialects")
+            if self._negotiate_smb2_minimal():
+                return True
+            
+            # Strategy 4: SMB1 fallback
+            self._debug_log("Strategy 4: SMB1 fallback")
+            return self._negotiate_smb1()
             
         except Exception as e:
             self._debug_log(f"All negotiate strategies failed: {str(e)}")
@@ -409,39 +402,119 @@ class SMBClient:
             return False
     
     def _negotiate_smb2(self) -> bool:
-        """SMB2 negotiate protocol"""
+        """SMB 3.1.1 negotiate with contexts"""
         try:
-            # SMB2 negotiate request with multiple dialects
-            negotiate_data = struct.pack('<H', 36)  # StructureSize
-            negotiate_data += struct.pack('<H', 3)   # DialectCount (try multiple)
-            negotiate_data += struct.pack('<H', 0)   # SecurityMode
-            negotiate_data += struct.pack('<H', 0)   # Reserved
-            negotiate_data += struct.pack('<I', 0)   # Capabilities
-            negotiate_data += os.urandom(16)         # ClientGuid (16 bytes)
-            negotiate_data += struct.pack('<Q', 0)   # ClientStartTime
-            # Multiple dialects for compatibility
-            negotiate_data += struct.pack('<H', 0x0202)  # SMB 2.02
-            negotiate_data += struct.pack('<H', 0x0210)  # SMB 2.10
-            negotiate_data += struct.pack('<H', 0x0300)  # SMB 3.00
+            # SMB 3.1.1 dialects with contexts
+            dialects = [0x0311, 0x0302, 0x0300, 0x0210]  # SMB 3.1.1, 3.0.2, 3.0, 2.1
             
-            self._debug_log(f"Sending SMB2 negotiate request, data length: {len(negotiate_data)}")
+            # Build negotiate contexts for SMB 3.1.1
+            contexts = b''
+            context_offset = 0
+            context_count = 0
+            
+            # Calculate context offset (header + body + dialects, aligned to 8)
+            base_offset = 64 + 36 + (len(dialects) * 2)
+            context_offset = (base_offset + 7) // 8 * 8  # Align to 8 bytes
+            
+            # Preauth integrity context (SMB 3.1.1)
+            preauth_ctx = struct.pack('<H H I', 0x0001, 4, 2)  # Type, DataLen, HashAlgCount
+            preauth_ctx += struct.pack('<H', 0x0001)  # SHA-512
+            preauth_ctx += b'\x00' * 30  # Salt (32 bytes total)
+            
+            # Encryption context
+            encrypt_ctx = struct.pack('<H H I', 0x0002, 4, 2)  # Type, DataLen, CipherCount  
+            encrypt_ctx += struct.pack('<H H', 0x0002, 0x0004)  # AES-128-GCM, AES-256-GCM
+            
+            # Compression context (for SMBGhost detection)
+            compress_ctx = struct.pack('<H H I', 0x0003, 6, 3)  # Type, DataLen, AlgCount
+            compress_ctx += struct.pack('<H H H', 0x0001, 0x0002, 0x0003)  # LZNT1, LZ77, LZ77+Huffman
+            
+            contexts = preauth_ctx + encrypt_ctx + compress_ctx
+            context_count = 3
+            
+            # SMB2 NEGOTIATE structure
+            negotiate_data = struct.pack('<H', 36)  # StructureSize
+            negotiate_data += struct.pack('<H', len(dialects))  # DialectCount
+            negotiate_data += struct.pack('<H', 0x01)  # SecurityMode (signing enabled)
+            negotiate_data += struct.pack('<H', 0)   # Reserved
+            negotiate_data += struct.pack('<I', 0x01)  # Capabilities (DFS)
+            negotiate_data += os.urandom(16)         # ClientGuid
+            negotiate_data += struct.pack('<I', context_offset)  # NegotiateContextOffset
+            negotiate_data += struct.pack('<H', context_count)   # NegotiateContextCount
+            negotiate_data += struct.pack('<H', 0)   # Reserved2
+            
+            # Add dialects
+            for dialect in dialects:
+                negotiate_data += struct.pack('<H', dialect)
+            
+            # Pad to context offset
+            while len(negotiate_data) < (context_offset - 64):
+                negotiate_data += b'\x00'
+            
+            # Add contexts
+            negotiate_data += contexts
+            
+            self._debug_log(f"Sending SMB 3.1.1 negotiate with contexts, data length: {len(negotiate_data)}")
             response = self._send_smb2_request(0x00, negotiate_data)  # SMB2_NEGOTIATE
             
             if response and len(response) >= 64:
                 # Extract dialect from response
                 if len(response) >= 74:
                     self.dialect = struct.unpack('<H', response[72:74])[0]
-                    self._debug_log(f"SMB2 negotiate response received, dialect: {hex(self.dialect)}")
+                    dialect_name = {0x0311: '3.1.1', 0x0302: '3.0.2', 0x0300: '3.0', 0x0210: '2.1'}.get(self.dialect, f'0x{self.dialect:04x}')
+                    self._debug_log(f"SMB negotiate successful, dialect: {dialect_name}")
+                    
+                    # Parse negotiate contexts from response
+                    self._parse_negotiate_contexts(response)
                     return True
                 else:
-                    self._debug_log(f"SMB2 negotiate response too short: {len(response)} bytes")
+                    self._debug_log(f"SMB negotiate response too short: {len(response)} bytes")
             else:
-                self._debug_log(f"Invalid SMB2 negotiate response: {len(response) if response else 0} bytes")
+                self._debug_log(f"Invalid SMB negotiate response: {len(response) if response else 0} bytes")
             
             return False
             
         except Exception as e:
-            self._debug_log(f"SMB2 negotiate exception: {str(e)}")
+            self._debug_log(f"SMB 3.1.1 negotiate exception: {str(e)}")
+            return False
+    
+    def _negotiate_smb3_fallback(self) -> bool:
+        """SMB 3.0 negotiate without contexts"""
+        try:
+            # SMB 3.0 without contexts for compatibility
+            dialects = [0x0300, 0x0302, 0x0210]  # SMB 3.0, 3.0.2, 2.1
+            
+            negotiate_data = struct.pack('<H', 36)  # StructureSize
+            negotiate_data += struct.pack('<H', len(dialects))  # DialectCount
+            negotiate_data += struct.pack('<H', 0x01)  # SecurityMode (signing enabled)
+            negotiate_data += struct.pack('<H', 0)   # Reserved
+            negotiate_data += struct.pack('<I', 0x01)  # Capabilities (DFS)
+            negotiate_data += os.urandom(16)         # ClientGuid
+            negotiate_data += struct.pack('<Q', 0)   # ClientStartTime
+            
+            # Add dialects
+            for dialect in dialects:
+                negotiate_data += struct.pack('<H', dialect)
+            
+            self._debug_log(f"Sending SMB 3.0 negotiate without contexts, data length: {len(negotiate_data)}")
+            response = self._send_smb2_request(0x00, negotiate_data)  # SMB2_NEGOTIATE
+            
+            if response and len(response) >= 64:
+                # Extract dialect from response
+                if len(response) >= 74:
+                    self.dialect = struct.unpack('<H', response[72:74])[0]
+                    dialect_name = {0x0302: '3.0.2', 0x0300: '3.0', 0x0210: '2.1'}.get(self.dialect, f'0x{self.dialect:04x}')
+                    self._debug_log(f"SMB 3.0 negotiate successful, dialect: {dialect_name}")
+                    return True
+                else:
+                    self._debug_log(f"SMB 3.0 negotiate response too short: {len(response)} bytes")
+            else:
+                self._debug_log(f"Invalid SMB 3.0 negotiate response: {len(response) if response else 0} bytes")
+            
+            return False
+            
+        except Exception as e:
+            self._debug_log(f"SMB 3.0 negotiate exception: {str(e)}")
             return False
     
     def _session_setup(self, username: str, password: str, domain: str) -> bool:
@@ -531,9 +604,9 @@ class SMBClient:
             
             self.message_id += 1
             
-            # NetBIOS session service header
+            # NetBIOS session service header (direct SMB over TCP)
             total_length = len(header) + len(data)
-            netbios_header = struct.pack('>I', total_length & 0x00FFFFFF)
+            netbios_header = b'\x00' + struct.pack('>I', total_length)[1:]  # Type 0x00 + 3-byte length
             
             self._debug_log(f"Sending SMB2 command {hex(command)}, message_id: {self.message_id-1}")
             
@@ -630,6 +703,104 @@ class SMBClient:
             0xC0000001: "STATUS_UNSUCCESSFUL"
         }
         return status_codes.get(status, f"Unknown status: {hex(status)}")
+    
+    def _parse_negotiate_contexts(self, response: bytes):
+        """Parse SMB 3.1.1 negotiate contexts from response"""
+        try:
+            if len(response) < 76:
+                return
+            
+            # Extract context info from negotiate response
+            body = response[64:]
+            if len(body) < 12:
+                return
+            
+            context_offset = struct.unpack('<I', body[8:12])[0] if len(body) >= 12 else 0
+            context_count = struct.unpack('<H', body[12:14])[0] if len(body) >= 14 else 0
+            
+            if context_offset == 0 or context_count == 0:
+                return
+            
+            # Parse each context
+            contexts_data = response[context_offset:] if context_offset < len(response) else b''
+            offset = 0
+            
+            for i in range(context_count):
+                if offset + 8 > len(contexts_data):
+                    break
+                
+                ctx_type = struct.unpack('<H', contexts_data[offset:offset+2])[0]
+                ctx_len = struct.unpack('<H', contexts_data[offset+2:offset+4])[0]
+                
+                if ctx_type == 0x0001:  # Preauth integrity
+                    self.preauth_integrity = True
+                    self.negotiate_contexts['preauth_integrity'] = True
+                elif ctx_type == 0x0002:  # Encryption
+                    self.encryption_required = True
+                    self.negotiate_contexts['encryption_ciphers'] = []
+                elif ctx_type == 0x0003:  # Compression
+                    self.compression_supported = True
+                    self.negotiate_contexts['compression_algorithms'] = []
+                elif ctx_type == 0x0008:  # Signing
+                    self.signing_required = True
+                    self.negotiate_contexts['signing_algorithms'] = []
+                
+                # Move to next context (aligned to 8 bytes)
+                offset += 4 + ctx_len
+                offset = (offset + 7) // 8 * 8
+            
+            self._debug_log(f"Parsed contexts: preauth={self.preauth_integrity}, encryption={self.encryption_required}, compression={self.compression_supported}, signing={self.signing_required}")
+            
+        except Exception as e:
+            self._debug_log(f"Context parsing error: {str(e)}")
+    
+    def get_vulnerability_info(self) -> list:
+        """Get SMB vulnerability information based on negotiated features"""
+        vulnerabilities = []
+        
+        # SMBGhost (CVE-2020-0796) - compression support
+        if self.compression_supported:
+            vulnerabilities.append({
+                'name': 'SMB Compression Enabled (SMBGhost)',
+                'severity': 'critical',
+                'description': 'SMB compression is enabled, potentially vulnerable to CVE-2020-0796',
+                'cve': 'CVE-2020-0796'
+            })
+        
+        # Signing not required
+        if not self.signing_required:
+            vulnerabilities.append({
+                'name': 'SMB Signing Not Required',
+                'severity': 'medium',
+                'description': 'SMB signing is not enforced, allowing NTLM relay attacks',
+                'cve': 'N/A'
+            })
+        
+        # Preauth integrity missing (downgrade risk)
+        if self.dialect == 0x0311 and not self.preauth_integrity:
+            vulnerabilities.append({
+                'name': 'Preauth Integrity Missing',
+                'severity': 'medium', 
+                'description': 'SMB 3.1.1 preauth integrity is missing, allowing downgrade attacks',
+                'cve': 'N/A'
+            })
+        
+        return vulnerabilities
+    
+    def get_capabilities_info(self) -> dict:
+        """Get detailed SMB capabilities information"""
+        dialect_names = {0x0311: '3.1.1', 0x0302: '3.0.2', 0x0300: '3.0', 0x0210: '2.1', 0x0202: '2.0.2'}
+        
+        return {
+            'dialect': dialect_names.get(self.dialect, f'0x{self.dialect:04x}' if self.dialect else 'Unknown'),
+            'signing_required': self.signing_required,
+            'encryption_required': self.encryption_required,
+            'compression_supported': self.compression_supported,
+            'preauth_integrity': self.preauth_integrity,
+            'negotiate_contexts': self.negotiate_contexts,
+            'session_id': self.session_id,
+            'tree_id': self.tree_id
+        }
     
     def _create_smb2_create(self, pipe_name: str) -> bytes:
         """Create SMB2 create request for named pipe"""

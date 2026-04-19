@@ -25,6 +25,10 @@ class ServiceFieldVisibilityMixin:
             control_widgets['smb_auth_combo'].currentTextChanged.connect(
                 lambda auth_type: self.toggle_smb_auth_fields(tool_key, auth_type)
             )
+            if 'smb_scan_type' in control_widgets:
+                control_widgets['smb_scan_type'].currentTextChanged.connect(
+                    lambda scan_type: self.on_smb_scan_type_changed(tool_key, scan_type)
+                )
         
         # HTTP enumeration field interactions
         elif tool_key == 'http_enum' and 'http_scan_type' in control_widgets:
@@ -1011,6 +1015,41 @@ class ServiceFieldVisibilityMixin:
             results_stack.setCurrentIndex(0)
         elif current_view == "graph":
             results_stack.setCurrentIndex(1)  # Tree view for SSH
+    
+    def on_smb_scan_type_changed(self, tool_key, scan_type):
+        """Handle SMB scan type change to switch terminal views"""
+        setattr(self, f"{tool_key}_current_scan_type", scan_type)
+        
+        # Update the results stack to show the correct terminal/table for this scan type
+        results_stack = getattr(self, f"{tool_key}_results_stack", None)
+        current_view = getattr(self, f"current_{tool_key}_view", "text")
+        
+        if not results_stack:
+            return
+        
+        terminals = getattr(self, f"{tool_key}_terminals", {})
+        tables = getattr(self, f"{tool_key}_tables", {})
+        trees = getattr(self, f"{tool_key}_trees", {})
+        
+        # Clear and rebuild stack with current scan type views
+        while results_stack.count() > 0:
+            widget = results_stack.widget(0)
+            results_stack.removeWidget(widget)
+        
+        if scan_type in terminals:
+            results_stack.addWidget(terminals[scan_type])  # Text view
+        if scan_type in trees:
+            results_stack.addWidget(trees[scan_type])      # Tree view
+        if scan_type in tables:
+            results_stack.addWidget(tables[scan_type])     # Table view
+        
+        # Set correct view index based on current view
+        if current_view == "text":
+            results_stack.setCurrentIndex(0)
+        elif current_view == "graph":
+            results_stack.setCurrentIndex(1)  # Tree view for SMB
+        elif current_view == "table":
+            results_stack.setCurrentIndex(2)  # Table view for SMB
     
     def on_rpc_scan_type_changed(self, tool_key, scan_type):
         """Handle RPC scan type change to switch terminal views"""

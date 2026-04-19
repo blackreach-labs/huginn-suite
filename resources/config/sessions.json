@@ -1,0 +1,35 @@
+{
+  "07deec5e": {
+    "id": "07deec5e",
+    "name": "Session 2025-08-13 22:33:54",
+    "description": "Auto-generated session",
+    "created_date": "2025-08-13T22:33:54.834309",
+    "targets": [],
+    "scan_ids": [],
+    "status": "active",
+    "tags": [],
+    "notes": ""
+  },
+  "f92114b9": {
+    "id": "f92114b9",
+    "name": "Session 2025-08-14 01:22:50",
+    "description": "Auto-generated session",
+    "created_date": "2025-08-14T01:22:50.907922",
+    "targets": [],
+    "scan_ids": [],
+    "status": "active",
+    "tags": [],
+    "notes": ""
+  },
+  "b84e8e6d": {
+    "id": "b84e8e6d",
+    "name": "Session 2026-03-21 17:52:59",
+    "description": "Auto-generated session",
+    "created_date": "2026-03-21T17:52:59.173661",
+    "targets": [],
+    "scan_ids": [],
+    "status": "active",
+    "tags": [],
+    "notes": ""
+  }
+}

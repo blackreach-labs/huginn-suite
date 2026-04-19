@@ -70,3 +70,10 @@ class BasePage(QWidget, ABC, metaclass=BasePageMeta):
     def on_page_deactivated(self):
         """Called when page becomes inactive. Override in subclasses."""
         pass
+    
+    def show_status(self, message, status_type="info"):
+        """Show status message. Override in subclasses for custom implementation."""
+        if hasattr(self.main_window, 'show_status'):
+            self.main_window.show_status(message, status_type)
+        else:
+            print(f"[{status_type.upper()}] {message}")

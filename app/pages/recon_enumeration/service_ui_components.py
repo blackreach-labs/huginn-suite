@@ -94,6 +94,8 @@ class ServiceUIComponentsMixin:
         elif tool_key == 'smb_enum' and 'smb_auth_combo' in controls.controls:
             from PyQt6.QtCore import QTimer
             QTimer.singleShot(0, lambda: self.toggle_smb_auth_fields(tool_key, "Anonymous"))
+            # Set initial scan type to Basic Info
+            QTimer.singleShot(5, lambda: self.on_smb_scan_type_changed(tool_key, "Basic Info"))
         elif tool_key == 'http_enum':
             from PyQt6.QtCore import QTimer
             # Set initial scan type to Fingerprinting (which hides all optional fields)
@@ -164,22 +166,22 @@ class ServiceUIComponentsMixin:
         text_view_btn.clicked.connect(lambda: self.set_service_view(tool_key, "text"))
         controls_row.addWidget(text_view_btn)
         
-        # Second view button - Graph for HTTP/RPC/SSH/DB, Table for others
-        if tool_key in ["http_enum", "rpc_enum", "ssh_enum", "db_enum"]:
+        # Second view button - Graph for HTTP/RPC/SMB/SSH/DB, Table for others
+        if tool_key in ["http_enum", "rpc_enum", "smb_enum", "ssh_enum", "db_enum"]:
             # Graph/Tree view button
             graph_icon_path = os.path.join(self.main_window.project_root, "resources", "icons", "graph.png")
             graph_view_btn = QToolButton()
             if os.path.exists(graph_icon_path):
                 graph_view_btn.setIcon(QIcon(graph_icon_path))
             else:
-                graph_view_btn.setText("Tree" if tool_key in ["rpc_enum", "ssh_enum", "db_enum"] else "Graph")
+                graph_view_btn.setText("Tree" if tool_key in ["rpc_enum", "smb_enum", "ssh_enum", "db_enum"] else "Graph")
             graph_view_btn.setFixedWidth(40)
             graph_view_btn.setCheckable(True)
             graph_view_btn.clicked.connect(lambda: self.set_service_view(tool_key, "graph"))
             controls_row.addWidget(graph_view_btn)
             setattr(self, f"{tool_key}_graph_view_btn", graph_view_btn)
             
-            # Table view button (only for HTTP, RPC, and DB, not SSH)
+            # Table view button (only for HTTP, RPC, SMB, and DB, not SSH)
             if tool_key != "ssh_enum":
                 table_view_btn = QToolButton()
                 if os.path.exists(table_icon_path):
@@ -403,6 +405,43 @@ class ServiceUIComponentsMixin:
             setattr(self, f"{tool_key}_tables", tables)
             setattr(self, f"{tool_key}_trees", trees)
             setattr(self, f"{tool_key}_current_scan_type", "Enumeration")
+        elif tool_key == "smb_enum":
+            # SMB enumeration with separate terminals for each scan type
+            terminals = {}
+            tables = {}
+            trees = {}
+            scan_types = ["Basic Info", "Share Enumeration"]
+            
+            for scan_type in scan_types:
+                # Text view (terminal) for this scan type
+                terminal = QTextEdit()
+                terminal.setReadOnly(True)
+                self.apply_terminal_theme_to_widget(terminal)
+                terminal.setPlaceholderText(f"{scan_type} results will appear here...")
+                terminals[scan_type] = terminal
+                
+                # Table view for this scan type
+                table = QTableWidget()
+                table.setColumnCount(3)
+                table.setHorizontalHeaderLabels(["Share", "Type", "Details"])
+                tables[scan_type] = table
+                
+                # Tree view for this scan type
+                tree = QTreeWidget()
+                tree.setHeaderLabels(["Category", "Count", "Details"])
+                tree.setRootIsDecorated(True)
+                trees[scan_type] = tree
+            
+            # Add current scan type views to stack (start with Basic Info)
+            results_stack.addWidget(terminals["Basic Info"])  # Default - Text view
+            results_stack.addWidget(trees["Basic Info"])      # Tree view
+            results_stack.addWidget(tables["Basic Info"])     # Table view
+            
+            # Store references
+            setattr(self, f"{tool_key}_terminals", terminals)
+            setattr(self, f"{tool_key}_tables", tables)
+            setattr(self, f"{tool_key}_trees", trees)
+            setattr(self, f"{tool_key}_current_scan_type", "Basic Info")
         elif tool_key == "db_enum":
             # Database enumeration with separate terminals for each scan type
             terminals = {}
@@ -638,7 +677,7 @@ class ServiceUIComponentsMixin:
         text_view_btn.setChecked(view_type == "text")
         
         # Handle view buttons for tools with graph/tree views
-        if tool_key in ["http_enum", "rpc_enum", "ssh_enum", "db_enum"]:
+        if tool_key in ["http_enum", "rpc_enum", "smb_enum", "ssh_enum", "db_enum"]:
             # Handle all view buttons
             graph_view_btn = getattr(self, f"{tool_key}_graph_view_btn", None)
             table_view_btn = getattr(self, f"{tool_key}_table_view_btn", None)
@@ -658,15 +697,13 @@ class ServiceUIComponentsMixin:
         if view_type == "text":
             results_stack.setCurrentIndex(0)
         elif view_type == "graph":
-            if tool_key in ["rpc_enum", "db_enum"]:
-                results_stack.setCurrentIndex(1)  # Tree view for RPC and DB
+            if tool_key in ["rpc_enum", "smb_enum", "db_enum"]:
+                results_stack.setCurrentIndex(1)  # Tree view for RPC, SMB, and DB
             else:
                 results_stack.setCurrentIndex(1)  # Graph view for HTTP
         elif view_type == "table":
-            if tool_key == "rpc_enum":
-                results_stack.setCurrentIndex(2)  # Table view for RPC
-            elif tool_key == "db_enum":
-                results_stack.setCurrentIndex(2)  # Table view for DB
+            if tool_key in ["rpc_enum", "smb_enum", "db_enum"]:
+                results_stack.setCurrentIndex(2)  # Table view for RPC, SMB, and DB
             elif tool_key == "http_enum":
                 current_scan_type = getattr(self, f"{tool_key}_current_scan_type", "Fingerprinting")
                 if current_scan_type == "Directory Enum" and results_stack.count() > 2:
@@ -727,6 +764,31 @@ class ServiceUIComponentsMixin:
                 self.append_service_output(tool_key, f"<p style='color: #FF4500;'>[EXPORT ERROR] Export failed: {str(e)}</p>")
             self.status_updated.emit(f"Service export error: {str(e)}")
     
+    def switch_smb_scan_view(self, tool_key, scan_type):
+        """Switch SMB scan view to show terminals/tables for specific scan type"""
+        try:
+            results_stack = getattr(self, f"{tool_key}_results_stack")
+            terminals = getattr(self, f"{tool_key}_terminals", {})
+            tables = getattr(self, f"{tool_key}_tables", {})
+            
+            if not results_stack or scan_type not in terminals:
+                return
+            
+            while results_stack.count() > 0:
+                widget = results_stack.widget(0)
+                results_stack.removeWidget(widget)
+            
+            results_stack.addWidget(terminals[scan_type])
+            trees = getattr(self, f"{tool_key}_trees", {})
+            if scan_type in trees:
+                results_stack.addWidget(trees[scan_type])
+            if scan_type in tables:
+                results_stack.addWidget(tables[scan_type])
+            
+            results_stack.setCurrentIndex(0)
+        except Exception as e:
+            print(f"Error switching SMB view: {e}")
+    
     def switch_db_scan_view(self, tool_key, scan_type):
         """Switch database scan view to show terminals/tables for specific scan type"""
         try:
@@ -754,8 +816,8 @@ class ServiceUIComponentsMixin:
     
     def append_service_output(self, tool_key, text):
         """Append text to service terminal output"""
-        # Handle RPC with multiple terminals
-        if tool_key == "rpc_enum":
+        # Handle RPC and SMB with multiple terminals
+        if tool_key in ["rpc_enum", "smb_enum"]:
             terminals = getattr(self, f"{tool_key}_terminals", {})
             current_scan_type = getattr(self, f"{tool_key}_current_scan_type", "Basic Info")
             terminal = terminals.get(current_scan_type)

@@ -34,6 +34,8 @@ class ObfuscationEngine:
             return codecs.encode(text, 'rot13')
         elif method == "Hex Encode":
             return text.encode().hex()
+        elif method == "ASCII Encode":
+            return ' '.join(str(ord(c)) for c in text)
         else:
             return text
     
@@ -62,6 +64,10 @@ class ObfuscationEngine:
                 return codecs.decode(text, 'rot13')
             elif method == "Hex Decode":
                 return bytes.fromhex(text).decode()
+            elif method == "ASCII Decode":
+                # Handle space-separated ASCII values
+                ascii_values = text.strip().split()
+                return ''.join(chr(int(val)) for val in ascii_values)
             else:
                 return text
         except Exception as e:
@@ -148,6 +154,20 @@ class ObfuscationEngine:
             except:
                 pass
         
+        # ASCII encoding detection (space-separated numbers)
+        if ObfuscationEngine._is_ascii_encoded(text):
+            try:
+                ascii_values = text.strip().split()
+                decoded = ''.join(chr(int(val)) for val in ascii_values)
+                confidence = 0.8
+                if format_output:
+                    formatted = f"<div style='color: #00FF41; font-size: 12pt; font-family: monospace; background: #1a1a1a; padding: 8px; margin: 5px 0; word-wrap: break-word;'>{decoded}</div>"
+                    results.append(("ASCII Encoding", formatted, confidence))
+                else:
+                    results.append(("ASCII Encoding", decoded, confidence))
+            except:
+                pass
+        
         # PowerShell EncodedCommand detection
         ps_match = re.search(r'-EncodedCommand\s+([A-Za-z0-9+/=]+)', text)
         if ps_match:
@@ -182,6 +202,129 @@ class ObfuscationEngine:
         """Check if text looks like hex"""
         hex_pattern = re.compile(r'^[0-9a-fA-F]+$')
         return bool(hex_pattern.match(text)) and len(text) % 2 == 0 and len(text) > 4
+    
+    @staticmethod
+    def _is_ascii_encoded(text):
+        """Check if text looks like ASCII-encoded (space-separated numbers)"""
+        try:
+            parts = text.strip().split()
+            if len(parts) < 2:  # Need at least 2 numbers to be considered ASCII encoded
+                return False
+            for part in parts:
+                val = int(part)
+                if val < 32 or val > 126:  # Printable ASCII range
+                    return False
+            return True
+        except ValueError:
+            return False
+    
+    @staticmethod
+    def _bytes_to_bitstring(b: bytes) -> str:
+        """Return a string of '0'/'1' bits for the given bytes."""
+        return ''.join(f"{byte:08b}" for byte in b)
+
+    @staticmethod
+    def _bitstring_to_bytes(bits: str) -> bytes:
+        """Convert a bitstring (length multiple of 8) back to bytes."""
+        if len(bits) % 8 != 0:
+            bits = bits[:(len(bits) // 8) * 8]
+        return bytes(int(bits[i:i+8], 2) for i in range(0, len(bits), 8))
+
+    @staticmethod
+    def embed_in_emojis(carrier: str, secret: str) -> str:
+        """
+        Hide `secret` inside `carrier` (a string of emoji or other characters)
+        by inserting zero-width characters after carrier characters.
+        Returns the stego string.
+        Usage note: carrier should be at least 1 character long. If secret is
+        longer than can be evenly distributed, remaining bits are appended after carrier end.
+        """
+        if not carrier:
+            raise ValueError("Carrier string must not be empty")
+
+        ZWSP = '\u200B'   # maps to bit '0'
+        ZWNJ = '\u200C'   # maps to bit '1'
+        ZWJ  = '\u200D'   # used as wrapper/marker around bit-chunks
+
+        secret_bytes = secret.encode('utf-8')
+        length = len(secret_bytes)
+        # 32-bit length header (big-endian)
+        length_header = length.to_bytes(4, byteorder='big')
+        header_bits = ObfuscationEngine._bytes_to_bitstring(length_header)
+        payload_bits = ObfuscationEngine._bytes_to_bitstring(secret_bytes)
+        bitstream = header_bits + payload_bits
+
+        # Distribute bitstream across carrier characters
+        n = len(carrier)
+        if len(bitstream) == 0:
+            return carrier  # nothing to hide
+
+        chunk_size = (len(bitstream) + n - 1) // n  # ceil division
+        parts = []
+        for i, ch in enumerate(carrier):
+            start = i * chunk_size
+            chunk_bits = bitstream[start:start + chunk_size]
+            if chunk_bits:
+                mapped = ''.join(ZWSP if b == '0' else ZWNJ for b in chunk_bits)
+                wrapped = ZWJ + mapped + ZWJ
+                parts.append(ch + wrapped)
+            else:
+                parts.append(ch)
+
+        # append remainder if any (shouldn't happen often, but safe)
+        tail_start = n * chunk_size
+        if tail_start < len(bitstream):
+            chunk_bits = bitstream[tail_start:]
+            mapped = ''.join(ZWSP if b == '0' else ZWNJ for b in chunk_bits)
+            wrapped = ZWJ + mapped + ZWJ
+            parts.append(wrapped)
+
+        return ''.join(parts)
+
+    @staticmethod
+    def extract_from_emojis(stego: str) -> str:
+        """
+        Extract hidden secret from a string produced by embed_in_emojis.
+        Returns the decoded UTF-8 string.
+        Raises ValueError if no hidden data found or if extraction fails.
+        """
+        if not stego:
+            raise ValueError("Input is empty")
+
+        import re
+        # Pattern: ZWJ (then one or more ZWSP or ZWNJ) then ZWJ
+        # direct characters used for clarity
+        pattern = re.compile(r'\u200D([\u200B\u200C]+)\u200D')
+        matches = pattern.findall(stego)
+        if not matches:
+            raise ValueError("No hidden data found")
+
+        # Rebuild bitstream in order of appearance
+        bit_chunks = []
+        for inner in matches:
+            bits = ''.join('0' if ch == '\u200B' else '1' for ch in inner)
+            bit_chunks.append(bits)
+        bitstream = ''.join(bit_chunks)
+
+        # First 32 bits are length in bytes (big-endian)
+        if len(bitstream) < 32:
+            raise ValueError("Hidden data too short to contain header")
+
+        length_bits = bitstream[:32]
+        payload_bits = bitstream[32:]
+        length = int(length_bits, 2)
+
+        needed_bits = length * 8
+        if len(payload_bits) < needed_bits:
+            raise ValueError("Hidden data truncated or corrupted")
+
+        payload_relevant = payload_bits[:needed_bits]
+        payload_bytes = ObfuscationEngine._bitstring_to_bytes(payload_relevant)
+        try:
+            return payload_bytes.decode('utf-8')
+        except UnicodeDecodeError:
+            # If decoding fails, return raw bytes repr (or raise)
+            raise ValueError("Extracted bytes are not valid UTF-8")
     
     @staticmethod
     def _unpack_javascript(packed_code):

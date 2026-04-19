@@ -27,19 +27,39 @@ class SMBDataCollector:
     def collect_shares(self, target: str, shares: list):
         """Collect SMB shares with deduplication"""
         for share in shares:
-            self.db.add_scan_result(
-                scan_id=self.current_scan_id,
-                tenant_id=self.tenant_id,
-                scan_type="smb_shares",
-                target=target,
-                scanner="smb_scanner",
-                result_data={
-                    "target": target,
-                    "share_name": share,
-                    "discovered_at": datetime.now().isoformat(),
-                    "scan_id": self.current_scan_id
-                }
-            )
+            if isinstance(share, dict):
+                # New structured share data
+                self.db.add_scan_result(
+                    scan_id=self.current_scan_id,
+                    tenant_id=self.tenant_id,
+                    scan_type="smb_shares",
+                    target=target,
+                    scanner="smb_scanner",
+                    result_data={
+                        "target": target,
+                        "share_name": share.get('name', 'Unknown'),
+                        "exists": share.get('exists', False),
+                        "anonymous_access": share.get('anonymous_access', False),
+                        "status_code": share.get('status', 0),
+                        "discovered_at": datetime.now().isoformat(),
+                        "scan_id": self.current_scan_id
+                    }
+                )
+            else:
+                # Legacy string format
+                self.db.add_scan_result(
+                    scan_id=self.current_scan_id,
+                    tenant_id=self.tenant_id,
+                    scan_type="smb_shares",
+                    target=target,
+                    scanner="smb_scanner",
+                    result_data={
+                        "target": target,
+                        "share_name": share,
+                        "discovered_at": datetime.now().isoformat(),
+                        "scan_id": self.current_scan_id
+                    }
+                )
     
     def collect_ports(self, target: str, ports: list):
         """Collect SMB ports with deduplication"""
@@ -81,6 +101,44 @@ class SMBDataCollector:
                     "scan_id": self.current_scan_id
                 }
             )
+    
+    def collect_smb_capabilities(self, target: str, capabilities: dict):
+        """Collect SMB capabilities and security posture"""
+        self.db.add_scan_result(
+            scan_id=self.current_scan_id,
+            tenant_id=self.tenant_id,
+            scan_type="smb_capabilities",
+            target=target,
+            scanner="smb_scanner",
+            result_data={
+                "target": target,
+                "negotiation": capabilities.get('negotiation', {}),
+                "security": capabilities.get('security', {}),
+                "session": capabilities.get('session', {}),
+                "discovered_at": datetime.now().isoformat(),
+                "scan_id": self.current_scan_id
+            }
+        )
+    
+    def collect_smb_services(self, target: str, services: list):
+        """Collect available SMB services (pipes)"""
+        for service in services:
+            if isinstance(service, dict):
+                self.db.add_scan_result(
+                    scan_id=self.current_scan_id,
+                    tenant_id=self.tenant_id,
+                    scan_type="smb_services",
+                    target=target,
+                    scanner="smb_scanner",
+                    result_data={
+                        "target": target,
+                        "service_name": service.get('name', 'Unknown'),
+                        "status_code": service.get('status', 0),
+                        "available": service.get('status', 0) != 0xC0000034,
+                        "discovered_at": datetime.now().isoformat(),
+                        "scan_id": self.current_scan_id
+                    }
+                )
     
     def complete_smb_scan(self, results_count: int, error: str = None):
         """Complete SMB scan"""
@@ -164,6 +222,47 @@ class SMBDataCollector:
                     }
                 },
                 'summary': {'total_vulnerabilities': len(vulns_data)}
+            }
+        
+        elif scan_type == "smb_capabilities":
+            caps_data = self.db.get_scan_data(self.tenant_id, "smb_capabilities", target)
+            return {
+                'table_data': [{
+                    'Target': item['data'].get('target', 'Unknown'),
+                    'Dialect': item['data'].get('negotiation', {}).get('dialect', 'Unknown'),
+                    'Signing': 'Required' if item['data'].get('security', {}).get('signing_required', False) else 'Optional',
+                    'Guest': 'Yes' if item['data'].get('session', {}).get('is_guest', False) else 'No',
+                    'Time Skew': f"{item['data'].get('negotiation', {}).get('time_skew_ms', 0)//1000}s",
+                    'Count': item.get('count', 1)
+                } for item in caps_data],
+                'graph_data': {
+                    'SMB Capabilities': {
+                        'count': len(caps_data),
+                        'details': f"{len(set(item.get('target', 'Unknown') for item in caps_data))} targets",
+                        'children': {}
+                    }
+                },
+                'summary': {'total_capabilities': len(caps_data)}
+            }
+        
+        elif scan_type == "smb_services":
+            services_data = self.db.get_scan_data(self.tenant_id, "smb_services", target)
+            return {
+                'table_data': [{
+                    'Target': item['data'].get('target', 'Unknown'),
+                    'Service': item['data'].get('service_name', 'Unknown'),
+                    'Available': 'Yes' if item['data'].get('available', False) else 'No',
+                    'Status Code': hex(item['data'].get('status_code', 0)),
+                    'Count': item.get('count', 1)
+                } for item in services_data],
+                'graph_data': {
+                    'SMB Services': {
+                        'count': len(services_data),
+                        'details': f"{len(set(item.get('target', 'Unknown') for item in services_data))} targets",
+                        'children': {}
+                    }
+                },
+                'summary': {'total_services': len(services_data)}
             }
         
         else:
