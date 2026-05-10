@@ -8,6 +8,7 @@ import threading
 import struct
 from typing import Dict, List, Optional
 from .rpc_protocol import RPCPacket, RPCClient
+import logging
 
 class FakeRPCService:
     """Fake RPC service for impersonation attacks"""
@@ -51,15 +52,17 @@ class FakeRPCService:
         if self.server_socket:
             try:
                 self.server_socket.close()
-            except:
+            except Exception as _exc:
                 pass
+                logging.debug("Suppressed exception", exc_info=True)
         
         # Close client connections
         for conn in self.client_connections:
             try:
                 conn.close()
-            except:
+            except Exception as _exc:
                 pass
+                logging.debug("Suppressed exception", exc_info=True)
         
         self.client_connections.clear()
         print(f"[FAKE-RPC] Fake RPC service stopped")
@@ -113,8 +116,9 @@ class FakeRPCService:
                 client_socket.close()
                 if client_socket in self.client_connections:
                     self.client_connections.remove(client_socket)
-            except:
+            except Exception as _exc:
                 pass
+                logging.debug("Suppressed exception", exc_info=True)
     
     def _process_rpc_packet(self, packet: RPCPacket, client_ip: str) -> Optional[bytes]:
         """Process incoming RPC packet"""

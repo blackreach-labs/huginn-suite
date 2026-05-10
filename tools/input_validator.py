@@ -2,6 +2,7 @@
 import re
 import ipaddress
 import urllib.parse
+import logging
 
 class InputValidator:
     @staticmethod
@@ -36,7 +37,7 @@ class InputValidator:
         try:
             result = urllib.parse.urlparse(url)
             return all([result.scheme, result.netloc])
-        except:
+        except Exception:
             return False
     
     @staticmethod

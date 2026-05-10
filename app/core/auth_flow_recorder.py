@@ -4,6 +4,7 @@ import time
 from typing import Dict, List, Optional, Any
 from urllib.parse import urlparse, parse_qs
 from PyQt6.QtCore import QObject, pyqtSignal
+from app.core.logger import logger
 
 class AuthFlowRecorder(QObject):
     """Records authentication flows from proxy traffic"""
@@ -179,8 +180,9 @@ class AuthFlowRecorder(QObject):
                                 'timestamp': time.time(),
                                 'url': http_request.url
                             }
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         # Extract from response body
         if http_response and http_response.text:
@@ -195,8 +197,9 @@ class AuthFlowRecorder(QObject):
                                 'timestamp': time.time(),
                                 'url': http_request.url
                             }
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         # Extract JWT tokens from Authorization header
         auth_header = http_request.headers.get('Authorization', '')

@@ -1,0 +1,796 @@
+2026-05-10 18:57:50 - huggin - INFO - License saved successfully
+2026-05-10 18:57:50 - huggin - INFO - License loaded and validated successfully
+2026-05-10 18:57:50 - huggin - INFO - Application starting...
+2026-05-10 18:57:50 - huggin - INFO - Font loaded successfully
+2026-05-10 18:57:50 - huggin - INFO - Stylesheet loaded successfully
+2026-05-10 18:57:50 - huggin - INFO - Creating main window...
+2026-05-10 18:57:50 - huggin - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-05-10 18:57:50 - huggin - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huggin\resources\fonts\neuropol.otf
+2026-05-10 18:57:50 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\db_attacks_page.py)
+2026-05-10 18:57:51 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 100, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-10 18:57:51 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 107, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-10 18:57:51 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 114, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-10 18:57:51 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 121, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-10 19:40:24 - huggin - INFO - License saved successfully
+2026-05-10 19:40:24 - huggin - INFO - License loaded and validated successfully
+2026-05-10 19:40:33 - huggin - INFO - License saved successfully
+2026-05-10 19:40:33 - huggin - INFO - License loaded and validated successfully
+2026-05-10 19:40:33 - huggin - ERROR - Unhandled exception:
+Traceback (most recent call last):
+  File "<string>", line 13, in <module>
+    exec(open('main.py').read())
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 112, in <module>
+  File "<string>", line 92, in main
+NameError: name '__file__' is not defined. Did you mean: '__name__'?
+
+2026-05-10 19:40:33 - huggin - INFO - Update manager stopped during cleanup
+2026-05-10 19:40:41 - huggin - INFO - License saved successfully
+2026-05-10 19:40:41 - huggin - INFO - License loaded and validated successfully
+2026-05-10 19:40:41 - huggin - INFO - Application starting...
+2026-05-10 19:40:41 - huggin - INFO - Font loaded successfully
+2026-05-10 19:40:41 - huggin - INFO - Stylesheet loaded successfully
+2026-05-10 19:40:41 - huggin - INFO - Creating main window...
+2026-05-10 19:40:41 - huggin - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-05-10 19:40:41 - huggin - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huggin\resources\fonts\neuropol.otf
+2026-05-10 19:40:41 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\db_attacks_page.py)
+2026-05-10 19:40:42 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 100, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-10 19:40:42 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 107, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-10 19:40:42 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 114, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-10 19:40:42 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 121, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-10 19:41:15 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 100, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-10 19:41:15 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 107, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-10 19:41:15 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 114, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-10 19:41:15 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 121, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-10 19:41:15 - huggin - INFO - Using default configuration
+2026-05-10 19:41:48 - huggin - INFO - License saved successfully
+2026-05-10 19:41:48 - huggin - INFO - License loaded and validated successfully
+2026-05-10 19:41:48 - huggin - INFO - Application starting...
+2026-05-10 19:41:48 - huggin - INFO - Font loaded successfully
+2026-05-10 19:41:48 - huggin - INFO - Stylesheet loaded successfully
+2026-05-10 19:41:48 - huggin - INFO - Creating main window...
+2026-05-10 19:41:48 - huggin - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-05-10 19:41:48 - huggin - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huggin\resources\fonts\neuropol.otf
+2026-05-10 19:41:48 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\db_attacks_page.py)
+2026-05-10 19:41:52 - huggin - WARNING - Migrating plaintext credential file 'default_credentials.json' to encrypted format. The plaintext file will be deleted.
+2026-05-10 19:42:01 - huggin - INFO - License saved successfully
+2026-05-10 19:42:01 - huggin - INFO - License loaded and validated successfully
+2026-05-10 19:42:01 - huggin - INFO - Application starting...
+2026-05-10 19:42:01 - huggin - INFO - Font loaded successfully
+2026-05-10 19:42:01 - huggin - INFO - Stylesheet loaded successfully
+2026-05-10 19:42:01 - huggin - INFO - Creating main window...
+2026-05-10 19:42:01 - huggin - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-05-10 19:42:01 - huggin - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huggin\resources\fonts\neuropol.otf
+2026-05-10 19:42:01 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\db_attacks_page.py)
+2026-05-10 19:42:13 - huggin - INFO - License saved successfully
+2026-05-10 19:42:13 - huggin - INFO - License loaded and validated successfully
+2026-05-10 19:42:13 - huggin - INFO - Application starting...
+2026-05-10 19:42:13 - huggin - INFO - Font loaded successfully
+2026-05-10 19:42:13 - huggin - INFO - Stylesheet loaded successfully
+2026-05-10 19:42:13 - huggin - INFO - Creating main window...
+2026-05-10 19:42:13 - huggin - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-05-10 19:42:13 - huggin - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huggin\resources\fonts\neuropol.otf
+2026-05-10 19:42:13 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\db_attacks_page.py)
+2026-05-10 19:42:16 - huggin - WARNING - Migrating plaintext credential file 'default_credentials.json' to encrypted format. The plaintext file will be deleted.
+2026-05-10 19:46:58 - huggin - WARNING - Migrating plaintext credential file 'default_credentials.json' to encrypted format. The plaintext file will be deleted.
+2026-05-10 19:47:04 - huggin - WARNING - Migrating plaintext credential file 'default_credentials.json' to encrypted format. The plaintext file will be deleted.
+2026-05-10 19:47:10 - huggin - WARNING - Migrating plaintext credential file 'default_credentials.json' to encrypted format. The plaintext file will be deleted.
+2026-05-10 19:47:16 - huggin - WARNING - Migrating plaintext credential file 'default_credentials.json' to encrypted format. The plaintext file will be deleted.
+2026-05-10 19:47:23 - huggin - WARNING - Migrating plaintext credential file 'default_credentials.json' to encrypted format. The plaintext file will be deleted.
+2026-05-10 19:47:29 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 100, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-10 19:47:29 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 107, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-10 19:47:29 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 114, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-10 19:47:29 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 121, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-10 19:47:29 - huggin - INFO - Using default configuration
+2026-05-10 19:47:32 - huggin - WARNING - Migrating plaintext credential file 'default_credentials.json' to encrypted format. The plaintext file will be deleted.
+2026-05-10 19:47:37 - huggin - WARNING - Migrating plaintext credential file 'default_credentials.json' to encrypted format. The plaintext file will be deleted.
+2026-05-10 19:47:46 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 100, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-10 19:47:46 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 107, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-10 19:47:46 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 114, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-10 19:47:46 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 121, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-10 19:47:46 - huggin - INFO - Using default configuration
+2026-05-10 19:47:49 - huggin - WARNING - Migrating plaintext credential file 'default_credentials.json' to encrypted format. The plaintext file will be deleted.
+2026-05-10 19:48:56 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 100, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-10 19:48:56 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 107, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-10 19:48:56 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 114, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-10 19:48:56 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 121, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-10 19:49:02 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 100, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-10 19:49:02 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 107, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-10 19:49:02 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 114, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-10 19:49:02 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 121, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-10 19:50:14 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 100, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-10 19:50:14 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 107, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-10 19:50:14 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 114, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-10 19:50:14 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 121, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-10 19:50:55 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 100, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-10 19:50:55 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 107, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-10 19:50:55 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 114, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-10 19:50:55 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 121, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-10 19:51:26 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 100, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-10 19:51:26 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 107, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-10 19:51:26 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 114, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-10 19:51:26 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 121, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-10 19:51:40 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 100, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-10 19:51:40 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 107, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-10 19:51:40 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 114, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-10 19:51:40 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 121, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-10 19:51:53 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 100, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-10 19:51:53 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 107, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-10 19:51:53 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 114, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-10 19:51:53 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 121, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-10 19:52:06 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 100, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-10 19:52:06 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 107, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-10 19:52:06 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 114, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-10 19:52:06 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 121, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-10 19:52:31 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 100, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-10 19:52:31 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 107, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-10 19:52:31 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 114, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-10 19:52:31 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 121, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-10 19:52:31 - huggin - WARNING - Migrating credential key file from v1 to v2 format
+2026-05-10 19:52:31 - huggin - ERROR - Credential encryption init failed: Fernet key must be 32 url-safe base64-encoded bytes.
+Traceback (most recent call last):
+  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\cryptography\fernet.py", line 34, in __init__
+    key = base64.urlsafe_b64decode(key)
+  File "c:\Python313\Lib\base64.py", line 134, in urlsafe_b64decode
+    return b64decode(s)
+  File "c:\Python313\Lib\base64.py", line 88, in b64decode
+    return binascii.a2b_base64(s, strict_mode=validate)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+binascii.Error: Incorrect padding
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 239, in _init_encryption
+    self._fernet = Fernet(raw.strip())
+                   ~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\cryptography\fernet.py", line 36, in __init__
+    raise ValueError(
+        "Fernet key must be 32 url-safe base64-encoded bytes."
+    ) from exc
+ValueError: Fernet key must be 32 url-safe base64-encoded bytes.
+2026-05-10 19:52:31 - huggin - INFO - Using default configuration
+2026-05-10 19:52:34 - huggin - INFO - License saved successfully
+2026-05-10 19:52:34 - huggin - INFO - License loaded and validated successfully
+2026-05-10 19:52:38 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 100, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-10 19:52:38 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 107, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-10 19:52:38 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 114, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-10 19:52:38 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 121, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-10 19:52:38 - huggin - INFO - Using default configuration
+2026-05-10 19:52:40 - huggin - WARNING - Migrating credential key file from v1 to v2 format
+2026-05-10 19:52:40 - huggin - ERROR - Credential encryption init failed: Fernet key must be 32 url-safe base64-encoded bytes.
+Traceback (most recent call last):
+  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\cryptography\fernet.py", line 34, in __init__
+    key = base64.urlsafe_b64decode(key)
+  File "c:\Python313\Lib\base64.py", line 134, in urlsafe_b64decode
+    return b64decode(s)
+  File "c:\Python313\Lib\base64.py", line 88, in b64decode
+    return binascii.a2b_base64(s, strict_mode=validate)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+binascii.Error: Incorrect padding
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 239, in _init_encryption
+    self._fernet = Fernet(raw.strip())
+                   ~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\cryptography\fernet.py", line 36, in __init__
+    raise ValueError(
+        "Fernet key must be 32 url-safe base64-encoded bytes."
+    ) from exc
+ValueError: Fernet key must be 32 url-safe base64-encoded bytes.
+2026-05-10 19:52:40 - huggin - INFO - License saved successfully
+2026-05-10 19:52:40 - huggin - INFO - License loaded and validated successfully
+2026-05-10 19:52:43 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 100, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-10 19:52:43 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 107, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-10 19:52:43 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 114, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-10 19:52:43 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 121, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-10 19:52:43 - huggin - INFO - Using default configuration
+2026-05-10 19:52:45 - huggin - WARNING - Migrating credential key file from v1 to v2 format
+2026-05-10 19:52:45 - huggin - ERROR - Credential encryption init failed: Fernet key must be 32 url-safe base64-encoded bytes.
+Traceback (most recent call last):
+  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\cryptography\fernet.py", line 34, in __init__
+    key = base64.urlsafe_b64decode(key)
+  File "c:\Python313\Lib\base64.py", line 134, in urlsafe_b64decode
+    return b64decode(s)
+  File "c:\Python313\Lib\base64.py", line 88, in b64decode
+    return binascii.a2b_base64(s, strict_mode=validate)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+binascii.Error: Incorrect padding
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 239, in _init_encryption
+    self._fernet = Fernet(raw.strip())
+                   ~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\cryptography\fernet.py", line 36, in __init__
+    raise ValueError(
+        "Fernet key must be 32 url-safe base64-encoded bytes."
+    ) from exc
+ValueError: Fernet key must be 32 url-safe base64-encoded bytes.
+2026-05-10 19:52:45 - huggin - INFO - License saved successfully
+2026-05-10 19:52:45 - huggin - INFO - License loaded and validated successfully
+2026-05-10 19:52:47 - huggin - WARNING - Migrating credential key file from v1 to v2 format
+2026-05-10 19:52:47 - huggin - ERROR - Credential encryption init failed: Fernet key must be 32 url-safe base64-encoded bytes.
+Traceback (most recent call last):
+  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\cryptography\fernet.py", line 34, in __init__
+    key = base64.urlsafe_b64decode(key)
+  File "C:\Users\allie\anaconda3\Lib\base64.py", line 134, in urlsafe_b64decode
+    return b64decode(s)
+  File "C:\Users\allie\anaconda3\Lib\base64.py", line 88, in b64decode
+    return binascii.a2b_base64(s, strict_mode=validate)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+binascii.Error: Incorrect padding
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 239, in _init_encryption
+    self._fernet = Fernet(raw.strip())
+                   ~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\cryptography\fernet.py", line 36, in __init__
+    raise ValueError(
+        "Fernet key must be 32 url-safe base64-encoded bytes."
+    ) from exc
+ValueError: Fernet key must be 32 url-safe base64-encoded bytes.
+2026-05-10 19:52:53 - huggin - WARNING - Migrating plaintext credential file 'default_credentials.json' to encrypted format. The plaintext file will be deleted.
+2026-05-10 19:52:53 - huggin - WARNING - Migrating credential key file from v1 to v2 format
+2026-05-10 19:52:53 - huggin - ERROR - Credential encryption init failed: Fernet key must be 32 url-safe base64-encoded bytes.
+Traceback (most recent call last):
+  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\cryptography\fernet.py", line 34, in __init__
+    key = base64.urlsafe_b64decode(key)
+  File "C:\Users\allie\anaconda3\Lib\base64.py", line 134, in urlsafe_b64decode
+    return b64decode(s)
+  File "C:\Users\allie\anaconda3\Lib\base64.py", line 88, in b64decode
+    return binascii.a2b_base64(s, strict_mode=validate)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+binascii.Error: Incorrect padding
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 239, in _init_encryption
+    self._fernet = Fernet(raw.strip())
+                   ~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\cryptography\fernet.py", line 36, in __init__
+    raise ValueError(
+        "Fernet key must be 32 url-safe base64-encoded bytes."
+    ) from exc
+ValueError: Fernet key must be 32 url-safe base64-encoded bytes.
+2026-05-10 19:52:53 - huggin - INFO - Migration complete: 'default_credentials.json' → 'default_credentials.enc'
+2026-05-10 19:52:53 - huggin - DEBUG - Credentials loaded for profile 'default'
+2026-05-10 19:55:20 - huggin - INFO - License saved successfully
+2026-05-10 19:55:20 - huggin - INFO - License loaded and validated successfully
+2026-05-10 19:55:20 - huggin - INFO - Application starting...
+2026-05-10 19:55:20 - huggin - INFO - Font loaded successfully
+2026-05-10 19:55:20 - huggin - INFO - Stylesheet loaded successfully
+2026-05-10 19:55:20 - huggin - INFO - Creating main window...
+2026-05-10 19:55:20 - huggin - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-05-10 19:55:20 - huggin - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huggin\resources\fonts\neuropol.otf
+2026-05-10 19:55:20 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\db_attacks_page.py)
+2026-05-10 19:55:22 - huggin - WARNING - Migrating credential key file from v1 to v2 format
+2026-05-10 19:55:22 - huggin - ERROR - Credential encryption init failed: Fernet key must be 32 url-safe base64-encoded bytes.
+Traceback (most recent call last):
+  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\cryptography\fernet.py", line 34, in __init__
+    key = base64.urlsafe_b64decode(key)
+  File "C:\Users\allie\anaconda3\Lib\base64.py", line 134, in urlsafe_b64decode
+    return b64decode(s)
+  File "C:\Users\allie\anaconda3\Lib\base64.py", line 88, in b64decode
+    return binascii.a2b_base64(s, strict_mode=validate)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+binascii.Error: Incorrect padding
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 239, in _init_encryption
+    self._fernet = Fernet(raw.strip())
+                   ~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\cryptography\fernet.py", line 36, in __init__
+    raise ValueError(
+        "Fernet key must be 32 url-safe base64-encoded bytes."
+    ) from exc
+ValueError: Fernet key must be 32 url-safe base64-encoded bytes.
+2026-05-10 19:55:22 - huggin - ERROR - Failed to decrypt credentials for profile 'default' — wrong key or corrupted file.
+2026-05-10 19:57:55 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 100, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-10 19:57:55 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 107, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-10 19:57:55 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 114, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-10 19:57:55 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 121, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-10 20:01:11 - huggin - DEBUG - Memory monitoring stopped
+2026-05-10 20:01:11 - huggin - DEBUG - Connection pool closed all sessions
+2026-05-10 20:01:33 - huggin - DEBUG - Memory monitoring stopped
+2026-05-10 20:01:33 - huggin - DEBUG - Connection pool closed all sessions
+2026-05-10 20:01:33 - huggin - INFO - Update manager stopped during cleanup
+2026-05-10 20:02:36 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 100, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-10 20:02:36 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 107, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-10 20:02:36 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 114, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-10 20:02:36 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 121, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-10 20:02:36 - huggin - INFO - Using default configuration
+2026-05-10 20:02:39 - huggin - WARNING - Migrating credential key file from v1 to v2 format
+2026-05-10 20:02:39 - huggin - ERROR - Credential encryption init failed: Fernet key must be 32 url-safe base64-encoded bytes.
+Traceback (most recent call last):
+  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\cryptography\fernet.py", line 34, in __init__
+    key = base64.urlsafe_b64decode(key)
+  File "c:\Python313\Lib\base64.py", line 134, in urlsafe_b64decode
+    return b64decode(s)
+  File "c:\Python313\Lib\base64.py", line 88, in b64decode
+    return binascii.a2b_base64(s, strict_mode=validate)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+binascii.Error: Incorrect padding
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 239, in _init_encryption
+    self._fernet = Fernet(raw.strip())
+                   ~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\cryptography\fernet.py", line 36, in __init__
+    raise ValueError(
+        "Fernet key must be 32 url-safe base64-encoded bytes."
+    ) from exc
+ValueError: Fernet key must be 32 url-safe base64-encoded bytes.
+2026-05-10 20:02:39 - huggin - INFO - License saved successfully
+2026-05-10 20:02:39 - huggin - INFO - License loaded and validated successfully
+2026-05-10 20:02:47 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 100, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-10 20:02:47 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 107, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-10 20:02:47 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 114, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-10 20:02:47 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 121, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-10 20:02:47 - huggin - INFO - Using default configuration
+2026-05-10 20:02:50 - huggin - WARNING - Migrating credential key file from v1 to v2 format
+2026-05-10 20:02:50 - huggin - WARNING - v1 key file is corrupt (Fernet key must be 32 url-safe base64-encoded bytes.); generating a new key. Previously encrypted credentials cannot be recovered.
+2026-05-10 20:02:50 - huggin - INFO - HUGGIN_MASTER_PASSWORD not set — using random per-installation key. Set the env var to use a portable password.
+2026-05-10 20:02:50 - huggin - INFO - License saved successfully
+2026-05-10 20:02:50 - huggin - INFO - License loaded and validated successfully
+2026-05-10 20:02:56 - huggin - ERROR - Failed to decrypt credentials for profile 'default' — wrong key or corrupted file.
+2026-05-10 20:02:56 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 100, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-10 20:02:56 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 107, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-10 20:02:56 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 114, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-10 20:02:56 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\asset_manager.py", line 121, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-10 21:55:10 - huggin - INFO - License saved successfully
+2026-05-10 21:55:10 - huggin - INFO - License loaded and validated successfully
+2026-05-10 21:55:10 - huggin - INFO - Application starting...
+2026-05-10 21:55:10 - huggin - INFO - Font loaded successfully
+2026-05-10 21:55:10 - huggin - INFO - Stylesheet loaded successfully
+2026-05-10 21:55:10 - huggin - INFO - Creating main window...
+2026-05-10 21:55:10 - huggin - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-05-10 21:55:10 - huggin - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huggin\resources\fonts\neuropol.otf
+2026-05-10 21:55:10 - huggin - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\db_attacks_page.py)
+2026-05-10 21:55:47 - huggin - ERROR - Failed to decrypt credentials for profile 'default' — wrong key or corrupted file.
+2026-05-10 21:55:50 - huggin - DEBUG - Credentials saved (encrypted) for profile 'default'
+2026-05-10 21:55:50 - huggin - WARNING - Migrating plaintext credential file 'HTB-Code_credentials.json' to encrypted format. The plaintext file will be deleted.
+2026-05-10 21:55:50 - huggin - INFO - Migration complete: 'HTB-Code_credentials.json' → 'HTB-Code_credentials.enc'
+2026-05-10 21:55:50 - huggin - DEBUG - Credentials loaded for profile 'HTB-Code'
+2026-05-10 21:55:50 - huggin - DEBUG - Credentials saved (encrypted) for profile 'HTB-Code'
+2026-05-10 21:58:11 - huggin - DEBUG - Memory monitoring stopped
+2026-05-10 21:58:11 - huggin - DEBUG - Connection pool closed all sessions
+2026-05-10 21:58:11 - huggin - INFO - Update manager stopped during cleanup

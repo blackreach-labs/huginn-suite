@@ -8,6 +8,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from app.tools.dns_scanner import run_dns_scan
 from app.core.dns_data_collector import create_dns_collector
 from app.core.centralized_scan_data import centralized_scan_data
+import logging
 
 def test_dns_collection():
     """Test DNS data collection with example.com and PTR lookups"""
@@ -48,7 +49,7 @@ def test_dns_collection():
                     'ttl': answers.rrset.ttl if hasattr(answers, 'rrset') else 0
                 })
                 print(f"   - {ip} -> {hostname}")
-        except:
+        except Exception:
             continue
     
     if ptr_records:

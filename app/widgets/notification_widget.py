@@ -6,6 +6,7 @@ from PyQt6.QtCore import Qt, pyqtSignal, QTimer
 from PyQt6.QtGui import QFont
 from app.core.notification_manager import notification_manager
 from datetime import datetime
+from app.core.logger import logger
 
 class NotificationWidget(QWidget):
     """Widget for managing notifications and settings"""
@@ -278,8 +279,9 @@ class NotificationWidget(QWidget):
                 notification = list(reversed(notifications))[row]
                 notification_manager.mark_notification_read(notification['id'])
                 self.refresh_notifications()
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def mark_all_read(self):
         """Mark all notifications as read"""

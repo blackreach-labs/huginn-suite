@@ -7,6 +7,7 @@ import socket
 import struct
 import subprocess
 from typing import List, Dict, Optional
+from app.core.logger import logger
 
 class DCOMUUIDScanner:
     """DCOM UUID scanner for execution vector detection"""
@@ -105,8 +106,9 @@ class DCOMUUIDScanner:
                         'exploitation': 'Unauthorized DCOM access'
                     })
         
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return weak_acls
     

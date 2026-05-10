@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdi
                              QComboBox, QPushButton, QToolButton, QSpacerItem, QSizePolicy)
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
+from app.core.logger import logger
 
 class ServiceUIComponentsMixin:
     """Mixin for service enumeration UI components"""
@@ -633,8 +634,9 @@ class ServiceUIComponentsMixin:
                         row_widget.setVisible(False)
                         row_widget.setMaximumHeight(0)
                         row_widget.setMinimumHeight(0)
-                    except RuntimeError:
+                    except RuntimeError as _exc:
                         pass  # Widget has been deleted
+                        logger.debug("Suppressed exception", exc_info=True)
     
     def toggle_service_scan(self, tool_key):
         """Toggle service scan - start if not running, stop if running"""

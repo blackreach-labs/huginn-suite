@@ -10,6 +10,7 @@ from PyQt6.QtCore import QObject, pyqtSignal
 from .secure_credential_manager import secure_credential_manager
 from .session_manager import session_manager
 from .connection_pool import connection_pool
+from app.core.logger import logger
 
 class AuthenticatedCrawler(QObject):
     """Enhanced crawler with authentication support"""
@@ -228,8 +229,9 @@ class AuthenticatedCrawler(QObject):
                             'page_content': response.text
                         }
             
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return None
     
@@ -261,8 +263,9 @@ class AuthenticatedCrawler(QObject):
                     'value': meta_csrf.get('content')
                 }
             
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return None
     
@@ -421,8 +424,9 @@ class AuthenticatedCrawler(QObject):
                             artifacts['storage_data'][storage_type] = {}
                         artifacts['storage_data'][storage_type][key] = value
         
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         # Extract relevant headers
         auth_headers = ['authorization', 'x-auth-token', 'x-api-key', 'x-csrf-token']
@@ -455,8 +459,9 @@ class AuthenticatedCrawler(QObject):
                     links.append(urljoin(base_url, href))
                 elif not href.startswith(('#', 'mailto:', 'tel:', 'javascript:')):
                     links.append(urljoin(base_url, href))
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return list(set(links))
     
@@ -499,8 +504,9 @@ class AuthenticatedCrawler(QObject):
                 }
                 
                 forms.append(form_data)
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return forms
     

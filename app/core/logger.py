@@ -70,25 +70,25 @@ class HugginLogger:
         self._logger.addHandler(error_handler)
         self._logger.addHandler(console_handler)
     
-    def debug(self, message):
+    def debug(self, message, **kwargs):
         """Log debug message"""
-        self._logger.debug(message)
+        self._logger.debug(message, **kwargs)
     
-    def info(self, message):
+    def info(self, message, **kwargs):
         """Log info message"""
-        self._logger.info(message)
+        self._logger.info(message, **kwargs)
     
-    def warning(self, message):
+    def warning(self, message, **kwargs):
         """Log warning message"""
-        self._logger.warning(message)
+        self._logger.warning(message, **kwargs)
     
-    def error(self, message):
+    def error(self, message, **kwargs):
         """Log error message"""
-        self._logger.error(message)
+        self._logger.error(message, **kwargs)
     
-    def critical(self, message):
+    def critical(self, message, **kwargs):
         """Log critical message"""
-        self._logger.critical(message)
+        self._logger.critical(message, **kwargs)
     
     def log_scan_start(self, target, wordlist, record_types):
         """Log scan initiation"""

@@ -4,6 +4,7 @@ import struct
 import time
 import hashlib
 from typing import Dict, List, Tuple, Optional
+from app.core.logger import logger
 
 class SMBClient:
     def __init__(self, host: str, port: int = 445, timeout: float = 3.0):
@@ -135,9 +136,10 @@ class SMBClient:
                 if len(response) >= 44:
                     self.session_id = struct.unpack('<Q', response[36:44])[0]
                     
-        except Exception:
+        except Exception as _exc:
             # Anonymous session setup failed, but that's expected
             pass
+            logger.debug("Suppressed exception", exc_info=True)
 
     def tree_connect(self, sharename: str) -> Tuple[int, int]:
         path = f"\\\\{self.host}\\{sharename}"
@@ -235,8 +237,9 @@ class SMBClient:
         try:
             if self.sock:
                 self.sock.close()
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
 
 def enumerate_smb_anonymous(host: str, timeout: float = 2.0, 
                           share_candidates: List[str] = None, 

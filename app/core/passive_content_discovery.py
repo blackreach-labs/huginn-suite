@@ -5,6 +5,7 @@ import re
 from urllib.parse import urljoin, urlparse
 from typing import Dict, List, Any
 from aiohttp import ClientSession
+from app.core.logger import logger
 
 class PassiveContentDiscovery:
     def __init__(self):
@@ -78,8 +79,9 @@ class PassiveContentDiscovery:
                                     'url': full_url,
                                     'path': path
                                 })
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def _extract_sitemaps(self, content: str, base_url: str, results: Dict[str, Any]):
         """Extract sitemap URLs from content"""

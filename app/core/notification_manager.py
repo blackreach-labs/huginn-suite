@@ -6,6 +6,7 @@ from datetime import datetime
 from PyQt6.QtWidgets import QSystemTrayIcon, QMenu, QApplication
 from PyQt6.QtCore import QObject, pyqtSignal, QTimer
 from PyQt6.QtGui import QIcon, QPixmap
+from app.core.logger import logger
 
 class NotificationManager(QObject):
     """Manage real-time notifications and system tray"""
@@ -223,8 +224,9 @@ class NotificationManager(QObject):
                     winsound.MessageBeep(winsound.MB_ICONEXCLAMATION)
                 else:
                     winsound.MessageBeep(winsound.MB_ICONASTERISK)
-        except ImportError:
+        except ImportError as _exc:
             pass  # Sound not available
+            logger.debug("Suppressed exception", exc_info=True)
     
     def _tray_icon_activated(self, reason):
         """Handle tray icon activation"""

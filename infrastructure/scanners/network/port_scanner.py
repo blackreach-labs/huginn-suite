@@ -7,6 +7,7 @@ from typing import Dict, Any, List, Optional
 from infrastructure.scanners.base.base_scanner import BaseScanner
 from shared.configuration.config_manager import ConfigManager
 from shared.exceptions.scanner_exceptions import NetworkException
+import logging
 
 
 class PortScanner(BaseScanner):
@@ -52,8 +53,9 @@ class PortScanner(BaseScanner):
             # Check if already an IP
             ipaddress.ip_address(self.target)
             return self.target
-        except ValueError:
+        except ValueError as _exc:
             pass
+            logging.debug("Suppressed exception", exc_info=True)
         
         try:
             loop = asyncio.get_event_loop()
@@ -104,8 +106,9 @@ class PortScanner(BaseScanner):
                     'state': 'open',
                     'banner': ''
                 }
-        except Exception:
+        except Exception as _exc:
             pass
+            logging.debug("Suppressed exception", exc_info=True)
         
         return None
 
@@ -152,8 +155,9 @@ class UDPPortScanner(BaseScanner):
             import ipaddress
             ipaddress.ip_address(self.target)
             return self.target
-        except ValueError:
+        except ValueError as _exc:
             pass
+            logging.debug("Suppressed exception", exc_info=True)
         
         try:
             loop = asyncio.get_event_loop()
@@ -226,8 +230,9 @@ class UDPPortScanner(BaseScanner):
             finally:
                 sock.close()
                 
-        except Exception:
+        except Exception as _exc:
             pass
+            logging.debug("Suppressed exception", exc_info=True)
         
         return None
     
@@ -313,8 +318,9 @@ class NetworkSweepScanner(BaseScanner):
             result = subprocess.run(cmd, capture_output=True, timeout=2)
             if result.returncode == 0:
                 return {'ip': ip, 'status': 'alive', 'method': 'icmp'}
-        except:
+        except Exception as _exc:
             pass
+            logging.debug("Suppressed exception", exc_info=True)
         
         # Fallback to TCP connect on common ports
         for port in [80, 443, 22, 135, 445]:
@@ -338,5 +344,6 @@ try:
     ScannerFactory.register_scanner("port_scanner", PortScanner)
     ScannerFactory.register_scanner("udp_port_scanner", UDPPortScanner)
     ScannerFactory.register_scanner("network_sweep", NetworkSweepScanner)
-except ImportError:
-    pass  # Factory not available yet
+except ImportError as _exc:
+    pass  # Factory not available yet    logging.debug("Suppressed exception", exc_info=True)
+    logging.debug("Suppressed exception", exc_info=True)

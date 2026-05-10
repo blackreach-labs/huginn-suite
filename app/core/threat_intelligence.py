@@ -3,6 +3,7 @@ import requests
 import json
 from datetime import datetime
 from PyQt6.QtCore import QObject, pyqtSignal
+from app.core.logger import logger
 
 class ThreatIntelligence(QObject):
     """Manages threat intelligence feeds and IOC checking."""
@@ -44,8 +45,9 @@ class ThreatIntelligence(QObject):
                             "first_seen": entry.get("first_seen"),
                             "last_seen": entry.get("last_seen")
                         })
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
             
         self.threat_data_updated.emit("ip_reputation", results)
         return results
@@ -73,8 +75,9 @@ class ThreatIntelligence(QObject):
                         "description": "Known malware hosting domain",
                         "severity": "high"
                     })
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
             
         # Check Phishing Army
         try:
@@ -90,8 +93,9 @@ class ThreatIntelligence(QObject):
                         "description": "Known phishing domain",
                         "severity": "high"
                     })
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
             
         self.threat_data_updated.emit("domain_reputation", results)
         return results

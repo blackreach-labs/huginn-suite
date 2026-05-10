@@ -5,7 +5,7 @@ from app.pages.components.base_page import BasePage
 from app.components.scan_table_component import ScanTableComponent
 from app.components.scan_details_component import ScanDetailsComponent
 from app.core.scan_registry import scan_registry
-from shared.events.event_bus import EventBus
+from app.core.logger import logger
 
 class RunningScansPage(BasePage):
     def __init__(self, parent=None):
@@ -16,12 +16,14 @@ class RunningScansPage(BasePage):
         """Setup the UI - required by BasePage"""
         try:
             self.setup_page()
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         try:
             self.connect_events()
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
 
     def setup_page(self):
         """Setup page layout and components"""
@@ -77,9 +79,19 @@ class RunningScansPage(BasePage):
         scan_registry.scan_updated.connect(self.on_scan_updated)
         scan_registry.scan_finished.connect(self.on_scan_finished)
         
-        # Event bus
-        EventBus.instance().scan_started.connect(self.on_scan_started)
-        EventBus.instance().scan_completed.connect(self.on_scan_finished)
+        # Event bus — subscribe using the callback API
+        try:
+            from shared.events.event_bus import get_event_bus
+            bus = get_event_bus()
+            bus.subscribe("scan_started", lambda e: self.on_scan_started(
+                getattr(e, 'scan_id', ''), getattr(e, 'scanner_type', '')
+            ))
+            bus.subscribe("scan_completed", lambda e: self.on_scan_finished(
+                getattr(e, 'scan_id', ''), getattr(e, 'results', {})
+            ))
+        except Exception as _exc:
+            from app.core.logger import logger
+            logger.debug("EventBus subscription skipped", exc_info=True)
 
     def update_display(self):
         """Update display components"""

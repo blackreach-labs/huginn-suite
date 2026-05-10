@@ -4,6 +4,7 @@ import struct
 import argparse
 import sys
 from concurrent.futures import ThreadPoolExecutor
+import logging
 
 class SMBEnum:
     def __init__(self, target, timeout=3):
@@ -26,8 +27,9 @@ class SMBEnum:
                     open_ports.append(port)
                     service = "NetBIOS" if port == 139 else "SMB"
                     print(f"[+] {port}/tcp open ({service})")
-            except:
+            except Exception as _exc:
                 pass
+                logging.debug("Suppressed exception", exc_info=True)
         
         return open_ports
 
@@ -58,8 +60,9 @@ class SMBEnum:
                             names.append((name, name_type))
                 
                 return names
-        except:
+        except Exception as _exc:
             pass
+            logging.debug("Suppressed exception", exc_info=True)
         return []
 
     def smb_negotiate(self):
@@ -81,8 +84,9 @@ class SMBEnum:
                 # Extract OS info from response
                 os_info = response[47:].split(b'\x00')[0].decode('ascii', errors='ignore')
                 return os_info
-        except:
+        except Exception as _exc:
             pass
+            logging.debug("Suppressed exception", exc_info=True)
         return None
 
 def scan_range(base_ip, start=1, end=254):

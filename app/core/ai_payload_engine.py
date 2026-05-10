@@ -4,6 +4,7 @@ import hashlib
 import json
 from typing import Dict, List, Tuple, Optional
 from enum import Enum
+from app.core.logger import logger
 
 class ResponseType(Enum):
     EVALUATED = "evaluated"      # Math/string output matches payload
@@ -161,7 +162,7 @@ class PayloadStrategy:
                             obfuscated_token = method_func(token)
                             new_payload = payload.replace(token, obfuscated_token)
                             return new_payload
-                        except:
+                        except Exception:
                             continue
         
         return payload

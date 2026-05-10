@@ -2,6 +2,7 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTextEdit, QProgressBar
 from PyQt6.QtCore import Qt
 import json
+from app.core.logger import logger
 
 class SummaryWidget(QWidget):
     """Widget to display executive summary"""
@@ -58,7 +59,7 @@ class SummaryWidget(QWidget):
         if isinstance(summary_data, str):
             try:
                 summary_data = json.loads(summary_data)
-            except:
+            except Exception:
                 self.summary_text.setPlainText("Invalid summary data")
                 return
         

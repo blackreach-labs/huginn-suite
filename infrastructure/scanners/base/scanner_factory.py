@@ -1,6 +1,7 @@
 """Scanner factory for creating scanner instances."""
 from typing import Dict, Type, Any, Optional
 from infrastructure.scanners.base.base_scanner import BaseScanner
+import logging
 
 
 class ScannerFactory:
@@ -41,26 +42,30 @@ def _register_default_scanners():
         ScannerFactory.register_scanner("port_scanner", PortScanner)
         ScannerFactory.register_scanner("udp_port_scanner", UDPPortScanner)
         ScannerFactory.register_scanner("network_sweep", NetworkSweepScanner)
-    except ImportError:
+    except ImportError as _exc:
         pass
+        logging.debug("Suppressed exception", exc_info=True)
     
     try:
         from infrastructure.scanners.network.dns_scanner import DNSScanner
         ScannerFactory.register_scanner("dns_scanner", DNSScanner)
-    except ImportError:
+    except ImportError as _exc:
         pass
+        logging.debug("Suppressed exception", exc_info=True)
     
     try:
         from infrastructure.scanners.service.rpc_scanner import RPCScanner
         ScannerFactory.register_scanner("rpc_scanner", RPCScanner)
-    except ImportError:
+    except ImportError as _exc:
         pass
+        logging.debug("Suppressed exception", exc_info=True)
     
     try:
         from infrastructure.scanners.service.http_scanner import HTTPScanner
         ScannerFactory.register_scanner("http_scanner", HTTPScanner)
-    except ImportError:
+    except ImportError as _exc:
         pass
+        logging.debug("Suppressed exception", exc_info=True)
 
 
 # Register scanners on import

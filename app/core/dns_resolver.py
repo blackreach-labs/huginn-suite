@@ -1,6 +1,7 @@
 # app/core/dns_resolver.py
 import socket
 import ipaddress
+from app.core.logger import logger
 
 class DNSResolver:
     def __init__(self):
@@ -12,8 +13,9 @@ class DNSResolver:
         try:
             ipaddress.ip_address(hostname)
             return hostname  # Already an IP
-        except ValueError:
+        except ValueError as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         # Get global DNS configuration from settings
         try:
@@ -62,6 +64,7 @@ class DNSResolver:
                 
         except Exception as e:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         # Fallback to system DNS
         return self._resolve_system_dns(hostname)
     
@@ -74,10 +77,12 @@ class DNSResolver:
             answers = resolver.resolve(hostname, 'A')
             if answers:
                 return str(answers[0])
-        except ImportError:
+        except ImportError as _exc:
             pass
-        except Exception:
+            logger.debug("Suppressed exception", exc_info=True)
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         # Fallback to system DNS
         return self._resolve_system_dns(hostname)

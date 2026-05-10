@@ -5,6 +5,7 @@ Simple RPC test using existing Windows tools
 import subprocess
 import sys
 import socket
+import logging
 
 def test_rpc_access(target, domain, username, password):
     print(f"Testing RPC access to {target}")
@@ -21,7 +22,7 @@ def test_rpc_access(target, domain, username, password):
         else:
             print("   FAILED: Target unreachable")
             return False
-    except:
+    except Exception:
         print("   FAILED: Ping test failed")
         return False
     

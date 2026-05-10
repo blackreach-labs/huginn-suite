@@ -2,6 +2,7 @@
 import struct
 import uuid
 from typing import Dict, List, Optional
+from app.core.logger import logger
 
 class LSARPCClient:
     """Local Security Authority RPC client for policy enumeration"""
@@ -523,5 +524,6 @@ class LSARPCClient:
             if self.policy_handle:
                 request_data = self.policy_handle
                 self.transport.call_rpc(self.LSA_CLOSE, request_data, self.LSARPC_UUID)
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)

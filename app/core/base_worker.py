@@ -2,6 +2,7 @@
 import subprocess
 from PyQt6.QtCore import QObject, pyqtSignal, QRunnable
 from app.core.logger import logger
+from app.core.html_utils import h
 
 class WorkerSignals(QObject):
     """Standard signals for all workers"""
@@ -34,10 +35,10 @@ class BaseWorker(QRunnable):
             )
             
             if result.stdout:
-                self.signals.output.emit(f"<pre style='color: #DCDCDC;'>{result.stdout}</pre>")
+                self.signals.output.emit(f"<pre style='color: #DCDCDC;'>{h(result.stdout)}</pre>")
             
             if result.stderr:
-                self.signals.error.emit(f"<p style='color: #FF4500;'>{result.stderr}</p>")
+                self.signals.error.emit(f"<p style='color: #FF4500;'>{h(result.stderr)}</p>")
                 
             return result.returncode == 0
             
@@ -46,7 +47,7 @@ class BaseWorker(QRunnable):
             return False
         except Exception as e:
             logger.error(f"Command execution error: {str(e)}")
-            self.signals.error.emit(f"<p style='color: #FF4500;'>[ERROR] {str(e)}</p>")
+            self.signals.error.emit(f"<p style='color: #FF4500;'>[ERROR] {h(str(e))}</p>")
             return False
 
 class CommandWorker(BaseWorker):
@@ -61,10 +62,10 @@ class CommandWorker(BaseWorker):
     def run(self):
         """Execute the command"""
         try:
-            self.signals.output.emit(f"<p style='color: #64C8FF;'>[*] {self.description}</p><br>")
+            self.signals.output.emit(f"<p style='color: #64C8FF;'>[*] {h(self.description)}</p><br>")
             self.run_command(self.cmd, self.cwd)
         except Exception as e:
             logger.error(f"Worker error: {str(e)}")
-            self.signals.error.emit(f"<p style='color: #FF4500;'>[ERROR] {str(e)}</p>")
+            self.signals.error.emit(f"<p style='color: #FF4500;'>[ERROR] {h(str(e))}</p>")
         finally:
             self.signals.finished.emit()

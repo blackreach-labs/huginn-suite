@@ -6,6 +6,7 @@ import socket
 import struct
 import uuid
 from typing import List, Dict, Optional
+from app.core.logger import logger
 
 class NativeRPCDump:
     # Known RPC protocols and their UUIDs
@@ -270,13 +271,15 @@ class NativeRPCDump:
                             'annotation': f'RPC Interface: {protocol}'
                         })
                     
-                except:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
                 
                 offset += 4  # Move to next potential UUID
         
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         # If no endpoints found through parsing, return some default known endpoints
         if not endpoints:
@@ -295,8 +298,9 @@ class NativeRPCDump:
         if self.socket:
             try:
                 self.socket.close()
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
             self.socket = None
 
 def dump_rpc_endpoints(target: str, port: int = 135, authenticated: bool = False) -> List[Dict]:

@@ -6,6 +6,7 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
                             QCheckBox, QListWidget, QListWidgetItem)
 from PyQt6.QtCore import Qt, pyqtSignal
 from app.core.wordlist_manager import wordlist_manager
+from app.core.logger import logger
 
 class WordlistDialog(QDialog):
     """Dialog for creating/editing wordlists"""
@@ -91,8 +92,9 @@ class WordlistDialog(QDialog):
                 with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
                     content = f.read()
                 self.content_text.setPlainText(content)
-            except Exception:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
     
     def get_wordlist_data(self):
         """Get wordlist data from form"""

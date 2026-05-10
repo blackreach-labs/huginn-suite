@@ -8,11 +8,17 @@ import re
 from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup
 import base64
+from app.core.logger import logger
 
 class EnterpriseFingerprinter:
     def __init__(self):
         self.session = requests.Session()
-        self.session.verify = False
+        # Honour the global SSL verification setting instead of hardcoding False.
+        try:
+            from app.core.config import config as _cfg
+            self.session.verify = _cfg.get('security.ssl_verify', True)
+        except Exception:
+            self.session.verify = True
         self.session.timeout = 10
         self.device_db = self._load_device_db()
         self.default_creds = self._load_default_creds()
@@ -27,8 +33,9 @@ class EnterpriseFingerprinter:
             if os.path.exists(db_path):
                 with open(db_path, 'r') as f:
                     return json.load(f)
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         # Fallback to embedded database
         return {
@@ -53,8 +60,9 @@ class EnterpriseFingerprinter:
             if os.path.exists(creds_path):
                 with open(creds_path, 'r') as f:
                     return json.load(f)
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         # Fallback to embedded credentials
         return {
@@ -184,8 +192,9 @@ class EnterpriseFingerprinter:
                     return mmh3.hash(response.content)
                 except ImportError:
                     return hash(response.content)
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         return None
     
     def _get_tls_cert_info(self, target):
@@ -213,8 +222,9 @@ class EnterpriseFingerprinter:
                         for ext in cert.get('subjectAltName', []):
                             if ext[0] == 'DNS':
                                 cert_info['san'].append(ext[1])
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         return cert_info
     
     def _analyze_cookies(self, cookies):
@@ -294,8 +304,9 @@ class EnterpriseFingerprinter:
                                 tls_config[f'TLS_{version}'] = True
                     except:
                         tls_config[f'TLS_{version}'] = False
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         return tls_config
     
     def _check_http_methods(self, target):
@@ -308,8 +319,9 @@ class EnterpriseFingerprinter:
                 response = self.session.request(method, target, timeout=5)
                 if response.status_code not in [405, 501]:
                     allowed_methods.append(method)
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         return allowed_methods
     
@@ -340,8 +352,9 @@ class EnterpriseFingerprinter:
                         'success': True
                     })
                     break  # Stop after first successful blank credential
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         return cred_results
     
@@ -366,8 +379,9 @@ class EnterpriseFingerprinter:
                     'severity': 'High',
                     'description': 'Possible directory traversal vulnerability'
                 })
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return vulns
     
@@ -399,8 +413,9 @@ class EnterpriseFingerprinter:
             # Temporarily disable catchall detection for debugging
             # if len(catchall_responses) >= 2:  # If 2+ random paths return redirects, likely catchall
             #     return surface  # Return empty surface to avoid false positives
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         # Common paths to check
         common_paths = [
@@ -447,8 +462,9 @@ class EnterpriseFingerprinter:
                             surface['apis'].append(route_info)
                         elif route_info['type'] == 'admin':
                             surface['admin_panels'].append(route_info)
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         return surface
     
@@ -568,8 +584,9 @@ class EnterpriseFingerprinter:
                         'path': path,
                         'description': 'TP-Link admin interface accessible'
                     })
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         return vulns
     
@@ -594,8 +611,9 @@ class EnterpriseFingerprinter:
                         'path': path,
                         'description': 'Netgear interface accessible'
                     })
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         return vulns
     

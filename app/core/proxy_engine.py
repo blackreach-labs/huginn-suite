@@ -4,6 +4,7 @@ from PyQt6.QtCore import QObject, pyqtSignal, QThread
 import json
 import time
 from urllib.parse import urlparse
+from app.core.logger import logger
 
 try:
     from mitmproxy import http, options
@@ -213,8 +214,9 @@ class ProxyEngine(QObject):
             if self.proxy_thread.master:
                 try:
                     self.proxy_thread.master.shutdown()
-                except:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
             self.proxy_thread.quit()
             self.proxy_thread.wait()
             self.proxy_stopped.emit()

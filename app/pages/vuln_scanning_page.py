@@ -6,6 +6,7 @@ from app.components.vuln_scanner_component import VulnScannerComponent
 from app.components.web_scanner_component import WebScannerComponent
 from app.components.ssh_vuln_scanner_component import SSHVulnScannerComponent
 from shared.events import get_event_bus
+from app.core.logger import logger
 # from application.services.vulnerability_service import VulnerabilityService
 
 class VulnScanningPage(BasePage):
@@ -30,15 +31,17 @@ class VulnScanningPage(BasePage):
         try:
             self.vuln_scanner = VulnScannerComponent(self)
             self.tab_widget.addTab(self.vuln_scanner, "Vulnerability Scanner")
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         # Web Application Scanner tab
         try:
             self.web_scanner = WebScannerComponent(self)
             self.tab_widget.addTab(self.web_scanner, "Web Application Scanner")
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         # SSH Vulnerability Scanner tab
         try:

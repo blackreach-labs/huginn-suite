@@ -5,6 +5,7 @@ Token theft and impersonation for privilege escalation
 import ctypes
 import ctypes.wintypes
 from typing import Dict, List, Optional, Tuple
+from app.core.logger import logger
 
 class TokenImpersonator:
     """Windows token impersonation via RPC"""
@@ -68,16 +69,18 @@ class TokenImpersonator:
                         if token_info:
                             tokens.append(token_info)
                             
-                    except Exception:
+                    except Exception as _exc:
                         pass
+                        logger.debug("Suppressed exception", exc_info=True)
                     
                     if not self.kernel32.Process32Next(snapshot, ctypes.byref(pe32)):
                         break
             
             self.kernel32.CloseHandle(snapshot)
             
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return tokens
     

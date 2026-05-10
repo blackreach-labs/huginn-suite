@@ -5,6 +5,7 @@ import base64
 from typing import Set, List, Dict, Callable
 import re
 from urllib.parse import quote
+from app.core.logger import logger
 
 class CertificateTransparencyClient:
     """Certificate Transparency log client for subdomain discovery"""
@@ -70,16 +71,18 @@ class CertificateTransparencyClient:
             try:
                 from app.core.rate_limiter import rate_limiter
                 rate_limiter.wait_if_needed('cert_transparency')
-            except ImportError:
+            except ImportError as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
             
             # Get proxy settings
             proxies = {}
             try:
                 from app.core.proxy_manager import proxy_manager
                 proxies = proxy_manager.get_proxy_dict()
-            except ImportError:
+            except ImportError as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
             
             # Search for certificates
             url = f"https://crt.sh/?q=%.{domain}&output=json"
@@ -111,8 +114,9 @@ class CertificateTransparencyClient:
                         cn_subdomains = self._extract_subdomains(cert_info['common_name'], domain)
                         results['subdomains'].update(cn_subdomains)
         
-        except Exception:
+        except Exception as _exc:
             pass  # Fail silently for individual source failures
+            logger.debug("Suppressed exception", exc_info=True)
         
         return results
     
@@ -126,16 +130,18 @@ class CertificateTransparencyClient:
             try:
                 from app.core.rate_limiter import rate_limiter
                 rate_limiter.wait_if_needed('cert_transparency')
-            except ImportError:
+            except ImportError as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
             
             # Get proxy settings
             proxies = {}
             try:
                 from app.core.proxy_manager import proxy_manager
                 proxies = proxy_manager.get_proxy_dict()
-            except ImportError:
+            except ImportError as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
             
             # Search for certificates (free tier, no API key needed)
             url = f"https://api.certspotter.com/v1/issuances?domain={domain}&include_subdomains=true&expand=dns_names"
@@ -162,8 +168,9 @@ class CertificateTransparencyClient:
                         subdomains = self._extract_subdomains(dns_name, domain)
                         results['subdomains'].update(subdomains)
         
-        except Exception:
+        except Exception as _exc:
             pass  # Fail silently for individual source failures
+            logger.debug("Suppressed exception", exc_info=True)
         
         return results
     
@@ -228,8 +235,9 @@ class CertificateTransparencyClient:
                 if response.status_code == 200:
                     return response.json()
         
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return {}
 

@@ -2,6 +2,7 @@
 import struct
 import uuid
 from typing import Dict, List, Optional, Tuple
+from app.core.logger import logger
 
 class SAMRClient:
     """Security Account Manager RPC client for user enumeration"""
@@ -246,8 +247,9 @@ class SAMRClient:
         try:
             request_data = handle
             self.transport.call_rpc(self.SAMR_CLOSE_HANDLE, request_data, self.SAMR_UUID)
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def _parse_enumeration_response(self, response: bytes) -> List[Dict]:
         """Parse enumeration response"""
@@ -374,5 +376,6 @@ class SAMRClient:
                 self._close_handle(self.domain_handle)
             if self.server_handle:
                 self._close_handle(self.server_handle)
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)

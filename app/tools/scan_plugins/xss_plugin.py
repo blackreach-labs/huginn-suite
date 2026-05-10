@@ -1,6 +1,7 @@
 # app/tools/scan_plugins/xss_plugin.py
 from .base_plugin import BaseScanPlugin
 import re
+from app.core.logger import logger
 
 class XSSPlugin(BaseScanPlugin):
     def __init__(self):
@@ -22,7 +23,7 @@ class XSSPlugin(BaseScanPlugin):
                 try:
                     xss_payload = '<script>alert(1)</script>'
                     test_data = {input_name: xss_payload}
-                    test_response = session.post(url, data=test_data, timeout=5, verify=False)
+                    test_response = session.post(url, data=test_data, timeout=5, verify=self.ssl_verify)
                     
                     if xss_payload in test_response.text:
                         results['vulnerabilities'].append({
@@ -31,7 +32,8 @@ class XSSPlugin(BaseScanPlugin):
                             'payload': xss_payload,
                             'evidence': 'Payload reflected in response'
                         })
-                except:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
         
         return results if results['vulnerabilities'] or results['parameters'] else None

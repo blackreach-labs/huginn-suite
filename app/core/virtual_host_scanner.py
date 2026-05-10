@@ -1,5 +1,6 @@
 import asyncio
 from urllib.parse import urlparse
+from app.core.logger import logger
 
 class VirtualHostScanner:
     """Test for virtual host attacks and subdomain enumeration"""
@@ -44,7 +45,7 @@ class VirtualHostScanner:
             async with session.get(target_url) as baseline_response:
                 baseline_content = await baseline_response.text()
                 baseline_status = baseline_response.status
-        except:
+        except Exception:
             return findings
         
         for malicious_host in malicious_hosts:
@@ -77,7 +78,7 @@ class VirtualHostScanner:
                         
                 await asyncio.sleep(0.2)  # Rate limiting
                 
-            except:
+            except Exception:
                 continue
         
         return findings
@@ -92,7 +93,7 @@ class VirtualHostScanner:
             async with session.get(target_url) as baseline_response:
                 baseline_status = baseline_response.status
                 baseline_size = len(await baseline_response.text())
-        except:
+        except Exception:
             return findings
         
         for vhost in self.common_vhosts[:8]:  # Limit to avoid overwhelming
@@ -116,7 +117,7 @@ class VirtualHostScanner:
                         
                 await asyncio.sleep(0.1)  # Rate limiting
                 
-            except:
+            except Exception:
                 continue
         
         if discovered_vhosts:

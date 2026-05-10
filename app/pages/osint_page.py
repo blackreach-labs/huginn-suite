@@ -8,7 +8,7 @@ from app.components.social_media_component import SocialMediaComponent
 from app.components.threat_intelligence_component import ThreatIntelligenceComponent
 from app.components.automation_component import AutomationComponent
 from app.components.compliance_component import ComplianceComponent
-from shared.events.event_bus import EventBus
+from app.core.logger import logger
 
 class OSINTPage(BasePage):
     def __init__(self, parent=None):
@@ -19,12 +19,14 @@ class OSINTPage(BasePage):
         """Setup the UI - required by BasePage"""
         try:
             self.setup_page()
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         try:
             self.connect_events()
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
 
     def setup_page(self):
         """Setup page layout and components"""
@@ -94,9 +96,19 @@ class OSINTPage(BasePage):
         self.compliance_component.compliance_checked.connect(self.on_compliance_checked)
         self.compliance_component.compliance_completed.connect(self.on_compliance_completed)
         
-        # Event bus
-        EventBus.instance().scan_started.connect(self.on_scan_started)
-        EventBus.instance().scan_completed.connect(self.on_scan_completed)
+        # Event bus — subscribe using the callback API (EventBus uses
+        # subscribe/publish, not Qt signals).
+        try:
+            from shared.events.event_bus import get_event_bus
+            bus = get_event_bus()
+            bus.subscribe("scan_started", lambda e: self.on_scan_started(
+                getattr(e, 'scan_id', ''), getattr(e, 'scanner_type', '')
+            ))
+            bus.subscribe("scan_completed", lambda e: self.on_scan_completed(
+                getattr(e, 'scan_id', ''), getattr(e, 'results', {})
+            ))
+        except Exception as _exc:
+            logger.debug("EventBus subscription skipped", exc_info=True)
 
     def on_osint_started(self, target, osint_type):
         """Handle OSINT operation started"""

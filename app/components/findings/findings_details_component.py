@@ -1,5 +1,6 @@
 # app/components/findings/findings_details_component.py
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTextEdit
+from app.core.html_utils import h
 
 class FindingsDetailsComponent(QWidget):
     def __init__(self, parent=None):
@@ -28,15 +29,17 @@ class FindingsDetailsComponent(QWidget):
 
     def show_finding_details(self, finding):
         details = self.get_finding_details(finding["id"])
+        # details comes from a hardcoded dict — safe as-is (contains trusted HTML)
+        # finding["title"] comes from user-selected data — escape it
         self.info_panel.setHtml(f"""
-        <div style='color: #64C8FF; font-size: 20pt; font-weight: bold; margin-bottom: 15px;'>{finding["title"]}</div>
+        <div style='color: #64C8FF; font-size: 20pt; font-weight: bold; margin-bottom: 15px;'>{h(finding["title"])}</div>
         <div style='color: #DCDCDC; font-size: 14pt; line-height: 150%;'>{details}</div>
         """)
 
     def show_hover_info(self, title, description):
         self.info_panel.setHtml(f"""
-        <div style='color: #64C8FF; font-size: 22pt; font-weight: bold;'>{title}</div>
-        <div style='color: #DCDCDC; font-size: 16pt;'>{description}</div>
+        <div style='color: #64C8FF; font-size: 22pt; font-weight: bold;'>{h(title)}</div>
+        <div style='color: #DCDCDC; font-size: 16pt;'>{h(description)}</div>
         """)
 
     def get_finding_details(self, finding_id):

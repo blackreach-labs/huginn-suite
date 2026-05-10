@@ -2,6 +2,7 @@ import os
 import yaml
 import json
 from typing import Dict, Any, Optional
+from app.core.logger import logger
 
 class ConfigManager:
     """Configuration and profile management for Huggin Scanner"""
@@ -16,8 +17,9 @@ class ConfigManager:
             try:
                 with open(self.config_path, 'r') as f:
                     return yaml.safe_load(f)
-            except Exception:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         return self._get_default_config()
     

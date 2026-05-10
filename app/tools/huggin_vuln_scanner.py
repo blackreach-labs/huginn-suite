@@ -48,6 +48,7 @@ from ..core.deserialization_tester import DeserializationTester
 from ..core.business_logic_tester import BusinessLogicTester
 from ..core.ml_vulnerability_predictor import MLVulnerabilityPredictor
 from ..core.adaptive_fuzzer import AdaptiveFuzzer
+from app.core.logger import logger
 
 def _load_payloads():
     """Load payloads from configuration file"""
@@ -147,8 +148,9 @@ class PayloadManager:
                 payloads.extend(['"><script>alert(1)</script>', "'><script>alert(1)</script>"])
             elif isinstance(self.tech_stack, list) and 'React' in self.tech_stack:
                 payloads.append('{{constructor.constructor("alert(1)")()}}')
-        except (AttributeError, TypeError):
+        except (AttributeError, TypeError) as _exc:
             pass  # Use base payloads only
+            logger.debug("Suppressed exception", exc_info=True)
         
         return payloads[:self.limit]
     
@@ -216,11 +218,15 @@ class HugginVulnScanner:
         self.zero_day_fuzzer = ZeroDayFuzzer()
         self.neural_engine = NeuralVulnerabilityEngine()
         self.quantum_fuzzer = QuantumFuzzer()
-        self.autonomous_agent = AutonomousSecurityAgent()
+        # Autonomous agent: live mode only in 'insane' profile so the agent
+        # makes real network requests.  All other profiles use simulation mode
+        # which produces clearly-labelled synthetic data.
+        self.autonomous_agent = AutonomousSecurityAgent(
+            simulation_mode=(profile != 'insane')
+        )
         
         # Lazy-loaded components for performance
         self._components = {}
-        self.autonomous_agent = None
         
         # Create scan session
         import uuid
@@ -390,14 +396,26 @@ class HugginVulnScanner:
                     )
                     self.results['autonomous_mission'] = agent_results
                     
-                    # Add agent discoveries as vulnerabilities
-                    agent_vulns = agent_results.get('discoveries', [])
+                    # Only add REAL (non-simulated) agent discoveries as vulnerabilities.
+                    # Simulated findings are stored in the mission result for reference
+                    # but must never be mixed into the real vulnerability list.
+                    agent_vulns = [
+                        v for v in agent_results.get('discoveries', [])
+                        if not v.get('simulated', True)  # default to True = exclude if unknown
+                    ]
                     if agent_vulns:
                         for vuln in agent_vulns:
                             vuln['source'] = 'autonomous_agent'
                             vuln['recommendation'] = 'Validate autonomous agent findings manually'
                         self.results['vulnerabilities'].extend(agent_vulns)
-                        info(f"Autonomous agent discovered {len(agent_vulns)} additional vulnerabilities")
+                        info(f"Autonomous agent discovered {len(agent_vulns)} real vulnerabilities")
+                    
+                    simulated_count = len(agent_results.get('discoveries', [])) - len(agent_vulns)
+                    if simulated_count > 0:
+                        info(
+                            f"Autonomous agent produced {simulated_count} simulated findings "
+                            "(excluded from results — not real vulnerabilities)"
+                        )
                     
                 except Exception as agent_err:
                     error(f"Autonomous agent execution failed: {agent_err}")
@@ -1068,8 +1086,9 @@ class HugginVulnScanner:
                     try:
                         async with session.get(self.target_url) as response:
                             content = await response.text()
-                    except:
+                    except Exception as _exc:
                         pass
+                        logger.debug("Suppressed exception", exc_info=True)
                     
                     # Passive content discovery
                     results = await passive_discovery.discover_content(session, self.target_url, content)

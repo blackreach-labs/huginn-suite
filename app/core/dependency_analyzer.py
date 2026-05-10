@@ -2,6 +2,7 @@ import re
 import json
 import aiohttp
 from typing import Dict, List, Optional
+from app.core.logger import logger
 
 class DependencyAnalyzer:
     """Analyzes exposed dependency files for known vulnerabilities"""
@@ -76,8 +77,9 @@ class DependencyAnalyzer:
                         'cvss_score': 7.5,
                         'remediation': f'Update {pkg} to version {vulnerable_packages[pkg][0]} or higher'
                     })
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return vulnerabilities
     

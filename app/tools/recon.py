@@ -12,6 +12,7 @@ from collections import defaultdict
 from PyQt6.QtCore import QObject, pyqtSignal, QRunnable, QThreadPool
 from app.core.logger import logger
 from app.core.config import config
+from app.core.html_utils import h
 
 class SubdomainGenerator:
     """Dedicated subdomain generator - handles only subdomain generation logic"""
@@ -175,7 +176,7 @@ class HostWordlistWorker(QRunnable):
                 continue
             except Exception as e:
                 logger.log_dns_error(test_domain, str(e))
-                self.signals.output.emit(f"<p style='color: orange;'>[Wildcard Detection Error]: {test_domain} - {e}</p>")
+                self.signals.output.emit(f"<p style='color: orange;'>[Wildcard Detection Error]: {h(test_domain)} - {h(e)}</p>")
 
     def query_subdomain(self, subdomain):
         if not self.is_running:
@@ -206,8 +207,9 @@ class HostWordlistWorker(QRunnable):
 
                 except (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer, dns.resolver.Timeout):
                     continue
-                except Exception:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
     
     def _query_srv_records(self, subdomain):
         """Query SRV records using service wordlist"""
@@ -235,8 +237,9 @@ class HostWordlistWorker(QRunnable):
                         self.signals.result_found.emit(fqdn, 'SRV', values)
                 except (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer, dns.resolver.Timeout):
                     continue
-                except Exception:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
 
     def _get_subdomains(self):
         """Get subdomains from the injected generator"""
@@ -293,8 +296,9 @@ class HostWordlistWorker(QRunnable):
                     
                     try:
                         future.result()
-                    except:
+                    except Exception as _exc:
                         pass
+                        logger.debug("Suppressed exception", exc_info=True)
                     
                     completed_count += 1
                     current_sub = future_to_sub[future]
@@ -364,7 +368,7 @@ class PTRWorker(QRunnable):
                         end_subnet = int(end_parts[2])
                         base_network = f"{start_parts[0]}.{start_parts[1]}"
                         
-                        self.signals.output.emit(f"<p style='color: #00BFFF;'>[INFO] Cross-subnet range detected. Scanning {end_subnet - start_subnet + 1} subnets...</p>")
+                        self.signals.output.emit(f"<p style='color: #00BFFF;'>[INFO] Cross-subnet range detected. Scanning {h(end_subnet - start_subnet + 1)} subnets...</p>")
                         
                         for subnet in range(start_subnet, end_subnet + 1):
                             # Scan each subnet from .1 to .254 (skip .0 and .255)
@@ -414,15 +418,18 @@ class PTRWorker(QRunnable):
                     values = [r.target.to_text().rstrip('.') for r in answers]
                     if values:
                         return str(ip), values
-                except dns.resolver.NXDOMAIN:
+                except dns.resolver.NXDOMAIN as _exc:
                     # No PTR record exists
                     pass
-                except dns.resolver.Timeout:
+                    logger.debug("Suppressed exception", exc_info=True)
+                except dns.resolver.Timeout as _exc:
                     # DNS timeout
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
                 except Exception as e:
                     # Silent error handling
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
                 return None
             
             with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
@@ -437,9 +444,9 @@ class PTRWorker(QRunnable):
                         ip, values = result
                         results[ip] = {'PTR': values}
                         self.results_count += 1
-                        self.signals.output.emit(f"<p style='color: #00FF41;'>[+] Found (PTR): {ip}</p>")
+                        self.signals.output.emit(f"<p style='color: #00FF41;'>[+] Found (PTR): {h(ip)}</p>")
                         for value in values:
-                            self.signals.output.emit(f"<p style='color: #DCDCDC; padding-left: 20px;'>&nbsp;&nbsp;&nbsp;-&gt; {value}</p>")
+                            self.signals.output.emit(f"<p style='color: #DCDCDC; padding-left: 20px;'>&nbsp;&nbsp;&nbsp;-&gt; {h(value)}</p>")
                         self.signals.output.emit("<br>")
                         # Store individual result immediately
                         self.signals.results_ready.emit({ip: {'PTR': values}})
@@ -451,7 +458,7 @@ class PTRWorker(QRunnable):
             
             # Final results summary already sent individually
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: red;'>[ERROR] PTR query failed: {str(e)}</p>")
+            self.signals.output.emit(f"<p style='color: red;'>[ERROR] PTR query failed: {h(str(e))}</p>")
         finally:
             self.signals.finished.emit()
     
@@ -559,15 +566,17 @@ class SRVOnlyWorker(QRunnable):
                             all_results[self.target]['SRV'].extend(values)
                             results_found += 1
                             
-                            self.signals.output.emit(f"<p style='color: #00FF41;'>[+] Found (SRV): {fqdn}</p>")
+                            self.signals.output.emit(f"<p style='color: #00FF41;'>[+] Found (SRV): {h(fqdn)}</p>")
                             for value in values:
-                                self.signals.output.emit(f"<p style='color: #DCDCDC; padding-left: 20px;'>&nbsp;&nbsp;&nbsp;-&gt; {value}</p>")
+                                self.signals.output.emit(f"<p style='color: #DCDCDC; padding-left: 20px;'>&nbsp;&nbsp;&nbsp;-&gt; {h(value)}</p>")
                             self.signals.output.emit("<br>")
                     
-                    except (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer, dns.resolver.Timeout):
+                    except (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer, dns.resolver.Timeout) as _exc:
                         pass
-                    except Exception:
+                        logger.debug("Suppressed exception", exc_info=True)
+                    except Exception as _exc:
                         pass
+                        logger.debug("Suppressed exception", exc_info=True)
                     
                     completed += 1
                     self.signals.progress_update.emit(completed, results_found, fqdn)
@@ -578,6 +587,6 @@ class SRVOnlyWorker(QRunnable):
             self.signals.status.emit("SRV enumeration completed")
             
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF4500;'>[ERROR] SRV enumeration failed: {str(e)}</p>")
+            self.signals.output.emit(f"<p style='color: #FF4500;'>[ERROR] SRV enumeration failed: {h(str(e))}</p>")
         finally:
             self.signals.finished.emit()

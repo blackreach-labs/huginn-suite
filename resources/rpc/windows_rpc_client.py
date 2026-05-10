@@ -8,6 +8,7 @@ import struct
 import uuid
 from typing import Dict, List, Optional
 from .native_rpc_dump import dump_rpc_endpoints
+import logging
 
 class WindowsRPCClient:
     def __init__(self):
@@ -91,8 +92,9 @@ class WindowsRPCClient:
                             os_info[key] = value
                 
                 registry_data['os_info'] = os_info
-        except:
+        except Exception as _exc:
             pass
+            logging.debug("Suppressed exception", exc_info=True)
         
         return registry_data
     
@@ -138,8 +140,9 @@ class WindowsRPCClient:
             try:
                 subprocess.run(['net', 'use', f'\\\\{self.target}\\IPC$', '/delete'], 
                              capture_output=True, text=True, timeout=5)
-            except:
+            except Exception as _exc:
                 pass
+                logging.debug("Suppressed exception", exc_info=True)
             self.authenticated = False
 
 

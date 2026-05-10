@@ -3,6 +3,7 @@ import time
 from typing import Dict, List, Optional
 from dataclasses import dataclass
 from datetime import datetime
+import logging
 
 @dataclass
 class ScanNode:
@@ -96,5 +97,6 @@ class NodeManager:
                     self.unregister_node(node_id)
                 
                 time.sleep(30)  # Check every 30 seconds
-            except Exception:
+            except Exception as _exc:
                 pass
+                logging.debug("Suppressed exception", exc_info=True)

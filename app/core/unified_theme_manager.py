@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 from PyQt6.QtCore import QObject, pyqtSignal
 from PyQt6.QtWidgets import QApplication
+from app.core.logger import logger
 
 class UnifiedThemeManager(QObject):
     """Unified theme manager combining all theme management functionality.
@@ -447,8 +448,9 @@ class UnifiedThemeManager(QObject):
         try:
             with open(self.settings_file, 'w') as f:
                 json.dump({"theme": self.current_theme}, f)
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def _load_theme_preference(self):
         """Load saved theme preference"""

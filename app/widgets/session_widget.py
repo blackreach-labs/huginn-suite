@@ -7,6 +7,7 @@ from PyQt6.QtCore import Qt, pyqtSignal
 from app.core.session_manager import session_manager
 import json
 from datetime import datetime
+from app.core.logger import logger
 
 class SessionDialog(QDialog):
     """Dialog for creating/editing sessions"""
@@ -283,7 +284,7 @@ class SessionWidget(QWidget):
                     try:
                         dt = datetime.fromisoformat(created.replace('Z', '+00:00'))
                         date_str = dt.strftime('%Y-%m-%d')
-                    except:
+                    except Exception:
                         date_str = created[:10]
                 else:
                     date_str = 'N/A'

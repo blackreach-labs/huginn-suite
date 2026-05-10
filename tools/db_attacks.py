@@ -17,7 +17,7 @@ class DatabaseAttacks(BaseTool):
         self.validator = InputValidator()
         self.cred_manager = CredentialManager()
         self.session = requests.Session()
-        self.session.verify = False
+        self.session.verify = _ssl_verify()
         requests.packages.urllib3.disable_warnings()
 
     def test_sql_injection(self, target, parameter="id", timeout=10, payloads=None):

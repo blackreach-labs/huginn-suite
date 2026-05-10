@@ -8,6 +8,7 @@ import socket
 import struct
 import uuid
 from typing import List, Dict, Optional, Tuple
+import logging
 
 class RPCEndpointMapper:
     """Real RPC Endpoint Mapper implementation"""
@@ -37,8 +38,9 @@ class RPCEndpointMapper:
         if self.sock:
             try:
                 self.sock.close()
-            except:
+            except Exception as _exc:
                 pass
+                logging.debug("Suppressed exception", exc_info=True)
             self.sock = None
     
     def enumerate_all_endpoints(self) -> List[Dict]:
@@ -56,8 +58,9 @@ class RPCEndpointMapper:
                 'port': 135,
                 'protocol': 'ncacn_ip_tcp'
             })
-        except Exception:
+        except Exception as _exc:
             pass
+            logging.debug("Suppressed exception", exc_info=True)
         finally:
             self.disconnect()
         

@@ -2,6 +2,32 @@
 
 Huggin is a comprehensive security assessment and reconnaissance framework that provides automated scanning, vulnerability detection, and intelligence gathering capabilities. It combines multiple security tools and techniques into a unified, user-friendly interface with advanced result filtering, memory management, and distributed scanning capabilities.
 
+## 🔒 Security
+
+A full security review was completed in May 2026. All 8 identified security issues
+(4 Critical, 2 High, 2 Medium) have been remediated.
+
+| Document | Description |
+|----------|-------------|
+| [`docs/SECURITY.md`](docs/SECURITY.md) | Secure coding standards, contribution rules, known issues |
+| [`docs/SECURITY_REVIEW.md`](docs/SECURITY_REVIEW.md) | Full review findings and remediation summary |
+| [`docs/CHANGELOG.md`](docs/CHANGELOG.md) | Detailed change log for every fix |
+
+**Key changes in the security review:**
+- SSL verification enabled by default (was globally disabled)
+- All credentials now Fernet-encrypted at rest (were plaintext JSON)
+- Command injection via `shell=True` eliminated across 10 files
+- SQL injection via f-string identifiers fixed with `_quote_identifier()`
+- HMAC-SHA256 attestation replaces hardcoded-secret check in Windows agent
+- HTML output escaping applied to all scan results and user data
+- 547 bare `except: pass` handlers now log suppressed exceptions
+- Autonomous agent simulation mode clearly labels all synthetic data
+
+To report a security issue, open a private issue or contact the maintainers
+directly. See [`docs/SECURITY.md`](docs/SECURITY.md) for the full policy.
+
+---
+
 ## 🚀 Huggin Advanced Security Scanner
 
 The flagship component of the Huggin framework is the **Huggin Advanced Security Scanner** - a revolutionary AI-powered vulnerability assessment tool that combines traditional security testing with cutting-edge artificial intelligence and quantum-inspired algorithms.

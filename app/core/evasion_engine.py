@@ -5,6 +5,7 @@ import re
 import json
 from typing import List, Dict, Any, Optional
 from urllib.parse import quote, unquote
+from app.core.logger import logger
 
 class EvasionEngine:
     """Advanced WAF evasion and bypass techniques for Phase 3"""
@@ -162,7 +163,7 @@ class EvasionEngine:
                 variant = self.evade_payload(payload, technique, waf_type)
                 if variant != payload and variant not in variants:
                     variants.append(variant)
-            except:
+            except Exception:
                 continue
         
         # Transformation chain variants
@@ -173,7 +174,7 @@ class EvasionEngine:
                     variant = self.evade_payload(variant, technique, waf_type)
                 if variant != payload and variant not in variants:
                     variants.append(variant)
-            except:
+            except Exception:
                 continue
         
         return variants[:8]  # Limit to 8 variants

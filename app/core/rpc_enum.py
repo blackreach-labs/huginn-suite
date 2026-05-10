@@ -1,4 +1,4 @@
-# app/core/rpc_enum_fixed.py
+# app/core/rpc_enum.py
 """
 Fixed RPC Enumeration Engine
 Provides reliable RPC enumeration functionality for the new architecture
@@ -8,6 +8,7 @@ import socket
 import struct
 from typing import Dict, List, Optional, Tuple
 import uuid
+from app.core.logger import logger
 
 class RPCEnumerator:
     """Enhanced RPC enumerator with fallback mechanisms"""
@@ -247,8 +248,9 @@ class RPCEnumerator:
         try:
             subprocess.run(["net", "use", f"\\\\{self.target}\\IPC$", "/delete", "/y"], 
                          capture_output=True, timeout=5)
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
 
 # Factory function for backward compatibility
 def enumerate_target_rpc(target: str, domain: str, username: str, password: str) -> Dict:

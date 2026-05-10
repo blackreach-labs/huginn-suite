@@ -2,6 +2,7 @@
 import asyncio
 from urllib.parse import urljoin, urlparse, parse_qs
 from bs4 import BeautifulSoup
+from app.core.logger import logger
 
 class PathTraversalTester:
     """Test for path traversal and LFI vulnerabilities"""
@@ -119,8 +120,9 @@ class PathTraversalTester:
                                 })
                                 break  # Found vulnerability, no need to test more payloads for this field
                 
-                except Exception:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
     
     async def _test_url_path_traversal(self, base_url):
         """Test URL parameters for path traversal"""
@@ -164,5 +166,6 @@ class PathTraversalTester:
                             'parameter': param_name,
                             'payload': lfi_payload
                         })
-            except Exception:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)

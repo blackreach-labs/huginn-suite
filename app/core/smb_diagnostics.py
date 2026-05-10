@@ -3,6 +3,7 @@ import socket
 import struct
 import time
 from typing import Dict, List, Tuple, Optional
+from app.core.logger import logger
 
 class SMBDiagnostics:
     """Comprehensive SMB connection diagnostics and troubleshooting"""
@@ -86,8 +87,9 @@ class SMBDiagnostics:
                 finally:
                     try:
                         sock.close()
-                    except:
+                    except Exception as _exc:
                         pass
+                        logger.debug("Suppressed exception", exc_info=True)
         
         except Exception as e:
             result['errors'].append(f"TCP test exception: {str(e)}")

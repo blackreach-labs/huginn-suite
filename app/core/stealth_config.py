@@ -1,6 +1,7 @@
 # app/core/stealth_config.py
 import json
 import os
+from app.core.logger import logger
 
 class StealthConfig:
     """Stealth Mode Configuration Manager"""
@@ -24,8 +25,9 @@ class StealthConfig:
             if os.path.exists(self.config_file):
                 with open(self.config_file, 'r') as f:
                     return json.load(f)
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         return self.default_config.copy()
     
     def save_config(self):
@@ -34,8 +36,9 @@ class StealthConfig:
             os.makedirs(os.path.dirname(self.config_file), exist_ok=True)
             with open(self.config_file, 'w') as f:
                 json.dump(self.config, f, indent=2)
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def is_enabled(self):
         """Check if stealth mode is enabled"""

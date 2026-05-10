@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
 from PyQt6.QtCore import pyqtSignal, Qt, QSize, QThreadPool
 from PyQt6.QtGui import QIcon
 import os
+from app.core.logger import logger
 
 # Import mixins for advanced functionality
 try:
@@ -38,8 +39,9 @@ class ReconEnumerationPage(QWidget, ServiceScannersMixin, ServiceUIComponentsMix
         try:
             from app.core.tenant_aware_updater import tenant_aware_updater
             tenant_aware_updater.tenant_changed.connect(self.on_tenant_changed)
-        except ImportError:
+        except ImportError as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         self.setup_ui()
         
@@ -78,8 +80,9 @@ class ReconEnumerationPage(QWidget, ServiceScannersMixin, ServiceUIComponentsMix
             from app.pages.osint_page import OSINTPage
             osint_widget = OSINTPage(self)
             self.tab_widget.addTab(osint_widget, self.create_tab_icon("osint.png"), "OSINT")
-        except ImportError:
+        except ImportError as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         # Network Scanning tab (combines Network Discovery and Port Scanning)
         network_scanning_tab = self.create_network_scanning_tab()
@@ -128,8 +131,9 @@ class ReconEnumerationPage(QWidget, ServiceScannersMixin, ServiceUIComponentsMix
                 
                 from PyQt6.QtCore import QTimer
                 QTimer.singleShot(500, self._register_ui_components)
-            except ImportError:
+            except ImportError as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
     
     def _register_ui_components(self):
         """Register UI components after they're created"""

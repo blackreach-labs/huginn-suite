@@ -23,6 +23,7 @@ from PyQt6.QtCore import QObject, pyqtSignal, QThread
 import yaml
 import re
 from datetime import datetime
+from app.core.logger import logger
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -298,7 +299,7 @@ class WaybackPlugin(SourcePlugin):
                                             source=self.name,
                                             raw_data={'original_url': url_str}
                                         ))
-                            except:
+                            except Exception:
                                 continue
         
         except Exception as e:
@@ -572,7 +573,7 @@ class DNSResolver:
                 result.ip = str(answers[0])
                 result.status = "resolved"
                 return result
-        except:
+        except Exception:
             try:
                 # Try AAAA record
                 answers = self.resolver.resolve(result.host, 'AAAA')
@@ -580,7 +581,7 @@ class DNSResolver:
                     result.ip = str(answers[0])
                     result.status = "resolved"
                     return result
-            except:
+            except Exception:
                 result.status = "unresolved"
                 return result
         
@@ -612,7 +613,7 @@ class DNSResolver:
             
             return filtered_results
         
-        except:
+        except Exception:
             # No wildcard detected, return all results
             return results
 

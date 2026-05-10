@@ -3,6 +3,7 @@ import asyncio
 from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup
 import aiohttp
+from app.core.logger import logger
 
 class ContentDiscovery:
     """Discover sensitive files and directories"""
@@ -74,8 +75,9 @@ class ContentDiscovery:
                             if path and path != '/':
                                 full_url = urljoin(base_url, path)
                                 self.discovered_urls.add(full_url)
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     async def _check_sensitive_paths(self, base_url):
         """Check for sensitive directories and files"""
@@ -153,6 +155,7 @@ class ContentDiscovery:
         except Exception as e:
             # Silently continue for now
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     async def _crawl_page(self, url):
         """Crawl page for additional links"""
@@ -170,8 +173,9 @@ class ContentDiscovery:
                         # Only add same-domain URLs
                         if urlparse(full_url).netloc == urlparse(url).netloc:
                             self.discovered_urls.add(full_url)
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def _is_directory_listing(self, content):
         """Detect if content shows directory listing"""

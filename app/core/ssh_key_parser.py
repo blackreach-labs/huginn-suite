@@ -3,6 +3,7 @@ import base64
 import struct
 import hashlib
 from typing import Dict, List, Optional, Tuple
+from app.core.logger import logger
 
 class SSHKeyParser:
     """SSH key analysis and parsing for reconnaissance"""
@@ -203,7 +204,7 @@ class SSHKeyParser:
                 return 256
             else:
                 return 0
-        except:
+        except Exception:
             return 0
     
     def _analyze_key_security(self, key_info: Dict) -> Dict:

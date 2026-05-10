@@ -5,6 +5,7 @@ import uuid
 import base64
 from typing import Optional, Dict, Tuple
 import urllib.parse
+from app.core.logger import logger
 
 class RPCHTTPTransport:
     """RPC over HTTP transport for Domain Controllers with SMB signing"""
@@ -206,5 +207,6 @@ class RPCHTTPTransport:
             if self.socket:
                 self.socket.close()
                 self.socket = None
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)

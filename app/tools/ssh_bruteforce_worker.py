@@ -5,6 +5,8 @@ import time
 from typing import List, Dict, Optional, Callable
 from PyQt6.QtCore import QObject, pyqtSignal, QRunnable
 from ..core.ssh_protocol import create_ssh_protocol
+from app.core.html_utils import h
+from app.core.logger import logger
 
 class SSHBruteforceSignals(QObject):
     output = pyqtSignal(str)
@@ -34,15 +36,15 @@ class SSHBruteforceWorker(QRunnable):
     def run(self):
         """Execute SSH bruteforce attack"""
         try:
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>[BRUTEFORCE] Starting SSH bruteforce attack on {self.target}:{self.port}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>[BRUTEFORCE] Starting SSH bruteforce attack on {h(self.target)}:{h(self.port)}</p><br>")
             
             # Check if SSH is accessible
             if not self._check_ssh_accessible():
-                self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] SSH service not accessible on {self.target}:{self.port}</p><br>")
+                self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] SSH service not accessible on {h(self.target)}:{h(self.port)}</p><br>")
                 return
             
             self.total_attempts = len(self.usernames) * len(self.passwords)
-            self.signals.output.emit(f"<p style='color: #87CEEB;'>[INFO] Testing {self.total_attempts} credential combinations</p><br>")
+            self.signals.output.emit(f"<p style='color: #87CEEB;'>[INFO] Testing {h(self.total_attempts)} credential combinations</p><br>")
             
             # Create thread pool for concurrent attacks
             threads = []
@@ -73,15 +75,15 @@ class SSHBruteforceWorker(QRunnable):
             if self.found_credentials:
                 self.signals.output.emit(f"<p style='color: #00FF41;'>[SUCCESS] Found {len(self.found_credentials)} valid credentials:</p><br>")
                 for cred in self.found_credentials:
-                    self.signals.output.emit(f"<p style='color: #00FF41;'>  [+] {cred['username']}:{cred['password']}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #00FF41;'>  [+] {h(cred['username'])}:{h(cred['password'])}</p><br>")
                     self.signals.credentials_found.emit(cred)
             else:
                 self.signals.output.emit(f"<p style='color: #FFAA00;'>[INFO] No valid credentials found</p><br>")
             
-            self.signals.output.emit(f"<p style='color: #87CEEB;'>[INFO] Bruteforce attack completed ({self.attempts}/{self.total_attempts} attempts)</p><br>")
+            self.signals.output.emit(f"<p style='color: #87CEEB;'>[INFO] Bruteforce attack completed ({h(self.attempts)}/{h(self.total_attempts)} attempts)</p><br>")
             
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] Bruteforce attack failed: {e}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] Bruteforce attack failed: {h(e)}</p><br>")
         finally:
             self.signals.finished.emit()
     
@@ -93,7 +95,7 @@ class SSHBruteforceWorker(QRunnable):
             result = sock.connect_ex((self.target, self.port))
             sock.close()
             return result == 0
-        except:
+        except Exception:
             return False
     
     def _test_credentials(self, username: str, password: str, semaphore: threading.Semaphore):
@@ -122,12 +124,12 @@ class SSHBruteforceWorker(QRunnable):
                     with self.lock:
                         self.found_credentials.append(credential)
                     
-                    self.signals.output.emit(f"<p style='color: #00FF41;'>[SUCCESS] Valid credentials: {username}:{password}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #00FF41;'>[SUCCESS] Valid credentials: {h(username)}:{h(password)}</p><br>")
                 else:
-                    self.signals.output.emit(f"<p style='color: #FF6B6B;'>[-] Failed: {username}:{password}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #FF6B6B;'>[-] Failed: {h(username)}:{h(password)}</p><br>")
                     
             except Exception as e:
-                self.signals.output.emit(f"<p style='color: #FFAA00;'>[WARNING] Error testing {username}:{password} - {e}</p><br>")
+                self.signals.output.emit(f"<p style='color: #FFAA00;'>[WARNING] Error testing {h(username)}:{h(password)} - {h(e)}</p><br>")
     
     def _attempt_ssh_login(self, username: str, password: str) -> bool:
         """Attempt SSH login with credentials using raw SSH protocol"""
@@ -239,7 +241,7 @@ class SSHKeyBruteforceWorker(QRunnable):
     def run(self):
         """Execute SSH key bruteforce attack"""
         try:
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>[KEY-BRUTEFORCE] Starting SSH key bruteforce on {self.target}:{self.port}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>[KEY-BRUTEFORCE] Starting SSH key bruteforce on {h(self.target)}:{h(self.port)}</p><br>")
             
             if not self.key_paths:
                 self.signals.output.emit(f"<p style='color: #FFAA00;'>[WARNING] No SSH keys provided for testing</p><br>")
@@ -270,10 +272,10 @@ class SSHKeyBruteforceWorker(QRunnable):
                             'timestamp': time.time()
                         }
                         self.found_credentials.append(credential)
-                        self.signals.output.emit(f"<p style='color: #00FF41;'>[SUCCESS] Valid key: {username}@{key_path}</p><br>")
+                        self.signals.output.emit(f"<p style='color: #00FF41;'>[SUCCESS] Valid key: {h(username)}@{h(key_path)}</p><br>")
                         self.signals.credentials_found.emit(credential)
                     else:
-                        self.signals.output.emit(f"<p style='color: #FF6B6B;'>[-] Failed: {username}@{key_path}</p><br>")
+                        self.signals.output.emit(f"<p style='color: #FF6B6B;'>[-] Failed: {h(username)}@{h(key_path)}</p><br>")
             
             if self.found_credentials:
                 self.signals.output.emit(f"<p style='color: #00FF41;'>[SUCCESS] Found {len(self.found_credentials)} valid keys</p><br>")
@@ -281,7 +283,7 @@ class SSHKeyBruteforceWorker(QRunnable):
                 self.signals.output.emit(f"<p style='color: #FFAA00;'>[INFO] No valid keys found</p><br>")
                 
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] Key bruteforce failed: {e}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] Key bruteforce failed: {h(e)}</p><br>")
         finally:
             self.signals.finished.emit()
     

@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
                             QLineEdit, QPushButton, QTextEdit, QFrame, QGroupBox, QGridLayout, QCheckBox)
 from PyQt6.QtCore import pyqtSignal
+from app.core.html_utils import h
 
 class AutomationComponent(QWidget):
     automation_started = pyqtSignal(str, str)
@@ -122,7 +123,7 @@ class AutomationComponent(QWidget):
         
         self.output_text.setHtml(f"""
         <p style='color: #64C8FF;'>[AUTOMATED OSINT] Starting comprehensive automation...</p>
-        <p style='color: #FFD93D;'>Selected modules: {modules_text}</p>
+        <p style='color: #FFD93D;'>Selected modules: {h(modules_text)}</p>
         <p style='color: #00FF41;'>Processing {len(targets.split(','))} targets automatically</p>
         <p style='color: #00FF41;'>Automation workflow initiated successfully</p>
         """)

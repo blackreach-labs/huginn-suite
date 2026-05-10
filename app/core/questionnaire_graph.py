@@ -3,6 +3,7 @@ import json
 import os
 from typing import Dict, List, Optional, Any
 import pickle
+from app.core.logger import logger
 
 class QuestionnaireGraph:
     def __init__(self):
@@ -208,8 +209,9 @@ class QuestionnaireGraph:
             }
             with open(self.db_file, 'wb') as f:
                 pickle.dump(data, f)
-        except Exception:
+        except Exception as _exc:
             pass  # Fail silently
+            logger.debug("Suppressed exception", exc_info=True)
     
     def load_graph(self):
         """Load graph from file"""

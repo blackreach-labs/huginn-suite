@@ -160,13 +160,15 @@ class QueryEngine:
         with sqlite3.connect(self.db.db_path) as conn:
             conn.row_factory = sqlite3.Row
             
-            placeholders = ','.join(['?' for _ in weak_passwords])
-            cursor = conn.execute(f"""
+            # Build the IN-clause placeholders from the list length — no
+            # user input is interpolated into the SQL string itself.
+            placeholders = ','.join('?' * len(weak_passwords))
+            cursor = conn.execute("""
                 SELECT t.ip, t.hostname, c.username, c.password, c.domain, s.service, s.port
                 FROM credentials c
                 JOIN targets t ON c.target_id = t.id
                 LEFT JOIN services s ON c.service_id = s.id
-                WHERE c.password IN ({placeholders})
+                WHERE c.password IN (""" + placeholders + """)
                    OR (c.username = c.password AND c.username != '')
                    OR (c.username IN ('admin', 'root', 'guest') AND c.password IN ('admin', 'root', 'guest'))
                 ORDER BY t.ip
@@ -181,8 +183,8 @@ class QueryEngine:
         with sqlite3.connect(self.db.db_path) as conn:
             conn.row_factory = sqlite3.Row
             
-            placeholders = ','.join(['?' for _ in db_ports])
-            cursor = conn.execute(f"""
+            placeholders = ','.join('?' * len(db_ports))
+            cursor = conn.execute("""
                 SELECT t.ip, t.hostname, s.port, s.service, s.version, s.banner,
                        COUNT(v.id) as vuln_count,
                        COUNT(c.id) as cred_count
@@ -190,7 +192,7 @@ class QueryEngine:
                 JOIN services s ON t.id = s.target_id
                 LEFT JOIN vulnerabilities v ON s.id = v.service_id
                 LEFT JOIN credentials c ON t.id = c.target_id
-                WHERE s.port IN ({placeholders}) AND s.state = 'open'
+                WHERE s.port IN (""" + placeholders + """) AND s.state = 'open'
                 GROUP BY t.id, s.id
                 ORDER BY vuln_count DESC, cred_count DESC, t.ip
             """, db_ports)

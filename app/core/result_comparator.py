@@ -3,6 +3,7 @@ import json
 import os
 from datetime import datetime
 from typing import Dict, List, Tuple
+from app.core.logger import logger
 
 class ResultComparator:
     """Compare scan results to identify changes"""
@@ -113,8 +114,9 @@ class ResultComparator:
         try:
             with open(filepath, 'w') as f:
                 json.dump(comparison, f, indent=2)
-        except:
+        except Exception as _exc:
             pass  # Fail silently
+            logger.debug("Suppressed exception", exc_info=True)
     
     def get_comparison_history(self, target: str, scan_type: str) -> List[Dict]:
         """Get comparison history for target"""

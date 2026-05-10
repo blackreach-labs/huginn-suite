@@ -3,6 +3,7 @@ import os
 import subprocess
 import tempfile
 from typing import Optional, Dict, Any
+import logging
 
 class KerberosAuth:
     """Minimal Kerberos authentication for RPC enumeration"""
@@ -98,8 +99,9 @@ class KerberosAuth:
             # Check if target is already an IP address
             socket.inet_aton(target)
             return target  # Already an IP
-        except socket.error:
+        except socket.error as _exc:
             pass
+            logging.debug("Suppressed exception", exc_info=True)
         
         try:
             # Try LocalDNS first if available
@@ -304,8 +306,9 @@ class KerberosAuth:
         if self.ccache_path and os.path.exists(self.ccache_path):
             try:
                 os.unlink(self.ccache_path)
-            except:
+            except Exception as _exc:
                 pass
+                logging.debug("Suppressed exception", exc_info=True)
         
         if 'KRB5CCNAME' in os.environ:
             del os.environ['KRB5CCNAME']

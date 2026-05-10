@@ -8,6 +8,7 @@ import os
 import subprocess
 import tempfile
 from typing import Dict, List, Optional
+from app.core.logger import logger
 
 class LSASSDumper:
     """LSASS memory dumper for credential extraction"""
@@ -96,8 +97,9 @@ class LSASSDumper:
                 # Clean up dump file
                 try:
                     os.remove(dump_file)
-                except:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
                 
                 return {
                     'success': True,
@@ -145,8 +147,9 @@ class LSASSDumper:
                 # Clean up
                 try:
                     os.remove(dump_file)
-                except:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
                 
                 return {
                     'success': True,
@@ -246,8 +249,9 @@ class LSASSDumper:
                                           capture_output=True, text=True, timeout=5)
                     if result.returncode == 0:
                         return result.stdout.strip().split('\\n')[0]
-                except:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
             
             return None
             

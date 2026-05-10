@@ -6,6 +6,7 @@ import hashlib
 import os
 import sys
 import time
+import logging
 
 def build_smb311_negotiate():
     """Build byte-perfect SMB 3.1.1 negotiate packet"""
@@ -252,8 +253,9 @@ def test_smb311_negotiate(host, port=445):
             try:
                 sock.close()
                 print(f"[DEBUG] Socket closed")
-            except:
+            except Exception as _exc:
                 pass
+                logging.debug("Suppressed exception", exc_info=True)
     
     return False
 

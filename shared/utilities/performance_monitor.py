@@ -4,6 +4,7 @@ import threading
 from typing import Dict, List, Optional, Callable
 from dataclasses import dataclass, field
 from datetime import datetime
+import logging
 
 @dataclass
 class PerformanceMetrics:
@@ -58,12 +59,14 @@ class PerformanceMonitor:
                 for callback in self.callbacks:
                     try:
                         callback(metrics)
-                    except Exception:
+                    except Exception as _exc:
                         pass
+                        logging.debug("Suppressed exception", exc_info=True)
                 
                 time.sleep(self.collection_interval)
-            except Exception:
+            except Exception as _exc:
                 pass
+                logging.debug("Suppressed exception", exc_info=True)
     
     def _collect_metrics(self) -> PerformanceMetrics:
         """Collect current performance metrics"""

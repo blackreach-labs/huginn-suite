@@ -3,6 +3,7 @@ import re
 import ipaddress
 from typing import Dict, List, Set, Optional
 from .ssh_session_manager import ssh_session_manager
+from app.core.logger import logger
 
 class SSHLateralMovement:
     """SSH lateral movement detection and analysis"""
@@ -154,8 +155,9 @@ class SSHLateralMovement:
                         subnet = str(network.network_address) + "/24"
                         if subnet not in analysis['subnets']:
                             analysis['subnets'].append(subnet)
-                    except:
+                    except Exception as _exc:
                         pass
+                        logger.debug("Suppressed exception", exc_info=True)
         
         analysis['network_hosts'] = list(set(analysis['network_hosts']))
         analysis['host_count'] = len(analysis['network_hosts'])

@@ -707,6 +707,16 @@ class SSHDataCollector:
                 
                 summary = {}
                 
+                # Hardcoded allowlist — these are the only tables we ever query here.
+                # Validating against the allowlist prevents injection even if the
+                # list variable were somehow tampered with at runtime.
+                _ALLOWED_SSH_TABLES = frozenset({
+                    'ssh_banners', 'ssh_vulnerabilities', 'ssh_fingerprints',
+                    'ssh_key_types', 'ssh_usernames', 'ssh_auth_results',
+                    'ssh_exploits', 'ssh_system_info', 'ssh_credentials',
+                    'ssh_lateral_targets', 'ssh_persistence',
+                })
+
                 # Count records in each table
                 tables = [
                     'ssh_banners', 'ssh_vulnerabilities', 'ssh_fingerprints',
@@ -716,7 +726,15 @@ class SSHDataCollector:
                 ]
                 
                 for table in tables:
-                    cursor.execute(f'SELECT COUNT(*) FROM {table} WHERE tenant_id = ?', (self.tenant_id,))
+                    if table not in _ALLOWED_SSH_TABLES:
+                        continue  # Skip any name not in the allowlist
+                    # Bracket-quote as a second layer of defence.
+                    # No f-string: concatenate the pre-validated quoted name.
+                    quoted = "[" + table + "]"
+                    cursor.execute(
+                        "SELECT COUNT(*) FROM " + quoted + " WHERE tenant_id = ?",
+                        (self.tenant_id,)
+                    )
                     count = cursor.fetchone()[0]
                     summary[table] = count
                 

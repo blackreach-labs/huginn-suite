@@ -1,6 +1,7 @@
 # app/components/owasp_api/api_risk_details_component.py
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTextEdit
 from PyQt6.QtCore import pyqtSignal
+from app.core.html_utils import h
 
 class APIRiskDetailsComponent(QWidget):
     """OWASP API risk details display component"""
@@ -54,10 +55,10 @@ class APIRiskDetailsComponent(QWidget):
         """Display details for selected risk"""
         self.details_area.setHtml(f"""
         <div style='color: #64C8FF; font-size: 18pt; font-weight: bold; margin-bottom: 15px;'>
-            {risk_data["title"]}
+            {h(risk_data["title"])}
         </div>
         <div style='color: #DCDCDC; font-size: 14pt; line-height: 150%;'>
-            {risk_data.get("details", "Detailed information not available.")}
+            {h(risk_data.get("details", "Detailed information not available."))}
         </div>
         """)
     
@@ -65,10 +66,10 @@ class APIRiskDetailsComponent(QWidget):
         """Show hover information"""
         self.details_area.setHtml(f"""
         <div style='color: #64C8FF; font-size: 16pt; font-weight: bold; margin-bottom: 10px;'>
-            {title}
+            {h(title)}
         </div>
         <div style='color: #DCDCDC; font-size: 14pt; line-height: 150%;'>
-            {description}
+            {h(description)}
         </div>
         """)
     

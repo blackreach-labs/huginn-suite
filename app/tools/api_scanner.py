@@ -4,6 +4,8 @@ import json
 import subprocess
 from urllib.parse import urljoin
 from PyQt6.QtCore import QObject, pyqtSignal, QRunnable
+from app.core.html_utils import h
+from app.core.logger import logger
 
 class APISignals(QObject):
     output = pyqtSignal(str)
@@ -28,6 +30,13 @@ class APIEnumWorker(QRunnable):
         self.is_running = True
         self.results = {}
         self.session = requests.Session()
+        # Honour the global SSL verification setting instead of hardcoding False.
+        try:
+            from app.core.config import config as _cfg
+            self.ssl_verify = _cfg.get('security.ssl_verify', True)
+        except Exception:
+            self.ssl_verify = True
+        self.session.verify = self.ssl_verify
         self.session.timeout = 10
         self.session.headers.update({'User-Agent': 'Mozilla/5.0 API Scanner'})
         
@@ -55,7 +64,7 @@ class APIEnumWorker(QRunnable):
                     return self.original_getaddrinfo(host, port, family, type, proto, flags)
                 else:
                     return self.original_getaddrinfo(host, port, family, type, proto, flags)
-            except:
+            except Exception:
                 return self.original_getaddrinfo(host, port, family, type, proto, flags)
         
         # Monkey patch socket.getaddrinfo
@@ -151,9 +160,21 @@ class APIEnumWorker(QRunnable):
         return url
     
     def run_command(self, cmd, timeout=60):
-        """Execute command and return output"""
+        """Execute command and return output.
+        
+        Args:
+            cmd: Command as a list of strings, e.g. ['gobuster', 'dir', '-u', url].
+                 Passing a plain string is accepted for backward compatibility but
+                 will be rejected if it contains shell metacharacters.
+            timeout: Seconds before the process is killed.
+        """
         try:
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, shell=True)
+            if isinstance(cmd, str):
+                # Legacy callers pass a string; split it safely rather than
+                # using shell=True which would allow injection.
+                import shlex
+                cmd = shlex.split(cmd)
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
             return result.stdout, result.stderr, result.returncode
         except subprocess.TimeoutExpired:
             return "", "Command timed out", 1
@@ -231,10 +252,10 @@ class APIEnumWorker(QRunnable):
 
             try:
                 # Use the existing session to maintain state (like cookies)
-                response = self.session.get(full_url, verify=False, timeout=10)
+                response = self.session.get(full_url, verify=self.ssl_verify, timeout=10)
 
                 if response.status_code == 200 and 'application/json' in response.headers.get('Content-Type', ''):
-                    self.signals.output.emit(f"<p style='color: #00FF41;'>[+] Discovered Endpoint: {path}</p>")
+                    self.signals.output.emit(f"<p style='color: #00FF41;'>[+] Discovered Endpoint: {h(path)}</p>")
                     endpoints_found.append(path)
                 
                     # Try to find new paths in the JSON response
@@ -247,7 +268,7 @@ class APIEnumWorker(QRunnable):
                                 if isinstance(sub_value, str) and sub_value.startswith('/') and sub_value not in scanned_paths:
                                     scan_queue.append(sub_value)
             except Exception as e:
-                self.signals.output.emit(f"<p style='color: #FF4500;'>[!] Error scanning {path}: {e}</p>")
+                self.signals.output.emit(f"<p style='color: #FF4500;'>[!] Error scanning {h(path)}: {h(e)}</p>")
             
         self.results['recursive_endpoints'] = endpoints_found
 
@@ -388,21 +409,21 @@ class APIEnumWorker(QRunnable):
     def intelligent_decode(self, response_json):
         """Attempts to decode data based on hints in the JSON response."""
         try:
-            self.signals.output.emit(f"<p style='color: #DCDCDC;'>Raw response: {response_json}</p>")
+            self.signals.output.emit(f"<p style='color: #DCDCDC;'>Raw response: {h(response_json)}</p>")
             # Check for ROT13 format from the guide
             if 'enctype' in response_json and response_json['enctype'] == 'ROT13' and 'data' in response_json:
                 decoded = codecs.decode(response_json['data'], 'rot_13')
-                self.signals.output.emit(f"<p style='color: #90EE90;'>&nbsp;&nbsp;&nbsp;→ Decoded ROT13: {decoded}</p>")
+                self.signals.output.emit(f"<p style='color: #90EE90;'>&nbsp;&nbsp;&nbsp;→ Decoded ROT13: {h(decoded)}</p>")
                 return decoded
 
             # Check for Base64 format from the guide
             if 'format' in response_json and response_json['format'] == 'encoded' and 'data' in response_json:
                 decoded = base64.b64decode(response_json['data']).decode('utf-8')
-                self.signals.output.emit(f"<p style='color: #90EE90;'>&nbsp;&nbsp;&nbsp;→ Decoded Base64: {decoded}</p>")
+                self.signals.output.emit(f"<p style='color: #90EE90;'>&nbsp;&nbsp;&nbsp;→ Decoded Base64: {h(decoded)}</p>")
                 return decoded
             
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF4500;'>[!] Decoding failed: {e}</p>")
+            self.signals.output.emit(f"<p style='color: #FF4500;'>[!] Decoding failed: {h(e)}</p>")
         
         return None
     
@@ -410,33 +431,33 @@ class APIEnumWorker(QRunnable):
         """Fuzz a specific endpoint for known vulnerabilities from the guide."""
         # Fuzz for the Privilege Escalation vulnerability
         if "admin/settings/update" in path:
-            self.signals.output.emit(f"<br><p style='color: #00BFFF;'>Fuzzing for Privilege Escalation: {path}...</p>")
+            self.signals.output.emit(f"<br><p style='color: #00BFFF;'>Fuzzing for Privilege Escalation: {h(path)}...</p>")
             test_url = urljoin(base_url, path)
             headers = {"Content-Type": "application/json"}
             payload = {"email": "test@2million.htb", "is_admin": 1} 
             try:
-                response = self.session.put(test_url, json=payload, headers=headers, verify=False, timeout=10)
-                self.signals.output.emit(f"<p style='color: #DCDCDC;'>Response: {response.status_code} - {response.text[:100]}</p>")
+                response = self.session.put(test_url, json=payload, headers=headers, verify=self.ssl_verify, timeout=10)
+                self.signals.output.emit(f"<p style='color: #DCDCDC;'>Response: {h(response.status_code)} - {response.text[:100]}</p>")
                 if response.status_code == 200 and '"is_admin":1' in response.text:
-                    self.signals.output.emit(f"<p style='color: #FF0000;'><b>[VULNERABILITY FOUND] Possible privilege escalation at {path}</b></p>")
+                    self.signals.output.emit(f"<p style='color: #FF0000;'><b>[VULNERABILITY FOUND] Possible privilege escalation at {h(path)}</b></p>")
                     self.results.setdefault('vulnerabilities', []).append(f"Privilege Escalation at {path}")
             except Exception as e:
-                self.signals.output.emit(f"<p style='color: #FFAA00;'>Error testing {path}: {e}</p>")
+                self.signals.output.emit(f"<p style='color: #FFAA00;'>Error testing {h(path)}: {h(e)}</p>")
 
         # Fuzz for the Command Injection vulnerability
         if "admin/vpn/generate" in path:
-            self.signals.output.emit(f"<br><p style='color: #00BFFF;'>Fuzzing for Command Injection: {path}...</p>")
+            self.signals.output.emit(f"<br><p style='color: #00BFFF;'>Fuzzing for Command Injection: {h(path)}...</p>")
             test_url = urljoin(base_url, path)
             headers = {"Content-Type": "application/json"}
             payload = {"username": "test;id;"}
             try:
-                response = self.session.post(test_url, json=payload, headers=headers, verify=False, timeout=10)
-                self.signals.output.emit(f"<p style='color: #DCDCDC;'>Response: {response.status_code} - {response.text[:100]}</p>")
+                response = self.session.post(test_url, json=payload, headers=headers, verify=self.ssl_verify, timeout=10)
+                self.signals.output.emit(f"<p style='color: #DCDCDC;'>Response: {h(response.status_code)} - {response.text[:100]}</p>")
                 if "uid=" in response.text and "gid=" in response.text:
-                     self.signals.output.emit(f"<p style='color: #FF0000;'><b>[VULNERABILITY FOUND] Possible RCE at {path}</b></p>")
+                     self.signals.output.emit(f"<p style='color: #FF0000;'><b>[VULNERABILITY FOUND] Possible RCE at {h(path)}</b></p>")
                      self.results.setdefault('vulnerabilities', []).append(f"Command Injection at {path}")
             except Exception as e:
-                self.signals.output.emit(f"<p style='color: #FFAA00;'>Error testing {path}: {e}</p>")
+                self.signals.output.emit(f"<p style='color: #FFAA00;'>Error testing {h(path)}: {h(e)}</p>")
 
     def run_twomillion_scenario(self, base_url):
         """Runs the full, multi-step attack chain from the PDF."""
@@ -445,14 +466,14 @@ class APIEnumWorker(QRunnable):
         # Try with IP if hostname fails
         if '2million.htb' in base_url:
             ip_url = base_url.replace('2million.htb', '10.10.11.221')
-            self.signals.output.emit(f"<p style='color: #00BFFF;'>Testing with IP: {ip_url}</p>")
+            self.signals.output.emit(f"<p style='color: #00BFFF;'>Testing with IP: {h(ip_url)}</p>")
             base_url = ip_url
         
         # Step 1: Discover the endpoint to generate the invite code
         self.signals.output.emit("<p style='color: #00BFFF;'>[1] Finding invite code generation endpoint...</p>")
         url_how_to_generate = urljoin(base_url, '/api/v1/invite/how/to/generate')
         try:
-            resp1 = self.session.post(url_how_to_generate, verify=False, timeout=10)
+            resp1 = self.session.post(url_how_to_generate, verify=self.ssl_verify, timeout=10)
             if resp1.status_code == 200:
                 decoded_path_info = self.intelligent_decode(resp1.json())
                 # Step 2: Generate the invite code
@@ -460,10 +481,10 @@ class APIEnumWorker(QRunnable):
                     self.signals.output.emit("<p style='color: #00BFFF;'>[2] Generating invite code...</p>")
                     path_to_generate = decoded_path_info.split(' ')[-1]
                     url_generate = urljoin(base_url, path_to_generate)
-                    resp2 = self.session.post(url_generate, verify=False, timeout=10)
+                    resp2 = self.session.post(url_generate, verify=self.ssl_verify, timeout=10)
                     if resp2.status_code == 200: self.intelligent_decode(resp2.json())
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF4500;'>[!] Scenario Step 1/2 Failed: {e}</p>")
+            self.signals.output.emit(f"<p style='color: #FF4500;'>[!] Scenario Step 1/2 Failed: {h(e)}</p>")
 
         # Step 3: Fuzz known vulnerable endpoints from the guide
         self.signals.output.emit("<p style='color: #00BFFF;'>[3] Fuzzing known vulnerable endpoints...</p>")
@@ -476,7 +497,7 @@ class APIEnumWorker(QRunnable):
             self.signals.status.emit(f"Starting {self.scan_type} scan on {self.target}...")
             
             base_url = self.normalize_url(self.target)
-            self.signals.output.emit(f"<p style='color: #00BFFF;'>Analyzing {base_url}...</p>")
+            self.signals.output.emit(f"<p style='color: #00BFFF;'>Analyzing {h(base_url)}...</p>")
             
             # Execute scan based on type
             if self.scan_type == "twomillion_scenario":
@@ -515,7 +536,7 @@ class APIEnumWorker(QRunnable):
                             method_results[endpoint_info['url']] = methods
                             allowed_methods = [m for m, s in methods.items() if s not in [404, 405]]
                             if allowed_methods:
-                                self.signals.output.emit(f"<p style='color: #00FF41;'>[+] {endpoint_info['url']}: {', '.join(allowed_methods)}</p>")
+                                self.signals.output.emit(f"<p style='color: #00FF41;'>[+] {h(endpoint_info['url'])}: {', '.join(allowed_methods)}</p>")
                     
                     if method_results:
                         self.results['http_methods'] = method_results
@@ -527,7 +548,7 @@ class APIEnumWorker(QRunnable):
                     if auth_tests:
                         self.results['auth_tests'] = auth_tests
                         for test in auth_tests:
-                            self.signals.output.emit(f"<p style='color: #FFAA00;'>[!] {test['test']} on {test['endpoint']}: {test['status']}</p>")
+                            self.signals.output.emit(f"<p style='color: #FFAA00;'>[!] {h(test['test'])} on {h(test['endpoint'])}: {h(test['status'])}</p>")
                 
                 if self.scan_type in ["vulns", "full"] and endpoints and self.is_running:
                     self.signals.output.emit("<br><p style='color: #00BFFF;'>Testing for vulnerabilities...</p>")
@@ -536,7 +557,7 @@ class APIEnumWorker(QRunnable):
                     if vuln_tests:
                         self.results['vulnerabilities'] = vuln_tests
                         for vuln in vuln_tests:
-                            self.signals.output.emit(f"<p style='color: #FF4500;'>[VULN] {vuln['vulnerability']} on {vuln['endpoint']}</p>")
+                            self.signals.output.emit(f"<p style='color: #FF4500;'>[VULN] {h(vuln['vulnerability'])} on {h(vuln['endpoint'])}</p>")
             
             if self.results:
                 final_results = {self.target: self.results}
@@ -548,7 +569,7 @@ class APIEnumWorker(QRunnable):
             self.signals.status.emit("Scan completed")
             
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF4500;'>[ERROR] Scan failed: {str(e)}</p>")
+            self.signals.output.emit(f"<p style='color: #FF4500;'>[ERROR] Scan failed: {h(str(e))}</p>")
             self.signals.status.emit("Scan error")
         finally:
             self.restore_dns()

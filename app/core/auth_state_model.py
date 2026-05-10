@@ -4,6 +4,7 @@ import time
 from typing import Dict, List, Optional, Set, Tuple
 from urllib.parse import urlparse
 from dataclasses import dataclass, asdict
+from app.core.logger import logger
 
 @dataclass
 class AuthNode:
@@ -215,8 +216,9 @@ class AuthStateModel:
                     for param in param_group:
                         if param in response_body:
                             current_params.add(param)
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         # Extract parameters from next request
         next_url_params = next_request.get('params', {})
@@ -280,8 +282,9 @@ class AuthStateModel:
                             lifecycle['expires_at'] = jwt_data['exp']
                         if 'scope' in jwt_data:
                             lifecycle['scope'] = jwt_data['scope']
-                except:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
             
             self.token_lifecycle[token_name] = lifecycle
     

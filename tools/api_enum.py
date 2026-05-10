@@ -4,6 +4,7 @@ import json
 import argparse
 import sys
 from concurrent.futures import ThreadPoolExecutor
+import logging
 
 # Import connection pool
 try:
@@ -36,17 +37,18 @@ def api_discovery(target, port=80, https=False, wordlist=None):
                 try:
                     from app.core.rate_limiter import rate_limiter
                     rate_limiter.wait_if_needed('api_enum')
-                except ImportError:
+                except ImportError as _exc:
                     pass
+                    logging.debug("Suppressed exception", exc_info=True)
                 
                 # Use connection pool if available
                 if connection_pool:
                     session = connection_pool.get_session(f"api_{target}")
                     proxies = proxy_manager.get_proxy_dict() if proxy_manager else {}
-                    response = session.get(url, timeout=3, verify=False, proxies=proxies)
+                    response = session.get(url, timeout=3, verify=_ssl_verify(), proxies=proxies)
                 else:
                     proxies = proxy_manager.get_proxy_dict() if proxy_manager else {}
-                    response = requests.get(url, timeout=3, verify=False, proxies=proxies)
+                    response = requests.get(url, timeout=3, verify=_ssl_verify(), proxies=proxies)
                 if response.status_code in [200, 401, 403]:
                     content_type = response.headers.get('content-type', '').lower()
                     if 'json' in content_type or 'api' in content_type:
@@ -58,10 +60,12 @@ def api_discovery(target, port=80, https=False, wordlist=None):
                             data = response.json()
                             if isinstance(data, dict) and len(str(data)) < 200:
                                 print(f"    Response: {data}")
-                        except:
+                        except Exception as _exc:
                             pass
-            except:
+                            logging.debug("Suppressed exception", exc_info=True)
+            except Exception as _exc:
                 pass
+                logging.debug("Suppressed exception", exc_info=True)
     
     with ThreadPoolExecutor(max_workers=10) as executor:
         executor.map(check_endpoint, endpoints)
@@ -78,14 +82,15 @@ def test_api_methods(url):
             if connection_pool:
                 session = connection_pool.get_session("api_methods")
                 proxies = proxy_manager.get_proxy_dict() if proxy_manager else {}
-                response = session.request(method, url, timeout=3, verify=False, proxies=proxies)
+                response = session.request(method, url, timeout=3, verify=_ssl_verify(), proxies=proxies)
             else:
                 proxies = proxy_manager.get_proxy_dict() if proxy_manager else {}
-                response = requests.request(method, url, timeout=3, verify=False, proxies=proxies)
+                response = requests.request(method, url, timeout=3, verify=_ssl_verify(), proxies=proxies)
             if response.status_code != 405:  # Method not allowed
                 print(f"[+] {method} {url} - Status: {response.status_code}")
-        except:
+        except Exception as _exc:
             pass
+            logging.debug("Suppressed exception", exc_info=True)
 
 def test_api_auth(url):
     print(f"[*] Testing authentication bypass on {url}")
@@ -107,14 +112,15 @@ def test_api_auth(url):
             if connection_pool:
                 session = connection_pool.get_session("api_auth")
                 proxies = proxy_manager.get_proxy_dict() if proxy_manager else {}
-                response = session.get(url, headers=headers, timeout=3, verify=False, proxies=proxies)
+                response = session.get(url, headers=headers, timeout=3, verify=_ssl_verify(), proxies=proxies)
             else:
                 proxies = proxy_manager.get_proxy_dict() if proxy_manager else {}
-                response = requests.get(url, headers=headers, timeout=3, verify=False, proxies=proxies)
+                response = requests.get(url, headers=headers, timeout=3, verify=_ssl_verify(), proxies=proxies)
             if response.status_code == 200:
                 print(f"[+] Potential bypass with headers: {headers}")
-        except:
+        except Exception as _exc:
             pass
+            logging.debug("Suppressed exception", exc_info=True)
 
 def main():
     parser = argparse.ArgumentParser(description="API Enumeration Tool")

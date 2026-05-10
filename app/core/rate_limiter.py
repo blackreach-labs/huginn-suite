@@ -2,6 +2,7 @@
 import time
 import threading
 from typing import Dict
+from app.core.logger import logger
 
 class RateLimiter:
     """Global rate limiter for all scanning operations"""
@@ -96,8 +97,9 @@ class RateLimiter:
             from app.core.stealth_engine import stealth_engine
             if stealth_engine.dynamic_rate_enabled:
                 self.set_rate_limit(stealth_engine.current_rate)
-        except ImportError:
+        except ImportError as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
 
 # Global instance
 rate_limiter = RateLimiter()

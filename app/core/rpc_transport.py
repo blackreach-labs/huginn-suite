@@ -6,6 +6,7 @@ from typing import Optional, Dict, Tuple
 from .smb_client import SMBClient
 from .rpc_http_transport import RPCHTTPTransport
 from .direct_rpc_client import DirectRPCClient
+from app.core.logger import logger
 
 class RPCTransport:
     """Complete RPC transport layer over SMB named pipes"""
@@ -173,8 +174,9 @@ class RPCTransport:
                                     'display_name': name,
                                     'state': 'RUNNING'
                                 })
-                        except:
+                        except Exception as _exc:
                             pass
+                            logger.debug("Suppressed exception", exc_info=True)
                     
                     offset += 16
                     
@@ -201,8 +203,9 @@ class RPCTransport:
                 self.http_transport.disconnect()
         except Exception as e:
             self._debug_log(f"Disconnect error: {str(e)}")
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def bind_interface(self, interface_uuid: uuid.UUID, version: Tuple[int, int]) -> bool:
         """Bind to RPC interface via SMB, HTTP, or direct RPC"""

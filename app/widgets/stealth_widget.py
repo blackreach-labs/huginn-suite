@@ -1,4 +1,8 @@
 # app/widgets/stealth_widget.py
+# NOTE: An improved version of this widget exists at
+# app/widgets/stealth_widget_improved.py which has additional features.
+# New code should use ImprovedStealthWidget from stealth_widget_improved.
+# This file is kept for backward compatibility.
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
                             QComboBox, QPushButton, QSpinBox, QCheckBox,
                             QGroupBox, QSlider, QLineEdit, QTextEdit, QTabWidget,

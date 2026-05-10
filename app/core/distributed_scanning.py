@@ -5,6 +5,7 @@ import threading
 import time
 from datetime import datetime
 from PyQt6.QtCore import QObject, pyqtSignal, QThread
+from app.core.logger import logger
 
 class DistributedNode:
     """Represents a distributed scanning node."""
@@ -59,8 +60,9 @@ class DistributedScanner(QObject):
                 except Exception:
                     break
                     
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def _handle_node_connection(self, client, addr):
         """Handle connection from a scanning node."""
@@ -89,8 +91,9 @@ class DistributedScanner(QObject):
                 
                 self.node_discovered.emit(node_id, node_info)
                 
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         finally:
             client.close()
     
@@ -136,8 +139,9 @@ class DistributedScanner(QObject):
                         self.node_discovered.emit(node_id, node_info)
                 
                 sock.close()
-            except Exception:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
     
     def distribute_scan(self, scan_type, targets, parameters=None):
         """Distribute scan across available nodes."""

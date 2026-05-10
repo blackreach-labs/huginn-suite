@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTableWidget, QTa
 from PyQt6.QtCore import pyqtSignal
 from datetime import datetime
 import os
+from app.core.logger import logger
 
 class SessionDataTablesComponent(QWidget):
     status_updated = pyqtSignal(str)
@@ -103,8 +104,9 @@ class SessionDataTablesComponent(QWidget):
                     try:
                         dt = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
                         timestamp = dt.strftime('%Y-%m-%d %H:%M:%S')
-                    except:
+                    except Exception as _exc:
                         pass
+                        logger.debug("Suppressed exception", exc_info=True)
                 
                 self.exports_table.setItem(row, 0, QTableWidgetItem(timestamp))
                 self.exports_table.setItem(row, 1, QTableWidgetItem(export.get('target', 'N/A')))
@@ -142,8 +144,9 @@ class SessionDataTablesComponent(QWidget):
                     try:
                         dt = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
                         timestamp = dt.strftime('%Y-%m-%d %H:%M:%S')
-                    except:
+                    except Exception as _exc:
                         pass
+                        logger.debug("Suppressed exception", exc_info=True)
                 
                 self.scans_table.setItem(row, 3, QTableWidgetItem(timestamp))
                 

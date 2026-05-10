@@ -4,6 +4,7 @@ from PyQt6.QtCore import QObject, pyqtSignal, QRunnable
 from app.core.scan_registry import scan_registry
 from app.core.scan_controller import ScanController
 from app.tools.dns_scanner import run_dns_scan
+from app.core.logger import logger
 
 class EnhancedDNSWorker(QRunnable):
     """Enhanced DNS worker with scan registry integration"""
@@ -35,7 +36,7 @@ class EnhancedDNSWorker(QRunnable):
         try:
             with open(self.wordlist_path, 'r') as f:
                 return len([line for line in f if line.strip()])
-        except:
+        except Exception:
             return 5
     
     def run(self):
@@ -50,7 +51,7 @@ class EnhancedDNSWorker(QRunnable):
                 try:
                     with open(self.wordlist_path, 'r') as f:
                         subdomains = [line.strip() for line in f if line.strip()]
-                except:
+                except Exception:
                     subdomains = ['www', 'mail', 'ftp', 'admin', 'test']
             else:
                 subdomains = ['www', 'mail', 'ftp', 'admin', 'test']

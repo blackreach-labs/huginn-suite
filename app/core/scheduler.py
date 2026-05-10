@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Callable
 import json
 import os
+from app.core.logger import logger
 
 class ScanScheduler:
     """Schedule scans to run at specific times"""
@@ -147,8 +148,9 @@ class ScanScheduler:
         try:
             with open(self.schedules_file, 'w') as f:
                 json.dump(self.scheduled_scans, f, indent=2)
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def load_schedules(self):
         """Load schedules from file"""

@@ -1,6 +1,7 @@
 import base64
 import re
 from typing import Dict, List, Optional
+from app.core.logger import logger
 
 class DeserializationDetector:
     """Insecure deserialization detection module"""
@@ -51,7 +52,8 @@ class DeserializationDetector:
                         'cvss_score': 8.1,
                         'remediation': 'Enable ViewState MAC validation'
                     }
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return None

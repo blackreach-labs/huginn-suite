@@ -2,6 +2,7 @@ import os
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, 
                             QCheckBox, QComboBox, QSpinBox, QPushButton, QFrame)
 from PyQt6.QtCore import pyqtSignal
+from app.core.logger import logger
 
 class DNSControlsComponent(QWidget):
     scan_started = pyqtSignal(dict)
@@ -142,8 +143,9 @@ class DNSControlsComponent(QWidget):
                     for filename in os.listdir(wordlist_dir):
                         if filename.endswith(".txt"):
                             self.wordlist_combo.addItem(filename, os.path.join(wordlist_dir, filename))
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
 
     def toggle_all_records(self):
         """Toggle all DNS record types"""

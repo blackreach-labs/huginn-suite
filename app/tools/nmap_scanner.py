@@ -61,15 +61,17 @@ def _validate_target(target: str) -> str:
     try:
         ipaddress.ip_address(target)
         return target
-    except ValueError:
+    except ValueError as _exc:
         pass
+        logger.debug("Suppressed exception", exc_info=True)
     
     # Validate CIDR notation
     try:
         ipaddress.ip_network(target, strict=False)
         return target
-    except ValueError:
+    except ValueError as _exc:
         pass
+        logger.debug("Suppressed exception", exc_info=True)
     
     # Validate IP range (e.g., 192.168.1.1-254, 192.168.1-5)
     if '-' in target:
@@ -100,8 +102,9 @@ def _validate_target(target: str) -> str:
                         end_octet = int(end_part)
                         if 0 <= end_octet <= 255:
                             return target
-            except (ValueError, ipaddress.AddressValueError):
+            except (ValueError, ipaddress.AddressValueError) as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
     
     # Validate network range like 192.168.1.0 (treat as 192.168.1.1-254)
     if target.endswith('.0'):
@@ -109,8 +112,9 @@ def _validate_target(target: str) -> str:
             base_ip = target[:-1] + '1'
             ipaddress.ip_address(base_ip)
             return target
-        except ValueError:
+        except ValueError as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     # Validate hostname (basic check)
     hostname_pattern = r'^[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?)*$'
@@ -129,6 +133,8 @@ def _get_stealth_flags(stealth_mode=False, decoy_ips=None):
     return flags
 
 from PyQt6.QtCore import QObject, pyqtSignal, QRunnable
+from app.core.html_utils import h
+from app.core.logger import logger
 
 class NetworkSweepSignals(QObject):
     output = pyqtSignal(str)
@@ -157,7 +163,7 @@ class TargetedScanWorker(QRunnable):
     def run(self):
         try:
             self.signals.progress_start.emit(100, f"Running {self.scan_type}...")
-            self.signals.output.emit(f"<p style='color: #87CEEB;'>Starting {self.scan_type} on {self.target}...</p><br>")
+            self.signals.output.emit(f"<p style='color: #87CEEB;'>Starting {h(self.scan_type)} on {h(self.target)}...</p><br>")
             
             # Update progress
             self.signals.progress_update.emit(50, 0)
@@ -166,7 +172,7 @@ class TargetedScanWorker(QRunnable):
             result = scan_targeted(self.target, self.scan_type, self.ports)
             
             if result['success']:
-                self.signals.output.emit(f"<pre style='color: #DCDCDC;'>{result['output']}</pre>")
+                self.signals.output.emit(f"<pre style='color: #DCDCDC;'>{h(result['output'])}</pre>")
                 
                 # Parse results for table view using standalone function
                 parsed_results = self._parse_nmap_output(result['output'], self.target)
@@ -182,11 +188,11 @@ class TargetedScanWorker(QRunnable):
                 
                 self.signals.progress_update.emit(100, 1)
             else:
-                self.signals.output.emit(f"<p style='color: #FF4500;'>{self.scan_type} failed: {result.get('error', 'Unknown error')}</p>")
+                self.signals.output.emit(f"<p style='color: #FF4500;'>{h(self.scan_type)} failed: {h(result.get('error', 'Unknown error'))}</p>")
                 self.signals.progress_update.emit(100, 0)
                 
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF4500;'>Error: {str(e)}</p>")
+            self.signals.output.emit(f"<p style='color: #FF4500;'>Error: {h(str(e))}</p>")
         finally:
             self.signals.finished.emit()
     
@@ -317,7 +323,7 @@ class NetworkSweepWorker(QRunnable):
                 # Convert 192.168.1.0 to 192.168.1.1-254
                 base = self.target[:-1]
                 targets = [f"{base}{i}" for i in range(1, 255)]
-                self.signals.output.emit(f"<p style='color: #87CEEB;'>Scanning subnet {self.target} (192.168.1.1-254)...</p><br>")
+                self.signals.output.emit(f"<p style='color: #87CEEB;'>Scanning subnet {h(self.target)} (192.168.1.1-254)...</p><br>")
             elif '-' in self.target:
                 # Handle ranges like 192.168.1.100-106 or 119.82.2.1-254
                 parts = self.target.split('-')
@@ -332,10 +338,10 @@ class NetworkSweepWorker(QRunnable):
                         start_octet = int(ip_parts[3])
                         end_octet = int(end_part)
                         targets = [f"{base}{i}" for i in range(start_octet, end_octet + 1)]
-                        self.signals.output.emit(f"<p style='color: #87CEEB;'>Scanning range {start_ip}-{base}{end_octet} ({len(targets)} hosts)...</p><br>")
+                        self.signals.output.emit(f"<p style='color: #87CEEB;'>Scanning range {h(start_ip)}-{h(base)}{h(end_octet)} ({len(targets)} hosts)...</p><br>")
             else:
                 targets = [self.target]
-                self.signals.output.emit(f"<p style='color: #87CEEB;'>Trying ping scan for {self.target}...</p><br>")
+                self.signals.output.emit(f"<p style='color: #87CEEB;'>Trying ping scan for {h(self.target)}...</p><br>")
             
             # Try ping first for each target with progress tracking
             total_targets = len(targets)
@@ -349,9 +355,10 @@ class NetworkSweepWorker(QRunnable):
                     ping_result = subprocess.run(ping_cmd, capture_output=True, text=True, timeout=2)
                     if ping_result.returncode == 0 and "Reply from" in ping_result.stdout:
                         alive_hosts.append(target)
-                        self.signals.output.emit(f"<p style='color: #00FF41;'>Host {target} is up (ping)</p><br>")
-                except Exception:
+                        self.signals.output.emit(f"<p style='color: #00FF41;'>Host {h(target)} is up (ping)</p><br>")
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
                 
                 # Emit progress every 5 hosts or on the last one
                 if (i + 1) % 5 == 0 or i == total_targets - 1:
@@ -364,8 +371,9 @@ class NetworkSweepWorker(QRunnable):
                             if scan_info.target == self.target and scan_info.scan_type == "Port Scan":
                                 scan_registry.update_scan_progress(scan_id, i + 1)
                                 break
-                    except:
+                    except Exception as _exc:
                         pass
+                        logger.debug("Suppressed exception", exc_info=True)
             
             # If ping didn't find hosts, try nmap as fallback
             if not alive_hosts:
@@ -373,7 +381,7 @@ class NetworkSweepWorker(QRunnable):
                 try:
                     nmap_path = _get_nmap_path()
                 except FileNotFoundError as e:
-                    self.signals.output.emit(f"<p style='color: #FF4500;'>Error: {str(e)}</p>")
+                    self.signals.output.emit(f"<p style='color: #FF4500;'>Error: {h(str(e))}</p>")
                     self.signals.finished.emit()
                     return
                 
@@ -426,7 +434,7 @@ class NetworkSweepWorker(QRunnable):
                         output_buffer.append(line)
 
                         if any(keyword in line for keyword in ["Starting", "Completed", "done"]) and "Host" not in line:
-                            self.signals.output.emit(f"<p style='color: #87CEEB;'>{line}</p><br>")
+                            self.signals.output.emit(f"<p style='color: #87CEEB;'>{h(line)}</p><br>")
                             # Update progress for nmap status lines
                             if "Completed" in line:
                                 progress_count += 10
@@ -446,8 +454,9 @@ class NetworkSweepWorker(QRunnable):
                                         if scan_info.target == self.target and scan_info.scan_type == "Port Scan":
                                             scan_registry.update_scan_progress(scan_id, min(progress_count, 90))
                                             break
-                                except:
+                                except Exception as _exc:
                                     pass
+                                    logger.debug("Suppressed exception", exc_info=True)
 
                 # Parse nmap results
                 for i, line in enumerate(output_buffer):
@@ -458,12 +467,12 @@ class NetworkSweepWorker(QRunnable):
                                 host_ip = host_match.group(1)
                                 if host_ip not in alive_hosts:
                                     alive_hosts.append(host_ip)
-                                    self.signals.output.emit(f"<p style='color: #00FF41;'>Host {host_ip} is up (nmap)</p><br>")
+                                    self.signals.output.emit(f"<p style='color: #00FF41;'>Host {h(host_ip)} is up (nmap)</p><br>")
                                     self.signals.progress_update.emit(len(alive_hosts), len(alive_hosts))
 
                 _, stderr = process.communicate()
                 if stderr:
-                    self.signals.output.emit(f"<p style='color: #FFAA00;'>Warnings: {stderr}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #FFAA00;'>Warnings: {h(stderr)}</p><br>")
 
             # Update inventory with discovered hosts
             if alive_hosts:
@@ -479,12 +488,12 @@ class NetworkSweepWorker(QRunnable):
             
             # Final summary
             host_count = len(alive_hosts)
-            self.signals.output.emit(f"<p style='color: #00FF41;'>Network sweep completed. Found {host_count} alive host(s).</p><br>")
+            self.signals.output.emit(f"<p style='color: #00FF41;'>Network sweep completed. Found {h(host_count)} alive host(s).</p><br>")
             self.signals.status.emit(f"Network sweep completed: {host_count} hosts found")
             self.signals.progress_update.emit(100, host_count)
             
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF4500;'>Unexpected error: {str(e)}</p>")
+            self.signals.output.emit(f"<p style='color: #FF4500;'>Unexpected error: {h(str(e))}</p>")
         finally:
             self.signals.finished.emit()
             

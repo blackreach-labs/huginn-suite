@@ -1,5 +1,6 @@
 import asyncio
 import base64
+from app.core.logger import logger
 
 class DeserializationTester:
     """Test for deserialization vulnerabilities"""
@@ -63,8 +64,9 @@ class DeserializationTester:
                         try:
                             encoded = base64.b64encode(payload.encode()).decode()
                             test_payloads.append(encoded)
-                        except:
+                        except Exception as _exc:
                             pass
+                            logger.debug("Suppressed exception", exc_info=True)
                     
                     for test_payload in test_payloads:
                         data = {input_field['name']: test_payload}

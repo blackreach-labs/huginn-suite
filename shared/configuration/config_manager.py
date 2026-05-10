@@ -6,6 +6,7 @@ from typing import Any, Dict, Optional
 from dataclasses import dataclass, asdict
 from ..events.event_bus import EventBus
 from ..events.plugin_events import PluginLoadedEvent
+import logging
 
 
 @dataclass
@@ -48,8 +49,9 @@ class ConfigManager:
             try:
                 with open(self.config_path, 'r') as f:
                     return json.load(f)
-            except (json.JSONDecodeError, IOError):
+            except (json.JSONDecodeError, IOError) as _exc:
                 pass
+                logging.debug("Suppressed exception", exc_info=True)
         return self._get_default_config()
     
     def _get_default_config(self) -> Dict[str, Any]:

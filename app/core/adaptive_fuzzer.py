@@ -1,6 +1,7 @@
 import asyncio
 import random
 from urllib.parse import quote
+from app.core.logger import logger
 
 class AdaptiveFuzzer:
     """Adaptive fuzzing engine that learns from responses"""
@@ -246,8 +247,9 @@ class AdaptiveFuzzer:
         try:
             variations.append(quote(payload))
             variations.append(payload.replace(' ', '+'))
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         # Character substitutions
         substitutions = {

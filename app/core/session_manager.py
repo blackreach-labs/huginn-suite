@@ -7,6 +7,7 @@ from typing import Dict, List, Optional
 import asyncio
 from infrastructure.data.repositories.sqlite_scan_repository import SQLiteScanRepository
 from domain.models.scan_result import ScanResultModel, Target, ScanStatus
+from app.core.logger import logger
 
 class SessionManager:
     """Manage scanning sessions and project organization"""
@@ -32,8 +33,9 @@ class SessionManager:
                         PRIMARY KEY (session_id, scan_result_id)
                     )
                 """)
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def create_session(self, name: str, description: str = "", targets: List[str] = None) -> Dict:
         """Create a new scanning session"""
@@ -241,8 +243,9 @@ class SessionManager:
                 try:
                     asyncio.run(self.scan_repository.save_scan_result(scan_result))
                     self.add_scan_to_session(new_session['id'], scan_result.id)
-                except Exception:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
             
             return new_session['id']
         
@@ -255,8 +258,9 @@ class SessionManager:
         try:
             with open(self.sessions_file, 'w') as f:
                 json.dump(self.sessions, f, indent=2, default=str)
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def load_sessions(self) -> Dict:
         """Load sessions from file"""
@@ -265,8 +269,9 @@ class SessionManager:
             if os.path.exists(self.sessions_file):
                 with open(self.sessions_file, 'r') as f:
                     return json.load(f)
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return {}
     
@@ -334,8 +339,9 @@ class SessionManager:
                 credential_module = sys.modules['app.core.credential_manager']
                 if hasattr(credential_module, 'credential_manager'):
                     credential_module.credential_manager.set_profile(session_id)
-        except Exception:
+        except Exception as _exc:
             pass  # Silently ignore sync errors
+            logger.debug("Suppressed exception", exc_info=True)
 
 # Global instance
 session_manager = SessionManager()

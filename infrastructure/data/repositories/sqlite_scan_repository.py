@@ -8,6 +8,7 @@ from datetime import datetime
 from domain.repositories.scan_repository import ScanRepository
 from domain.models.scan_result import ScanResultModel, Target, ScanStatus, Vulnerability, SeverityLevel
 from shared.exceptions.scanner_exceptions import DatabaseException
+import logging
 
 
 class SQLiteScanRepository(ScanRepository):
@@ -317,8 +318,9 @@ class SQLiteScanRepository(ScanRepository):
         import asyncio
         try:
             asyncio.run(self.save_scan_result(scan_result))
-        except RuntimeError:
+        except RuntimeError as _exc:
             pass
+            logging.debug("Suppressed exception", exc_info=True)
         return hash(scan_id) % (10**8)
     
     def save_export(self, session_id: str, scan_id: int, file_path: str, format: str, target: str = None) -> int:

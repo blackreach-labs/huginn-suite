@@ -5,6 +5,7 @@ import hashlib
 import hmac
 import os
 from typing import Optional, Tuple
+from app.core.logger import logger
 
 class SMBClient:
     """SMB2/3 client for RPC transport"""
@@ -179,14 +180,16 @@ class SMBClient:
                     try:
                         logoff_data = struct.pack('<HH', 4, 0)  # StructureSize, Reserved
                         self._send_smb2_request(0x02, logoff_data)  # SMB2_LOGOFF
-                    except:
+                    except Exception as _exc:
                         pass
+                        logger.debug("Suppressed exception", exc_info=True)
                 
                 # Close socket
                 try:
                     self.socket.shutdown(socket.SHUT_RDWR)
-                except:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
                 
                 self.socket.close()
                 self.socket = None
@@ -271,8 +274,9 @@ class SMBClient:
         try:
             close_request = self._create_smb2_close(file_id)
             self._send_smb2_request(0x06, close_request)  # SMB2_CLOSE
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def _establish_netbios_session(self) -> bool:
         """Skip NetBIOS session for direct SMB connection"""

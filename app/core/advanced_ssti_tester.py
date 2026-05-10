@@ -1,4 +1,5 @@
 import asyncio
+from app.core.logger import logger
 
 class AdvancedSSTITester:
     """Advanced Server-Side Template Injection testing with context awareness"""
@@ -125,8 +126,9 @@ class AdvancedSSTITester:
                 else:
                     return 'generic'
             
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return None
     

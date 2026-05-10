@@ -5,6 +5,7 @@ import hashlib
 import hmac
 import time
 from typing import Dict, List, Optional, Tuple
+from app.core.logger import logger
 
 class SSHProtocol:
     """Low-level SSH protocol implementation for advanced reconnaissance"""
@@ -32,8 +33,9 @@ class SSHProtocol:
         if self.sock:
             try:
                 self.sock.close()
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
             self.sock = None
     
     def read_banner(self) -> Optional[str]:

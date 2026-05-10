@@ -3,6 +3,7 @@ import ssl
 import socket
 from datetime import datetime
 from urllib.parse import urlparse
+from app.core.logger import logger
 
 class TLSAnalyzer:
     """Analyze TLS configuration and certificate security"""
@@ -34,8 +35,9 @@ class TLSAnalyzer:
                                 'severity': 'MEDIUM',
                                 'description': f'HTTP site does not redirect to HTTPS'
                             })
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
             
             return {'tls_enabled': False, 'security_issues': self.security_issues}
         
@@ -100,8 +102,9 @@ class TLSAnalyzer:
                     'severity': 'MEDIUM',
                     'description': f'Certificate expires in {days_until_expiry} days'
                 })
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         # Check if self-signed
         if cert_info.get('issuer') == cert_info.get('subject'):
@@ -209,8 +212,9 @@ class TLSAnalyzer:
             if directive.startswith('max-age='):
                 try:
                     hsts_info['max_age'] = int(directive.split('=')[1])
-                except ValueError:
+                except ValueError as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
             elif directive == 'includeSubDomains':
                 hsts_info['include_subdomains'] = True
             elif directive == 'preload':

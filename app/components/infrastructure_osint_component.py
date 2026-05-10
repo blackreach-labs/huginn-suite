@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
 from PyQt6.QtCore import pyqtSignal, QTimer, Qt
 from PyQt6.QtGui import QFont
 from app.core.professional_subdomain_worker import professional_subdomain_controller
+from app.core.logger import logger
 
 class InfrastructureOSINTComponent(QWidget):
     osint_started = pyqtSignal(str, str)
@@ -316,6 +317,21 @@ class InfrastructureOSINTComponent(QWidget):
         """)
         
         # Start the professional enumeration
+        from app.core.html_utils import h
+        self.output_text.setHtml(f"""
+        <div style='font-family: "Courier New", monospace; background-color: rgba(0,0,50,0.3); padding: 15px; border-radius: 5px;'>
+        <p style='color: #64C8FF; font-weight: bold; font-size: 16px;'>🚀 PROFESSIONAL SUBDOMAIN ENUMERATION</p>
+        <p style='color: #DCDCDC;'>Target: <span style='color: #00FF41; font-weight: bold;'>{h(target)}</span></p>
+        <p style='color: #DCDCDC;'>Data Sources: <span style='color: #FFD93D;'>{h(sources_str)}</span></p>
+        <p style='color: #DCDCDC;'>Configuration:</p>
+        <p style='color: #DCDCDC; margin-left: 20px;'>• DNS Resolution: <span style='color: {"#00FF41" if resolve_dns else "#FF6B6B"};'>{'Enabled' if resolve_dns else 'Disabled'}</span></p>
+        <p style='color: #DCDCDC; margin-left: 20px;'>• Wildcard Filtering: <span style='color: {"#00FF41" if filter_wildcards else "#FF6B6B"};'>{'Enabled' if filter_wildcards else 'Disabled'}</span></p>
+        <p style='color: #DCDCDC; margin-left: 20px;'>• Rate Limit: <span style='color: #64C8FF;'>{rate_limit} req/sec</span></p>
+        <hr style='border: 1px solid rgba(100, 200, 255, 0.3);'>
+        <p style='color: #64C8FF;'>📋 Initializing professional enumeration engine...</p>
+        </div>
+        """)
+
         professional_subdomain_controller.start_enumeration(
             domain=target,
             sources=selected_sources,
@@ -529,10 +545,11 @@ class InfrastructureOSINTComponent(QWidget):
         unique_ips = statistics.get('unique_ips', 0)
         
         # Update console with completion message
+        from app.core.html_utils import h
         self.output_text.append(f"""
         <div style='font-family: "Courier New", monospace; background-color: rgba(0,100,0,0.3); padding: 15px; border-radius: 5px; margin-top: 10px;'>
         <p style='color: #00FF41; font-weight: bold; font-size: 16px;'>✅ PROFESSIONAL ENUMERATION COMPLETED</p>
-        <p style='color: #DCDCDC;'>Target: <span style='color: #64C8FF; font-weight: bold;'>{domain}</span></p>
+        <p style='color: #DCDCDC;'>Target: <span style='color: #64C8FF; font-weight: bold;'>{h(domain)}</span></p>
         <p style='color: #DCDCDC;'>Duration: <span style='color: #FFD93D;'>{duration:.2f} seconds</span></p>
         <p style='color: #DCDCDC;'>Total Subdomains: <span style='color: #00FF41; font-weight: bold; font-size: 18px;'>{total}</span></p>
         <p style='color: #DCDCDC;'>Resolved IPs: <span style='color: #64C8FF;'>{resolved_count}</span></p>
@@ -590,8 +607,9 @@ class InfrastructureOSINTComponent(QWidget):
                     from datetime import datetime
                     dt = datetime.fromisoformat(first_seen.replace('Z', '+00:00'))
                     first_seen = dt.strftime('%Y-%m-%d %H:%M')
-                except:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
             first_seen_item = QTableWidgetItem(first_seen)
             self.results_table.setItem(row, 4, first_seen_item)
             
@@ -602,8 +620,9 @@ class InfrastructureOSINTComponent(QWidget):
                     from datetime import datetime
                     dt = datetime.fromisoformat(last_seen.replace('Z', '+00:00'))
                     last_seen = dt.strftime('%Y-%m-%d %H:%M')
-                except:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
             last_seen_item = QTableWidgetItem(last_seen)
             self.results_table.setItem(row, 5, last_seen_item)
     
@@ -650,10 +669,11 @@ class InfrastructureOSINTComponent(QWidget):
         self.progress_bar.setVisible(False)
         self.stop_btn.setVisible(False)
         
+        from app.core.html_utils import h
         self.output_text.append(f"""
         <div style='font-family: "Courier New", monospace; background-color: rgba(50,0,0,0.3); padding: 10px; border-radius: 5px; margin-top: 10px;'>
         <p style='color: #FF6B6B; font-weight: bold;'>❌ ENUMERATION ERROR</p>
-        <p style='color: #DCDCDC;'>{error_message}</p>
+        <p style='color: #DCDCDC;'>{h(error_message)}</p>
         <p style='color: #FFD93D;'>Suggestions:</p>
         <p style='color: #DCDCDC; margin-left: 20px;'>• Install required tools: <code>go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest</code></p>
         <p style='color: #DCDCDC; margin-left: 20px;'>• Install Amass: <code>go install -v github.com/owasp-amass/amass/v4/...@master</code></p>

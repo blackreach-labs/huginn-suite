@@ -3,6 +3,7 @@ import socket
 import argparse
 import sys
 from concurrent.futures import ThreadPoolExecutor
+import logging
 
 def scan_db_ports(target):
     db_ports = {
@@ -27,8 +28,9 @@ def scan_db_ports(target):
             if result == 0:
                 print(f"[+] {port}/tcp open ({service})")
                 open_ports.append((port, service))
-        except:
+        except Exception as _exc:
             pass
+            logging.debug("Suppressed exception", exc_info=True)
     
     return open_ports
 

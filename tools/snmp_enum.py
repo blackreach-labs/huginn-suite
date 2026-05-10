@@ -4,6 +4,7 @@ import struct
 import argparse
 import sys
 from concurrent.futures import ThreadPoolExecutor
+import logging
 
 def snmp_scan_port(target):
     try:
@@ -34,8 +35,9 @@ def snmp_community_scan(target, communities):
             if len(response) > 10:
                 print(f"[✓] Valid community string: '{community}'")
                 return community
-        except:
+        except Exception as _exc:
             pass
+            logging.debug("Suppressed exception", exc_info=True)
     
     print("[-] No valid community strings found")
     return None

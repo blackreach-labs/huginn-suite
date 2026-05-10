@@ -9,6 +9,7 @@ import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from app.tools.smb_raw_proto import SMBRawClient, enumerate_smb_comprehensive
+import logging
 
 def test_hardened_smb311(target):
     """Test hardened SMB 3.1.1 detection"""
@@ -119,8 +120,9 @@ def test_compatibility(target):
                 try:
                     client.close()
                     client.connect()
-                except:
+                except Exception as _exc:
                     pass
+                    logging.debug("Suppressed exception", exc_info=True)
         
         client.close()
         return True

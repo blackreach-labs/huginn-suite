@@ -393,14 +393,24 @@ class EvidenceCollector:
         return None
     
     def collect_command_output(self, command: str, description: str = "") -> EvidenceItem:
-        """Collect output from a command execution"""
+        """Collect output from a command execution.
+        
+        Args:
+            command: Command as a list of strings, e.g. ['ipconfig', '/all'].
+                     A plain string is accepted but will be split via shlex —
+                     shell=True is intentionally avoided to prevent injection.
+            description: Human-readable description of what this command collects.
+        """
         evidence_id = str(uuid.uuid4())
         
         try:
-            # Execute command
+            import shlex
+            cmd = shlex.split(command) if isinstance(command, str) else command
+
+            # Execute command — shell=False prevents metacharacter injection
             result = subprocess.run(
-                command,
-                shell=True,
+                cmd,
+                shell=False,
                 capture_output=True,
                 text=True,
                 timeout=60

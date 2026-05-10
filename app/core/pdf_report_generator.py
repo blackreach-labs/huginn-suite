@@ -8,6 +8,7 @@ from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
 from datetime import datetime
 import os
 from typing import Dict, List, Any
+from app.core.logger import logger
 
 class PDFReportGenerator:
     """Generate professional PDF reports from centralized scan data"""
@@ -63,7 +64,7 @@ class PDFReportGenerator:
                 overview = centralized_scan_data.get_tenant_overview(self.tenant_id)
                 total_results = overview.get('total_results', 0)
                 total_scans = overview.get('total_scans', 0)
-            except:
+            except Exception:
                 total_results = 0
                 total_scans = 0
             
@@ -91,7 +92,7 @@ class PDFReportGenerator:
                             str(summary.get('unique_targets', 0)),
                             summary.get('last_scan_time', 'Never')[:10] if summary.get('last_scan_time', 'Never') != 'Never' else 'Never'
                         ])
-                except:
+                except Exception:
                     continue
             
             if findings_data:
@@ -156,7 +157,7 @@ class PDFReportGenerator:
             for scan_type, title in scan_types:
                 try:
                     data = centralized_scan_data.get_scan_data(self.tenant_id, scan_type)
-                except:
+                except Exception:
                     data = []
                 if data:
                     story.append(Paragraph(title, self.styles['SectionHeader']))

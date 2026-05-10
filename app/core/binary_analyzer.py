@@ -1,6 +1,7 @@
 import re
 import struct
 from typing import Dict, List, Optional, Tuple
+from app.core.logger import logger
 
 class BinaryAnalyzer:
     """Binary analysis and protocol-level testing capabilities"""
@@ -60,16 +61,18 @@ class BinaryAnalyzer:
                 if len(current_string) >= min_length:
                     try:
                         strings.append(current_string.decode('ascii'))
-                    except:
+                    except Exception as _exc:
                         pass
+                        logger.debug("Suppressed exception", exc_info=True)
                 current_string = b''
         
         # Don't forget the last string
         if len(current_string) >= min_length:
             try:
                 strings.append(current_string.decode('ascii'))
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         return strings[:100]  # Limit results
     

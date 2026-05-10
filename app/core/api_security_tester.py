@@ -1,6 +1,7 @@
 import json
 import re
 from typing import Dict, List, Optional
+from app.core.logger import logger
 
 class APISecurityTester:
     """Advanced API security testing module"""
@@ -52,8 +53,9 @@ class APISecurityTester:
                         if 'swagger' in content.lower() or 'openapi' in content.lower():
                             additional_endpoints = self._parse_api_docs(content, target)
                             endpoints.extend(additional_endpoints)
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         return endpoints
     
@@ -116,8 +118,9 @@ class APISecurityTester:
                         'cvss_score': 7.5,
                         'remediation': 'Implement proper authorization checks for API endpoints'
                     }
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return None
     
@@ -170,8 +173,9 @@ class APISecurityTester:
                     'cvss_score': 5.3,
                     'remediation': 'Implement rate limiting to prevent abuse'
                 }
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return None
     
@@ -199,8 +203,9 @@ class APISecurityTester:
                                 'cvss_score': 5.3,
                                 'remediation': 'Disable GraphQL introspection in production'
                             })
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         return vulnerabilities
     
@@ -233,9 +238,11 @@ class APISecurityTester:
                                     'cvss_score': 7.5,
                                     'remediation': 'Use secure JWT signing algorithms (RS256, HS256)'
                                 })
-                        except:
+                        except Exception as _exc:
                             pass
-        except:
+                            logger.debug("Suppressed exception", exc_info=True)
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return vulnerabilities

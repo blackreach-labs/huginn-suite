@@ -8,6 +8,7 @@ from enum import Enum
 from .centralized_scan_data import centralized_scan_data
 from .advanced_analytics_engine import create_advanced_analytics_engine
 from .cross_scan_correlator import create_cross_scan_correlator
+from app.core.logger import logger
 
 class ScanPriority(Enum):
     CRITICAL = "critical"
@@ -325,8 +326,9 @@ class IntelligentScanOrchestrator:
                         item_time = datetime.fromisoformat(item['last_seen'].replace('Z', '+00:00'))
                         if item_time > datetime.now() - timedelta(days=7):
                             recent_data.append(item)
-                    except:
+                    except Exception as _exc:
                         pass
+                        logger.debug("Suppressed exception", exc_info=True)
                 
                 # If less than 20% of data is recent, recommend refresh
                 if len(recent_data) / len(data) < 0.2:

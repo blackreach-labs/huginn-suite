@@ -7,6 +7,7 @@ from typing import Dict, List, Optional, Any
 from pathlib import Path
 from dataclasses import dataclass, asdict
 import threading
+from app.core.logger import logger
 
 @dataclass
 class Asset:
@@ -97,26 +98,30 @@ class AssetManager:
                 # Add fqdn column if it doesn't exist
             try:
                 conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
-            except sqlite3.OperationalError:
+            except sqlite3.OperationalError as _exc:
                 pass  # Column already exists
+                logger.debug("Suppressed exception", exc_info=True)
             
             # Add mac_address column if it doesn't exist
             try:
                 conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
-            except sqlite3.OperationalError:
+            except sqlite3.OperationalError as _exc:
                 pass  # Column already exists
+                logger.debug("Suppressed exception", exc_info=True)
             
             # Add vendor column if it doesn't exist
             try:
                 conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
-            except sqlite3.OperationalError:
+            except sqlite3.OperationalError as _exc:
                 pass  # Column already exists
+                logger.debug("Suppressed exception", exc_info=True)
             
             # Add notes column if it doesn't exist
             try:
                 conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
-            except sqlite3.OperationalError:
+            except sqlite3.OperationalError as _exc:
                 pass  # Column already exists
+                logger.debug("Suppressed exception", exc_info=True)
             
             # Create indexes for performance
             indexes = [
@@ -184,7 +189,7 @@ class AssetManager:
             (asset_id, tenant_id, ip_address, hostname, fqdn, mac_address, vendor, os_type, os_version, 
              status, confidence, first_seen, last_seen, open_ports, services, 
              vulnerabilities, metadata, notes)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (asset_id, tenant_id, ip_address, hostname, fqdn, mac_address, vendor, os_type, os_version,
               status, confidence, timestamp, timestamp, open_ports, services,
               vulnerabilities, metadata, notes))
@@ -705,8 +710,9 @@ class AssetManager:
                 result = cursor.fetchone()
                 if result and self._is_valid_ip(result[0]):
                     return result[0]
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         # Try DNS resolution as last resort
         try:
@@ -720,8 +726,9 @@ class AssetManager:
                     """, (tenant_id, ip))
                     if cursor.fetchone():
                         return ip
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return None
     

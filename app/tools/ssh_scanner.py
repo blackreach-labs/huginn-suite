@@ -5,6 +5,8 @@ from PyQt6.QtCore import QObject, pyqtSignal, QRunnable
 from ..core.ssh_data_collector import create_ssh_collector
 from ..core.ssh_protocol import create_ssh_protocol
 from ..core.ssh_key_parser import create_ssh_key_parser
+from app.core.html_utils import h
+from app.core.logger import logger
 
 class SSHWorkerSignals(QObject):
     output = pyqtSignal(str)
@@ -33,11 +35,11 @@ class SSHWorker(QRunnable):
     
     def run(self):
         try:
-            self.signals.output.emit(f"<p style='color: #00BFFF;'>[SSH] Scanning {self.target}:{self.port}</p><br>")
+            self.signals.output.emit(f"<p style='color: #00BFFF;'>[SSH] Scanning {h(self.target)}:{h(self.port)}</p><br>")
             
             # Start scan session
             self.scan_id = self.data_collector.start_ssh_scan(self.target, "ssh_scanner")
-            self.signals.output.emit(f"<p style='color: #87CEEB;'>[INFO] Started scan session: {self.scan_id}</p><br>")
+            self.signals.output.emit(f"<p style='color: #87CEEB;'>[INFO] Started scan session: {h(self.scan_id)}</p><br>")
             
             # Route to scan type-specific method
             if self.scan_type == "Enumeration":
@@ -54,7 +56,7 @@ class SSHWorker(QRunnable):
                 self.run_enumeration()  # Default
                 
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] SSH scan failed: {e}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] SSH scan failed: {h(e)}</p><br>")
             if self.scan_id:
                 self.data_collector.complete_ssh_scan(0, str(e))
         finally:
@@ -71,11 +73,11 @@ class SSHWorker(QRunnable):
             sock.close()
             
             if result == 0:
-                self.signals.output.emit(f"<p style='color: #00FF41;'>[+] SSH port {self.port} is open</p><br>")
+                self.signals.output.emit(f"<p style='color: #00FF41;'>[+] SSH port {h(self.port)} is open</p><br>")
                 
                 banner = self.grab_banner()
                 if banner:
-                    self.signals.output.emit(f"<p style='color: #87CEEB;'>[INFO] Banner: {banner}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #87CEEB;'>[INFO] Banner: {h(banner)}</p><br>")
                     
                     banner_info = {
                         'banner': banner,
@@ -90,7 +92,7 @@ class SSHWorker(QRunnable):
                 # Test authentication if credentials provided
                 auth_results = []
                 if self.auth_type != "Anonymous" and self.username:
-                    self.signals.output.emit(f"<p style='color: #87CEEB;'>[AUTH] Testing authentication for user: {self.username}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #87CEEB;'>[AUTH] Testing authentication for user: {h(self.username)}</p><br>")
                     auth_results = self._test_authentication()
                 
                 results = {
@@ -107,7 +109,7 @@ class SSHWorker(QRunnable):
                 self._update_inventory(results)
                 self._emit_ui_data(results)
             else:
-                self.signals.output.emit(f"<p style='color: #FF6B6B;'>[-] SSH port {self.port} is closed</p><br>")
+                self.signals.output.emit(f"<p style='color: #FF6B6B;'>[-] SSH port {h(self.port)} is closed</p><br>")
                 results = {
                     'target': self.target,
                     'port': self.port,
@@ -118,7 +120,7 @@ class SSHWorker(QRunnable):
             self.signals.results.emit(results)
                 
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] Enumeration failed: {e}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] Enumeration failed: {h(e)}</p><br>")
     
     def run_banner_grab(self):
         """Enhanced banner analysis with vulnerability detection"""
@@ -128,16 +130,16 @@ class SSHWorker(QRunnable):
             if self.check_port():
                 banner = self.grab_banner()
                 if banner:
-                    self.signals.output.emit(f"<p style='color: #87CEEB;'>[INFO] Banner: {banner}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #87CEEB;'>[INFO] Banner: {h(banner)}</p><br>")
                     
                     version_info = self.parse_banner_version(banner)
-                    self.signals.output.emit(f"<p style='color: #00FF41;'>[+] SSH Version: {version_info.get('version', 'Unknown')}</p><br>")
-                    self.signals.output.emit(f"<p style='color: #00FF41;'>[+] OS Detection: {version_info.get('os', 'Unknown')}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #00FF41;'>[+] SSH Version: {h(version_info.get('version', 'Unknown'))}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #00FF41;'>[+] OS Detection: {h(version_info.get('os', 'Unknown'))}</p><br>")
                     
                     vulns = self.check_banner_vulnerabilities(banner)
                     if vulns:
                         for vuln in vulns:
-                            self.signals.output.emit(f"<p style='color: #FF6B6B;'>[VULN] {vuln}</p><br>")
+                            self.signals.output.emit(f"<p style='color: #FF6B6B;'>[VULN] {h(vuln)}</p><br>")
                         if self.data_collector:
                             self.data_collector.collect_vulnerabilities(self.target, [{'cve': v, 'description': v} for v in vulns])
                     else:
@@ -167,7 +169,7 @@ class SSHWorker(QRunnable):
                     self._emit_ui_data(results)
                     
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] Banner analysis failed: {e}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] Banner analysis failed: {h(e)}</p><br>")
     
     def run_key_exchange(self):
         """SSH key exchange and algorithm enumeration"""
@@ -179,11 +181,11 @@ class SSHWorker(QRunnable):
                 
                 self.signals.output.emit(f"<p style='color: #87CEEB;'>[INFO] Key Exchange Algorithms:</p><br>")
                 for alg in algorithms.get('kex', []):
-                    self.signals.output.emit(f"<p style='color: #00FF41;'>  [+] {alg}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #00FF41;'>  [+] {h(alg)}</p><br>")
                 
                 self.signals.output.emit(f"<p style='color: #87CEEB;'>[INFO] Host Key Types:</p><br>")
                 for key_type in algorithms.get('host_keys', []):
-                    self.signals.output.emit(f"<p style='color: #00FF41;'>  [+] {key_type}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #00FF41;'>  [+] {h(key_type)}</p><br>")
                 
                 if self.data_collector:
                     self.data_collector.collect_key_types(self.target, algorithms.get('host_keys', []))
@@ -200,7 +202,7 @@ class SSHWorker(QRunnable):
                 self._emit_ui_data(results)
                 
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] Key exchange analysis failed: {e}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] Key exchange analysis failed: {h(e)}</p><br>")
     
     def run_cipher_analysis(self):
         """SSH cipher strength analysis"""
@@ -214,13 +216,13 @@ class SSHWorker(QRunnable):
                 for cipher in ciphers.get('encryption', []):
                     strength = "Strong" if "aes" in cipher.lower() else "Weak"
                     color = "#00FF41" if strength == "Strong" else "#FFAA00"
-                    self.signals.output.emit(f"<p style='color: {color}'>  [{strength}] {cipher}</p><br>")
+                    self.signals.output.emit(f"<p style='color: {color}'>  [{h(strength)}] {h(cipher)}</p><br>")
                 
                 self.signals.output.emit(f"<p style='color: #87CEEB;'>[INFO] MAC Algorithms:</p><br>")
                 for mac in ciphers.get('mac', []):
                     strength = "Strong" if "sha256" in mac.lower() else "Weak"
                     color = "#00FF41" if strength == "Strong" else "#FFAA00"
-                    self.signals.output.emit(f"<p style='color: {color}'>  [{strength}] {mac}</p><br>")
+                    self.signals.output.emit(f"<p style='color: {color}'>  [{h(strength)}] {h(mac)}</p><br>")
                 
                 # Update inventory with cipher info
                 results = {
@@ -234,7 +236,7 @@ class SSHWorker(QRunnable):
                 self._emit_ui_data(results)
                 
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] Cipher analysis failed: {e}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] Cipher analysis failed: {h(e)}</p><br>")
     
     def run_full_scan(self):
         """Comprehensive SSH scan combining all methods"""
@@ -247,25 +249,25 @@ class SSHWorker(QRunnable):
             # Get banner once
             banner = self.grab_banner()
             if banner:
-                self.signals.output.emit(f"<p style='color: #87CEEB;'>[INFO] Banner: {banner}</p><br>")
+                self.signals.output.emit(f"<p style='color: #87CEEB;'>[INFO] Banner: {h(banner)}</p><br>")
                 
                 # Parse version info
                 version_info = self.parse_banner_version(banner)
-                self.signals.output.emit(f"<p style='color: #00FF41;'>[+] SSH Version: {version_info.get('version', 'Unknown')}</p><br>")
-                self.signals.output.emit(f"<p style='color: #00FF41;'>[+] OS Detection: {version_info.get('os', 'Unknown')}</p><br>")
+                self.signals.output.emit(f"<p style='color: #00FF41;'>[+] SSH Version: {h(version_info.get('version', 'Unknown'))}</p><br>")
+                self.signals.output.emit(f"<p style='color: #00FF41;'>[+] OS Detection: {h(version_info.get('os', 'Unknown'))}</p><br>")
                 
                 # Check vulnerabilities
                 vulns = self.check_banner_vulnerabilities(banner)
                 if vulns:
                     for vuln in vulns:
-                        self.signals.output.emit(f"<p style='color: #FF6B6B;'>[VULN] {vuln}</p><br>")
+                        self.signals.output.emit(f"<p style='color: #FF6B6B;'>[VULN] {h(vuln)}</p><br>")
                 else:
                     self.signals.output.emit(f"<p style='color: #00FF41;'>[+] No known vulnerabilities found</p><br>")
                 
                 # Test authentication if credentials provided
                 auth_results = []
                 if self.auth_type != "Anonymous" and self.username:
-                    self.signals.output.emit(f"<p style='color: #87CEEB;'>[AUTH] Testing authentication for user: {self.username}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #87CEEB;'>[AUTH] Testing authentication for user: {h(self.username)}</p><br>")
                     auth_results = self._test_authentication()
                 
                 # Algorithm enumeration
@@ -274,11 +276,11 @@ class SSHWorker(QRunnable):
                 
                 self.signals.output.emit(f"<p style='color: #87CEEB;'>[INFO] Key Exchange Algorithms:</p><br>")
                 for alg in algorithms.get('kex', []):
-                    self.signals.output.emit(f"<p style='color: #00FF41;'>  [+] {alg}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #00FF41;'>  [+] {h(alg)}</p><br>")
                 
                 self.signals.output.emit(f"<p style='color: #87CEEB;'>[INFO] Host Key Types:</p><br>")
                 for key_type in algorithms.get('host_keys', []):
-                    self.signals.output.emit(f"<p style='color: #00FF41;'>  [+] {key_type}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #00FF41;'>  [+] {h(key_type)}</p><br>")
                 
                 # Cipher analysis
                 self.signals.output.emit(f"<p style='color: #87CEEB;'>[CIPHER] SSH cipher analysis</p><br>")
@@ -288,13 +290,13 @@ class SSHWorker(QRunnable):
                 for cipher in ciphers.get('encryption', []):
                     strength = "Strong" if "aes" in cipher.lower() else "Weak"
                     color = "#00FF41" if strength == "Strong" else "#FFAA00"
-                    self.signals.output.emit(f"<p style='color: {color}'>  [{strength}] {cipher}</p><br>")
+                    self.signals.output.emit(f"<p style='color: {color}'>  [{h(strength)}] {h(cipher)}</p><br>")
                 
                 self.signals.output.emit(f"<p style='color: #87CEEB;'>[INFO] MAC Algorithms:</p><br>")
                 for mac in ciphers.get('mac', []):
                     strength = "Strong" if "sha256" in mac.lower() else "Weak"
                     color = "#00FF41" if strength == "Strong" else "#FFAA00"
-                    self.signals.output.emit(f"<p style='color: {color}'>  [{strength}] {mac}</p><br>")
+                    self.signals.output.emit(f"<p style='color: {color}'>  [{h(strength)}] {h(mac)}</p><br>")
                 
                 # Collect data
                 if self.data_collector:
@@ -312,13 +314,13 @@ class SSHWorker(QRunnable):
                 
                 # Summary
                 self.signals.output.emit(f"<p style='color: #00FF41;'>\n=== SSH SCAN SUMMARY ===</p><br>")
-                self.signals.output.emit(f"<p style='color: #87CEEB;'>Target: {self.target}:{self.port}</p><br>")
-                self.signals.output.emit(f"<p style='color: #87CEEB;'>Service: {version_info.get('software', 'SSH')} {version_info.get('version', '')}</p><br>")
-                self.signals.output.emit(f"<p style='color: #87CEEB;'>OS: {version_info.get('os', 'Unknown')}</p><br>")
+                self.signals.output.emit(f"<p style='color: #87CEEB;'>Target: {h(self.target)}:{h(self.port)}</p><br>")
+                self.signals.output.emit(f"<p style='color: #87CEEB;'>Service: {h(version_info.get('software', 'SSH'))} {h(version_info.get('version', ''))}</p><br>")
+                self.signals.output.emit(f"<p style='color: #87CEEB;'>OS: {h(version_info.get('os', 'Unknown'))}</p><br>")
                 if auth_results:
                     auth_status = "Success" if any(auth['success'] for auth in auth_results) else "Failed"
                     color = "#00FF41" if auth_status == "Success" else "#FF6B6B"
-                    self.signals.output.emit(f"<p style='color: {color}'>Authentication: {auth_status}</p><br>")
+                    self.signals.output.emit(f"<p style='color: {color}'>Authentication: {h(auth_status)}</p><br>")
                 self.signals.output.emit(f"<p style='color: #87CEEB;'>Algorithms: {len(algorithms.get('kex', []))} KEX, {len(algorithms.get('host_keys', []))} Host Keys</p><br>")
                 self.signals.output.emit(f"<p style='color: #87CEEB;'>Ciphers: {len(ciphers.get('encryption', []))} Encryption, {len(ciphers.get('mac', []))} MAC</p><br>")
                 if vulns:
@@ -349,7 +351,7 @@ class SSHWorker(QRunnable):
             self.signals.output.emit(f"<p style='color: #00FF41;'>[+] Full scan completed</p><br>")
             
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] Full scan failed: {e}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] Full scan failed: {h(e)}</p><br>")
     
     def check_port(self):
         """Check if SSH port is open"""
@@ -360,12 +362,12 @@ class SSHWorker(QRunnable):
             sock.close()
             
             if result == 0:
-                self.signals.output.emit(f"<p style='color: #00FF41;'>[+] SSH port {self.port} is open</p><br>")
+                self.signals.output.emit(f"<p style='color: #00FF41;'>[+] SSH port {h(self.port)} is open</p><br>")
                 return True
             else:
-                self.signals.output.emit(f"<p style='color: #FF6B6B;'>[-] SSH port {self.port} is closed</p><br>")
+                self.signals.output.emit(f"<p style='color: #FF6B6B;'>[-] SSH port {h(self.port)} is closed</p><br>")
                 return False
-        except:
+        except Exception:
             return False
     
     def parse_banner_version(self, banner):
@@ -482,7 +484,7 @@ class SSHWorker(QRunnable):
             banner = sock.recv(1024).decode('utf-8', errors='ignore').strip()
             sock.close()
             return banner
-        except:
+        except Exception:
             return None
     
     def _update_inventory(self, results):
@@ -492,9 +494,9 @@ class SSHWorker(QRunnable):
             update_inventory_from_ssh_scan(results)
             self.signals.output.emit(f"<p style='color: #00FF41;'>[+] Inventory updated with SSH scan results</p><br>")
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>[WARNING] Inventory update failed: {e}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>[WARNING] Inventory update failed: {h(e)}</p><br>")
             import traceback
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>[DEBUG] {traceback.format_exc()}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>[DEBUG] {h(traceback.format_exc())}</p><br>")
     
     def _test_authentication(self):
         """Test SSH authentication using system SSH client"""
@@ -520,7 +522,7 @@ class SSHWorker(QRunnable):
                     })
                     
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] Authentication test failed: {e}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] Authentication test failed: {h(e)}</p><br>")
         
         return auth_results
     
@@ -546,14 +548,14 @@ class SSHWorker(QRunnable):
             success = self.password.lower() in common_passwords or len(self.password) > 10
             
             if success:
-                self.signals.output.emit(f"<p style='color: #00FF41;'>[+] Password authentication successful: {self.username}</p><br>")
+                self.signals.output.emit(f"<p style='color: #00FF41;'>[+] Password authentication successful: {h(self.username)}</p><br>")
             else:
-                self.signals.output.emit(f"<p style='color: #FF6B6B;'>[-] Password authentication failed: {self.username}</p><br>")
+                self.signals.output.emit(f"<p style='color: #FF6B6B;'>[-] Password authentication failed: {h(self.username)}</p><br>")
             
             return success
             
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>[-] Password authentication failed: {self.username} ({str(e)})</p><br>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>[-] Password authentication failed: {h(self.username)} ({h(str(e))})</p><br>")
             return False
     
     def _test_key_auth(self):
@@ -563,22 +565,32 @@ class SSHWorker(QRunnable):
             import os
             
             if not os.path.exists(self.key_path):
-                self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] SSH key file not found: {self.key_path}</p><br>")
+                self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] SSH key file not found: {h(self.key_path)}</p><br>")
                 return False
             
-            cmd = f'ssh -o StrictHostKeyChecking=no -o ConnectTimeout=5 -i "{self.key_path}" -p {self.port} {self.username}@{self.target} "echo test"'
-            result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=15)
+            # Use argument list (no shell=True) to prevent command injection via
+            # username, key_path, or target containing shell metacharacters.
+            cmd = [
+                "ssh",
+                "-o", "StrictHostKeyChecking=no",
+                "-o", "ConnectTimeout=5",
+                "-i", self.key_path,
+                "-p", str(self.port),
+                f"{self.username}@{self.target}",
+                "echo test"
+            ]
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=15)
             success = result.returncode == 0 and 'test' in result.stdout
             
             if success:
-                self.signals.output.emit(f"<p style='color: #00FF41;'>[+] Key authentication successful: {self.username}</p><br>")
+                self.signals.output.emit(f"<p style='color: #00FF41;'>[+] Key authentication successful: {h(self.username)}</p><br>")
             else:
-                self.signals.output.emit(f"<p style='color: #FF6B6B;'>[-] Key authentication failed: {self.username}</p><br>")
+                self.signals.output.emit(f"<p style='color: #FF6B6B;'>[-] Key authentication failed: {h(self.username)}</p><br>")
             
             return success
             
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] Key auth test failed: {e}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] Key auth test failed: {h(e)}</p><br>")
             return False
     
     def _emit_ui_data(self, results):
@@ -784,7 +796,7 @@ class SSHWorker(QRunnable):
                 self.signals.graph_data.emit(graph_data)
                 
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>[WARNING] UI data emission failed: {e}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>[WARNING] UI data emission failed: {h(e)}</p><br>")
     
     def _analyze_cipher_strength(self, cipher):
         """Analyze cipher strength and return color"""

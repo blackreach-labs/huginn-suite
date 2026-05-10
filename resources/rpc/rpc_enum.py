@@ -8,6 +8,7 @@ from .rpc_transport import RPCTransport
 from .svcctl_client import SvcCtlClient
 from .winreg_client import WinRegClient
 from .secure_credential_manager import secure_credential_manager
+import logging
 
 class RPCEnumerator:
     def __init__(self):
@@ -177,7 +178,7 @@ class RPCEnumerator:
                                 'status': 'open'
                             }
                             endpoints.append(port_info)
-                    except:
+                    except Exception:
                         continue
             
         except Exception as e:

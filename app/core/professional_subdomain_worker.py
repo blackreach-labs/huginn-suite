@@ -10,6 +10,7 @@ from typing import Dict, List, Any
 from PyQt6.QtCore import QThread, pyqtSignal, QObject
 from app.core.subdomain_engine import subdomain_engine, ScanOptions, SubdomainResult
 import logging
+from app.core.logger import logger
 
 logger = logging.getLogger(__name__)
 
@@ -225,8 +226,9 @@ class ProfessionalSubdomainController(QObject):
             from app.core.subdomain_engine import subdomain_engine
             # Reload API keys from global settings
             subdomain_engine.api_keys = subdomain_engine._load_api_keys()
-        except ImportError:
+        except ImportError as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
 
 # Global instance
 professional_subdomain_controller = ProfessionalSubdomainController()

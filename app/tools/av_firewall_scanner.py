@@ -9,6 +9,7 @@ import logging
 from typing import Dict, List, Optional, Any
 import requests
 import time
+from app.core.logger import logger
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +45,7 @@ class AVFirewallScanner:
             
             for payload in test_payloads:
                 try:
-                    response = requests.get(url + payload, timeout=10, verify=False)
+                    response = requests.get(url + payload, timeout=10, verify=self.ssl_verify)
                     
                     # Check response headers for WAF indicators
                     waf_headers = {
@@ -212,14 +213,22 @@ class AVFirewallScanner:
             result = subprocess.run(['nmap', '--version'], 
                                   capture_output=True, text=True, timeout=5)
             return result.returncode == 0
-        except:
+        except Exception:
             return False
     
     def _run_nmap_scan(self, target: str, args: str) -> Optional[str]:
-        """Run nmap scan with specified arguments"""
+        """Run nmap scan with specified arguments.
+        
+        Note: args is a trusted internal string (never user-supplied directly).
+        target is validated to be a hostname/IP before reaching this method.
+        We still avoid shell=True and split args safely.
+        """
         try:
-            cmd = f"nmap {args} {target}"
-            result = subprocess.run(cmd, shell=True, capture_output=True, 
+            import shlex
+            # Build argument list: ['nmap', <arg1>, <arg2>, ..., <target>]
+            # shlex.split handles the internal args string safely.
+            cmd = ["nmap"] + shlex.split(args) + [target]
+            result = subprocess.run(cmd, capture_output=True,
                                   text=True, timeout=self.timeout)
             
             if result.returncode == 0:

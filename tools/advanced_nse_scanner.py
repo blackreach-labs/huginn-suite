@@ -172,8 +172,9 @@ class AdvancedNSEScanner:
                         'exploit_available': True,
                         'year': 2024
                     }
-            except socket.timeout:
+            except socket.timeout as _exc:
                 pass
+                logging.debug("Suppressed exception", exc_info=True)
                 
         except PermissionError:
             # Fallback to basic IPv6 connectivity test
@@ -196,8 +197,9 @@ class AdvancedNSEScanner:
                 sock.connect((target_ipv6, 80))
                 sock.close()
                 return True
-        except:
+        except Exception as _exc:
             pass
+            logging.debug("Suppressed exception", exc_info=True)
         return False
     
     def _resolve_ipv6(self, target):
@@ -206,8 +208,9 @@ class AdvancedNSEScanner:
             result = socket.getaddrinfo(target, None, socket.AF_INET6)
             if result:
                 return result[0][4][0]
-        except:
+        except Exception as _exc:
             pass
+            logging.debug("Suppressed exception", exc_info=True)
         return None
     
     def _craft_ipv6_header(self):
@@ -395,8 +398,9 @@ class AdvancedNSEScanner:
             # Vulnerable range: 8.5p1 to 9.8p1 (glibc-based systems)
             if (major == 8 and minor >= 5) or (major == 9 and minor < 8) or (major == 9 and minor == 8 and patch <= 1):
                 return True
-        except:
+        except Exception as _exc:
             pass
+            logging.debug("Suppressed exception", exc_info=True)
         return False
     
     def test_cve_2024_30078(self):
@@ -614,7 +618,7 @@ class AdvancedNSEScanner:
                 try:
                     headers = {'User-Agent': payload, 'X-Forwarded-For': payload}
                     response = self.session.get(target_url, headers=headers, 
-                                              timeout=self.timeout, verify=False)
+                                              timeout=self.timeout, verify=_ssl_verify())
                     
                     if any(indicator in response.text.lower() for indicator in ['jndi', 'ldap']):
                         return {
@@ -653,7 +657,7 @@ class AdvancedNSEScanner:
                 data = {payload: 'test'}
                 
                 response = self.session.post(target_url, data=data, 
-                                           timeout=self.timeout, verify=False)
+                                           timeout=self.timeout, verify=_ssl_verify())
                 
                 if (response.status_code == 400 and 
                     'class.module.classLoader' in response.text):
@@ -716,8 +720,9 @@ class AdvancedNSEScanner:
                     'exploit_available': True,
                     'metasploit_module': 'exploit/windows/smb/ms17_010_eternalblue'
                 }
-        except Exception:
+        except Exception as _exc:
             pass
+            logging.debug("Suppressed exception", exc_info=True)
         
         print("[-] Not vulnerable to EternalBlue")
         return None
@@ -753,8 +758,9 @@ class AdvancedNSEScanner:
                     'exploit_available': True,
                     'metasploit_module': 'exploit/windows/rdp/cve_2019_0708_bluekeep_rce'
                 }
-        except Exception:
+        except Exception as _exc:
             pass
+            logging.debug("Suppressed exception", exc_info=True)
         
         print("[-] Not vulnerable to BlueKeep")
         return None
@@ -792,8 +798,9 @@ class AdvancedNSEScanner:
                     'evidence': 'Heartbleed vulnerability detected',
                     'exploit_available': True
                 }
-        except Exception:
+        except Exception as _exc:
             pass
+            logging.debug("Suppressed exception", exc_info=True)
         
         print("[-] Not vulnerable to Heartbleed")
         return None
@@ -816,7 +823,7 @@ class AdvancedNSEScanner:
             for payload in sql_payloads:
                 try:
                     url = f"{target_url}?id={payload}"
-                    response = self.session.get(url, timeout=self.timeout, verify=False)
+                    response = self.session.get(url, timeout=self.timeout, verify=_ssl_verify())
                     
                     if any(error in response.text.lower() for error in 
                           ['sql syntax', 'mysql_fetch', 'ora-', 'microsoft jet database']):
@@ -836,7 +843,7 @@ class AdvancedNSEScanner:
             xss_payload = '<script>alert("XSS")</script>'
             try:
                 url = f"{target_url}?q={xss_payload}"
-                response = self.session.get(url, timeout=self.timeout, verify=False)
+                response = self.session.get(url, timeout=self.timeout, verify=_ssl_verify())
                 
                 if xss_payload in response.text:
                     vulnerabilities.append({
@@ -879,8 +886,9 @@ class AdvancedNSEScanner:
                 'evidence': 'SMB service accessible - potential for lateral movement',
                 'exploit_available': False
             }
-        except Exception:
+        except Exception as _exc:
             pass
+            logging.debug("Suppressed exception", exc_info=True)
         
         return None
     
@@ -916,8 +924,9 @@ class AdvancedNSEScanner:
                         'evidence': f'Vulnerable SSH version: {version}',
                         'exploit_available': False
                     }
-        except Exception:
+        except Exception as _exc:
             pass
+            logging.debug("Suppressed exception", exc_info=True)
         
         print("[-] No SSH vulnerabilities detected")
         return None
@@ -947,8 +956,9 @@ class AdvancedNSEScanner:
                             'evidence': f'Weak SSL/TLS version: {version}',
                             'exploit_available': False
                         }
-        except Exception:
+        except Exception as _exc:
             pass
+            logging.debug("Suppressed exception", exc_info=True)
         
         print("[-] No SSL/TLS vulnerabilities detected")
         return None

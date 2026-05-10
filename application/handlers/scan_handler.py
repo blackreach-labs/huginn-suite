@@ -7,6 +7,7 @@ from application.services.scan_orchestrator import ScanOrchestrator, ScanRequest
 from infrastructure.data.repositories.sqlite_scan_repository import SQLiteScanRepository
 from shared.events.event_bus import EventBus
 from shared.configuration.config_manager import ConfigManager
+from app.core.html_utils import h
 
 
 class ScanSignals(QObject):
@@ -53,7 +54,7 @@ class AsyncScanWorker(QRunnable):
             self.signals.status.emit("Scan completed")
             
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF4500;'>[ERROR] Scan failed: {str(e)}</p>")
+            self.signals.output.emit(f"<p style='color: #FF4500;'>[ERROR] Scan failed: {h(str(e))}</p>")
             self.signals.status.emit("Scan error")
         finally:
             self.signals.finished.emit()
@@ -151,7 +152,7 @@ class ScanHandler:
                     self.signals.status.emit("Comprehensive scan completed")
                     
                 except Exception as e:
-                    self.signals.output.emit(f"<p style='color: #FF4500;'>[ERROR] Comprehensive scan failed: {str(e)}</p>")
+                    self.signals.output.emit(f"<p style='color: #FF4500;'>[ERROR] Comprehensive scan failed: {h(str(e))}</p>")
                     self.signals.status.emit("Comprehensive scan error")
                 finally:
                     self.signals.finished.emit()

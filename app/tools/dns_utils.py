@@ -5,6 +5,7 @@ import dns.query
 from PyQt6.QtCore import QThreadPool
 from collections import defaultdict
 from .recon import PTRWorker
+from app.core.logger import logger
 
 def enumerate_hostnames(target, wordlist_path, output_callback, status_callback, finished_callback, record_types=None, use_bruteforce=False, char_sets=None, max_length=16, dns_server=None, wildcard_callback=None, results_callback=None, progress_callback=None, progress_start_callback=None, scan_controller=None, tenant_id="default"):
     from .recon import SubdomainGenerator, HostWordlistWorker
@@ -199,9 +200,10 @@ def query_direct_records(target, record_types, dns_server, output_callback, resu
                 for value in values:
                     output_callback(f"<p style='color: #DCDCDC; padding-left: 20px;'>&nbsp;&nbsp;&nbsp;-&gt; {value}</p>")
                 output_callback("<br>")
-        except (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer):
+        except (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer) as _exc:
             # No record exists - this is normal, don't show as error
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         except Exception as e:
             output_callback(f"<p style='color: orange;'>[!] {rtype} query failed for {target}: {str(e)}</p>")
     

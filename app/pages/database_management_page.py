@@ -9,6 +9,7 @@ import sqlite3
 import os
 from pathlib import Path
 from typing import Dict, List, Tuple
+from app.core.logger import logger
 
 class DatabaseQueryThread(QThread):
     """Thread for executing database queries"""
@@ -541,8 +542,9 @@ class DatabaseManagementPage(QWidget):
                         size = os.path.getsize(db_config["path"])
                         size_str = self.format_file_size(size)
                         db_item.setText(0, f"{db_name} ({size_str})")
-                    except:
+                    except Exception as _exc:
                         pass
+                        logger.debug("Suppressed exception", exc_info=True)
                 else:
                     db_item.setIcon(0, self.style().standardIcon(self.style().StandardPixmap.SP_DialogCancelButton))
                     db_item.setText(0, f"{db_name} (Not Found)")
@@ -637,8 +639,17 @@ class DatabaseManagementPage(QWidget):
                     obj_item.setExpanded(False)
                     
                     if obj_type == 'table':
-                        # Get column info
-                        cursor.execute(f"PRAGMA table_info({name})")
+                        # Get column info — bracket-quote the name to prevent
+                        # injection via a crafted table name in the opened DB.
+                        try:
+                            from app.core.database_utils import _quote_identifier
+                            quoted_name = _quote_identifier(name)
+                        except ValueError:
+                            # Skip tables with unquotable names
+                            obj_item.setText(2, "skipped (invalid name)")
+                            continue
+
+                        cursor.execute("PRAGMA table_info(" + quoted_name + ")")
                         columns = cursor.fetchall()
                         
                         for col_info in columns:
@@ -653,10 +664,10 @@ class DatabaseManagementPage(QWidget):
                         
                         # Get row count
                         try:
-                            cursor.execute(f"SELECT COUNT(*) FROM {name}")
+                            cursor.execute("SELECT COUNT(*) FROM " + quoted_name)
                             count = cursor.fetchone()[0]
                             obj_item.setText(2, f"{len(columns)} columns, {count} rows")
-                        except:
+                        except Exception:
                             obj_item.setText(2, f"{len(columns)} columns")
                     
         except Exception as e:

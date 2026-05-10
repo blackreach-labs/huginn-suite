@@ -1,6 +1,7 @@
 import asyncio
 import re
 from typing import Dict, List, Optional
+from app.core.logger import logger
 
 class SSTIDetector:
     """Server-Side Template Injection detection module"""
@@ -26,7 +27,7 @@ class SSTIDetector:
                     if '49' in content:  # 7*7 = 49
                         # Confirm with template-specific payloads
                         return await self._confirm_ssti(url, param, content)
-            except:
+            except Exception:
                 continue
         return None
     

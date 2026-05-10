@@ -8,6 +8,7 @@ import socket
 import argparse
 import sys
 import re
+from app.core.logger import logger
 
 class RPCRelayScanner:
     """Scanner for RPC relay vulnerabilities and MITM attack surface"""
@@ -214,7 +215,7 @@ class RPCRelayScanner:
             
             return False
             
-        except:
+        except Exception:
             return False
     
     def _simulate_relay_attack(self, target, relay_type, results):
@@ -288,7 +289,7 @@ class RPCRelayScanner:
             result = sock.connect_ex((target, port))
             sock.close()
             return result == 0
-        except:
+        except Exception:
             return False
     
     def _test_ntlm_auth(self, target, port, service):

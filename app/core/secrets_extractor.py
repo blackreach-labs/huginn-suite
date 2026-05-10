@@ -14,6 +14,7 @@ from .dns_settings import dns_settings
 from .dcsync_client import DCSyncClient
 from .ntlm_relay_client import NTLMRelayClient
 from .lsass_dumper import LSASSDumper
+from app.core.logger import logger
 
 class SecretsExtractor:
     """Advanced secrets extraction using Impacket's secretsdump.py"""
@@ -260,8 +261,9 @@ class SecretsExtractor:
             # Check if target is already an IP address
             socket.inet_aton(target)
             return target  # Already an IP
-        except socket.error:
+        except socket.error as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         try:
             # Get current DNS configuration

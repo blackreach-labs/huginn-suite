@@ -1,5 +1,6 @@
 import asyncio
 from typing import Dict, List, Optional
+from app.core.logger import logger
 
 class AdaptiveScanner:
     """Adaptive scanning engine that learns from responses"""
@@ -52,8 +53,9 @@ class AdaptiveScanner:
                         'cvss_score': 7.5,
                         'remediation': 'Implement proper input validation'
                     }
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return None
     

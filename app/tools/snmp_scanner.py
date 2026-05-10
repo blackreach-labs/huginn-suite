@@ -2,6 +2,8 @@
 import subprocess
 from PyQt6.QtCore import QObject, pyqtSignal, QRunnable
 from ..core.snmp_data_collector import create_snmp_collector
+from app.core.html_utils import h
+from app.core.logger import logger
 
 class SNMPWorkerSignals(QObject):
     output = pyqtSignal(str)
@@ -22,7 +24,7 @@ class SNMPWorker(QRunnable):
     
     def run(self):
         try:
-            self.signals.output.emit(f"<p style='color: #87CEEB;'>Starting SNMP enumeration on {self.target}...</p><br>")
+            self.signals.output.emit(f"<p style='color: #87CEEB;'>Starting SNMP enumeration on {h(self.target)}...</p><br>")
             
             # Start scan in centralized data
             scan_id = self.data_collector.start_snmp_scan(self.target, "snmp_scanner")
@@ -67,7 +69,7 @@ class SNMPWorker(QRunnable):
             
         except Exception as e:
             self.data_collector.complete_snmp_scan(0, str(e))
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>Error: {str(e)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>Error: {h(str(e))}</p><br>")
         finally:
             self.signals.finished.emit()
     
@@ -88,12 +90,13 @@ class SNMPWorker(QRunnable):
                     result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
                     
                     if result.returncode == 0 and "No Such Object" not in result.stdout:
-                        self.signals.output.emit(f"<p style='color: #00FF41;'>Valid community: {community}</p><br>")
+                        self.signals.output.emit(f"<p style='color: #00FF41;'>Valid community: {h(community)}</p><br>")
                         valid_communities.append(community)
                         
-                except:
+                except Exception as _exc:
                     # Try with Windows netsh or basic UDP check
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
             
             if valid_communities:
                 results['valid_communities'] = valid_communities
@@ -103,7 +106,7 @@ class SNMPWorker(QRunnable):
                 return []
             
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>Community testing failed: {str(e)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>Community testing failed: {h(str(e))}</p><br>")
             return []
     
     def _get_system_info(self, results, community):
@@ -121,14 +124,14 @@ class SNMPWorker(QRunnable):
                 system_desc = result.stdout.strip()
                 system_info['system_description'] = system_desc
                 results['system_description'] = system_desc
-                self.signals.output.emit(f"<p>System: {system_desc}</p><br>")
+                self.signals.output.emit(f"<p>System: {h(system_desc)}</p><br>")
                 return system_info
             else:
                 self.signals.output.emit("<p style='color: #FFAA00;'>Could not retrieve system information</p><br>")
                 return None
                 
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>System info retrieval failed: {str(e)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>System info retrieval failed: {h(str(e))}</p><br>")
             return None
     
     def _get_users(self, results, community):
@@ -150,7 +153,7 @@ class SNMPWorker(QRunnable):
                 return []
                 
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>User enumeration failed: {str(e)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>User enumeration failed: {h(str(e))}</p><br>")
             return []
     
     def _get_network_info(self, results, community):
@@ -172,5 +175,5 @@ class SNMPWorker(QRunnable):
                 return []
                 
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>Network enumeration failed: {str(e)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>Network enumeration failed: {h(str(e))}</p><br>")
             return []

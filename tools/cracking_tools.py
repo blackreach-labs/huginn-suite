@@ -10,6 +10,7 @@ import re
 import json
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
+import logging
 
 class ProfessionalCrackingTools:
     def __init__(self, timeout=300):
@@ -373,8 +374,9 @@ class ProfessionalCrackingTools:
             print(f"OS: {platform.system()} {platform.release()}")
             print(f"Architecture: {platform.machine()}")
             print(f"Processor: {platform.processor()}")
-        except:
+        except Exception as _exc:
             pass
+            logging.debug("Suppressed exception", exc_info=True)
 
     def generate_advanced_rules(self):
         """Generate advanced password mutation rules"""

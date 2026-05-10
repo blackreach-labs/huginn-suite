@@ -2,6 +2,7 @@
 from PyQt6.QtCore import QObject, pyqtSignal, QRunnable
 from app.tools.av_firewall_scanner import av_firewall_scanner
 import logging
+from app.core.html_utils import h
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +27,7 @@ class AVFirewallWorker(QRunnable):
     def run(self):
         """Execute AV/Firewall detection"""
         try:
-            self.signals.output.emit(f"<p style='color: #00BFFF;'>[AV DETECTION] Starting {self.detection_type} on {self.target}</p><br>")
+            self.signals.output.emit(f"<p style='color: #00BFFF;'>[AV DETECTION] Starting {h(self.detection_type)} on {h(self.target)}</p><br>")
             
             results = {
                 'target': self.target,
@@ -44,12 +45,12 @@ class AVFirewallWorker(QRunnable):
                 waf_results = av_firewall_scanner.detect_waf(self.target, self.port)
                 
                 if waf_results.get('error'):
-                    self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] {waf_results['error']}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] {h(waf_results['error'])}</p><br>")
                     results['error'] = waf_results['error']
                 else:
                     if waf_results.get('waf_detected'):
                         waf_type = waf_results.get('waf_type', 'Unknown')
-                        self.signals.output.emit(f"<p style='color: #FF6B6B;'>WAF DETECTED: {waf_type}</p><br>")
+                        self.signals.output.emit(f"<p style='color: #FF6B6B;'>WAF DETECTED: {h(waf_type)}</p><br>")
                         results['detections'].append({
                             'type': 'WAF',
                             'name': waf_type,
@@ -57,7 +58,7 @@ class AVFirewallWorker(QRunnable):
                         })
                         
                         for indicator in waf_results.get('indicators', []):
-                            self.signals.output.emit(f"<p style='color: #FFAA00;'>  - {indicator}</p><br>")
+                            self.signals.output.emit(f"<p style='color: #FFAA00;'>  - {h(indicator)}</p><br>")
                     else:
                         self.signals.output.emit(f"<p style='color: #00FF41;'>No WAF detected</p><br>")
                 
@@ -68,7 +69,7 @@ class AVFirewallWorker(QRunnable):
                 fw_results = av_firewall_scanner.detect_firewall_nmap(self.target)
                 
                 if fw_results.get('error'):
-                    self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] {fw_results['error']}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] {h(fw_results['error'])}</p><br>")
                     results['error'] = fw_results['error']
                 else:
                     if fw_results.get('firewall_detected'):
@@ -92,14 +93,14 @@ class AVFirewallWorker(QRunnable):
                 evasion_results = av_firewall_scanner.firewall_evasion_scan(self.target)
                 
                 if evasion_results.get('error'):
-                    self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] {evasion_results['error']}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] {h(evasion_results['error'])}</p><br>")
                     results['error'] = evasion_results['error']
                 else:
                     successful = evasion_results.get('successful_techniques', [])
                     if successful:
                         self.signals.output.emit(f"<p style='color: #00FF41;'>Successful evasion techniques:</p><br>")
                         for technique in successful:
-                            self.signals.output.emit(f"<p style='color: #87CEEB;'>  - {technique}</p><br>")
+                            self.signals.output.emit(f"<p style='color: #87CEEB;'>  - {h(technique)}</p><br>")
                         
                         results['detections'].append({
                             'type': 'Evasion',
@@ -115,15 +116,15 @@ class AVFirewallWorker(QRunnable):
                 payload_results = av_firewall_scanner.generate_av_test_payload("msfvenom")
                 
                 if payload_results.get('error'):
-                    self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] {payload_results['error']}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] {h(payload_results['error'])}</p><br>")
                     results['error'] = payload_results['error']
                 else:
                     if payload_results.get('command'):
                         self.signals.output.emit(f"<p style='color: #00FF41;'>Generated command:</p><br>")
-                        self.signals.output.emit(f"<p style='color: #87CEEB;'>{payload_results['command']}</p><br>")
+                        self.signals.output.emit(f"<p style='color: #87CEEB;'>{h(payload_results['command'])}</p><br>")
                     
                     for instruction in payload_results.get('instructions', []):
-                        self.signals.output.emit(f"<p style='color: #FFAA00;'>{instruction}</p><br>")
+                        self.signals.output.emit(f"<p style='color: #FFAA00;'>{h(instruction)}</p><br>")
                     
                     results['detections'].append({
                         'type': 'Payload',
@@ -136,7 +137,7 @@ class AVFirewallWorker(QRunnable):
             # Summary
             detection_count = len(results.get('detections', []))
             if detection_count > 0:
-                self.signals.output.emit(f"<p style='color: #00FF41;'>[COMPLETE] Detection completed - {detection_count} findings</p><br>")
+                self.signals.output.emit(f"<p style='color: #00FF41;'>[COMPLETE] Detection completed - {h(detection_count)} findings</p><br>")
             else:
                 self.signals.output.emit(f"<p style='color: #FFAA00;'>[COMPLETE] Detection completed - no security measures detected</p><br>")
             
@@ -146,6 +147,6 @@ class AVFirewallWorker(QRunnable):
             error_msg = f"AV/Firewall detection failed: {str(e)}"
             logger.error(error_msg)
             self.signals.error.emit(error_msg)
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] {error_msg}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] {h(error_msg)}</p><br>")
         finally:
             self.signals.finished.emit()

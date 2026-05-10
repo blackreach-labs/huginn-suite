@@ -8,6 +8,7 @@ from PyQt6.QtGui import QFont, QPalette, QColor
 from ..core.unified_ui_integration import create_unified_integration
 from ..core.centralized_scan_data import centralized_scan_data
 import json
+from app.core.logger import logger
 
 class CentralizedDashboardPage(QWidget):
     """Unified dashboard showing all scan types with real-time updates"""
@@ -331,8 +332,9 @@ class CentralizedDashboardPage(QWidget):
                     try:
                         dt = datetime.fromisoformat(last_scan.replace('Z', '+00:00'))
                         last_scan = dt.strftime('%H:%M:%S')
-                    except:
+                    except Exception as _exc:
                         pass
+                        logger.debug("Suppressed exception", exc_info=True)
                 
                 labels['last_scan'].setText(last_scan)
                 

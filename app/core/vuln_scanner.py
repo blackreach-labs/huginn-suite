@@ -4,6 +4,7 @@ import re
 import socket
 from typing import Dict, List, Callable
 from urllib.parse import urljoin, urlparse
+from app.core.logger import logger
 
 class VulnerabilityScanner:
     """Vulnerability scanner for common security issues"""
@@ -16,6 +17,11 @@ class VulnerabilityScanner:
             'dns': self._check_dns_vulns,
             'port': self._check_port_vulns
         }
+        try:
+            from app.core.config import config as _cfg
+            self.ssl_verify = _cfg.get('security.ssl_verify', True)
+        except Exception:
+            self.ssl_verify = True
     
     def scan_vulnerabilities(self, target: str, scan_type: str = 'http', 
                            progress_callback: Callable = None) -> Dict:
@@ -59,8 +65,9 @@ class VulnerabilityScanner:
         try:
             from app.core.proxy_manager import proxy_manager
             proxies = proxy_manager.get_proxy_dict()
-        except ImportError:
+        except ImportError as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         # Check for common HTTP vulnerabilities
         vuln_checks = [
@@ -81,8 +88,9 @@ class VulnerabilityScanner:
                 try:
                     from app.core.rate_limiter import rate_limiter
                     rate_limiter.wait_if_needed('vuln_scanner')
-                except ImportError:
+                except ImportError as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
                 
                 vuln_result = check_func(target, proxies)
                 if vuln_result:
@@ -100,7 +108,7 @@ class VulnerabilityScanner:
         for payload in payloads:
             try:
                 url = urljoin(target, payload)
-                response = requests.get(url, timeout=self.timeout, proxies=proxies, verify=False)
+                response = requests.get(url, timeout=self.timeout, proxies=proxies, verify=self.ssl_verify)
                 
                 if response.status_code == 200:
                     content = response.text.lower()
@@ -125,7 +133,7 @@ class VulnerabilityScanner:
         for payload in payloads:
             try:
                 url = f"{target}?id={payload}"
-                response = requests.get(url, timeout=self.timeout, proxies=proxies, verify=False)
+                response = requests.get(url, timeout=self.timeout, proxies=proxies, verify=self.ssl_verify)
                 
                 if response.status_code == 200:
                     content = response.text.lower()
@@ -152,7 +160,7 @@ class VulnerabilityScanner:
         
         try:
             url = f"{target}?q={payload}"
-            response = requests.get(url, timeout=self.timeout, proxies=proxies, verify=False)
+            response = requests.get(url, timeout=self.timeout, proxies=proxies, verify=self.ssl_verify)
             
             if response.status_code == 200 and payload in response.text:
                 return {
@@ -162,8 +170,9 @@ class VulnerabilityScanner:
                     'evidence': f'Payload reflected: {payload}',
                     'url': url
                 }
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return None
     
@@ -171,7 +180,7 @@ class VulnerabilityScanner:
         """Check for missing security headers"""
         
         try:
-            response = requests.get(target, timeout=self.timeout, proxies=proxies, verify=False)
+            response = requests.get(target, timeout=self.timeout, proxies=proxies, verify=self.ssl_verify)
             
             missing_headers = []
             security_headers = [
@@ -194,8 +203,9 @@ class VulnerabilityScanner:
                     'evidence': f'Missing: {", ".join(missing_headers)}',
                     'url': target
                 }
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return None
     
@@ -208,7 +218,7 @@ class VulnerabilityScanner:
         for path in default_paths:
             try:
                 url = urljoin(target, path)
-                response = requests.get(url, timeout=self.timeout, proxies=proxies, verify=False)
+                response = requests.get(url, timeout=self.timeout, proxies=proxies, verify=self.ssl_verify)
                 
                 if response.status_code == 200 and 'login' in response.text.lower():
                     return {
@@ -231,7 +241,7 @@ class VulnerabilityScanner:
         for path in info_paths:
             try:
                 url = urljoin(target, path)
-                response = requests.get(url, timeout=self.timeout, proxies=proxies, verify=False)
+                response = requests.get(url, timeout=self.timeout, proxies=proxies, verify=self.ssl_verify)
                 
                 if response.status_code == 200:
                     return {
@@ -286,8 +296,9 @@ class VulnerabilityScanner:
                             'url': f'https://{hostname}'
                         })
         
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return vulnerabilities
     
@@ -315,11 +326,13 @@ class VulnerabilityScanner:
                             })
                     except Exception:
                         continue
-            except Exception:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
-        except ImportError:
+        except ImportError as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return vulnerabilities
     

@@ -8,6 +8,7 @@ import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from app.core.asset_manager import asset_manager
+import logging
 
 def test_ip_hostname_correlation():
     """Test that IP addresses and hostnames are treated as the same asset"""
@@ -17,8 +18,9 @@ def test_ip_hostname_correlation():
     # Clear any existing test data
     try:
         asset_manager.remove_asset(tenant_id, "192.168.1.100")
-    except:
+    except Exception as _exc:
         pass
+        logging.debug("Suppressed exception", exc_info=True)
     
     print("Testing IP-Hostname Correlation...")
     print("=" * 50)
@@ -72,8 +74,9 @@ def test_ip_hostname_correlation():
     try:
         asset_manager.remove_asset(tenant_id, "192.168.1.101")
         asset_manager.remove_asset(tenant_id, "web.local")
-    except:
+    except Exception as _exc:
         pass
+        logging.debug("Suppressed exception", exc_info=True)
     
     # Add by hostname first
     asset_id3 = asset_manager.add_or_update_asset(
@@ -132,8 +135,9 @@ def test_ip_hostname_correlation():
         asset_manager.remove_asset(tenant_id, "192.168.1.100")
         asset_manager.remove_asset(tenant_id, "192.168.1.101")
         asset_manager.remove_asset(tenant_id, "web.local")
-    except:
+    except Exception as _exc:
         pass
+        logging.debug("Suppressed exception", exc_info=True)
 
 if __name__ == "__main__":
     test_ip_hostname_correlation()

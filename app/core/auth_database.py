@@ -444,11 +444,11 @@ class AuthDatabase:
             # Export flows
             if session_ids:
                 placeholders = ','.join('?' * len(session_ids))
-                cursor.execute(f"""
-                    SELECT session_id, flow_data 
-                    FROM auth_flows 
-                    WHERE session_id IN ({placeholders})
-                """, session_ids)
+                cursor.execute(
+                    "SELECT session_id, flow_data FROM auth_flows "
+                    "WHERE session_id IN (" + placeholders + ")",
+                    session_ids
+                )
             else:
                 cursor.execute("SELECT session_id, flow_data FROM auth_flows")
             

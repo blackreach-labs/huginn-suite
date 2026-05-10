@@ -8,6 +8,7 @@ import logging
 from typing import Dict, List, Optional, Any
 import subprocess
 import re
+from app.core.logger import logger
 
 logger = logging.getLogger(__name__)
 
@@ -474,8 +475,9 @@ class DatabaseScanner:
                 # Simulate credential test (in real implementation would use mysql connector)
                 test_result = f"Tested {username}:{password if password else '(empty)'}"
                 results['security_tests']['weak_credentials'].append(test_result)
-            except Exception:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
     
     def _analyze_mariadb_configuration(self, results: Dict[str, Any], target: str, port: int) -> None:
         """Analyze MariaDB configuration for security issues"""

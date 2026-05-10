@@ -2,6 +2,7 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
                             QLineEdit, QPushButton, QTextEdit, QComboBox, QCheckBox, QFrame)
 from PyQt6.QtCore import pyqtSignal, QThreadPool, Qt
 from app.core.base_worker import CommandWorker
+from app.core.html_utils import h
 
 class RpcRelayComponent(QWidget):
     relay_started = pyqtSignal(str, str)
@@ -187,7 +188,7 @@ class RpcRelayComponent(QWidget):
 
     def show_error(self, message):
         """Show error message"""
-        self.terminal_output.setHtml(f"<p style='color: #FF4500;'>[ERROR] {message}</p>")
+        self.terminal_output.setHtml(f"<p style='color: #FF4500;'>[ERROR] {h(message)}</p>")
 
     def append_terminal_output(self, text):
         """Append text to terminal output"""

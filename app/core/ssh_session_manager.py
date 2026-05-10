@@ -6,6 +6,7 @@ import uuid
 from typing import Dict, List, Optional, Callable
 from PyQt6.QtCore import QObject, pyqtSignal
 from .centralized_scan_data import centralized_scan_data
+from app.core.logger import logger
 
 class SSHSessionSignals(QObject):
     session_established = pyqtSignal(str, dict)
@@ -105,8 +106,9 @@ interact'''
                     if 'connection_test' in output:
                         self.is_active = True
                         return True
-                except:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
             
             # If we have a mock process, it's already active
             if self.is_active:
@@ -130,8 +132,9 @@ interact'''
                 try:
                     if hasattr(self.process, 'kill'):
                         self.process.kill()
-                except:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
             self.process = None
         self.is_active = False
     

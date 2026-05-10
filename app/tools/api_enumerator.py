@@ -3,6 +3,7 @@ import requests
 import json
 from urllib.parse import urljoin, urlparse
 from .encoders import detect_and_decode
+from app.core.logger import logger
 
 class APIEnumerator:
     def __init__(self, session=None, cookies=None):
@@ -15,6 +16,14 @@ class APIEnumerator:
             '/users', '/admin', '/auth', '/login',
             '/config', '/settings', '/status'
         ]
+        # Honour the global SSL verification setting instead of hardcoding False.
+        try:
+            from app.core.config import config as _cfg
+            self.ssl_verify = _cfg.get('security.ssl_verify', True)
+        except Exception:
+            self.ssl_verify = True
+        if not session:
+            self.session.verify = self.ssl_verify
         
     def set_auth_cookie(self, cookie_string):
         """Set authentication cookie (PHPSESSID, JWT, etc.)"""
@@ -47,7 +56,7 @@ class APIEnumerator:
                         full_url, 
                         cookies=self.cookies,
                         timeout=10,
-                        verify=False
+                        verify=self.ssl_verify
                     )
                     
                     if response.status_code == 200:
@@ -63,11 +72,13 @@ class APIEnumerator:
                             data = response.json()
                             new_paths = self.extract_paths_from_json(data)
                             queue.extend([p for p in new_paths if p not in visited])
-                        except:
+                        except Exception as _exc:
                             pass
+                            logger.debug("Suppressed exception", exc_info=True)
                             
-                except Exception:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
         
         return discovered
     
@@ -115,7 +126,7 @@ class APIEnumerator:
                     cookies=self.cookies,
                     headers={'Content-Type': 'application/json'},
                     timeout=10,
-                    verify=False
+                    verify=self.ssl_verify
                 )
                 
                 results[method] = {
@@ -130,8 +141,9 @@ class APIEnumerator:
                         json_data = response.json()
                         if any(key in json_data for key in ['admin', 'role', 'privileges']):
                             results[method]['privilege_escalation'] = True
-                    except:
+                    except Exception as _exc:
                         pass
+                        logger.debug("Suppressed exception", exc_info=True)
                         
             except Exception as e:
                 results[method] = {'error': str(e)}
@@ -160,7 +172,7 @@ class APIEnumerator:
                         full_url,
                         cookies=self.cookies,
                         timeout=5,
-                        verify=False
+                        verify=self.ssl_verify
                     )
                     
                     if response.status_code in [200, 201, 401, 403]:
@@ -171,8 +183,9 @@ class APIEnumerator:
                             'method': 'GET'
                         })
                         
-                except Exception:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
         
         return found_endpoints
     
@@ -241,7 +254,7 @@ class APIEnumerator:
                         cookies=self.cookies,
                         headers={'Content-Type': 'application/json'},
                         timeout=10,
-                        verify=False
+                        verify=self.ssl_verify
                     )
                     
                     if response.status_code in [200, 201]:
@@ -252,7 +265,8 @@ class APIEnumerator:
                             'response': response.text[:200]
                         })
                         
-                except Exception:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
         
         return escalation_tests

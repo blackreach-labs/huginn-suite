@@ -50,12 +50,25 @@ class MainWindow(QMainWindow):
     
     def _initialize_components(self):
         """Initialize all UI components and managers."""
+        self._configure_thread_pool()
         self._setup_window()
         self._setup_managers()
         self._setup_ui()
         self._setup_lazy_pages()
         self._apply_styling()
         self._optimized_final_setup()
+
+    def _configure_thread_pool(self):
+        """Configure the global QThreadPool with sensible limits."""
+        from PyQt6.QtCore import QThreadPool
+        pool = QThreadPool.globalInstance()
+        # Cap at 2× CPU count, minimum 4, maximum 32.
+        # Prevents runaway thread creation during aggressive scans.
+        import os
+        cpu_count = os.cpu_count() or 4
+        max_threads = max(4, min(cpu_count * 2, 32))
+        pool.setMaxThreadCount(max_threads)
+        logger.info(f"QThreadPool max threads set to {max_threads} (CPUs: {cpu_count})")
     
     def _setup_window(self):
         """Set up basic window properties."""
@@ -196,12 +209,20 @@ class MainWindow(QMainWindow):
             return None
         
     def _create_recon_enumeration(self):
-        from app.pages.recon_enumeration_page import ReconEnumerationPage
-        return ReconEnumerationPage(self)
+        try:
+            from app.pages.recon_enumeration_page import ReconEnumerationPage
+            return ReconEnumerationPage(self)
+        except Exception as e:
+            logger.error(f"Failed to create recon enumeration page: {e}")
+            return None
         
     def _create_vuln_scanning(self):
-        from app.pages.vuln_scanning_page import VulnScanningPage
-        return VulnScanningPage(self)
+        try:
+            from app.pages.vuln_scanning_page import VulnScanningPage
+            return VulnScanningPage(self)
+        except Exception as e:
+            logger.error(f"Failed to create vuln scanning page: {e}")
+            return None
     
     def _create_inventory(self):
         from app.pages.inventory_page import InventoryPage
@@ -384,21 +405,6 @@ class MainWindow(QMainWindow):
             logger.error(f"Error handling mindmap selection: {e}")
             self.status_bar.showMessage("Navigation error occurred")
     
-    def open_reports_dialog(self):
-        """Open advanced reports dialog."""
-        try:
-            from app.widgets.advanced_reporting_widget import AdvancedReportingWidget
-            dialog = self._create_dialog("Advanced Reporting Engine", AdvancedReportingWidget, (1000, 750))
-            self.status_bar.showMessage("Advanced Reporting Engine opened")
-            dialog.exec()
-        except ImportError as e:
-            logger.error(f"Reporting widget import failed in open_reports_dialog: {e}")
-            self.status_bar.showMessage("Advanced Reporting not available")
-        except Exception as e:
-            logger.error(f"Unexpected error in open_reports_dialog: {e}")
-            self.status_bar.showMessage("Failed to open Advanced Reporting")
-
-    
     def set_home_style(self, style):
         """Set the home page navigation style."""
         self.theme_manager.set_home_style(style)
@@ -424,8 +430,9 @@ class MainWindow(QMainWindow):
     
     def changeEvent(self, event):
         """Handle window state changes."""
-        if hasattr(self, 'tray_manager') and self.tray_manager.handle_window_state_change(event):
-            return
+        if hasattr(self, 'tray_manager') and self.tray_manager is not None:
+            if self.tray_manager.handle_window_state_change(event):
+                return
         super().changeEvent(event)
     
     def closeEvent(self, event):
@@ -440,6 +447,14 @@ class MainWindow(QMainWindow):
             # Stop memory monitoring
             from app.core.memory_manager import memory_manager
             memory_manager.stop_monitoring()
+
+            # Close all HTTP sessions
+            from app.core.connection_pool import connection_pool
+            connection_pool.close_all()
+
+            # Wait for queued scan workers to finish (max 5 s)
+            from PyQt6.QtCore import QThreadPool
+            QThreadPool.globalInstance().waitForDone(5000)
             
             # Cleanup tray
             if hasattr(self, 'tray_manager') and self.tray_manager:
@@ -452,20 +467,27 @@ class MainWindow(QMainWindow):
     
     def _cleanup_services(self):
         """Cleanup running services before application exit."""
-        services = [
-            ('local_dns_server', 'stop_server', 'running'),
-            ('vpn_manager', 'disconnect', 'is_connected')
-        ]
-        
-        for service_name, method, attr in services:
-            try:
-                module = __import__(f'app.core.{service_name}', fromlist=[service_name])
-                service = getattr(module, service_name)
-                if hasattr(service, attr) and getattr(service, attr):
-                    getattr(service, method)()
-                    logger.info(f"{service_name} stopped")
-            except Exception as e:
-                logger.error(f"Error stopping {service_name}: {e}")
+        # Stop local DNS server if running
+        try:
+            from app.core.local_dns_server import local_dns_server
+            if hasattr(local_dns_server, 'running') and local_dns_server.running:
+                local_dns_server.stop_server()
+                logger.info("local_dns_server stopped")
+        except ImportError:
+            pass  # Module not available — nothing to stop
+        except Exception as e:
+            logger.error(f"Error stopping local_dns_server: {e}")
+
+        # Disconnect VPN if connected
+        try:
+            from app.core.vpn_manager import vpn_manager
+            if hasattr(vpn_manager, 'is_connected') and vpn_manager.is_connected:
+                vpn_manager.disconnect()
+                logger.info("vpn_manager disconnected")
+        except ImportError:
+            pass  # Module not available — nothing to stop
+        except Exception as e:
+            logger.error(f"Error stopping vpn_manager: {e}")
     
     # Legacy methods for compatibility
     def export_current_results(self):
@@ -578,8 +600,9 @@ class MainWindow(QMainWindow):
                 attack_chain_page = self.page_manager.get_page('attack_chain_home')
                 if attack_chain_page:
                     self.stack.setCurrentWidget(attack_chain_page)
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
     
     def _create_dialog(self, title, widget_class, size=(800, 600), *args):
         """Create a standard dialog with widget."""

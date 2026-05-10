@@ -8,6 +8,7 @@ import time
 import itertools
 from typing import Dict, List, Optional, Any
 from datetime import datetime, timedelta
+from app.core.logger import logger
 
 class AzureStorageCrawler:
     """Azure Storage Account crawler with SAS token bruteforcer and blob scraper"""
@@ -83,8 +84,9 @@ class AzureStorageCrawler:
                         'url': f"https://{account_name}.blob.core.windows.net/{name_elem.text}",
                         'public': sas_token is None
                     })
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         # Try common container names
         common_containers = [
@@ -145,6 +147,7 @@ class AzureStorageCrawler:
                     })
         except Exception as e:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return blobs
     

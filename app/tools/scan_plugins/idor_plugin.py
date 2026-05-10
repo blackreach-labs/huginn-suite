@@ -1,6 +1,7 @@
 # app/tools/scan_plugins/idor_plugin.py
 from .base_plugin import BaseScanPlugin
 import re
+from app.core.logger import logger
 
 class IDORPlugin(BaseScanPlugin):
     def __init__(self):
@@ -20,7 +21,7 @@ class IDORPlugin(BaseScanPlugin):
             try:
                 test_id = str(int(value) + 1)
                 test_url = url.replace(f"{param}={value}", f"{param}={test_id}")
-                test_response = session.get(test_url, timeout=5, verify=False)
+                test_response = session.get(test_url, timeout=5, verify=self.ssl_verify)
                 
                 if test_response.status_code == 200 and len(test_response.text) > 100:
                     results['vulnerabilities'].append({
@@ -30,7 +31,8 @@ class IDORPlugin(BaseScanPlugin):
                         'test_id': test_id,
                         'evidence': f'Different ID accessible: {test_response.status_code}'
                     })
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         return results if results['vulnerabilities'] or results['parameters'] else None

@@ -8,6 +8,7 @@ from PyQt6.QtGui import QFont, QIcon
 from app.pages.components.base_page import BasePage
 from app.widgets.attack_chain_mindmap import AttackChainMindmap
 import os
+from app.core.logger import logger
 
 class AttackChainHomePage(BasePage):
     """Attack chain home page with Setup, Mindmap, and Correlations tabs"""
@@ -726,8 +727,9 @@ class AttackChainHomePage(BasePage):
                 try:
                     from app.core.credential_manager import credential_manager
                     credential_manager.set_profile(profile_name)
-                except ImportError:
+                except ImportError as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
                 
                 # Trigger tenant change via tenant-aware updater
                 try:
@@ -853,8 +855,9 @@ class AttackChainHomePage(BasePage):
             from app.core.credential_manager import credential_manager
             credential_manager.set_profile(profile_name)
             self.refresh_credential_display()
-        except ImportError:
+        except ImportError as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         # Add blank entry to target table
         row = self.target_table.rowCount()
@@ -878,8 +881,9 @@ class AttackChainHomePage(BasePage):
         try:
             from app.core.tenant_aware_updater import tenant_aware_updater
             tenant_aware_updater.set_tenant(profile_name)
-        except ImportError:
+        except ImportError as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         self.update_scope_validation()
     
@@ -1169,8 +1173,9 @@ class AttackChainHomePage(BasePage):
             self.notes.clear()
             self.refresh_credential_display()
             
-        except ImportError:
+        except ImportError as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def delete_selected_credential(self):
         """Delete the selected credential"""
@@ -1189,8 +1194,9 @@ class AttackChainHomePage(BasePage):
                     self.refresh_credential_display()
             else:
                 QMessageBox.information(self, "No Selection", "Please select a credential to delete")
-        except ImportError:
+        except ImportError as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def clear_credentials(self):
         """Clear all credentials"""
@@ -1205,8 +1211,9 @@ class AttackChainHomePage(BasePage):
                 if reply == QMessageBox.StandardButton.Yes:
                     credential_manager.clear_credentials()
                     self.refresh_credential_display()
-        except ImportError:
+        except ImportError as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def toggle_password_display(self, show):
         """Toggle password visibility in the table"""
@@ -1226,8 +1233,9 @@ class AttackChainHomePage(BasePage):
                             password_item.setText('*' * min(len(cred.password), 10))
                     else:
                         password_item.setText("N/A")
-        except ImportError:
+        except ImportError as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def load_credentials_from_profile(self, cred_data):
         """Load credentials from profile data"""
@@ -1251,8 +1259,9 @@ class AttackChainHomePage(BasePage):
                                 source=cred.get('source', 'manual'),
                                 credential_type=cred.get('credential_type', 'Username/Password')
                             )
-        except ImportError:
+        except ImportError as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def update_inventory_with_profile_data(self, profile_data):
         """Update inventory page with profile data"""
@@ -1303,8 +1312,9 @@ class AttackChainHomePage(BasePage):
             if hasattr(self.main_window, 'inventory_page') and hasattr(self.main_window.inventory_page, 'add_assets_from_profile'):
                 self.main_window.inventory_page.add_assets_from_profile(assets)
                 
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def refresh_credential_display(self):
         """Refresh credential display"""
@@ -1348,8 +1358,9 @@ class AttackChainHomePage(BasePage):
             if hasattr(self, 'cred_summary'):
                 self.cred_summary.setText(f"📊 {summary}")
                 
-        except ImportError:
+        except ImportError as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def update_scope_validation(self):
         """Update scope validation status display"""
@@ -1417,8 +1428,9 @@ class AttackChainHomePage(BasePage):
         try:
             from app.core.scope_manager import scope_manager
             scope_manager.update_scope(in_scope_text, out_scope_text)
-        except ImportError:
+        except ImportError as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def trigger_tenant_change_updates(self, tenant_id):
         """Trigger real-time updates across all application components when tenant changes"""
@@ -1435,24 +1447,27 @@ class AttackChainHomePage(BasePage):
                 from app.core.centralized_scan_data import get_scan_data_manager
                 scan_data_manager = get_scan_data_manager(tenant_id)
                 # Trigger UI refresh for any active scan data displays
-            except ImportError:
+            except ImportError as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
             
             # Update any real-time data updaters
             try:
                 from app.core.realtime_data_updater import get_realtime_updater
                 updater = get_realtime_updater(tenant_id)
                 updater.refresh_all_components()
-            except ImportError:
+            except ImportError as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
             
             # Update correlation dashboard if active
             try:
                 if hasattr(self, 'correlations_tab'):
                     # Refresh correlation data for new tenant
                     pass
-            except Exception:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
             
             # Update any other tenant-specific components
             self.refresh_tenant_specific_data(tenant_id)

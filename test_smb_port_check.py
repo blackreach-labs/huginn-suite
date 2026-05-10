@@ -4,6 +4,7 @@ import socket
 import struct
 import sys
 import time
+import logging
 
 def test_port_445(host):
     """Test if port 445 is open and responsive"""
@@ -35,8 +36,9 @@ def test_port_445(host):
         if sock:
             try:
                 sock.close()
-            except:
+            except Exception as _exc:
                 pass
+                logging.debug("Suppressed exception", exc_info=True)
 
 def test_smb1_negotiate(host):
     """Test SMB1 negotiate to see if server only supports SMB1"""
@@ -101,8 +103,9 @@ def test_smb1_negotiate(host):
         if sock:
             try:
                 sock.close()
-            except:
+            except Exception as _exc:
                 pass
+                logging.debug("Suppressed exception", exc_info=True)
     
     return False
 
@@ -140,8 +143,9 @@ def test_raw_data_send(host):
         if sock:
             try:
                 sock.close()
-            except:
+            except Exception as _exc:
                 pass
+                logging.debug("Suppressed exception", exc_info=True)
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:

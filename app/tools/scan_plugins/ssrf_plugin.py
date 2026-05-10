@@ -1,6 +1,7 @@
 # app/tools/scan_plugins/ssrf_plugin.py
 from .base_plugin import BaseScanPlugin
 import re
+from app.core.logger import logger
 
 class SSRFPlugin(BaseScanPlugin):
     def __init__(self):
@@ -25,14 +26,15 @@ class SSRFPlugin(BaseScanPlugin):
                     # Test basic SSRF payload
                     try:
                         test_data = {param: 'http://127.0.0.1:80'}
-                        test_response = session.post(url, data=test_data, timeout=5, verify=False)
+                        test_response = session.post(url, data=test_data, timeout=5, verify=self.ssl_verify)
                         if test_response.status_code != response.status_code:
                             results['vulnerabilities'].append({
                                 'type': 'Potential SSRF',
                                 'parameter': param,
                                 'evidence': f'Status code changed: {response.status_code} -> {test_response.status_code}'
                             })
-                    except:
+                    except Exception as _exc:
                         pass
+                        logger.debug("Suppressed exception", exc_info=True)
         
         return results if results['vulnerabilities'] or results['parameters'] else None

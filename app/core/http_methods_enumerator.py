@@ -1,3 +1,4 @@
+from app.core.logger import logger
 class HTTPMethodsEnumerator:
     """Enumerate and test HTTP methods beyond basic OPTIONS"""
     
@@ -47,7 +48,7 @@ class HTTPMethodsEnumerator:
                                 'description': f'WebDAV method {method} is enabled',
                                 'recommendation': 'Disable WebDAV if not required, or restrict access'
                             })
-            except:
+            except Exception:
                 continue
         
         # Check for method override headers
@@ -89,7 +90,7 @@ class HTTPMethodsEnumerator:
                             'description': f'Server may process {header} header for method override',
                             'recommendation': 'Disable HTTP method override if not required'
                         })
-            except:
+            except Exception:
                 continue
                 
         return findings

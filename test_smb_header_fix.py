@@ -4,6 +4,7 @@ import socket
 import struct
 import os
 import sys
+import logging
 
 def build_correct_smb2_negotiate():
     """Build SMB2 negotiate with correct header structure"""
@@ -160,8 +161,9 @@ def test_corrected_smb2(host):
             try:
                 sock.close()
                 print(f"[DEBUG] Socket closed")
-            except:
+            except Exception as _exc:
                 pass
+                logging.debug("Suppressed exception", exc_info=True)
     
     return False
 

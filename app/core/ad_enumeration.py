@@ -35,28 +35,29 @@ class ADEnumeration(QObject):
         
         try:
             # Domain users enumeration
+            # Use argument lists (no shell=True) to prevent command injection via
+            # username or password containing shell metacharacters.
             self.ad_event.emit('enum_progress', 'Enumerating domain users...', {})
-            users_cmd = f'net user /domain'
             if username and password:
-                users_cmd = f'net user /domain /user:{username} /password:{password}'
+                users_cmd = ["net", "user", "/domain", f"/user:{username}", f"/password:{password}"]
+            else:
+                users_cmd = ["net", "user", "/domain"]
                 
-            users_result = subprocess.run(users_cmd, shell=True, capture_output=True, text=True)
+            users_result = subprocess.run(users_cmd, capture_output=True, text=True)
             if users_result.returncode == 0:
                 users = self._parse_net_users(users_result.stdout)
                 results['users'] = users[:50]  # Limit results
                 
             # Domain computers
             self.ad_event.emit('enum_progress', 'Enumerating domain computers...', {})
-            computers_cmd = 'net view /domain'
-            computers_result = subprocess.run(computers_cmd, shell=True, capture_output=True, text=True)
+            computers_result = subprocess.run(["net", "view", "/domain"], capture_output=True, text=True)
             if computers_result.returncode == 0:
                 computers = self._parse_net_computers(computers_result.stdout)
                 results['computers'] = computers
                 
             # Domain groups
             self.ad_event.emit('enum_progress', 'Enumerating domain groups...', {})
-            groups_cmd = 'net group /domain'
-            groups_result = subprocess.run(groups_cmd, shell=True, capture_output=True, text=True)
+            groups_result = subprocess.run(["net", "group", "/domain"], capture_output=True, text=True)
             if groups_result.returncode == 0:
                 groups = self._parse_net_groups(groups_result.stdout)
                 results['groups'] = groups[:30]

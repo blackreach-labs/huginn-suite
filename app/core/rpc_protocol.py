@@ -7,6 +7,7 @@ import struct
 import socket
 import uuid
 from typing import Dict, List, Optional, Tuple
+from app.core.logger import logger
 
 class RPCPacket:
     """Raw RPC packet structure"""
@@ -81,8 +82,9 @@ class RPCClient:
         if self.socket:
             try:
                 self.socket.close()
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
             self.socket = None
     
     def send_bind_request(self, interface_uuid: str, version: Tuple[int, int]) -> bool:
@@ -536,8 +538,9 @@ class RPCRelayEngine:
             try:
                 client_socket.close()
                 target_socket.close()
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
     
     def _relay_rpc_traffic(self, client_socket, target_socket):
         """Relay RPC traffic between client and target"""
@@ -555,12 +558,14 @@ class RPCRelayEngine:
                         try:
                             packet = RPCPacket.unpack(data)
                             print(f"[RELAY] {direction} - Type: {packet.packet_type}, Call ID: {packet.call_id}")
-                        except:
+                        except Exception as _exc:
                             pass
+                            logger.debug("Suppressed exception", exc_info=True)
                     
                     destination.send(data)
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         # Start relay threads
         client_to_target = threading.Thread(
@@ -587,8 +592,9 @@ class RPCRelayEngine:
         if self.server_socket:
             try:
                 self.server_socket.close()
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
             self.server_socket = None
         
         print(f"[RELAY] RPC relay server stopped")

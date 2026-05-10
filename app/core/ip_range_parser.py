@@ -2,6 +2,7 @@
 import ipaddress
 import re
 from typing import List, Iterator
+from app.core.logger import logger
 
 class IPRangeParser:
     """Parse and normalize IP address ranges for scanning"""
@@ -53,7 +54,7 @@ class IPRangeParser:
                 # Treat as /24 network
                 return IPRangeParser._parse_cidr(f"{target}/24")
             return [target]
-        except:
+        except Exception:
             return []
     
     @staticmethod
@@ -64,7 +65,7 @@ class IPRangeParser:
             if network.num_addresses == 1:  # /32
                 return [str(network.network_address)]
             return [str(ip) for ip in network.hosts()]  # Excludes network/broadcast
-        except:
+        except Exception:
             return []
     
     @staticmethod
@@ -84,7 +85,7 @@ class IPRangeParser:
             cidr = f"{base}/{wildcard_bits}"
             
             return IPRangeParser._parse_cidr(cidr)
-        except:
+        except Exception:
             return []
     
     @staticmethod
@@ -127,7 +128,7 @@ class IPRangeParser:
                     break
             
             return ips
-        except:
+        except Exception:
             return []
     
     @staticmethod
@@ -139,7 +140,7 @@ class IPRangeParser:
                 if ip_addr in ipaddress.ip_network(reserved):
                     return True
             return False
-        except:
+        except Exception:
             return True  # Invalid IPs are considered reserved
 
     @staticmethod

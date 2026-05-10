@@ -3,6 +3,8 @@ import socket
 import ipaddress
 import concurrent.futures
 from PyQt6.QtCore import QObject, pyqtSignal, QRunnable
+from app.core.html_utils import h
+from app.core.logger import logger
 
 class StealthScannerSignals(QObject):
     output = pyqtSignal(str)
@@ -39,7 +41,7 @@ class StealthSweepWorker(QRunnable):
                 return [f"{base_network}.{i}" for i in range(start_octet, end_octet + 1)]
             else:
                 return [target]
-        except:
+        except Exception:
             return [target]
     
     def icmp_probe(self, ip):
@@ -51,7 +53,7 @@ class StealthSweepWorker(QRunnable):
             result = sock.connect_ex((ip, 80))
             sock.close()
             return result == 0
-        except:
+        except Exception:
             return False
     
     def tcp_syn_probe(self, ip, port):
@@ -62,7 +64,7 @@ class StealthSweepWorker(QRunnable):
             result = sock.connect_ex((ip, port))
             sock.close()
             return result == 0
-        except:
+        except Exception:
             return False
     
     def tcp_ack_probe(self, ip, port):
@@ -73,7 +75,7 @@ class StealthSweepWorker(QRunnable):
             result = sock.connect_ex((ip, port))
             sock.close()
             return result == 0
-        except:
+        except Exception:
             return False
     
     def probe_host(self, ip):
@@ -166,7 +168,7 @@ class StealthSweepWorker(QRunnable):
             self.signals.status.emit("Stealth sweep completed")
             
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF4500;'>[ERROR] Stealth sweep failed: {str(e)}</p>")
+            self.signals.output.emit(f"<p style='color: #FF4500;'>[ERROR] Stealth sweep failed: {h(str(e))}</p>")
             self.signals.status.emit("Stealth sweep error")
         finally:
             self.signals.finished.emit()

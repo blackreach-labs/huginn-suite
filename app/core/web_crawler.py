@@ -3,6 +3,7 @@ import requests
 import re
 from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup
+from app.core.logger import logger
 
 class WebCrawler:
     def __init__(self, max_depth=2, max_pages=50):
@@ -12,7 +13,12 @@ class WebCrawler:
         self.session.headers.update({
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         })
-        self.session.verify = False
+        # Honour the global SSL verification setting instead of hardcoding False.
+        try:
+            from app.core.config import config as _cfg
+            self.session.verify = _cfg.get('security.ssl_verify', True)
+        except Exception:
+            self.session.verify = True
         self.visited_urls = set()
         self.crawled_data = {}
     
@@ -93,7 +99,7 @@ class WebCrawler:
             soup = BeautifulSoup(html_content, 'html.parser')
             title_tag = soup.find('title')
             return title_tag.get_text().strip() if title_tag else 'No title'
-        except:
+        except Exception:
             # Fallback regex
             title_match = re.search(r'<title[^>]*>([^<]+)</title>', html_content, re.IGNORECASE)
             return title_match.group(1).strip() if title_match else 'No title'
@@ -111,7 +117,7 @@ class WebCrawler:
                     links.append(urljoin(base_url, href))
                 elif not href.startswith(('#', 'mailto:', 'tel:', 'javascript:')):
                     links.append(urljoin(base_url, href))
-        except:
+        except Exception:
             # Fallback regex
             link_pattern = r'<a[^>]+href=["\']([^"\']+)["\'][^>]*>'
             matches = re.findall(link_pattern, html_content, re.IGNORECASE)
@@ -155,7 +161,7 @@ class WebCrawler:
                     'method': method,
                     'inputs': inputs
                 })
-        except:
+        except Exception:
             # Fallback regex
             form_pattern = r'<form[^>]*action=["\']([^"\']*)["\'][^>]*>(.*?)</form>'
             matches = re.findall(form_pattern, html_content, re.DOTALL | re.IGNORECASE)

@@ -2,6 +2,7 @@
 import socket
 import struct
 import uuid
+from app.core.logger import logger
 
 class DirectRPCClient:
     """Direct RPC client for port 135 (endpoint mapper)"""
@@ -130,8 +131,9 @@ class DirectRPCClient:
                         'endpoint': '\\pipe\\lsarpc',
                         'service': 'Local Security Authority'
                     })
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return endpoints if endpoints else self._get_default_endpoints()
     
@@ -175,8 +177,9 @@ class DirectRPCClient:
                     domains.append({'name': 'LAB', 'rid': 1000})
                 if b'BUILTIN' in data:
                     domains.append({'name': 'BUILTIN', 'rid': 544})
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         return domains
     
     def _parse_samr_users(self, data: bytes) -> list:
@@ -190,8 +193,9 @@ class DirectRPCClient:
                     {'rid': 501, 'name': 'Guest'},
                     {'rid': 1001, 'name': 'krbtgt'}
                 ]
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         return users
     
     def _parse_lsa_policy(self, data: bytes) -> dict:
@@ -204,8 +208,9 @@ class DirectRPCClient:
                     'domain_sid': 'S-1-5-21-1234567890-1234567890-1234567890',
                     'policy_info': 'Primary Domain Information'
                 }
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         return policy
     
     def _get_default_endpoints(self) -> list:
@@ -237,5 +242,6 @@ class DirectRPCClient:
             if self.socket:
                 self.socket.close()
                 self.socket = None
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)

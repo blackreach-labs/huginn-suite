@@ -7,6 +7,7 @@ import re
 from typing import Dict, List, Optional, Any
 from urllib.parse import parse_qs, unquote
 from PyQt6.QtCore import QObject, pyqtSignal
+from app.core.logger import logger
 
 class AuthTokenAnalyzer(QObject):
     """Analyzes authentication tokens and cookies"""
@@ -65,8 +66,9 @@ class AuthTokenAnalyzer(QObject):
                 header = self._safe_base64_decode(parts[0])
                 if header and 'alg' in header:
                     return 'jwt'
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         # OAuth access tokens are often long and random
         if len(token_value) > 20 and re.match(r'^[A-Za-z0-9_-]+$', token_value):
@@ -147,8 +149,9 @@ class AuthTokenAnalyzer(QObject):
                 decoded = base64.b64decode(token_value + '==')
                 data = json.loads(decoded)
                 analysis['oauth_data'] = data
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         # Analyze token characteristics
         analysis['properties'] = {

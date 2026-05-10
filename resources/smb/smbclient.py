@@ -18,6 +18,7 @@ from impacket.smbconnection import SMBConnection, SMB2_DIALECT_002, SMB2_DIALECT
 from impacket.smb3structs import FILE_DIRECTORY_FILE, FILE_LIST_DIRECTORY
 
 import charset_normalizer as chardet
+import logging
 
 
 class MiniImpacketShell(cmd.Cmd):
@@ -422,8 +423,9 @@ class MiniImpacketShell(cmd.Cmd):
                     else:
                         retval = ip.strip("*").replace("//","/") + LINE.get_longname()
                         retFiles.append(retval)
-        except:
+        except Exception as _exc:
             pass
+            logging.debug("Suppressed exception", exc_info=True)
         return retList,retFiles,retInt
 
     def do_tree(self, filepath):
@@ -460,8 +462,9 @@ class MiniImpacketShell(cmd.Cmd):
                 for q in retList:
                     folderList.append(q)
                 totalFilesRead = totalFilesRead + retInt
-            except:
+            except Exception as _exc:
                 pass
+                logging.debug("Suppressed exception", exc_info=True)
         print("Finished - " + str(totalFilesRead) + " files and folders")
 
     def do_rm(self, filename):

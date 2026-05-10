@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from PyQt6.QtCore import QObject, pyqtSignal, QThread
 import time
 import re
+from app.core.logger import logger
 
 class WebCrawler(QObject):
     url_discovered = pyqtSignal(str, str)  # url, method
@@ -78,6 +79,7 @@ class WebCrawler(QObject):
         
         except Exception as e:
             pass  # Continue crawling even if one URL fails
+            logger.debug("Suppressed exception", exc_info=True)
         
         time.sleep(0.1)  # Be nice to the server
     

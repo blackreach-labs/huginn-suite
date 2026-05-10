@@ -163,7 +163,7 @@ class LicenseManager(QObject):
             expiry_date = datetime.fromisoformat(self.license_data['expiry_date'])
             remaining = expiry_date - datetime.now()
             return max(0, remaining.days)
-        except:
+        except Exception:
             return 0
             
     def save_license(self):

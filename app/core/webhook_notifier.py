@@ -4,6 +4,7 @@ from typing import Dict, Any, Optional, List
 from urllib.parse import urlparse
 import aiohttp
 from logging import info, error
+from app.core.logger import logger
 
 class WebhookNotifier:
     """Real-time webhook notifications for scan events"""
@@ -146,5 +147,5 @@ class WebhookNotifier:
         try:
             parsed = urlparse(url)
             return parsed.scheme in ['http', 'https'] and parsed.netloc
-        except:
+        except Exception:
             return False

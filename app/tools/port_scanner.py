@@ -5,6 +5,8 @@ import concurrent.futures
 import ipaddress
 import time
 from PyQt6.QtCore import QObject, pyqtSignal, QRunnable
+from app.core.html_utils import h
+from app.core.logger import logger
 
 class PortScannerSignals(QObject):
     output = pyqtSignal(str)
@@ -45,14 +47,15 @@ class PortScanWorker(QRunnable):
                 except:
                     service = "unknown"
                 return port, service
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         return None
     
     def run(self):
         try:
             self.signals.status.emit(f"Starting port scan on {self.target}...")
-            self.signals.output.emit(f"<p style='color: #00BFFF;'>Scanning {len(self.ports)} ports on {self.target}...</p><br>")
+            self.signals.output.emit(f"<p style='color: #00BFFF;'>Scanning {len(self.ports)} ports on {h(self.target)}...</p><br>")
             self.signals.progress_start.emit(len(self.ports))
             
             open_ports = []
@@ -89,7 +92,7 @@ class PortScanWorker(QRunnable):
             self.signals.status.emit("Port scan completed")
             
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF4500;'>[ERROR] Port scan failed: {str(e)}</p>")
+            self.signals.output.emit(f"<p style='color: #FF4500;'>[ERROR] Port scan failed: {h(str(e))}</p>")
             self.signals.status.emit("Port scan error")
         finally:
             self.signals.finished.emit()
@@ -134,7 +137,7 @@ class NetworkSweepWorker(QRunnable):
                 from app.core.ip_range_parser import parse_ip_range
                 ips = parse_ip_range(self.network_range)
                 if not ips:
-                    self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] Invalid network range: {self.network_range}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] Invalid network range: {h(self.network_range)}</p><br>")
                     self.signals.finished.emit()
                     return
             
@@ -197,7 +200,7 @@ class NetworkSweepWorker(QRunnable):
                         added_count += 1
                     
                     print(f"[DEBUG] Added {added_count} assets to inventory for tenant {self.tenant_id}")
-                    self.signals.output.emit(f"<p style='color: #87CEEB;'>Updated inventory with {added_count} hosts from ping sweep</p><br>")
+                    self.signals.output.emit(f"<p style='color: #87CEEB;'>Updated inventory with {h(added_count)} hosts from ping sweep</p><br>")
                     
                 except Exception as e:
                     print(f"[ERROR] Failed to add assets to inventory: {e}")
@@ -211,7 +214,7 @@ class NetworkSweepWorker(QRunnable):
             self.signals.status.emit("Ping sweep completed")
             
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF4500;'>[ERROR] Ping sweep failed: {str(e)}</p>")
+            self.signals.output.emit(f"<p style='color: #FF4500;'>[ERROR] Ping sweep failed: {h(str(e))}</p>")
             self.signals.status.emit("Ping sweep error")
         finally:
             self.signals.finished.emit()
@@ -370,6 +373,7 @@ class EnhancedPortScanWorker(QRunnable):
         except Exception as e:
             # Fall back to basic detection if enhanced fails
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         # Fallback to basic port-based detection
         return self._basic_os_detection(set(open_ports))
@@ -436,8 +440,9 @@ class EnhancedPortScanWorker(QRunnable):
                     if probe:
                         sock.sendall(probe)
                     banner = sock.recv(1024).decode("utf-8", errors="ignore").strip()
-                except:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
             
             sock.close()
             
@@ -543,30 +548,30 @@ class EnhancedPortScanWorker(QRunnable):
                     
                     # Display server type if detected
                     if server_type and server_type != 'Unknown':
-                        self.signals.output.emit(f"<br><p style='color: #87CEEB;'>[SERVER TYPE] {target_ip}: {server_type}</p><br>")
+                        self.signals.output.emit(f"<br><p style='color: #87CEEB;'>[SERVER TYPE] {h(target_ip)}: {h(server_type)}</p><br>")
                     
                     # Enhanced OS detection
                     if self.os_detection:
                         os_result = self.detect_os_from_ports(port_data, target_ip)
                         all_results[target_ip]['os_detection'] = os_result
                         
-                        self.signals.output.emit(f"<br><p style='color: #FFD700;'>[OS Detection] {target_ip}: {os_result['os']} (Confidence: {os_result['confidence']})</p><br>")
+                        self.signals.output.emit(f"<br><p style='color: #FFD700;'>[OS Detection] {h(target_ip)}: {h(os_result['os'])} (Confidence: {h(os_result['confidence'])})</p><br>")
                         
                         # Show detection methods used
                         if 'detection_methods' in os_result:
                             methods = ', '.join(os_result['detection_methods'])
-                            self.signals.output.emit(f"<p style='color: #87CEEB;'>  Detection methods: {methods}</p><br>")
+                            self.signals.output.emit(f"<p style='color: #87CEEB;'>  Detection methods: {h(methods)}</p><br>")
                         
                         # Show evidence
                         for evidence in os_result.get('evidence', []):
-                            self.signals.output.emit(f"<p style='color: #FFAA00;'>  • {evidence}</p><br>")
+                            self.signals.output.emit(f"<p style='color: #FFAA00;'>  • {h(evidence)}</p><br>")
                         
                         # Show vulnerabilities if found
                         if os_result.get('vulnerabilities'):
                             self.signals.output.emit(f"<p style='color: #FF6B6B;'>  ⚠️ Known vulnerabilities found:</p><br>")
                             for vuln in os_result['vulnerabilities'][:3]:  # Show top 3
                                 severity_color = {'Critical': '#FF0000', 'High': '#FF6B6B', 'Medium': '#FFA500', 'Low': '#FFFF00'}.get(vuln.get('severity', 'Medium'), '#FFA500')
-                                self.signals.output.emit(f"<p style='color: {severity_color};'>    • {vuln['id']}: {vuln['description']}</p><br>")
+                                self.signals.output.emit(f"<p style='color: {severity_color};'>    • {h(vuln['id'])}: {h(vuln['description'])}</p><br>")
             
             if all_results:
                 self.results = all_results
@@ -576,7 +581,7 @@ class EnhancedPortScanWorker(QRunnable):
                     from app.core.inventory_integration import update_inventory_from_port_scan
                     update_inventory_from_port_scan(all_results)
                 except Exception as e:
-                    self.signals.output.emit(f"<p style='color: #FFAA00;'>[WARNING] Inventory update failed: {e}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #FFAA00;'>[WARNING] Inventory update failed: {h(e)}</p><br>")
                 
                 self.signals.results_ready.emit(self.results)
                 total_open = sum(len(data.get('open_ports', [])) for data in all_results.values())
@@ -587,7 +592,7 @@ class EnhancedPortScanWorker(QRunnable):
             self.signals.status.emit("Enhanced port scan completed")
             
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF4500;'>[ERROR] Enhanced port scan failed: {str(e)}</p>")
+            self.signals.output.emit(f"<p style='color: #FF4500;'>[ERROR] Enhanced port scan failed: {h(str(e))}</p>")
             self.signals.status.emit("Enhanced port scan error")
         finally:
             self.signals.finished.emit()
@@ -659,8 +664,9 @@ class LegacyEnhancedPortScanWorker(QRunnable):
                         'evidence': enhanced_result['evidence'],
                         'detection_methods': list(enhanced_result['fingerprints'].keys())
                     }
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         # Fallback to basic port pattern detection
         if {88, 135, 389, 445, 5985}.issubset(open_ports):
@@ -722,8 +728,9 @@ class LegacyEnhancedPortScanWorker(QRunnable):
                 return f"{base_service} ({banner.strip()[:50]})"
             
             sock.close()
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return base_service
     
@@ -742,8 +749,9 @@ class LegacyEnhancedPortScanWorker(QRunnable):
             if result == 0:
                 service = self.enhanced_service_detection(port)
                 return port, service
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         return None
     
     def run(self):
@@ -775,7 +783,7 @@ class LegacyEnhancedPortScanWorker(QRunnable):
                     if result:
                         port, service = result
                         open_ports.append((port, service))
-                        self.signals.output.emit(f"<p style='color: #00FF41;'>[+] {self.target}:{port}/tcp open - {service}</p><br>")
+                        self.signals.output.emit(f"<p style='color: #00FF41;'>[+] {h(self.target)}:{port}/tcp open - {h(service)}</p><br>")
                     
                     if completed % 10 == 0:
                         self.signals.progress_update.emit(completed, len(open_ports))
@@ -809,27 +817,27 @@ class LegacyEnhancedPortScanWorker(QRunnable):
                 server_type = detect_server_type(open_port_numbers)
                 if server_type and server_type != 'Unknown':
                     result_data['server_type'] = server_type
-                    self.signals.output.emit(f"<br><p style='color: #87CEEB;'>[SERVER TYPE] {self.target}: {server_type}</p><br>")
+                    self.signals.output.emit(f"<br><p style='color: #87CEEB;'>[SERVER TYPE] {h(self.target)}: {h(server_type)}</p><br>")
                 
                 # Add enhanced OS detection if enabled
                 if self.os_detection:
                     os_info = self.detect_os_from_ports(port_data, self.target)
                     if os_info:
                         result_data['os_detection'] = os_info
-                        self.signals.output.emit(f"<p style='color: #FFD700;'>[OS Detection] {self.target}: {os_info['os']} (Confidence: {os_info['confidence']})</p><br>")
+                        self.signals.output.emit(f"<p style='color: #FFD700;'>[OS Detection] {h(self.target)}: {h(os_info['os'])} (Confidence: {h(os_info['confidence'])})</p><br>")
                         
                         # Show detection methods if available
                         if 'detection_methods' in os_info:
                             methods = ', '.join(os_info['detection_methods'])
-                            self.signals.output.emit(f"<p style='color: #87CEEB;'>  Detection methods: {methods}</p><br>")
+                            self.signals.output.emit(f"<p style='color: #87CEEB;'>  Detection methods: {h(methods)}</p><br>")
                         
                         # Show evidence
                         for evidence in os_info.get('evidence', []):
-                            self.signals.output.emit(f"<p style='color: #FFAA00;'>  • {evidence}</p><br>")
+                            self.signals.output.emit(f"<p style='color: #FFAA00;'>  • {h(evidence)}</p><br>")
                         
                         # Legacy support for 'reason' field
                         if 'reason' in os_info and 'evidence' not in os_info:
-                            self.signals.output.emit(f"<p style='color: #FFAA00;'>• {os_info['reason']}</p><br>")
+                            self.signals.output.emit(f"<p style='color: #FFAA00;'>• {h(os_info['reason'])}</p><br>")
                 
                 self.results[self.target] = result_data
                 self.signals.results_ready.emit(self.results)
@@ -840,7 +848,7 @@ class LegacyEnhancedPortScanWorker(QRunnable):
             self.signals.status.emit("Enhanced port scan completed")
             
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF4500;'>[ERROR] Enhanced port scan failed: {str(e)}</p>")
+            self.signals.output.emit(f"<p style='color: #FF4500;'>[ERROR] Enhanced port scan failed: {h(str(e))}</p>")
             self.signals.status.emit("Enhanced port scan error")
         finally:
             self.signals.finished.emit()
@@ -886,7 +894,7 @@ class Layer2SweepWorker(QRunnable):
 
             # Final summary
             unique_hosts = len(self.results["layer2_hosts"])
-            self.signals.output.emit(f"<br><p style='color: #00FF41;'>Found {unique_hosts} unique devices</p><br>")
+            self.signals.output.emit(f"<br><p style='color: #00FF41;'>Found {h(unique_hosts)} unique devices</p><br>")
             
             # Add to inventory
             try:
@@ -907,15 +915,15 @@ class Layer2SweepWorker(QRunnable):
                     asset_manager.add_or_update_asset(self.tenant_id, **asset_data)
                     added_count += 1
                 
-                self.signals.output.emit(f"<p style='color: #87CEEB;'>Updated inventory with {added_count} hosts from Layer 2 sweep</p><br>")
+                self.signals.output.emit(f"<p style='color: #87CEEB;'>Updated inventory with {h(added_count)} hosts from Layer 2 sweep</p><br>")
             except Exception as e:
-                self.signals.output.emit(f"<p style='color: #FFAA00;'>[WARN] Inventory update failed: {e}</p><br>")
+                self.signals.output.emit(f"<p style='color: #FFAA00;'>[WARN] Inventory update failed: {h(e)}</p><br>")
             
             self.signals.results_ready.emit(self.results)
             self.signals.status.emit("Layer 2 sweep completed")
 
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF4500;'>[ERROR] Layer 2 sweep failed: {str(e)}</p>")
+            self.signals.output.emit(f"<p style='color: #FF4500;'>[ERROR] Layer 2 sweep failed: {h(str(e))}</p>")
             self.signals.status.emit("Layer 2 sweep error")
         finally:
             self.signals.finished.emit()
@@ -939,7 +947,7 @@ class Layer2SweepWorker(QRunnable):
                     break
                 self.add_result(ip=rcv.psrc, mac=rcv.hwsrc, proto="ARP")
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>[WARN] ARP sweep error: {e}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>[WARN] ARP sweep error: {h(e)}</p><br>")
 
     def do_ndp_sweep(self):
         """IPv6 Neighbor Discovery using all-nodes multicast"""
@@ -984,7 +992,7 @@ class Layer2SweepWorker(QRunnable):
                 self.add_result(ip=src_ip, mac=src_mac, proto="NDP")
 
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>[WARN] NDP sweep error: {e}</p>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>[WARN] NDP sweep error: {h(e)}</p>")
 
     def do_netbios_probe(self):
         """NetBIOS broadcast probe for Windows hosts"""
@@ -1006,7 +1014,7 @@ class Layer2SweepWorker(QRunnable):
                     break
             sock.close()
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>[WARN] NetBIOS probe error: {e}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>[WARN] NetBIOS probe error: {h(e)}</p><br>")
 
     def do_mdns_probe(self):
         """mDNS multicast probe for Apple/Linux/IoT devices"""
@@ -1021,7 +1029,7 @@ class Layer2SweepWorker(QRunnable):
                 src_ip = ans[IP].src
                 self.add_result(ip=src_ip, mac=None, proto="mDNS")
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>[WARN] mDNS probe error: {e}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>[WARN] mDNS probe error: {h(e)}</p><br>")
 
     def add_result(self, ip, mac=None, proto="Unknown"):
         """Add discovered host to results (avoid duplicates)"""

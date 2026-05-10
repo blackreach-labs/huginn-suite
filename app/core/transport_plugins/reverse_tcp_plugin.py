@@ -10,6 +10,7 @@ import uuid
 from typing import List
 from ..listener_manager import TransportPlugin, ListenerConfig, Session
 from datetime import datetime
+from app.core.logger import logger
 
 class ReverseTCPPlugin(TransportPlugin):
     def __init__(self):
@@ -178,6 +179,7 @@ class ReverseTCPPlugin(TransportPlugin):
             session['status'] = 'closed'
             try:
                 session['socket'].close()
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
             del self.sessions[session_id]

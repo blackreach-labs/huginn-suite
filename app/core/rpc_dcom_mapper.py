@@ -6,6 +6,7 @@ import ctypes
 import ctypes.wintypes
 import winreg
 from typing import Dict, List, Optional, Tuple
+from app.core.logger import logger
 
 class DCOMMapper:
     """Advanced DCOM interface mapper"""
@@ -52,8 +53,9 @@ class DCOMMapper:
             if self.target != "localhost":
                 winreg.CloseKey(hkey)
                 
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return clsids
     
@@ -76,16 +78,18 @@ class DCOMMapper:
             # Get default name
             try:
                 info['name'] = winreg.QueryValue(clsid_key, "")
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
             
             # Check for ProgID
             try:
                 progid_key = winreg.OpenKey(clsid_key, "ProgID")
                 info['prog_id'] = winreg.QueryValue(progid_key, "")
                 winreg.CloseKey(progid_key)
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
             
             # Check for LocalServer32
             try:
@@ -93,16 +97,18 @@ class DCOMMapper:
                 info['local_server'] = winreg.QueryValue(local_key, "")
                 info['remote_accessible'] = True
                 winreg.CloseKey(local_key)
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
             
             # Check for InprocServer32
             try:
                 inproc_key = winreg.OpenKey(clsid_key, "InprocServer32")
                 info['inproc_server'] = winreg.QueryValue(inproc_key, "")
                 winreg.CloseKey(inproc_key)
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
             
             # Rate vulnerability potential
             info['vulnerability_rating'] = self._rate_clsid_vulnerability(info)
@@ -234,8 +240,9 @@ class ALPCScanner:
                 # This is a simplified parsing
                 endpoints = self._parse_alpc_handles(buffer)
         
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return endpoints
     
@@ -265,8 +272,9 @@ class ALPCScanner:
             
             endpoints.extend(mock_endpoints)
             
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return endpoints
     
@@ -293,8 +301,9 @@ class ALPCScanner:
                     'vulnerability_potential': 'High'
                 })
             
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return fingerprint
 
@@ -330,8 +339,9 @@ class DCOMALPCMapper:
             # Risk assessment
             results['risk_assessment'] = self._assess_risk(results)
             
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return results
     

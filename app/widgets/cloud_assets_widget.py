@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
                             QCheckBox, QGroupBox, QListWidget, QSplitter)
 from PyQt6.QtCore import Qt, pyqtSignal, QThreadPool
 from app.core.cloud_enumeration import CloudEnumerationWorker
+from app.core.logger import logger
 
 class CloudAssetsWidget(QWidget):
     """Cloud Assets enumeration widget"""
@@ -241,8 +242,9 @@ class CloudAssetsWidget(QWidget):
             try:
                 with open(wordlist_path, 'r') as f:
                     return [line.strip() for line in f if line.strip()]
-            except Exception:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         # Default cloud keywords
         return [

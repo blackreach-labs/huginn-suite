@@ -5,6 +5,7 @@ import time
 from queue import Queue, Empty
 from contextlib import contextmanager
 from typing import Optional
+from app.core.logger import logger
 
 class DatabaseConnectionPool:
     """Thread-safe SQLite connection pool for improved performance"""
@@ -51,7 +52,7 @@ class DatabaseConnectionPool:
             if conn:
                 try:
                     self.pool.put_nowait(conn)
-                except:
+                except Exception:
                     # Pool is full, close the connection
                     conn.close()
     

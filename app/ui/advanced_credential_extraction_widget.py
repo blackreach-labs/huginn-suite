@@ -10,6 +10,7 @@ from PyQt6.QtCore import QThread, pyqtSignal, QTimer
 from PyQt6.QtGui import QFont
 from ..core.secrets_extractor import SecretsExtractor
 from ..core.base_worker import BaseWorker
+from app.core.html_utils import h
 
 class AdvancedCredentialExtractionWidget(QWidget):
     """Advanced credential extraction interface"""
@@ -447,18 +448,18 @@ class DCSyncWorker(QThread):
                 output = sys.stdout.getvalue()
                 for line in output.split('\n'):
                     if line.strip():
-                        self.output.emit(f"<span style='color: white;'>{line}</span>")
+                        self.output.emit(f"<span style='color: white;'>{h(line)}</span>")
                 
                 if result['success']:
                     self.output.emit(f"<span style='color: green;'>[SUCCESS] DCSync completed successfully</span>")
                 else:
-                    self.output.emit(f"<span style='color: red;'>[ERROR] {result.get('error', 'Unknown error')}</span>")
+                    self.output.emit(f"<span style='color: red;'>[ERROR] {h(result.get('error', 'Unknown error'))}</span>")
                     
             finally:
                 sys.stdout = old_stdout
                 
         except Exception as e:
-            self.output.emit(f"<span style='color: red;'>[ERROR] DCSync failed: {str(e)}</span>")
+            self.output.emit(f"<span style='color: red;'>[ERROR] DCSync failed: {h(str(e))}</span>")
 
 class RelayWorker(QThread):
     """Worker thread for NTLM relay"""
@@ -487,18 +488,18 @@ class RelayWorker(QThread):
                 output = sys.stdout.getvalue()
                 for line in output.split('\n'):
                     if line.strip():
-                        self.output.emit(f"<span style='color: white;'>{line}</span>")
+                        self.output.emit(f"<span style='color: white;'>{h(line)}</span>")
                 
                 if result['success']:
                     self.output.emit(f"<span style='color: green;'>[SUCCESS] NTLM relay completed</span>")
                 else:
-                    self.output.emit(f"<span style='color: red;'>[ERROR] {result.get('error', 'Unknown error')}</span>")
+                    self.output.emit(f"<span style='color: red;'>[ERROR] {h(result.get('error', 'Unknown error'))}</span>")
                     
             finally:
                 sys.stdout = old_stdout
                 
         except Exception as e:
-            self.output.emit(f"<span style='color: red;'>[ERROR] NTLM relay failed: {str(e)}</span>")
+            self.output.emit(f"<span style='color: red;'>[ERROR] NTLM relay failed: {h(str(e))}</span>")
     
     def stop(self):
         self.running = False
@@ -529,18 +530,18 @@ class LSASSWorker(QThread):
                 output = sys.stdout.getvalue()
                 for line in output.split('\n'):
                     if line.strip():
-                        self.output.emit(f"<span style='color: white;'>{line}</span>")
+                        self.output.emit(f"<span style='color: white;'>{h(line)}</span>")
                 
                 if result['success']:
                     self.output.emit(f"<span style='color: green;'>[SUCCESS] LSASS dump completed</span>")
                 else:
-                    self.output.emit(f"<span style='color: red;'>[ERROR] {result.get('error', 'Unknown error')}</span>")
+                    self.output.emit(f"<span style='color: red;'>[ERROR] {h(result.get('error', 'Unknown error'))}</span>")
                     
             finally:
                 sys.stdout = old_stdout
                 
         except Exception as e:
-            self.output.emit(f"<span style='color: red;'>[ERROR] LSASS dump failed: {str(e)}</span>")
+            self.output.emit(f"<span style='color: red;'>[ERROR] LSASS dump failed: {h(str(e))}</span>")
 
 class LegacyWorker(QThread):
     """Worker thread for legacy extraction"""
@@ -575,7 +576,7 @@ class LegacyWorker(QThread):
                 output = sys.stdout.getvalue()
                 for line in output.split('\n'):
                     if line.strip():
-                        self.output.emit(f"<span style='color: white;'>{line}</span>")
+                        self.output.emit(f"<span style='color: white;'>{h(line)}</span>")
                 
                 if success:
                     self.output.emit(f"<span style='color: green;'>[SUCCESS] Legacy extraction completed</span>")
@@ -586,4 +587,4 @@ class LegacyWorker(QThread):
                 sys.stdout = old_stdout
                 
         except Exception as e:
-            self.output.emit(f"<span style='color: red;'>[ERROR] Legacy extraction failed: {str(e)}</span>")
+            self.output.emit(f"<span style='color: red;'>[ERROR] Legacy extraction failed: {h(str(e))}</span>")

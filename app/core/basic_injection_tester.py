@@ -2,6 +2,7 @@
 import asyncio
 from urllib.parse import urljoin, urlparse, parse_qs
 from bs4 import BeautifulSoup
+from app.core.logger import logger
 
 class BasicInjectionTester:
     """Test for basic injection vulnerabilities"""
@@ -90,8 +91,9 @@ class BasicInjectionTester:
                                     'payload': payload
                                 })
                 
-                except Exception:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
                 
                 # Reset field value
                 test_fields[field_name] = fields[field_name]
@@ -158,8 +160,9 @@ class BasicInjectionTester:
                                     'payload': payload
                                 })
                 
-                except Exception:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
                 
                 # Reset field value
                 test_fields[field_name] = fields[field_name]
@@ -191,5 +194,6 @@ class BasicInjectionTester:
                             'parameter': param_name,
                             'payload': xss_payload
                         })
-            except Exception:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)

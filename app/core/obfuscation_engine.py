@@ -4,6 +4,7 @@ import urllib.parse
 import re
 import binascii
 import codecs
+from app.core.logger import logger
 try:
     from pygments import highlight
     from pygments.lexers import JavascriptLexer, PowerShellLexer, get_lexer_by_name
@@ -88,8 +89,9 @@ class ObfuscationEngine:
                     results.append(("Base64", formatted, confidence))
                 else:
                     results.append(("Base64", decoded, confidence))
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         # URL encoding detection
         if '%' in text:
@@ -102,8 +104,9 @@ class ObfuscationEngine:
                         results.append(("URL Encoding", formatted, confidence))
                     else:
                         results.append(("URL Encoding", decoded, confidence))
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         # Hex encoding detection
         if ObfuscationEngine._is_hex(text):
@@ -115,8 +118,9 @@ class ObfuscationEngine:
                     results.append(("Hex Encoding", formatted, confidence))
                 else:
                     results.append(("Hex Encoding", decoded, confidence))
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         # JavaScript CharCode detection
         char_match = re.search(r'String\.fromCharCode\(([0-9,\s]+)\)', text)
@@ -130,8 +134,9 @@ class ObfuscationEngine:
                     results.append(("JavaScript CharCode", formatted, confidence))
                 else:
                     results.append(("JavaScript CharCode", decoded, confidence))
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         # JavaScript packed code detection (eval function with packed parameters)
         js_packed_match = re.search(r'eval\(function\(p,a,c,k,e,d\)\{.*?\}\(.*?\)\)', text, re.DOTALL)
@@ -151,8 +156,9 @@ class ObfuscationEngine:
                     results.append(("JavaScript Packed", formatted, confidence))
                 else:
                     results.append(("JavaScript Packed", decoded, confidence))
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         # ASCII encoding detection (space-separated numbers)
         if ObfuscationEngine._is_ascii_encoded(text):
@@ -165,8 +171,9 @@ class ObfuscationEngine:
                     results.append(("ASCII Encoding", formatted, confidence))
                 else:
                     results.append(("ASCII Encoding", decoded, confidence))
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         # PowerShell EncodedCommand detection
         ps_match = re.search(r'-EncodedCommand\s+([A-Za-z0-9+/=]+)', text)
@@ -184,8 +191,9 @@ class ObfuscationEngine:
                     results.append(("PowerShell EncodedCommand", formatted, confidence))
                 else:
                     results.append(("PowerShell EncodedCommand", decoded, confidence))
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         return results
     

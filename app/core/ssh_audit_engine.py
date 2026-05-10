@@ -3,6 +3,7 @@ import re
 from typing import Dict, List, Optional, Tuple
 from .ssh_protocol import SSHProtocol
 from .ssh_banner_parser import SSHBannerParser
+from app.core.logger import logger
 
 class SSHAuditEngine:
     """SSH security audit and compliance checking engine"""
@@ -516,8 +517,9 @@ class SSHAuditEngine:
                     data = sock.recv(1024)
                     if not data:
                         break
-            except Exception:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
             
             end_time = time.time()
             sock.close()
@@ -545,8 +547,9 @@ class SSHAuditEngine:
                     for conn in connections:
                         try:
                             conn.close()
-                        except:
+                        except Exception as _exc:
                             pass
+                            logger.debug("Suppressed exception", exc_info=True)
                     return True
                 
                 time.sleep(0.1)
@@ -555,8 +558,9 @@ class SSHAuditEngine:
             for conn in connections:
                 try:
                     conn.close()
-                except:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
             
             # If all connections succeeded, no rate limiting detected
             return False

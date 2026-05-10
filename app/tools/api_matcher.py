@@ -1,11 +1,18 @@
 # app/tools/api_matcher.py
 import requests
 from urllib.parse import urljoin
+from app.core.logger import logger
 
 class APIMatcher:
     def __init__(self, session=None):
         self.session = session or requests.Session()
-        self.session.verify = False
+        # Honour the global SSL verification setting instead of hardcoding False.
+        if not session:
+            try:
+                from app.core.config import config as _cfg
+                self.session.verify = _cfg.get('security.ssl_verify', True)
+            except Exception:
+                self.session.verify = True
     
     def match_endpoints(self, base_url, endpoints):
         """Match JavaScript endpoints to accessible APIs"""
@@ -60,8 +67,9 @@ class APIMatcher:
                 import json
                 data = json.loads(response.text)
                 analysis['json_structure'] = self._analyze_json_structure(data)
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         elif 'application/xml' in content_type or 'text/xml' in content_type:
             analysis['api_type'] = 'XML API'
         elif 'text/html' in content_type:

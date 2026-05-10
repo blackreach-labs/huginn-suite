@@ -4,6 +4,7 @@ Demo of AI-driven SSTI scanning with adaptive payload generation
 """
 import asyncio
 from app.core.ai_payload_engine import AIPayloadEngine, ResponseType
+import logging
 
 def demo_ai_adaptation():
     """Demonstrate AI payload adaptation logic"""
@@ -64,7 +65,7 @@ def demo_ai_adaptation():
         try:
             obfuscated = method_func(dangerous_token)
             print(f"   {method_name}: {dangerous_token} → {obfuscated}")
-        except:
+        except Exception:
             print(f"   {method_name}: Failed")
     
     # Show target intelligence

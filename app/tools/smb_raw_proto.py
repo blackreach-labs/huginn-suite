@@ -23,6 +23,7 @@ import hashlib
 import hmac
 import os
 from typing import Dict, List, Tuple, Optional, Any
+from app.core.logger import logger
 
 # SMB2 command codes
 SMB2_NEGOTIATE = 0x0000
@@ -572,8 +573,9 @@ class SMBRawClient:
             # Best-effort: TreeConnect to IPC$ first (some servers behave better)
             try:
                 self.tree_connect('IPC$')
-            except Exception:
+            except Exception as _exc:
                 pass  # ignore; we only attempt to influence server state
+                logger.debug("Suppressed exception", exc_info=True)
 
             # Use hardened signed SESSION_SETUP for SMB 3.1.1
             if self.dialect == '3.1.1' and self.preauth_hash_value:
@@ -839,8 +841,9 @@ class SMBRawClient:
                             domain_info['forest_name'] = av_value.decode('utf-16le', errors='ignore')
 
                     offset += 4 + av_len
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
 
         return domain_info
 
@@ -905,8 +908,9 @@ class SMBRawClient:
         if self.sock:
             try:
                 self.sock.close()
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
             self.sock = None
         self.session_id = 0
         self.message_id = 1
@@ -1287,8 +1291,9 @@ def enumerate_smb_comprehensive(host: str, timeout: float = 3.0) -> Dict:
     finally:
         try:
             client.close()
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
 
 def scan_smb_ports(host: str, timeout: float = 2.0) -> Dict:
     """Scan for SMB ports"""
@@ -1334,5 +1339,6 @@ def _probe_smb1_support(host: str, port: int, timeout: float = 2.0) -> bool:
     finally:
         try:
             sock.close()
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)

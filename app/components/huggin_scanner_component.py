@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
 from PyQt6.QtCore import pyqtSignal
 from app.components.progress_component import ProgressComponent
 from app.core.asset_manager import asset_manager
+from app.core.logger import logger
 
 class HugginScannerComponent(QWidget):
     scan_started = pyqtSignal(str, str)
@@ -712,7 +713,7 @@ class HugginScannerComponent(QWidget):
                         return profile
                 
                 return 'default'
-            except:
+            except Exception:
                 return 'default'
 
     def append_output(self, text):

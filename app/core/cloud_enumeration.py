@@ -5,6 +5,8 @@ import time
 from typing import Dict, List, Optional, Callable
 from PyQt6.QtCore import QObject, pyqtSignal
 from app.core.base_worker import BaseWorker
+from app.core.html_utils import h
+from app.core.logger import logger
 
 try:
     from app.core.aws_pentest_engine import AWSPentestEngine
@@ -216,8 +218,9 @@ class CloudEnumerationEngine(QObject):
                     guid_match = re.search(r'([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', tenant_discovery_endpoint)
                     if guid_match:
                         results['tenant_guid'] = guid_match.group(1)
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         # Test common domain patterns
         domain_patterns = [
@@ -233,8 +236,9 @@ class CloudEnumerationEngine(QObject):
                 response = self.session.get(url, timeout=5)
                 if response.status_code == 200:
                     results['domains'].append(domain)
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
                 
         return results
     
@@ -392,8 +396,9 @@ class CloudEnumerationEngine(QObject):
                 except:
                     return False
                     
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
             
         return False
         
@@ -512,12 +517,12 @@ class CloudEnumerationWorker(BaseWorker):
         if results['buckets']:
             self.signals.output.emit(f"<p style='color: #00FF41;'>Found {len(results['buckets'])} S3 buckets:</p>")
             for bucket in results['buckets']:
-                self.signals.output.emit(f"<p style='color: #DCDCDC;'>  • {bucket}.s3.amazonaws.com</p>")
+                self.signals.output.emit(f"<p style='color: #DCDCDC;'>  • {h(bucket)}.s3.amazonaws.com</p>")
         
         if results['accessible']:
             self.signals.output.emit(f"<p style='color: #FF6B6B;'>Publicly accessible buckets ({len(results['accessible'])}):</p>")
             for bucket_info in results['accessible']:
-                self.signals.output.emit(f"<p style='color: #FF6B6B;'>  ⚠️ {bucket_info['bucket']} - {bucket_info['url']}</p>")
+                self.signals.output.emit(f"<p style='color: #FF6B6B;'>  ⚠️ {h(bucket_info['bucket'])} - {h(bucket_info['url'])}</p>")
         
         if results['errors']:
             self.signals.output.emit(f"<p style='color: #FFAA00;'>Errors: {len(results['errors'])}</p>")
@@ -529,12 +534,12 @@ class CloudEnumerationWorker(BaseWorker):
         if results['containers']:
             self.signals.output.emit(f"<p style='color: #00FF41;'>Found {len(results['containers'])} Azure storage accounts:</p>")
             for container in results['containers']:
-                self.signals.output.emit(f"<p style='color: #DCDCDC;'>  • {container}.blob.core.windows.net</p>")
+                self.signals.output.emit(f"<p style='color: #DCDCDC;'>  • {h(container)}.blob.core.windows.net</p>")
         
         if results['accessible']:
             self.signals.output.emit(f"<p style='color: #FF6B6B;'>Accessible containers ({len(results['accessible'])}):</p>")
             for container_info in results['accessible']:
-                self.signals.output.emit(f"<p style='color: #FF6B6B;'>  ⚠️ {container_info['container']} - {container_info['url']}</p>")
+                self.signals.output.emit(f"<p style='color: #FF6B6B;'>  ⚠️ {h(container_info['container'])} - {h(container_info['url'])}</p>")
                 
     def format_metadata_results(self, results: Dict):
         """Format metadata API results"""
@@ -544,17 +549,17 @@ class CloudEnumerationWorker(BaseWorker):
             self.signals.output.emit("<p style='color: #00FF41;'>AWS Metadata API accessible</p>")
             if 'identity' in results['aws']:
                 identity = results['aws']['identity']
-                self.signals.output.emit(f"<p style='color: #DCDCDC;'>  Instance ID: {identity.get('instanceId', 'N/A')}</p>")
-                self.signals.output.emit(f"<p style='color: #DCDCDC;'>  Region: {identity.get('region', 'N/A')}</p>")
-                self.signals.output.emit(f"<p style='color: #DCDCDC;'>  Account ID: {identity.get('accountId', 'N/A')}</p>")
+                self.signals.output.emit(f"<p style='color: #DCDCDC;'>  Instance ID: {h(identity.get('instanceId', 'N/A'))}</p>")
+                self.signals.output.emit(f"<p style='color: #DCDCDC;'>  Region: {h(identity.get('region', 'N/A'))}</p>")
+                self.signals.output.emit(f"<p style='color: #DCDCDC;'>  Account ID: {h(identity.get('accountId', 'N/A'))}</p>")
         
         if results['azure'].get('available'):
             self.signals.output.emit("<p style='color: #00FF41;'>Azure Metadata API accessible</p>")
             if 'data' in results['azure']:
                 data = results['azure']['data']
                 compute = data.get('compute', {})
-                self.signals.output.emit(f"<p style='color: #DCDCDC;'>  VM Name: {compute.get('name', 'N/A')}</p>")
-                self.signals.output.emit(f"<p style='color: #DCDCDC;'>  Location: {compute.get('location', 'N/A')}</p>")
+                self.signals.output.emit(f"<p style='color: #DCDCDC;'>  VM Name: {h(compute.get('name', 'N/A'))}</p>")
+                self.signals.output.emit(f"<p style='color: #DCDCDC;'>  Location: {h(compute.get('location', 'N/A'))}</p>")
         
         if results['gcp'].get('available'):
             self.signals.output.emit("<p style='color: #00FF41;'>GCP Metadata API accessible</p>")
@@ -567,16 +572,16 @@ class CloudEnumerationWorker(BaseWorker):
             self.signals.output.emit("<p style='color: #00FF41;'>✓ Valid Azure tenant found</p>")
             tenant_info = results['tenant_info']
             if 'issuer' in tenant_info:
-                self.signals.output.emit(f"<p style='color: #DCDCDC;'>  Issuer: {tenant_info['issuer']}</p>")
+                self.signals.output.emit(f"<p style='color: #DCDCDC;'>  Issuer: {h(tenant_info['issuer'])}</p>")
             if 'authorization_endpoint' in tenant_info:
-                self.signals.output.emit(f"<p style='color: #DCDCDC;'>  Auth endpoint: {tenant_info['authorization_endpoint']}</p>")
+                self.signals.output.emit(f"<p style='color: #DCDCDC;'>  Auth endpoint: {h(tenant_info['authorization_endpoint'])}</p>")
         else:
             self.signals.output.emit("<p style='color: #FF6B6B;'>✗ Invalid or inaccessible tenant</p>")
             
         if results['domains']:
             self.signals.output.emit(f"<p style='color: #00FF41;'>Found {len(results['domains'])} associated domains:</p>")
             for domain in results['domains']:
-                self.signals.output.emit(f"<p style='color: #DCDCDC;'>  • {domain}</p>")
+                self.signals.output.emit(f"<p style='color: #DCDCDC;'>  • {h(domain)}</p>")
                 
         if results['errors']:
             self.signals.output.emit(f"<p style='color: #FFAA00;'>Errors: {len(results['errors'])}</p>")
@@ -589,12 +594,12 @@ class CloudEnumerationWorker(BaseWorker):
             self.signals.output.emit(f"<p style='color: #00FF41;'>Found {len(results['apps'])} App Services:</p>")
             for app in results['apps']:
                 status_color = "#00FF41" if app['status'] == 200 else "#FFAA00"
-                self.signals.output.emit(f"<p style='color: {status_color};'>  • {app['name']} ({app['status']}) - {app['url']}</p>")
+                self.signals.output.emit(f"<p style='color: {h(status_color)};'>  • {h(app['name'])} ({h(app['status'])}) - {h(app['url'])}</p>")
                 
         if results['scm_endpoints']:
             self.signals.output.emit(f"<p style='color: #FF6B6B;'>SCM endpoints found ({len(results['scm_endpoints'])}):</p>")
             for scm in results['scm_endpoints']:
-                self.signals.output.emit(f"<p style='color: #FF6B6B;'>  ⚠️ {scm['name']} - {scm['scm_url']}</p>")
+                self.signals.output.emit(f"<p style='color: #FF6B6B;'>  ⚠️ {h(scm['name'])} - {h(scm['scm_url'])}</p>")
                 
         if results['errors']:
             self.signals.output.emit(f"<p style='color: #FFAA00;'>Errors: {len(results['errors'])}</p>")

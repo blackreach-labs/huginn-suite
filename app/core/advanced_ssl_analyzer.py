@@ -1,6 +1,7 @@
 import ssl
 import socket
 from urllib.parse import urlparse
+from app.core.logger import logger
 
 class AdvancedSSLAnalyzer:
     """Advanced SSL/TLS security analysis"""
@@ -93,8 +94,9 @@ class AdvancedSSLAnalyzer:
                                     'recommendation': 'Configure strong cipher suites only'
                                 })
                                 break
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
             
         return findings
     
@@ -122,7 +124,8 @@ class AdvancedSSLAnalyzer:
                             'expiry_date': cert['notAfter'],
                             'recommendation': 'Renew SSL certificate before expiration'
                         })
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
             
         return findings

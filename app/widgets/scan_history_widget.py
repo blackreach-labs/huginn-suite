@@ -6,6 +6,7 @@ from PyQt6.QtCore import Qt, pyqtSignal
 # from infrastructure.data.repositories.sqlite_scan_repository import SQLiteScanRepository
 import json
 from datetime import datetime
+from app.core.logger import logger
 
 class ScanHistoryWidget(QWidget):
     """Widget for managing scan history and database"""
@@ -253,7 +254,7 @@ class ScanHistoryWidget(QWidget):
                     try:
                         dt = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
                         date_str = dt.strftime('%Y-%m-%d %H:%M')
-                    except:
+                    except Exception:
                         date_str = timestamp[:16]
                 else:
                     date_str = str(timestamp)[:16]

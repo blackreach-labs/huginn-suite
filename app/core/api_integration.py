@@ -3,6 +3,7 @@ import requests
 import json
 from PyQt6.QtCore import QObject, pyqtSignal
 from .secure_credential_manager import secure_credential_manager
+from app.core.logger import logger
 
 class APIIntegration(QObject):
     """Handles external API integrations for enhanced functionality."""
@@ -121,8 +122,9 @@ class APIIntegration(QObject):
             
             try:
                 result["json"] = response.json()
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
                 
             self.api_response.emit("custom", result)
             return result

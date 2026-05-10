@@ -40,8 +40,9 @@ class ScanExporter:
                         file_size INTEGER
                     )
                 """)
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def export_results(self, results, target, format_type="json", filename=None, scan_type=None):
         """

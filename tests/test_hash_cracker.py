@@ -13,6 +13,7 @@ from infrastructure.data.repositories.sqlite_hash_repository import SQLiteHashRe
 from infrastructure.external.hash_source_updater import HashSourceUpdater
 from domain.services.hash_lookup_manager import HashLookupManager
 from application.services.hash_lookup_service import HashLookupService
+import logging
 
 def test_hash_cracking():
     """Test basic hash cracking functionality"""
@@ -90,8 +91,9 @@ def test_hash_cracking():
         try:
             if os.path.exists(db_path):
                 os.unlink(db_path)
-        except:
+        except Exception as _exc:
             pass  # Ignore cleanup errors
+            logging.debug("Suppressed exception", exc_info=True)
 
 if __name__ == "__main__":
     test_hash_cracking()

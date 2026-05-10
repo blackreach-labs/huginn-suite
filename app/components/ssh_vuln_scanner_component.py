@@ -8,6 +8,8 @@ from PyQt6.QtGui import QFont
 import socket
 from ..core.ssh_banner_parser import SSHBannerParser
 from ..core.ssh_audit_engine import SSHAuditEngine
+from app.core.html_utils import h
+from app.core.logger import logger
 
 class SSHVulnWorkerSignals:
     def __init__(self):
@@ -29,12 +31,12 @@ class SSHVulnWorker(QThread):
     
     def run(self):
         try:
-            self.output.emit(f"<p style='color: #00BFFF;'>[SSH VULN] Starting vulnerability scan for {self.target}:{self.port}</p><br>")
+            self.output.emit(f"<p style='color: #00BFFF;'>[SSH VULN] Starting vulnerability scan for {h(self.target)}:{h(self.port)}</p><br>")
             self.progress.emit(10)
             
             # Test connectivity
             if not self.check_ssh_port():
-                self.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] SSH port {self.port} is not accessible</p><br>")
+                self.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] SSH port {h(self.port)} is not accessible</p><br>")
                 return
             
             self.progress.emit(30)
@@ -45,7 +47,7 @@ class SSHVulnWorker(QThread):
                 self.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] Could not retrieve SSH banner</p><br>")
                 return
             
-            self.output.emit(f"<p style='color: #87CEEB;'>[INFO] Banner: {banner}</p><br>")
+            self.output.emit(f"<p style='color: #87CEEB;'>[INFO] Banner: {h(banner)}</p><br>")
             self.progress.emit(50)
             
             # Parse banner for vulnerabilities
@@ -59,17 +61,17 @@ class SSHVulnWorker(QThread):
                     banner_info = result
                 elif result.get('type') == 'vulnerability':
                     vulnerabilities.append(result)
-            self.output.emit(f"<p style='color: #00FF41;'>[+] Software: {banner_info.get('software', 'Unknown')} {banner_info.get('version', '')}</p><br>")
+            self.output.emit(f"<p style='color: #00FF41;'>[+] Software: {h(banner_info.get('software', 'Unknown'))} {h(banner_info.get('version', ''))}</p><br>")
             
             if banner_info.get('vendor'):
-                self.output.emit(f"<p style='color: #00FF41;'>[+] Vendor: {banner_info['vendor']}</p><br>")
+                self.output.emit(f"<p style='color: #00FF41;'>[+] Vendor: {h(banner_info['vendor'])}</p><br>")
             
             self.progress.emit(70)
             if vulnerabilities:
                 self.output.emit(f"<p style='color: #FF6B6B;'>[VULN] Found {len(vulnerabilities)} vulnerabilities:</p><br>")
                 for vuln in vulnerabilities:
                     severity_color = {'high': '#FF4444', 'medium': '#FFAA00', 'low': '#90EE90'}.get(vuln.get('severity', 'medium'), '#FFAA00')
-                    self.output.emit(f"<p style='color: {severity_color};'>  • {vuln.get('cve', 'Unknown')}: {vuln.get('description', 'No description')}</p><br>")
+                    self.output.emit(f"<p style='color: {severity_color};'>  • {h(vuln.get('cve', 'Unknown'))}: {h(vuln.get('description', 'No description'))}</p><br>")
             else:
                 self.output.emit(f"<p style='color: #00FF41;'>[+] No known vulnerabilities found in banner</p><br>")
             
@@ -86,7 +88,7 @@ class SSHVulnWorker(QThread):
                     for alg in alg_list:
                         if any(weak in alg.lower() for weak in ['sha1', 'md5', 'des', 'rc4', 'cbc']):
                             weak_count += 1
-                            self.output.emit(f"<p style='color: #FFAA00;'>  • {alg}: Potentially weak algorithm</p><br>")
+                            self.output.emit(f"<p style='color: #FFAA00;'>  • {h(alg)}: Potentially weak algorithm</p><br>")
                 
                 if weak_count == 0:
                     self.output.emit(f"<p style='color: #00FF41;'>[+] No weak algorithms detected</p><br>")
@@ -123,7 +125,7 @@ class SSHVulnWorker(QThread):
             self.results.emit(results)
             
         except Exception as e:
-            self.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] Scan failed: {e}</p><br>")
+            self.output.emit(f"<p style='color: #FF6B6B;'>[ERROR] Scan failed: {h(e)}</p><br>")
         finally:
             self.finished.emit()
     
@@ -134,7 +136,7 @@ class SSHVulnWorker(QThread):
             result = sock.connect_ex((self.target, self.port))
             sock.close()
             return result == 0
-        except:
+        except Exception:
             return False
     
     def grab_banner(self):
@@ -145,7 +147,7 @@ class SSHVulnWorker(QThread):
             banner = sock.recv(1024).decode('utf-8', errors='ignore').strip()
             sock.close()
             return banner
-        except:
+        except Exception:
             return None
     
     def enumerate_algorithms(self):

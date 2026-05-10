@@ -10,7 +10,12 @@ class SourceMapAnalyzer:
     
     def __init__(self, session=None):
         self.session = session or requests.Session()
-        self.session.verify = False
+        # Honour the global SSL verification setting instead of hardcoding False.
+        try:
+            from app.core.config import config as _cfg
+            self.session.verify = _cfg.get('security.ssl_verify', True)
+        except Exception:
+            self.session.verify = True
         self.session.timeout = 10
     
     def find_source_maps(self, content: str, base_url: str) -> List[str]:

@@ -2,6 +2,7 @@
 import ipaddress
 import re
 from typing import List, Set, Tuple, Optional
+from app.core.logger import logger
 
 class ScopeManager:
     """Manages engagement scope and validates targets against defined scope"""
@@ -52,8 +53,9 @@ class ScopeManager:
                     else:
                         self.out_of_scope_networks.append(network)
                     continue
-                except:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
             
             # Check if it's an IP address
             try:
@@ -63,8 +65,9 @@ class ScopeManager:
                 else:
                     self.out_of_scope_ips.add(item)
                 continue
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
             
             # Treat as domain
             if is_in_scope:
@@ -97,8 +100,9 @@ class ScopeManager:
             for network in self.out_of_scope_networks:
                 if ip in network:
                     return False, f"IP '{base_target}' is in out-of-scope network {network}"
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         # Check in-scope domains (including wildcard matching)
         for domain in self.in_scope_domains:
@@ -123,8 +127,9 @@ class ScopeManager:
             for network in self.in_scope_networks:
                 if ip in network:
                     return True, f"IP '{target}' is in scope network {network}"
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         # If no scope defined, allow everything
         if not (self.in_scope_domains or self.in_scope_ips or self.in_scope_networks):

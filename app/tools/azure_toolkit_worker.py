@@ -5,6 +5,7 @@ Azure Toolkit Worker for Enumeration Page Integration
 from PyQt6.QtCore import QObject, pyqtSignal
 from app.core.base_worker import WorkerSignals
 import logging
+from app.core.html_utils import h
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +28,7 @@ class AzureToolkitWorker(QObject):
         try:
             from app.core.azure_toolkit import AzureToolkit
             
-            self.signals.output.emit(f"<p style='color: #00BFFF;'>Starting Azure {self.module}...</p>")
+            self.signals.output.emit(f"<p style='color: #00BFFF;'>Starting Azure {h(self.module)}...</p>")
             
             toolkit = AzureToolkit()
             
@@ -76,13 +77,13 @@ class AzureToolkitWorker(QObject):
             
         except Exception as e:
             logger.error(f"Azure toolkit operation failed: {e}")
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>Error: {str(e)}</p>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>Error: {h(str(e))}</p>")
             self.signals.error.emit(str(e))
     
     def format_dns_results(self, results):
         """Format DNS enumeration results"""
         if 'error' in results:
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>DNS Error: {results['error']}</p>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>DNS Error: {h(results['error'])}</p>")
             return
         
         summary = results.get('summary', {})
@@ -92,18 +93,18 @@ class AzureToolkitWorker(QObject):
         
         discovered_services = summary.get('discovered_services', 0)
         if discovered_services > 0:
-            self.signals.output.emit(f"<p style='color: #00FF41;'>Found {discovered_services} Azure services</p>")
+            self.signals.output.emit(f"<p style='color: #00FF41;'>Found {h(discovered_services)} Azure services</p>")
             
             high_value_targets = summary.get('high_value_targets', [])
             for target in high_value_targets:
                 service_type = target.get('service_type', 'Unknown')
                 domain = target.get('domain', 'Unknown')
-                self.signals.output.emit(f"<p style='color: #FFAA00;'>  • {service_type}: {domain}</p>")
+                self.signals.output.emit(f"<p style='color: #FFAA00;'>  • {h(service_type)}: {h(domain)}</p>")
     
     def format_ad_results(self, results):
         """Format Azure AD results"""
         if 'error' in results:
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>AD Error: {results['error']}</p>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>AD Error: {h(results['error'])}</p>")
             return
         
         summary = results.get('summary', {})
@@ -111,9 +112,9 @@ class AzureToolkitWorker(QObject):
         tenant_name = summary.get('tenant_name', 'Unknown')
         user_count = summary.get('user_count', 0)
         
-        self.signals.output.emit(f"<p style='color: #00FF41;'>Tenant: {tenant_name}</p>")
+        self.signals.output.emit(f"<p style='color: #00FF41;'>Tenant: {h(tenant_name)}</p>")
         if user_count > 0:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>Users enumerated: {user_count}</p>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>Users enumerated: {h(user_count)}</p>")
         
         privileged_roles = summary.get('privileged_roles', [])
         if privileged_roles:
@@ -122,27 +123,27 @@ class AzureToolkitWorker(QObject):
     def format_arm_results(self, results):
         """Format ARM results"""
         if 'error' in results:
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>ARM Error: {results['error']}</p>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>ARM Error: {h(results['error'])}</p>")
             return
         
         summary = results.get('summary', {})
         
         subscription_count = summary.get('subscription_count', 0)
         if subscription_count > 0:
-            self.signals.output.emit(f"<p style='color: #00FF41;'>Subscriptions: {subscription_count}</p>")
+            self.signals.output.emit(f"<p style='color: #00FF41;'>Subscriptions: {h(subscription_count)}</p>")
         
         storage_accounts = summary.get('total_storage_accounts', 0)
         key_vaults = summary.get('total_key_vaults', 0)
         
         if storage_accounts > 0:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>Storage Accounts: {storage_accounts}</p>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>Storage Accounts: {h(storage_accounts)}</p>")
         if key_vaults > 0:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>Key Vaults: {key_vaults}</p>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>Key Vaults: {h(key_vaults)}</p>")
     
     def format_storage_results(self, results):
         """Format storage results"""
         if 'error' in results:
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>Storage Error: {results['error']}</p>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>Storage Error: {h(results['error'])}</p>")
             return
         
         summary = results.get('summary', {})
@@ -152,13 +153,13 @@ class AzureToolkitWorker(QObject):
         sensitive_blobs = summary.get('sensitive_blob_count', 0)
         
         if account_count > 0:
-            self.signals.output.emit(f"<p style='color: #00FF41;'>Storage Accounts: {account_count}</p>")
+            self.signals.output.emit(f"<p style='color: #00FF41;'>Storage Accounts: {h(account_count)}</p>")
         
         if public_containers > 0:
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>🚨 Public Containers: {public_containers}</p>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>🚨 Public Containers: {h(public_containers)}</p>")
         
         if sensitive_blobs > 0:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>⚠️ Sensitive Files: {sensitive_blobs}</p>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>⚠️ Sensitive Files: {h(sensitive_blobs)}</p>")
     
     def format_comprehensive_results(self, results):
         """Format comprehensive results"""
@@ -170,15 +171,15 @@ class AzureToolkitWorker(QObject):
         if high_risk:
             self.signals.output.emit(f"<p style='color: #FF6B6B;'>🔴 HIGH RISK ({len(high_risk)}):</p>")
             for finding in high_risk:
-                self.signals.output.emit(f"<p style='color: #FF6B6B;'>  • {finding}</p>")
+                self.signals.output.emit(f"<p style='color: #FF6B6B;'>  • {h(finding)}</p>")
         
         if medium_risk:
             self.signals.output.emit(f"<p style='color: #FFAA00;'>🟡 MEDIUM RISK ({len(medium_risk)}):</p>")
             for finding in medium_risk:
-                self.signals.output.emit(f"<p style='color: #FFAA00;'>  • {finding}</p>")
+                self.signals.output.emit(f"<p style='color: #FFAA00;'>  • {h(finding)}</p>")
         
         recommendations = summary.get('recommendations', [])
         if recommendations:
             self.signals.output.emit("<p style='color: #87CEEB;'>💡 RECOMMENDATIONS:</p>")
             for rec in recommendations:
-                self.signals.output.emit(f"<p style='color: #87CEEB;'>  • {rec}</p>")
+                self.signals.output.emit(f"<p style='color: #87CEEB;'>  • {h(rec)}</p>")

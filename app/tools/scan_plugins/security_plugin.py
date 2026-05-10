@@ -3,13 +3,18 @@ import re
 import urllib.parse
 from typing import Dict, List
 from .ai_ssti_plugin import AISSTIPlugin
+from app.core.logger import logger
 
 class SecurityPlugin:
     def __init__(self, session=None, progress_callback=None):
         self.name = "Security Analysis"
         self.session = session
         self.progress_callback = progress_callback
-        self.ssl_verify = False
+        try:
+            from app.core.config import config as _cfg
+            self.ssl_verify = _cfg.get('security.ssl_verify', True)
+        except Exception:
+            self.ssl_verify = True
         if session:
             self.ai_ssti_plugin = AISSTIPlugin(session, progress_callback)
         
@@ -154,7 +159,7 @@ class SecurityPlugin:
                             'type': 'SSTI',
                             'evidence': '49 found in response'
                         })
-                except:
+                except Exception:
                     continue
         
         return vulnerabilities
@@ -180,7 +185,7 @@ class SecurityPlugin:
                         'type': 'XSS',
                         'evidence': 'Payload reflected'
                     })
-            except:
+            except Exception:
                 continue
         
         return vulnerabilities
@@ -207,7 +212,7 @@ class SecurityPlugin:
                         'type': 'SQL Injection',
                         'evidence': 'SQL error detected'
                     })
-            except:
+            except Exception:
                 continue
         
         return vulnerabilities
@@ -233,7 +238,7 @@ class SecurityPlugin:
                         'type': 'Command Injection',
                         'evidence': 'Command output detected'
                     })
-            except:
+            except Exception:
                 continue
         
         return vulnerabilities
@@ -259,7 +264,7 @@ class SecurityPlugin:
                         'type': 'File Inclusion',
                         'evidence': 'System file content detected'
                     })
-            except:
+            except Exception:
                 continue
         
         return vulnerabilities
@@ -279,7 +284,7 @@ class SecurityPlugin:
             }
             
             return {k: v for k, v in security_headers.items() if v}
-        except:
+        except Exception:
             return {}
     
     def _check_sensitive_files(self, target_url: str) -> List[str]:
@@ -297,7 +302,7 @@ class SecurityPlugin:
                 
                 if response.status_code == 200:
                     sensitive_files.append(file_path)
-            except:
+            except Exception:
                 continue
         
         return sensitive_files

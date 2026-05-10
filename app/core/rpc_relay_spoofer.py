@@ -7,6 +7,7 @@ import struct
 import threading
 import time
 from typing import Dict, List, Optional
+from app.core.logger import logger
 
 class LLMNRSpoofer:
     """LLMNR spoofing for credential capture"""
@@ -58,8 +59,9 @@ class LLMNRSpoofer:
             
             sock.close()
             
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def _craft_llmnr_response(self, query: bytes, client_ip: str) -> Optional[bytes]:
         """Craft LLMNR response packet"""
@@ -184,8 +186,9 @@ class NBTNSSpoofer:
             
             sock.close()
             
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def _craft_nbtns_response(self, query: bytes) -> Optional[bytes]:
         """Craft NBT-NS response"""
@@ -249,8 +252,9 @@ class NTLMRelayHandler:
             
             sock.close()
             
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def _handle_smb_client(self, client_sock: socket.socket, addr: tuple):
         """Handle individual SMB client connection"""
@@ -270,8 +274,9 @@ class NTLMRelayHandler:
             
             client_sock.close()
             
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def _parse_ntlm_data(self, data: bytes) -> Optional[Dict]:
         """Parse NTLM authentication data"""
@@ -323,8 +328,9 @@ class RPCRelaySpoofer:
             
             self.running = True
             
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return results
     

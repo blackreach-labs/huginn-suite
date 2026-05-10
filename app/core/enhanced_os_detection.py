@@ -4,6 +4,7 @@ import struct
 import time
 import random
 from collections import defaultdict
+from app.core.logger import logger
 
 class EnhancedOSDetection:
     """Enhanced OS detection using TTL analysis, TCP window size, and IP ID sequences"""
@@ -83,8 +84,9 @@ class EnhancedOSDetection:
                 if result == 0:
                     responsive_ports.append(test_port)
                 sock.close()
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         # Estimate based on port patterns
         if 135 in responsive_ports or 445 in responsive_ports:
@@ -226,8 +228,9 @@ class EnhancedOSDetection:
                     results['vulnerabilities'] = best_match['vulnerabilities']
                 
                 return results
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         # Use enhanced port-based detection
         if open_ports:
@@ -625,8 +628,9 @@ class EnhancedOSDetection:
                     if match:
                         print(f"[DEBUG] SMB Banner: {match.group()}")
                         score += 0.2
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         # WinRM Banner (5985) - only if port is open
         if 5985 in open_ports:
@@ -635,8 +639,9 @@ class EnhancedOSDetection:
                 if winrm_banner and 'microsoft-httpapi' in winrm_banner.lower():
                     print(f"[DEBUG] WinRM Banner: Microsoft-HTTPAPI detected")
                     score += 0.1
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         # HTTP/HTTPS Banner - only if ports are open
         for port in [80, 443]:
@@ -647,8 +652,9 @@ class EnhancedOSDetection:
                         print(f"[DEBUG] HTTP Banner: Microsoft-IIS detected on port {port}")
                         score += 0.1
                         break
-                except:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
         
         # RDP Certificate (3389) - only if port is open
         if 3389 in open_ports:
@@ -657,8 +663,9 @@ class EnhancedOSDetection:
                 if rdp_info and any('server' in str(rdp_info).lower() or 'win' in str(rdp_info).lower() for _ in [1]):
                     print(f"[DEBUG] RDP Certificate: Windows server detected")
                     score += 0.1
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         return min(score, 0.3)
     
@@ -679,8 +686,9 @@ class EnhancedOSDetection:
                 sock.close()
                 if result == 0:
                     open_ports.add(port)
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         self._open_ports_cache[target_ip] = open_ports
         return open_ports

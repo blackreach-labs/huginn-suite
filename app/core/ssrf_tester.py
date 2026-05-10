@@ -1,5 +1,6 @@
 import asyncio
 from urllib.parse import urljoin
+from app.core.logger import logger
 
 class SSRFTester:
     """Test for Server-Side Request Forgery using discovered parameters"""
@@ -129,7 +130,8 @@ class SSRFTester:
                     'recommendation': 'Implement URL validation and restrict outbound requests'
                 }
                 
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
             
         return None

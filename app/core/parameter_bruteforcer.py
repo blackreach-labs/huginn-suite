@@ -1,5 +1,6 @@
 import asyncio
 from urllib.parse import urljoin
+from app.core.logger import logger
 
 class ParameterBruteforcer:
     """Bruteforce hidden parameters using common parameter names"""
@@ -29,7 +30,7 @@ class ParameterBruteforcer:
                 baseline_status = baseline_response.status
                 baseline_content = await baseline_response.text()
                 baseline_size = len(baseline_content)
-        except:
+        except Exception:
             return findings
         
         # Filter out known parameters
@@ -73,7 +74,7 @@ class ParameterBruteforcer:
                     
                     await asyncio.sleep(0.1)  # Rate limiting
                     
-                except:
+                except Exception:
                     continue
         
         if discovered_params:

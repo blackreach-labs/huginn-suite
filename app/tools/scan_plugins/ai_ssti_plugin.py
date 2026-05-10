@@ -4,6 +4,7 @@ import time
 from typing import Dict, List, Optional
 from urllib.parse import urljoin
 from app.core.ai_payload_engine import AIPayloadEngine, ResponseType
+from app.core.logger import logger
 
 class AISSTIPlugin:
     def __init__(self, session, progress_callback=None):
@@ -11,7 +12,11 @@ class AISSTIPlugin:
         self.progress_callback = progress_callback
         self.ai_engine = AIPayloadEngine()
         self.max_adaptation_rounds = 5
-        self.ssl_verify = False
+        try:
+            from app.core.config import config as _cfg
+            self.ssl_verify = _cfg.get('security.ssl_verify', True)
+        except Exception:
+            self.ssl_verify = True
         
     async def scan(self, target_url: str, endpoints: List[str] = None) -> Dict:
         """AI-driven SSTI scanning with adaptive payload generation"""
@@ -179,7 +184,7 @@ class AISSTIPlugin:
                     'method': 'GET',
                     'parameter': param
                 }
-            except:
+            except Exception:
                 continue
         
         return None
@@ -204,7 +209,7 @@ class AISSTIPlugin:
                     'method': 'POST',
                     'parameter': param
                 }
-            except:
+            except Exception:
                 continue
         
         return None

@@ -9,18 +9,20 @@ from .runtime_user_fingerprint import RuntimeUserFingerprint
 from .oob_tester import multi_channel_oob_test
 # Import config manager directly
 from app.core.config import config as config_manager
+from app.core.logger import logger
 
 class HTTPFingerprinter:
     def __init__(self, session=None, progress_callback=None):
-        # Suppress SSL warnings if configured
-        if config_manager.get('security.suppress_ssl_warnings', True):
+        # Only suppress SSL warnings when the user has explicitly disabled
+        # certificate verification in config (ssl_verify = False).
+        if config_manager.get('security.suppress_ssl_warnings', False):
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
         
         self.session = session or requests.Session()
         self.session.headers.update({
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         })
-        self.ssl_verify = config_manager.get('security.ssl_verify', False)
+        self.ssl_verify = config_manager.get('security.ssl_verify', True)
         self.plugins = []
         self.progress_callback = progress_callback
         self.is_running = lambda: True  # Default to always running
@@ -155,8 +157,9 @@ class HTTPFingerprinter:
                         'encoded_data': encoded_data
                     })
                     
-            except Exception:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         return analyzed_js
     
@@ -296,8 +299,9 @@ class HTTPFingerprinter:
                         'content_type': response.headers.get('Content-Type', 'Unknown')
                     })
                     
-            except Exception:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         return found_files
     
@@ -609,8 +613,9 @@ class HTTPFingerprinter:
                 if count_match:
                     total_classes = min(int(count_match.group(1)), max_index)
                     pass
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         # Enumerate classes by index
         for i in range(min(total_classes, max_index)):
@@ -681,8 +686,9 @@ class HTTPFingerprinter:
                 callback_url = None
                 try:
                     callback_url = self.listener_manager.get_listener_url(bind_ip=True)
-                except Exception:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
                 
                 if callback_url:
                     try:
@@ -714,8 +720,9 @@ class HTTPFingerprinter:
                                                     return True
                                         except:
                                             continue
-                            except:
+                            except Exception as _exc:
                                 pass
+                                logger.debug("Suppressed exception", exc_info=True)
                             return False
                         
                         try:
@@ -728,8 +735,10 @@ class HTTPFingerprinter:
                                 time.sleep(1)  # Brief wait
                         except Exception as e:
                             pass
-                    except:
+                            logger.debug("Suppressed exception", exc_info=True)
+                    except Exception as _exc:
                         pass
+                        logger.debug("Suppressed exception", exc_info=True)
                 
                 pass
                 return {
@@ -848,8 +857,9 @@ class HTTPFingerprinter:
                         try:
                             import base64
                             content = base64.b64decode(response.text).decode('utf-8', errors='ignore')
-                        except:
+                        except Exception as _exc:
                             pass
+                            logger.debug("Suppressed exception", exc_info=True)
                     
                     # Parse /etc/passwd
                     if "root:x:0:0" in content:
@@ -950,6 +960,7 @@ class HTTPFingerprinter:
                 
         except Exception as e:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return account_info
     
@@ -991,8 +1002,9 @@ class HTTPFingerprinter:
                                     return resp.text
                             except:
                                 continue
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
             
             return ""
         

@@ -8,6 +8,7 @@ from app.components.cracking.live_attacks_component import LiveAttacksComponent
 from app.components.cracking.results_management_component import ResultsManagementComponent
 from app.components.cracking.hash_lookup_component import HashLookupComponent
 from app.components.progress_component import ProgressComponent
+from app.core.logger import logger
 
 class CrackingPage(BasePage):
     navigate_signal = pyqtSignal(str)
@@ -20,12 +21,14 @@ class CrackingPage(BasePage):
         """Setup the UI - required by BasePage"""
         try:
             self.setup_layout()
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         try:
             self.setup_components()
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
 
     def setup_components(self):
         self.hash_analysis = HashAnalysisComponent()

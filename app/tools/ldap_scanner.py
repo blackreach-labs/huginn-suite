@@ -12,6 +12,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import time
 from PyQt6.QtCore import QObject, pyqtSignal, QRunnable
 from ..core.ldap_data_collector import create_ldap_collector
+from app.core.html_utils import h
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +41,7 @@ class LDAPWorker(QRunnable):
     
     def run(self):
         try:
-            self.signals.output.emit(f"<p style='color: #87CEEB;'>Starting LDAP enumeration on {self.target}:{self.port}...</p><br>")
+            self.signals.output.emit(f"<p style='color: #87CEEB;'>Starting LDAP enumeration on {h(self.target)}:{h(self.port)}...</p><br>")
             
             # Start scan in centralized data
             scan_id = self.data_collector.start_ldap_scan(self.target, "ldap_scanner")
@@ -55,7 +56,7 @@ class LDAPWorker(QRunnable):
                 total_results += 1
                 
                 if basic_info['accessible']:
-                    self.signals.output.emit(f"<p style='color: #00FF41;'>LDAP server accessible on port {self.port}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #00FF41;'>LDAP server accessible on port {h(self.port)}</p><br>")
                     results.update(basic_info)
                     
                     # Perform enumeration based on auth type
@@ -94,7 +95,7 @@ class LDAPWorker(QRunnable):
                             total_results += len(enum_results['privileged_users'])
                             self.signals.output.emit(f"<p style='color: #FF6B6B;'>Found {len(enum_results['privileged_users'])} privileged users</p><br>")
                 else:
-                    self.signals.output.emit(f"<p style='color: #FFAA00;'>LDAP server not accessible: {basic_info.get('error', 'Unknown error')}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #FFAA00;'>LDAP server not accessible: {h(basic_info.get('error', 'Unknown error'))}</p><br>")
             
             # Complete scan
             self.data_collector.complete_ldap_scan(total_results)
@@ -104,7 +105,7 @@ class LDAPWorker(QRunnable):
             
         except Exception as e:
             self.data_collector.complete_ldap_scan(0, str(e))
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>Error: {str(e)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>Error: {h(str(e))}</p><br>")
         finally:
             self.signals.finished.emit()
 

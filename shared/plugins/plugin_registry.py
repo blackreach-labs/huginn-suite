@@ -1,6 +1,7 @@
 from typing import Dict, List, Optional, Type
 from .plugin_interface import PluginInterface, PluginMetadata
 import threading
+import logging
 
 class PluginRegistry:
     """Thread-safe plugin registry"""
@@ -33,8 +34,9 @@ class PluginRegistry:
             if plugin_name in self._instances:
                 try:
                     self._instances[plugin_name].cleanup()
-                except Exception:
+                except Exception as _exc:
                     pass
+                    logging.debug("Suppressed exception", exc_info=True)
                 del self._instances[plugin_name]
             
             if plugin_name in self._plugins:

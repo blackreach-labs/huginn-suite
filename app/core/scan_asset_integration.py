@@ -3,6 +3,7 @@ from PyQt6.QtCore import QObject, pyqtSignal
 from app.core.asset_manager import asset_manager
 from datetime import datetime
 import re
+from app.core.logger import logger
 
 class ScanAssetIntegrator(QObject):
     """Integrates scan results with asset inventory"""
@@ -49,8 +50,9 @@ class ScanAssetIntegrator(QObject):
                 if last_profile and last_profile != 'default':
                     print(f"Found profile from settings: {last_profile}")
                     return last_profile
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
             
             # Fallback to file system check
             import os

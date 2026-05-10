@@ -1,3 +1,4 @@
+from app.core.logger import logger
 """
 Simplified SMB client using smbprotocol library
 """
@@ -48,5 +49,6 @@ class SimpleSMBClient:
                 self.session.disconnect()
             if self.connection:
                 self.connection.disconnect()
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)

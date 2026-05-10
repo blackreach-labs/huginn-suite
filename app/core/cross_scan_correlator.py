@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass
 from .centralized_scan_data import centralized_scan_data
+from app.core.logger import logger
 
 @dataclass
 class CorrelationFinding:
@@ -121,7 +122,7 @@ class CrossScanCorrelator:
                     scan_type=scan_type,
                     limit=500
                 )
-            except:
+            except Exception:
                 data[scan_type] = []
         
         return data
@@ -470,7 +471,7 @@ class CrossScanCorrelator:
                         segment = 'unknown'
                 else:
                     segment = 'non-ip'
-            except:
+            except Exception:
                 segment = 'unknown'
             
             if segment not in segments:

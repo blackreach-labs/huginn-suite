@@ -5,6 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import urljoin, urlparse
 import time
 from typing import Set, Dict, List, Callable
+from app.core.logger import logger
 
 class AdvancedDirectoryEnumerator:
     """Advanced directory enumeration with recursive scanning"""
@@ -20,6 +21,11 @@ class AdvancedDirectoryEnumerator:
         self.interesting_files = ['admin', 'login', 'config', 'backup', 'test']
         self.redirect_patterns = {}
         self.catchall_redirect = None
+        try:
+            from app.core.config import config as _cfg
+            self.ssl_verify = _cfg.get('security.ssl_verify', True)
+        except Exception:
+            self.ssl_verify = True
         
     def enumerate_directories(self, target_url: str, wordlist_path: str, 
                             progress_callback: Callable = None,
@@ -124,11 +130,12 @@ class AdvancedDirectoryEnumerator:
             try:
                 from app.core.proxy_manager import proxy_manager
                 proxies = proxy_manager.get_proxy_dict()
-            except ImportError:
+            except ImportError as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
             
             response = requests.get(url, timeout=self.timeout, allow_redirects=False, 
-                                  verify=False, proxies=proxies, 
+                                  verify=self.ssl_verify, proxies=proxies, 
                                   headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'})
             
             status_code = response.status_code
@@ -198,13 +205,15 @@ class AdvancedDirectoryEnumerator:
                 if result_callback:
                     try:
                         result_callback(finding)
-                    except:
+                    except Exception as _exc:
                         pass  # Ignore callback errors to prevent threading issues
+                        logger.debug("Suppressed exception", exc_info=True)
                 
                 return True  # Found something
         
-        except Exception:
+        except Exception as _exc:
             pass  # Ignore individual request failures
+            logger.debug("Suppressed exception", exc_info=True)
         
         return False  # Nothing found
     
@@ -216,12 +225,13 @@ class AdvancedDirectoryEnumerator:
             test_url = urljoin(target_url, test_path)
             
             response = requests.get(test_url, timeout=self.timeout, allow_redirects=False, 
-                                  verify=False, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'})
+                                  verify=self.ssl_verify, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'})
             
             if response.status_code in [301, 302]:
                 self.catchall_redirect = response.headers.get('Location', '')
-        except:
+        except Exception as _exc:
             pass  # Ignore errors during catch-all test
+            logger.debug("Suppressed exception", exc_info=True)
     
     def _categorize_finding(self, url: str, status_code: int, response) -> str:
         """Categorize finding as directory or file"""

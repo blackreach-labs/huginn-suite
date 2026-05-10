@@ -1,6 +1,7 @@
 # app/core/compliance_mapper.py
 from typing import Dict, List, Any
 from datetime import datetime
+from app.core.logger import logger
 
 class ComplianceMapper:
     """Map security findings to compliance frameworks"""
@@ -108,7 +109,7 @@ class ComplianceMapper:
                         'data': item['data'],
                         'count': item['count']
                     })
-            except:
+            except Exception:
                 continue
         
         if framework == 'OWASP_TOP_10':

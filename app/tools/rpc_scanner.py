@@ -1,9 +1,11 @@
-# app/tools/rpc_scanner_fixed.py
+# app/tools/rpc_scanner.py
 import subprocess
 import re
 import socket
 from typing import Dict, List, Optional
 from PyQt6.QtCore import QObject, pyqtSignal, QRunnable
+from app.core.html_utils import h
+from app.core.logger import logger
 
 class RPCWorkerSignals(QObject):
     output = pyqtSignal(str)
@@ -47,9 +49,9 @@ class RPCWorker(QRunnable):
             
             # Start scan
             scan_id = self._start_scan_session()
-            self.signals.output.emit(f"<p style='color: #87CEEB;'>Starting RPC enumeration on {self.target}...</p><br>")
-            self.signals.output.emit(f"<p style='color: #87CEEB;'>Authentication: {self.auth_type}</p><br>")
-            self.signals.output.emit(f"<p style='color: #87CEEB;'>Scan ID: {scan_id}</p><br>")
+            self.signals.output.emit(f"<p style='color: #87CEEB;'>Starting RPC enumeration on {h(self.target)}...</p><br>")
+            self.signals.output.emit(f"<p style='color: #87CEEB;'>Authentication: {h(self.auth_type)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #87CEEB;'>Scan ID: {h(scan_id)}</p><br>")
             
             # Execute scan
             self.signals.output.emit("<p style='color: #87CEEB;'>Executing scan...</p><br>")
@@ -77,7 +79,7 @@ class RPCWorker(QRunnable):
                 self.signals.output.emit("<p style='color: #FF6B6B;'>❌ RPC enumeration failed</p><br>")
                 
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>Exception in run(): {str(e)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>Exception in run(): {h(str(e))}</p><br>")
             self._handle_error(f"RPC scan failed: {str(e)}")
         finally:
             self.signals.output.emit("<p style='color: #87CEEB;'>RPC Scanner finishing...</p><br>")
@@ -90,7 +92,7 @@ class RPCWorker(QRunnable):
             from ..core.rpc_data_collector import create_rpc_collector
             self.data_collector = create_rpc_collector(self.tenant_id)
         except ImportError as e:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>Warning: Data collector not available: {e}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>Warning: Data collector not available: {h(e)}</p><br>")
     
     def _calculate_total_steps(self) -> int:
         """Calculate total steps based on scan type"""
@@ -252,7 +254,7 @@ class RPCWorker(QRunnable):
                     for service in enhanced_results['services'][:5]:
                         name = service.get('name', 'Unknown')
                         state = service.get('state', 'Unknown')
-                        self.signals.output.emit(f"<p>• {name}: {state}</p><br>")
+                        self.signals.output.emit(f"<p>• {h(name)}: {h(state)}</p><br>")
                         
                     if len(enhanced_results['services']) > 5:
                         self.signals.output.emit(f"<p>... and {len(enhanced_results['services']) - 5} more services</p><br>")
@@ -269,7 +271,7 @@ class RPCWorker(QRunnable):
                     for share in enhanced_results['shares'][:3]:
                         name = share.get('name', 'Unknown')
                         share_type = share.get('type', 'Unknown')
-                        self.signals.output.emit(f"<p>• {name} ({share_type})</p><br>")
+                        self.signals.output.emit(f"<p>• {h(name)} ({h(share_type)})</p><br>")
                 
                 return
             
@@ -286,7 +288,7 @@ class RPCWorker(QRunnable):
                 for service in services[:5]:
                     name = service.get('name', 'Unknown')
                     state = service.get('state', 'Unknown')
-                    self.signals.output.emit(f"<p>• {name}: {state}</p><br>")
+                    self.signals.output.emit(f"<p>• {h(name)}: {h(state)}</p><br>")
                     
                 if len(services) > 5:
                     self.signals.output.emit(f"<p>... and {len(services) - 5} more services</p><br>")
@@ -374,7 +376,7 @@ class RPCWorker(QRunnable):
                 if match:
                     os_name = match.group(1).strip()
                     results['os_info'] = os_name
-                    self.signals.output.emit(f"<p>OS: {os_name}</p><br>")
+                    self.signals.output.emit(f"<p>OS: {h(os_name)}</p><br>")
             else:
                 self.signals.output.emit("<p style='color: #FFAA00;'>Remote registry access denied</p><br>")
                 results['registry_access'] = False
@@ -691,12 +693,13 @@ class RPCWorker(QRunnable):
     
     def _handle_error(self, error_message: str):
         """Handle scan errors"""
-        self.signals.output.emit(f"<p style='color: #FF6B6B;'>Error: {error_message}</p><br>")
+        self.signals.output.emit(f"<p style='color: #FF6B6B;'>Error: {h(error_message)}</p><br>")
         if self.data_collector:
             try:
                 self.data_collector.complete_rpc_scan(error_message=error_message)
-            except Exception:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
     
     def _try_enhanced_rpc_enumeration(self) -> Dict:
         """Try enhanced RPC enumeration using the windows_rpc_client"""
@@ -734,8 +737,9 @@ class RPCWorker(QRunnable):
             # Check if target is already an IP address
             socket.inet_aton(target)
             return target  # Already an IP
-        except socket.error:
+        except socket.error as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         try:
             # Simple system DNS resolution
@@ -782,13 +786,13 @@ class RPCWorker(QRunnable):
                     
                     # Highlight important services
                     if port in [135, 445]:
-                        self.signals.output.emit(f"<p style='color: #FFD700;'>🔑 Port {port}: {service} (RPC/SMB available)</p><br>")
+                        self.signals.output.emit(f"<p style='color: #FFD700;'>🔑 Port {port}: {h(service)} (RPC/SMB available)</p><br>")
                     elif port == 3389:
-                        self.signals.output.emit(f"<p style='color: #87CEEB;'>🖥️ Port {port}: {service}</p><br>")
+                        self.signals.output.emit(f"<p style='color: #87CEEB;'>🖥️ Port {port}: {h(service)}</p><br>")
                     elif port in [88, 389]:
-                        self.signals.output.emit(f"<p style='color: #90EE90;'>🏢 Port {port}: {service} (Domain services)</p><br>")
+                        self.signals.output.emit(f"<p style='color: #90EE90;'>🏢 Port {port}: {h(service)} (Domain services)</p><br>")
                     else:
-                        self.signals.output.emit(f"<p>• Port {port}: {service}</p><br>")
+                        self.signals.output.emit(f"<p>• Port {port}: {h(service)}</p><br>")
                 
                 # Provide recommendations based on open ports
                 if any(ep['port'] in [135, 445] for ep in open_ports):
@@ -809,8 +813,9 @@ class RPCWorker(QRunnable):
             if self.auth_type != "Anonymous":
                 subprocess.run(["net", "use", f"\\\\{self.target}", "/delete", "/y"], 
                              capture_output=True, timeout=5)
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def _native_rpc_enumeration(self) -> dict:
         """Perform native RPC enumeration using enhanced Windows RPC client (from legacy version)"""
@@ -835,17 +840,17 @@ class RPCWorker(QRunnable):
             target_ip = self._resolve_target(self.target)
             
             # Debug output
-            self.signals.output.emit(f"<p style='color: #87CEEB;'>Target: {self.target} -> {target_ip}</p><br>")
-            self.signals.output.emit(f"<p style='color: #87CEEB;'>Scan type: {self.scan_type}</p><br>")
+            self.signals.output.emit(f"<p style='color: #87CEEB;'>Target: {h(self.target)} -> {h(target_ip)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #87CEEB;'>Scan type: {h(self.scan_type)}</p><br>")
             
             # For anonymous access, skip auth test
             if self.auth_type == "Anonymous":
                 self.signals.output.emit(f"<p style='color: #FFD700;'>Using anonymous access...</p><br>")
             elif username and self.password:
-                self.signals.output.emit(f"<p style='color: #87CEEB;'>Domain: {domain or 'None'}</p><br>")
-                self.signals.output.emit(f"<p style='color: #87CEEB;'>Username: {username}</p><br>")
+                self.signals.output.emit(f"<p style='color: #87CEEB;'>Domain: {h(domain or 'None')}</p><br>")
+                self.signals.output.emit(f"<p style='color: #87CEEB;'>Username: {h(username)}</p><br>")
                 if domain:
-                    self.signals.output.emit(f"<p style='color: #00FF41;'>Using domain credentials: {domain}\\{username}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #00FF41;'>Using domain credentials: {h(domain)}\\{h(username)}</p><br>")
             
             # For RPC enumeration, use resolved IP regardless of auth type
             self.signals.output.emit("<p style='color: #87CEEB;'>Calling enumerate_target_rpc...</p><br>")
@@ -854,7 +859,7 @@ class RPCWorker(QRunnable):
             
             if results.get('errors'):
                 for error in results['errors']:
-                    self.signals.output.emit(f"<p style='color: #FFAA00;'>Warning: {error}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #FFAA00;'>Warning: {h(error)}</p><br>")
             
             # Display RPC endpoints first
             rpc_endpoints = results.get('rpc_endpoints', [])
@@ -871,9 +876,9 @@ class RPCWorker(QRunnable):
                     
                     # Highlight critical RPC services
                     if any(critical in protocol.lower() for critical in ['service control', 'registry', 'lsa']):
-                        self.signals.output.emit(f"<p style='color: #FFD700;'>• {protocol}: {uuid_str}{port_info}</p><br>")
+                        self.signals.output.emit(f"<p style='color: #FFD700;'>• {h(protocol)}: {h(uuid_str)}{port_info}</p><br>")
                     else:
-                        self.signals.output.emit(f"<p>• {protocol}: {uuid_str}{port_info}</p><br>")
+                        self.signals.output.emit(f"<p>• {h(protocol)}: {h(uuid_str)}{port_info}</p><br>")
             
             # Display network endpoints
             endpoints = results.get('endpoints', [])
@@ -884,7 +889,7 @@ class RPCWorker(QRunnable):
                 
                 self.signals.output.emit(f"<p style='color: #00FF41;'>Network endpoints accessible: {len(endpoints)}</p><br>")
                 for endpoint in endpoints:
-                    self.signals.output.emit(f"<p>• Port {endpoint['port']}: {endpoint['service']}</p><br>")
+                    self.signals.output.emit(f"<p>• Port {h(endpoint['port'])}: {h(endpoint['service'])}</p><br>")
             
             # Display services with enhanced formatting
             services = results.get('services', [])
@@ -905,9 +910,9 @@ class RPCWorker(QRunnable):
                         name = service.get('name', 'Unknown')
                         display_name = service.get('display_name', '')
                         if display_name and display_name != name:
-                            self.signals.output.emit(f"<p>• {name} ({display_name})</p><br>")
+                            self.signals.output.emit(f"<p>• {h(name)} ({h(display_name)})</p><br>")
                         else:
-                            self.signals.output.emit(f"<p>• {name}</p><br>")
+                            self.signals.output.emit(f"<p>• {h(name)}</p><br>")
                     
                     if len(running_services) > 15:
                         self.signals.output.emit(f"<p>... and {len(running_services) - 15} more running services</p><br>")
@@ -928,7 +933,7 @@ class RPCWorker(QRunnable):
                 for domain in domains:
                     name = domain.get('name', 'Unknown')
                     user_count = domain.get('users_count', 0)
-                    self.signals.output.emit(f"<p>  - {name}: {user_count} users</p><br>")
+                    self.signals.output.emit(f"<p>  - {h(name)}: {h(user_count)} users</p><br>")
                 
                 if users:
                     self.signals.output.emit(f"<p>• Sample Users ({len(users)}):</p><br>")
@@ -936,7 +941,7 @@ class RPCWorker(QRunnable):
                         name = user.get('name', 'Unknown')
                         rid = user.get('rid', 0)
                         enabled = '[+]' if user.get('enabled') else '[-]'
-                        self.signals.output.emit(f"<p>  - {name} (RID: {rid}) {enabled}</p><br>")
+                        self.signals.output.emit(f"<p>  - {h(name)} (RID: {h(rid)}) {h(enabled)}</p><br>")
             
             # Display LSA information
             lsa_info = results.get('lsa_info', {})
@@ -949,7 +954,7 @@ class RPCWorker(QRunnable):
                 trusted_domains = lsa_info.get('trusted_domains', [])
                 
                 self.signals.output.emit(f"<p style='color: #00FF41;'>LSA Policy Information:</p><br>")
-                self.signals.output.emit(f"<p>• Domain: {domain_name}</p><br>")
+                self.signals.output.emit(f"<p>• Domain: {h(domain_name)}</p><br>")
                 if trusted_domains:
                     self.signals.output.emit(f"<p>• Trusted Domains: {', '.join(trusted_domains)}</p><br>")
             
@@ -963,7 +968,7 @@ class RPCWorker(QRunnable):
                     share_name = share.get('name', 'Unknown')
                     share_type = share.get('type', 'Unknown')
                     permissions = share.get('permissions', 'Unknown')
-                    self.signals.output.emit(f"<p>• {share_name} ({share_type}) - {permissions}</p><br>")
+                    self.signals.output.emit(f"<p>• {h(share_name)} ({h(share_type)}) - {h(permissions)}</p><br>")
             
             # Display registry information
             registry_data = results.get('registry', {})
@@ -979,13 +984,13 @@ class RPCWorker(QRunnable):
                     important_keys = ['ProductName', 'CurrentVersion', 'CurrentBuild', 'ReleaseId']
                     for key in important_keys:
                         if key in os_info and os_info[key]:
-                            self.signals.output.emit(f"<p>• {key}: {os_info[key]}</p><br>")
+                            self.signals.output.emit(f"<p>• {h(key)}: {h(os_info[key])}</p><br>")
             
             self.signals.output.emit("<p style='color: #00FF41;'>Native RPC enumeration completed</p><br>")
             return results
             
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>Native RPC enumeration failed: {str(e)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>Native RPC enumeration failed: {h(str(e))}</p><br>")
             import traceback
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>Traceback: {traceback.format_exc()}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>Traceback: {h(traceback.format_exc())}</p><br>")
             return None

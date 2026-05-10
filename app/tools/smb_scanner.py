@@ -5,6 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 from PyQt6.QtCore import QObject, pyqtSignal, QRunnable
 from ..core.smb_data_collector import create_smb_collector
 from .smb_raw_proto import enumerate_smb_comprehensive, scan_smb_ports, SMBRawClient, _probe_smb1_support
+from app.core.html_utils import h
 
 class SMBWorkerSignals(QObject):
     output = pyqtSignal(str)
@@ -30,7 +31,7 @@ class SMBWorker(QRunnable):
     
     def run(self):
         try:
-            self.signals.output.emit(f"<p style='color: #87CEEB;'>🚀 Starting advanced SMB enumeration with hardened DC detection on {self.target}...</p><br>")
+            self.signals.output.emit(f"<p style='color: #87CEEB;'>🚀 Starting advanced SMB enumeration with hardened DC detection on {h(self.target)}...</p><br>")
             
             # Start scan in centralized data
             scan_id = self.data_collector.start_smb_scan(self.target, "smb_scanner")
@@ -57,13 +58,13 @@ class SMBWorker(QRunnable):
                 if domain_info.get('domain_name') or domain_info.get('dns_domain'):
                     self.signals.output.emit(f"<p style='color: #00BFFF;'>🏛️ Domain Discovery via NTLM:</p>")
                     if domain_info.get('domain_name'):
-                        self.signals.output.emit(f"<p style='color: #87CEEB;'>• NetBIOS Domain: {domain_info['domain_name']}</p>")
+                        self.signals.output.emit(f"<p style='color: #87CEEB;'>• NetBIOS Domain: {h(domain_info['domain_name'])}</p>")
                     if domain_info.get('dns_domain'):
-                        self.signals.output.emit(f"<p style='color: #87CEEB;'>• DNS Domain: {domain_info['dns_domain']}</p>")
+                        self.signals.output.emit(f"<p style='color: #87CEEB;'>• DNS Domain: {h(domain_info['dns_domain'])}</p>")
                     if domain_info.get('forest_name'):
-                        self.signals.output.emit(f"<p style='color: #87CEEB;'>• Forest Name: {domain_info['forest_name']}</p>")
+                        self.signals.output.emit(f"<p style='color: #87CEEB;'>• Forest Name: {h(domain_info['forest_name'])}</p>")
                     if domain_info.get('computer_name'):
-                        self.signals.output.emit(f"<p style='color: #87CEEB;'>• Computer Name: {domain_info['computer_name']}</p>")
+                        self.signals.output.emit(f"<p style='color: #87CEEB;'>• Computer Name: {h(domain_info['computer_name'])}</p>")
                     self.signals.output.emit("<br>")
                     total_results += 1
             
@@ -103,7 +104,7 @@ class SMBWorker(QRunnable):
             
         except Exception as e:
             self.data_collector.complete_smb_scan(0, str(e))
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>❌ Error: {str(e)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>❌ Error: {h(str(e))}</p><br>")
         finally:
             self.signals.finished.emit()
     
@@ -129,11 +130,11 @@ class SMBWorker(QRunnable):
             risk_colors = {'CRITICAL': '#FF0000', 'HIGH': '#FF6600', 'MEDIUM': '#FFAA00', 'LOW': '#00FF41'}
             risk_color = risk_colors.get(risk_level, '#CCCCCC')
             
-            self.signals.output.emit(f"<p style='color: {risk_color};'>🎯 Target: {assessment.get('target', self.target)}</p>")
+            self.signals.output.emit(f"<p style='color: {risk_color};'>🎯 Target: {h(assessment.get('target', self.target))}</p>")
             self.signals.output.emit(f"<p style='color: {risk_color};'>🛡️ Overall Risk: {risk_level}</p>")
             
             if assessment.get('risk_summary'):
-                self.signals.output.emit(f"<p style='color: {risk_color};'>📊 {assessment['risk_summary']}</p><br>")
+                self.signals.output.emit(f"<p style='color: {risk_color};'>📊 {h(assessment['risk_summary'])}</p><br>")
             
             # Handle SMB blocking detection
             if assessment.get('metadata', {}).get('smb_blocked') or assessment.get('metadata', {}).get('connection_reset'):
@@ -163,13 +164,13 @@ class SMBWorker(QRunnable):
                 if metadata.get('negotiated_dialect'):
                     dialect = metadata['negotiated_dialect']
                     if dialect == '3.1.1' and metadata.get('hardened_negotiate'):
-                        self.signals.output.emit(f"<p style='color: #00FF41;'>• Negotiated Dialect: SMB {dialect} (Hardened Detection)</p>")
+                        self.signals.output.emit(f"<p style='color: #00FF41;'>• Negotiated Dialect: SMB {h(dialect)} (Hardened Detection)</p>")
                     else:
-                        self.signals.output.emit(f"<p style='color: #87CEEB;'>• Negotiated Dialect: SMB {dialect}</p>")
+                        self.signals.output.emit(f"<p style='color: #87CEEB;'>• Negotiated Dialect: SMB {h(dialect)}</p>")
                 
                 signing_status = "✅ Required" if metadata.get('signing_required') else "⚠️ Optional"
                 signing_color = "#00FF41" if metadata.get('signing_required') else "#FFAA00"
-                self.signals.output.emit(f"<p style='color: {signing_color};'>• SMB Signing: {signing_status}</p>")
+                self.signals.output.emit(f"<p style='color: {h(signing_color)};'>• SMB Signing: {h(signing_status)}</p>")
                 
                 if metadata.get('encryption_required'):
                     self.signals.output.emit(f"<p style='color: #00FF41;'>• SMB Encryption: ✅ Required</p>")
@@ -193,13 +194,13 @@ class SMBWorker(QRunnable):
             if domain_info and not domain_info.get('error') and not metadata.get('smb_blocked') and not metadata.get('connection_reset'):
                 self.signals.output.emit("<p style='color: #00BFFF;'>🏛️ Enhanced Domain Intelligence (NTLM Type-2 Parsing):</p>")
                 if domain_info.get('domain_name'):
-                    self.signals.output.emit(f"<p style='color: #87CEEB;'>• NetBIOS Domain: {domain_info['domain_name']}</p>")
+                    self.signals.output.emit(f"<p style='color: #87CEEB;'>• NetBIOS Domain: {h(domain_info['domain_name'])}</p>")
                 if domain_info.get('dns_domain'):
-                    self.signals.output.emit(f"<p style='color: #87CEEB;'>• DNS Domain: {domain_info['dns_domain']}</p>")
+                    self.signals.output.emit(f"<p style='color: #87CEEB;'>• DNS Domain: {h(domain_info['dns_domain'])}</p>")
                 if domain_info.get('computer_name'):
-                    self.signals.output.emit(f"<p style='color: #87CEEB;'>• Computer Name: {domain_info['computer_name']}</p>")
+                    self.signals.output.emit(f"<p style='color: #87CEEB;'>• Computer Name: {h(domain_info['computer_name'])}</p>")
                 if domain_info.get('forest_name'):
-                    self.signals.output.emit(f"<p style='color: #87CEEB;'>• Forest Name: {domain_info['forest_name']}</p>")
+                    self.signals.output.emit(f"<p style='color: #87CEEB;'>• Forest Name: {h(domain_info['forest_name'])}</p>")
                 
                 # Show if this was obtained via hardened method
                 if metadata.get('hardened_negotiate'):
@@ -217,11 +218,11 @@ class SMBWorker(QRunnable):
                         share_name = share.get('name', 'Unknown')
                         if share.get('accessible'):
                             accessible_shares.append(share_name)
-                            self.signals.output.emit(f"<p style='color: #00FF41;'>• ✅ {share_name} - Accessible</p>")
+                            self.signals.output.emit(f"<p style='color: #00FF41;'>• ✅ {h(share_name)} - Accessible</p>")
                         elif share.get('exists'):
-                            self.signals.output.emit(f"<p style='color: #FFAA00;'>• 🔒 {share_name} - Access Denied</p>")
+                            self.signals.output.emit(f"<p style='color: #FFAA00;'>• 🔒 {h(share_name)} - Access Denied</p>")
                         else:
-                            self.signals.output.emit(f"<p style='color: #888888;'>• ❓ {share_name} - Not Found</p>")
+                            self.signals.output.emit(f"<p style='color: #888888;'>• ❓ {h(share_name)} - Not Found</p>")
                 
                 if accessible_shares:
                     results['accessible_shares'] = accessible_shares
@@ -238,11 +239,11 @@ class SMBWorker(QRunnable):
                     severity_colors = {'CRITICAL': '#FF0000', 'HIGH': '#FF6600', 'MEDIUM': '#FFAA00', 'LOW': '#0099FF'}
                     severity_color = severity_colors.get(severity, '#CCCCCC')
                     
-                    self.signals.output.emit(f"<p style='color: {severity_color};'>• 🔴 {vuln.get('type', 'Unknown Vulnerability')} [{severity}]</p>")
+                    self.signals.output.emit(f"<p style='color: {severity_color};'>• 🔴 {h(vuln.get('type', 'Unknown Vulnerability'))} [{h(severity)}]</p>")
                     if vuln.get('description'):
-                        self.signals.output.emit(f"<p style='color: #CCCCCC;'>  Description: {vuln['description']}</p>")
+                        self.signals.output.emit(f"<p style='color: #CCCCCC;'>  Description: {h(vuln['description'])}</p>")
                     if vuln.get('cve'):
-                        self.signals.output.emit(f"<p style='color: #CCCCCC;'>  CVE: {vuln['cve']}</p>")
+                        self.signals.output.emit(f"<p style='color: #CCCCCC;'>  CVE: {h(vuln['cve'])}</p>")
                 
                 results['vulnerabilities'] = vulnerabilities
                 self.signals.output.emit("<br>")
@@ -256,9 +257,9 @@ class SMBWorker(QRunnable):
                     severity_colors = {'HIGH': '#FF6600', 'MEDIUM': '#FFAA00', 'LOW': '#0099FF', 'INFO': '#87CEEB'}
                     severity_color = severity_colors.get(severity, '#CCCCCC')
                     
-                    self.signals.output.emit(f"<p style='color: {severity_color};'>• ℹ️ {finding.get('type', 'Security Finding')}</p>")
+                    self.signals.output.emit(f"<p style='color: {severity_color};'>• ℹ️ {h(finding.get('type', 'Security Finding'))}</p>")
                     if finding.get('description'):
-                        self.signals.output.emit(f"<p style='color: #CCCCCC;'>  {finding['description']}</p>")
+                        self.signals.output.emit(f"<p style='color: #CCCCCC;'>  {h(finding['description'])}</p>")
                 
                 self.signals.output.emit("<br>")
             
@@ -266,9 +267,9 @@ class SMBWorker(QRunnable):
             recommendations = assessment.get('recommendations', [])
             if recommendations:
                 rec_color = '#00FF41' if metadata.get('smb_blocked') or metadata.get('connection_reset') else '#00BFFF'
-                self.signals.output.emit(f"<p style='color: {rec_color};'>💡 Security Assessment:</p>")
+                self.signals.output.emit(f"<p style='color: {h(rec_color)};'>💡 Security Assessment:</p>")
                 for rec in recommendations:
-                    self.signals.output.emit(f"<p style='color: #87CEEB;'>• {rec}</p>")
+                    self.signals.output.emit(f"<p style='color: #87CEEB;'>• {h(rec)}</p>")
                 self.signals.output.emit("<br>")
             
             # Store assessment results
@@ -276,10 +277,10 @@ class SMBWorker(QRunnable):
             
             # Error handling
             if 'error' in assessment:
-                self.signals.output.emit(f"<p style='color: #FF6B6B;'>❌ {assessment['error']}</p><br>")
+                self.signals.output.emit(f"<p style='color: #FF6B6B;'>❌ {h(assessment['error'])}</p><br>")
             
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>❌ Advanced SMB protocol analysis failed: {str(e)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>❌ Advanced SMB protocol analysis failed: {h(str(e))}</p><br>")
             # Try fallback to basic detection
             try:
                 self.signals.output.emit("<p style='color: #FFAA00;'>🔄 Attempting fallback to basic SMB detection...</p><br>")
@@ -288,12 +289,12 @@ class SMBWorker(QRunnable):
                 client.connect()
                 basic_result = client._negotiate_smb302_simple()
                 if basic_result.get('dialect') != 'Unknown':
-                    self.signals.output.emit(f"<p style='color: #87CEEB;'>✅ Fallback successful: SMB {basic_result['dialect']} detected</p><br>")
+                    self.signals.output.emit(f"<p style='color: #87CEEB;'>✅ Fallback successful: SMB {h(basic_result['dialect'])} detected</p><br>")
                     results['metadata'] = {'negotiated_dialect': basic_result['dialect'], 'fallback_method': True}
                 client.close()
             except Exception:
                 import traceback
-                self.signals.output.emit(f"<p style='color: #888888;'>Debug: {traceback.format_exc()}</p><br>")
+                self.signals.output.emit(f"<p style='color: #888888;'>Debug: {h(traceback.format_exc())}</p><br>")
     
     def _enumerate_shares(self, results):
         """Enhanced SMB share enumeration using existing protocol analysis results"""
@@ -318,11 +319,11 @@ class SMBWorker(QRunnable):
                     description = share_info.get('description', 'Unknown status')
                     
                     if accessible:
-                        self.signals.output.emit(f"<p style='color: #00FF41;'>✅ {share_name}: Accessible (Anonymous) - {description}</p>")
+                        self.signals.output.emit(f"<p style='color: #00FF41;'>✅ {h(share_name)}: Accessible (Anonymous) - {h(description)}</p>")
                     elif exists:
-                        self.signals.output.emit(f"<p style='color: #FFAA00;'>🔒 {share_name}: Exists (Access Denied) - {description}</p>")
+                        self.signals.output.emit(f"<p style='color: #FFAA00;'>🔒 {h(share_name)}: Exists (Access Denied) - {h(description)}</p>")
                     else:
-                        self.signals.output.emit(f"<p style='color: #888888;'>❌ {share_name}: Not Found - {description}</p>")
+                        self.signals.output.emit(f"<p style='color: #888888;'>❌ {h(share_name)}: Not Found - {h(description)}</p>")
                 
                 # Security assessment
                 if accessible_shares:
@@ -334,7 +335,7 @@ class SMBWorker(QRunnable):
                 self.signals.output.emit("<p style='color: #FFAA00;'>⚠️ No share information available from protocol analysis</p><br>")
                 
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>❌ Advanced share enumeration error: {str(e)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>❌ Advanced share enumeration error: {h(str(e))}</p><br>")
     
     def _get_status_description(self, status_code: int) -> str:
         """Get human-readable status description"""
@@ -373,7 +374,7 @@ class SMBWorker(QRunnable):
                 self.signals.output.emit(f"<p style='color: #87CEEB;'>📄 Testing {len(wordlist)} share names with hardened detection...</p><br>")
                 
             except Exception as e:
-                self.signals.output.emit(f"<p style='color: #FFAA00;'>❌ Failed to read wordlist: {str(e)}</p><br>")
+                self.signals.output.emit(f"<p style='color: #FFAA00;'>❌ Failed to read wordlist: {h(str(e))}</p><br>")
                 return
             
             # Use SMB client for probing
@@ -407,24 +408,24 @@ class SMBWorker(QRunnable):
                         
                         status_text = "Accessible" if accessible else "Access Denied"
                         color = "#00FF41" if accessible else "#FFAA00"
-                        self.signals.output.emit(f"<p style='color: {color};'>✅ {share_name}: {status_text}</p>")
+                        self.signals.output.emit(f"<p style='color: {color};'>✅ {h(share_name)}: {h(status_text)}</p>")
                 
                 client.close()
                 
             except Exception as e:
-                self.signals.output.emit(f"<p style='color: #FFAA00;'>⚠️ Share discovery error: {str(e)}</p><br>")
+                self.signals.output.emit(f"<p style='color: #FFAA00;'>⚠️ Share discovery error: {h(str(e))}</p><br>")
                 return
             
             # Results
             if found_shares:
                 results['bruteforce_shares'] = found_shares
                 accessible_count = len([s for s in found_shares if s['accessible']])
-                self.signals.output.emit(f"<p style='color: #00FF41;'>🎉 Found {len(found_shares)} additional shares, {accessible_count} accessible</p><br>")
+                self.signals.output.emit(f"<p style='color: #00FF41;'>🎉 Found {len(found_shares)} additional shares, {h(accessible_count)} accessible</p><br>")
             else:
-                self.signals.output.emit(f"<p style='color: #FFAA00;'>🔍 No additional shares found (tested {tested_count} names)</p><br>")
+                self.signals.output.emit(f"<p style='color: #FFAA00;'>🔍 No additional shares found (tested {h(tested_count)} names)</p><br>")
                 
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>❌ Advanced share discovery error: {str(e)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>❌ Advanced share discovery error: {h(str(e))}</p><br>")
     
     def stop(self):
         """Stop the SMB enumeration"""

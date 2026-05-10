@@ -1,5 +1,6 @@
 import asyncio
 from urllib.parse import urljoin
+from app.core.logger import logger
 
 class DirectoryFuzzer:
     """Advanced directory and file fuzzing with crawling"""
@@ -83,8 +84,9 @@ class DirectoryFuzzer:
                         'status': response.status,
                         'redirect_to': location
                     }
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         await asyncio.sleep(0.1)  # Rate limiting
         return None

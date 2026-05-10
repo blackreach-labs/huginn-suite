@@ -2,6 +2,7 @@
 import base64
 import re
 import urllib.parse
+from app.core.logger import logger
 
 def decode_javascript_obfuscation(js_content):
     """Attempt to decode obfuscated JavaScript"""
@@ -64,8 +65,9 @@ def detect_and_decode(string_data):
                 decoded = base64.b64decode(string_data).decode('utf-8', errors='ignore')
                 if all(ord(c) < 127 for c in decoded) and len(decoded) > 3:
                     results.append(('Base64', decoded))
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     # URL encoding detection
     if '%' in string_data:
@@ -73,8 +75,9 @@ def detect_and_decode(string_data):
             decoded = urllib.parse.unquote(string_data)
             if decoded != string_data and len(decoded) > 3:
                 results.append(('URL Encoded', decoded))
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     # Hex encoding detection
     if re.match(r'^[0-9a-fA-F]+$', string_data) and len(string_data) % 2 == 0:
@@ -82,8 +85,9 @@ def detect_and_decode(string_data):
             decoded = bytes.fromhex(string_data).decode('utf-8', errors='ignore')
             if all(ord(c) < 127 for c in decoded) and len(decoded) > 3:
                 results.append(('Hex', decoded))
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     # ROT13 detection
     try:
@@ -91,7 +95,8 @@ def detect_and_decode(string_data):
         decoded = codecs.decode(string_data, 'rot13')
         if decoded != string_data and len(decoded) > 3:
             results.append(('ROT13', decoded))
-    except:
+    except Exception as _exc:
         pass
+        logger.debug("Suppressed exception", exc_info=True)
     
     return results

@@ -7,6 +7,7 @@ from app.components.db_attacks.database_enumeration_component import DatabaseEnu
 from app.components.db_attacks.privilege_escalation_component import PrivilegeEscalationComponent
 from app.components.db_attacks.data_extraction_component import DataExtractionComponent
 from app.components.progress_component import ProgressComponent
+from app.core.logger import logger
 
 class DbAttacksPage(BasePage):
     navigate_signal = pyqtSignal(str)
@@ -22,24 +23,29 @@ class DbAttacksPage(BasePage):
     def setup_components(self):
         try:
             self.sql_injection = SqlInjectionComponent()
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         try:
             self.db_enumeration = DatabaseEnumerationComponent()
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         try:
             self.privilege_escalation = PrivilegeEscalationComponent()
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         try:
             self.data_extraction = DataExtractionComponent()
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         try:
             self.progress = ProgressComponent()
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
 
     def setup_layout(self):
         main_layout = QVBoxLayout(self)

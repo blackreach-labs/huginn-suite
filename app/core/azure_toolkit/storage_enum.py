@@ -8,6 +8,7 @@ from azure.storage.blob import BlobServiceClient
 from azure.core.exceptions import ClientAuthenticationError, HttpResponseError
 import logging
 from .auth import AzureAuthenticator
+from app.core.logger import logger
 
 logger = logging.getLogger(__name__)
 
@@ -235,7 +236,7 @@ class AzureStorageEnum:
             # Try to decode as text
             try:
                 text_content = content.decode('utf-8', errors='ignore')
-            except:
+            except Exception:
                 text_content = f"<Binary content, {len(content)} bytes>"
             
             return {

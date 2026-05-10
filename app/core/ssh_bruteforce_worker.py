@@ -4,6 +4,7 @@ import threading
 import queue
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from .ssh_protocol import SSHProtocol
+from app.core.logger import logger
 
 class SSHBruteforceWorker:
     """SSH brute force attack implementation"""
@@ -240,8 +241,9 @@ class SSHUserEnumerator:
                 target, port, 'invalid_user_12345', 'invalid_password_12345'
             )
             baseline_responses['invalid'] = baseline_result
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         # Test each username
         for username in self.common_usernames:

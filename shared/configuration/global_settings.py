@@ -3,6 +3,7 @@
 import json
 import os
 from typing import Dict, Any
+import logging
 
 class GlobalSettings:
     """Manages global application settings"""
@@ -23,7 +24,7 @@ class GlobalSettings:
             try:
                 with open(self._settings_file, 'r') as f:
                     self._settings = json.load(f)
-            except:
+            except Exception:
                 self._settings = self._get_default_settings()
         else:
             self._settings = self._get_default_settings()

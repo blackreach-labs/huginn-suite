@@ -6,6 +6,7 @@ from typing import Dict, List, Optional, Any, Tuple
 from urllib.parse import urlparse, parse_qs, urlencode
 from PyQt6.QtCore import QObject, pyqtSignal, QThread
 from .http_client import HttpRequest, HttpResponse, UnifiedHttpClient
+from app.core.logger import logger
 
 class AuthReplayEngine(QObject):
     """Replays and mutates authentication flows"""
@@ -110,8 +111,9 @@ class AuthReplayEngine(QObject):
                         if param in data:
                             del data[param]
                     mutated.data = urlencode(data, doseq=True)
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         return mutated
     
@@ -158,8 +160,9 @@ class AuthReplayEngine(QObject):
                     if 'state' in data:
                         del data['state']
                     mutated.data = urlencode(data, doseq=True)
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         return mutated
     
@@ -186,8 +189,9 @@ class AuthReplayEngine(QObject):
                     if 'redirect_uri' in data:
                         data['redirect_uri'] = [malicious_uris[0]]
                     mutated.data = urlencode(data, doseq=True)
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         return mutated
     
@@ -223,8 +227,9 @@ class AuthReplayEngine(QObject):
                         if param in data:
                             del data[param]
                     mutated.data = urlencode(data, doseq=True)
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         return mutated
     
@@ -251,8 +256,9 @@ class AuthReplayEngine(QObject):
                         if param in data:
                             data[param] = escalation_values[0]
                     mutated.data = json.dumps(data)
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         return mutated
     

@@ -8,6 +8,7 @@ import logging
 import subprocess
 from typing import Dict, List, Optional, Any
 import re
+from app.core.logger import logger
 
 logger = logging.getLogger(__name__)
 
@@ -147,7 +148,7 @@ class IKEScanner:
             result = subprocess.run(['ike-scan', '--help'], 
                                   capture_output=True, text=True, timeout=5)
             return result.returncode == 0 or 'usage' in result.stdout.lower()
-        except:
+        except Exception:
             return False
     
     def _parse_ike_scan_output(self, output: str) -> Dict[str, Any]:

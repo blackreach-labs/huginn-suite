@@ -13,6 +13,8 @@ from ..core.scan_asset_integration import scan_asset_integrator
 from ..core.source_patterns import PatternScanner
 from ..core.source_map_analyzer import SourceMapAnalyzer
 from ..core.listener_manager import listener_manager
+from app.core.html_utils import h
+from app.core.logger import logger
 try:
     from ..core.web_crawler import WebCrawler
 except ImportError:
@@ -60,6 +62,12 @@ class HTTPEnumWorker(QRunnable):
         self.wildcard_length = None
         self.session = None
         self.authenticated_crawler = None
+        # Read SSL verify setting once; used by all inline requests in this worker.
+        try:
+            from app.core.config import config as _cfg
+            self.ssl_verify = _cfg.get('security.ssl_verify', True)
+        except Exception:
+            self.ssl_verify = True
         # Initialize centralized data collector
         self.data_collector = create_http_collector(tenant_id)
         # Initialize pattern scanner and source map analyzer
@@ -93,12 +101,12 @@ class HTTPEnumWorker(QRunnable):
                     # Store resolved IP and original hostname for requests
                     self.resolved_ip = resolved_ip
                     self.original_hostname = hostname
-                    self.signals.output.emit(f"<p style='color: #87CEEB;'>Using DNS: {hostname} → {resolved_ip}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #87CEEB;'>Using DNS: {h(hostname)} → {h(resolved_ip)}</p><br>")
                 elif not resolved_ip:
-                    self.signals.output.emit(f"<p style='color: #FFAA00;'>DNS resolution failed for {hostname}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #FFAA00;'>DNS resolution failed for {h(hostname)}</p><br>")
                     return False
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>DNS resolution error: {str(e)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>DNS resolution error: {h(str(e))}</p><br>")
             return False
         return True
     
@@ -106,7 +114,12 @@ class HTTPEnumWorker(QRunnable):
         """Get or create HTTP session with proper configuration"""
         if not self.session:
             self.session = requests.Session()
-            self.session.verify = False
+            # Honour the global SSL verification setting instead of hardcoding False.
+            try:
+                from app.core.config import config as _cfg
+                self.session.verify = _cfg.get('security.ssl_verify', True)
+            except Exception:
+                self.session.verify = True
             self.session.timeout = 10
         return self.session
     
@@ -134,14 +147,14 @@ class HTTPEnumWorker(QRunnable):
                 if info and info['status'] != 'running':
                     if listener_manager.start_listener(self.listener_id):
                         bind_ip = info.get('bind_ip', '0.0.0.0')
-                        self.signals.output.emit(f"<p style='color: #00FF41;'>Auto-started listener {self.listener_id} on {bind_ip}:{info['port']}</p><br>")
+                        self.signals.output.emit(f"<p style='color: #00FF41;'>Auto-started listener {h(self.listener_id)} on {h(bind_ip)}:{h(info['port'])}</p><br>")
                     else:
-                        self.signals.output.emit(f"<p style='color: #FF6B6B;'>Failed to start listener {self.listener_id}</p><br>")
+                        self.signals.output.emit(f"<p style='color: #FF6B6B;'>Failed to start listener {h(self.listener_id)}</p><br>")
                 elif info and info['status'] == 'running':
                     bind_ip = info.get('bind_ip', '0.0.0.0')
-                    self.signals.output.emit(f"<p style='color: #87CEEB;'>Using active listener {self.listener_id} on {bind_ip}:{info['port']}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #87CEEB;'>Using active listener {h(self.listener_id)} on {h(bind_ip)}:{h(info['port'])}</p><br>")
                 elif not info:
-                    self.signals.output.emit(f"<p style='color: #FF6B6B;'>Listener {self.listener_id} not found</p><br>")
+                    self.signals.output.emit(f"<p style='color: #FF6B6B;'>Listener {h(self.listener_id)} not found</p><br>")
             
             # Handle target URL formatting with DNS server support
             if not self.target.startswith(('http://', 'https://')):
@@ -226,7 +239,7 @@ class HTTPEnumWorker(QRunnable):
             # Complete data collection with error
             if hasattr(self, 'data_collector'):
                 self.data_collector.complete_http_scan(error_message=str(e))
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>Error: {str(e)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>Error: {h(str(e))}</p><br>")
             self.signals.status.emit(f"Error: {str(e)}")
         finally:
             self.is_running = False
@@ -245,8 +258,9 @@ class HTTPEnumWorker(QRunnable):
             try:
                 from PyQt6.QtWidgets import QApplication
                 QApplication.processEvents()
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
             
             def progress_callback(step, total, message):
                 self.signals.progress_update.emit(step, total, message)
@@ -256,8 +270,9 @@ class HTTPEnumWorker(QRunnable):
                     QApplication.processEvents()
                     import time
                     time.sleep(0.1)  # Brief pause for visual update
-                except:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
             
             fingerprinter = HTTPFingerprinter(session=self._get_session(), progress_callback=progress_callback)
             fingerprinter.is_running = lambda: self.is_running  # Pass stop condition
@@ -280,10 +295,10 @@ class HTTPEnumWorker(QRunnable):
             # Display comprehensive results with proper formatting
             self.signals.progress_update.emit(3, total_steps, "Processing server information")
             if 'server' in fingerprint_results:
-                self.signals.output.emit(f"<p><b>Server:</b> {fingerprint_results['server']}</p><br>")
+                self.signals.output.emit(f"<p><b>Server:</b> {h(fingerprint_results['server'])}</p><br>")
             
             if 'status_code' in fingerprint_results:
-                self.signals.output.emit(f"<p><b>Status Code:</b> {fingerprint_results['status_code']}</p><br>")
+                self.signals.output.emit(f"<p><b>Status Code:</b> {h(fingerprint_results['status_code'])}</p><br>")
             
             if 'content_length' in fingerprint_results:
                 self.signals.output.emit(f"<p><b>Content Length:</b> {fingerprint_results['content_length']:,} bytes</p><br>")
@@ -298,7 +313,7 @@ class HTTPEnumWorker(QRunnable):
                 if 'security_headers' in tech and tech['security_headers']:
                     self.signals.output.emit("<p style='color: #87CEEB;'><b>Security Headers:</b></p><br>")
                     for header, value in tech['security_headers'].items():
-                        self.signals.output.emit(f"<p style='margin-left: 20px;'><b>{header}:</b> {value}</p><br>")
+                        self.signals.output.emit(f"<p style='margin-left: 20px;'><b>{h(header)}:</b> {h(value)}</p><br>")
                     self.signals.output.emit("<br>")
             
             # WAF Detection
@@ -306,7 +321,7 @@ class HTTPEnumWorker(QRunnable):
             if 'waf_detection' in fingerprint_results:
                 waf = fingerprint_results['waf_detection']
                 if waf.get('detected'):
-                    self.signals.output.emit(f"<p style='color: #FF6B6B;'><b>WAF Detected:</b> {waf.get('name', 'Unknown')}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #FF6B6B;'><b>WAF Detected:</b> {h(waf.get('name', 'Unknown'))}</p><br>")
                 else:
                     self.signals.output.emit("<p style='color: #00FF41;'><b>WAF:</b> Not detected</p><br>")
             
@@ -315,7 +330,7 @@ class HTTPEnumWorker(QRunnable):
                 tls = fingerprint_results['tls_fingerprint']
                 if 'certificate' in tls:
                     cert = tls['certificate']
-                    self.signals.output.emit(f"<p><b>TLS Certificate:</b> {cert.get('subject', 'Unknown')}</p>")
+                    self.signals.output.emit(f"<p><b>TLS Certificate:</b> {h(cert.get('subject', 'Unknown'))}</p>")
                     if 'san' in cert and cert['san']:
                         self.signals.output.emit(f"<p><b>SAN Domains:</b> {', '.join(cert['san'][:5])}</p>")
                     self.signals.output.emit("<br>")
@@ -325,14 +340,14 @@ class HTTPEnumWorker(QRunnable):
             if 'known_files' in fingerprint_results and fingerprint_results['known_files']:
                 self.signals.output.emit("<p style='color: #FFD700;'><b>Accessible Files:</b></p><br>")
                 for file_info in fingerprint_results['known_files'][:10]:
-                    self.signals.output.emit(f"<p style='margin-left: 20px;'><b>{file_info['path']}</b> ({file_info['content_type']})</p><br>")
+                    self.signals.output.emit(f"<p style='margin-left: 20px;'><b>{h(file_info['path'])}</b> ({h(file_info['content_type'])})</p><br>")
                 self.signals.output.emit("<br>")
             
             # Plugin Results
             if 'plugins' in fingerprint_results:
                 for plugin_name, plugin_result in fingerprint_results['plugins'].items():
                     if plugin_result and 'error' not in plugin_result:
-                        self.signals.output.emit(f"<p style='color: #87CEEB;'><b>{plugin_name}:</b> {plugin_result.get('summary', 'Detected')}</p><br>")
+                        self.signals.output.emit(f"<p style='color: #87CEEB;'><b>{h(plugin_name)}:</b> {h(plugin_result.get('summary', 'Detected'))}</p><br>")
                 self.signals.output.emit("<br>")
             
             # JavaScript Analysis
@@ -340,7 +355,7 @@ class HTTPEnumWorker(QRunnable):
             if 'javascript_analysis' in fingerprint_results and fingerprint_results['javascript_analysis']:
                 self.signals.output.emit("<p style='color: #FFD700;'><b>JavaScript Analysis:</b></p><br>")
                 for js_file in fingerprint_results['javascript_analysis'][:3]:
-                    self.signals.output.emit(f"<p style='margin-left: 20px;'><b>File:</b> {js_file['url']}</p><br>")
+                    self.signals.output.emit(f"<p style='margin-left: 20px;'><b>File:</b> {h(js_file['url'])}</p><br>")
                     self.signals.output.emit(f"<p style='margin-left: 20px;'><b>Size:</b> {js_file['size']:,} bytes</p><br>")
                     if js_file.get('api_endpoints'):
                         self.signals.output.emit(f"<p style='margin-left: 20px;'><b>API Endpoints:</b> {len(js_file['api_endpoints'])}</p><br>")
@@ -355,7 +370,7 @@ class HTTPEnumWorker(QRunnable):
                     account_info = fingerprinter.detect_execution_account(target_url)
                     fingerprint_results['execution_account'] = account_info
                 except Exception as e:
-                    self.signals.output.emit(f"<p style='color: #FFAA00;'>Account detection failed: {str(e)}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #FFAA00;'>Account detection failed: {h(str(e))}</p><br>")
                     fingerprint_results['execution_account'] = {'user': None, 'method': None}
             
             if 'execution_account' in fingerprint_results:
@@ -391,11 +406,11 @@ class HTTPEnumWorker(QRunnable):
                 if account.get('user'):
                     method = account.get('method', 'Unknown')
                     if 'SSTI' in method:
-                        self.signals.output.emit(f"<p style='color: #FF6B6B;'><b>🚨 RCE DETECTED via SSTI:</b> {account['user']}</p><br>")
+                        self.signals.output.emit(f"<p style='color: #FF6B6B;'><b>🚨 RCE DETECTED via SSTI:</b> {h(account['user'])}</p><br>")
                     elif 'LFI' in method:
-                        self.signals.output.emit(f"<p style='color: #FFD700;'><b>📁 LFI DETECTED:</b> {account['user']}</p><br>")
+                        self.signals.output.emit(f"<p style='color: #FFD700;'><b>📁 LFI DETECTED:</b> {h(account['user'])}</p><br>")
                     else:
-                        self.signals.output.emit(f"<p><b>Execution Account:</b> {account['user']} ({method})</p>")
+                        self.signals.output.emit(f"<p><b>Execution Account:</b> {h(account['user'])} ({h(method)})</p>")
                 
                 # Show sandbox detection if found (can be in addition to RCE)
                 if account.get('sandbox_detected'):
@@ -426,13 +441,13 @@ class HTTPEnumWorker(QRunnable):
                             runtime_info = fingerprinter.detect_runtime_user(target_url, fingerprint_results.get('initial_response'))
                             fingerprint_results['runtime_user'] = runtime_info
                         except Exception as e:
-                            self.signals.output.emit(f"<p style='color: #FFAA00;'>Runtime user detection failed: {str(e)}</p><br>")
+                            self.signals.output.emit(f"<p style='color: #FFAA00;'>Runtime user detection failed: {h(str(e))}</p><br>")
                             fingerprint_results['runtime_user'] = {'user': None}
                     
                     if 'runtime_user' in fingerprint_results:
                         runtime = fingerprint_results['runtime_user']
                         if runtime.get('user'):
-                            self.signals.output.emit(f"<p><b>Runtime User:</b> {runtime['user']}</p>")
+                            self.signals.output.emit(f"<p><b>Runtime User:</b> {h(runtime['user'])}</p>")
                         else:
                             self.signals.output.emit(f"<p><b>Runtime User:</b> Not detected</p>")
             
@@ -445,7 +460,7 @@ class HTTPEnumWorker(QRunnable):
             self.signals.output.emit("<br>")
             
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>Advanced fingerprinting failed: {str(e)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>Advanced fingerprinting failed: {h(str(e))}</p><br>")
     
     def _build_fingerprint_tree(self, fingerprint_results):
         """Build table-like structure for Fingerprinting graph view"""
@@ -591,8 +606,9 @@ class HTTPEnumWorker(QRunnable):
                             'type': 'js_detail'
                         })
             
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def _detect_wildcard_responses(self):
         """Detect wildcard responses to filter false positives"""
@@ -606,10 +622,11 @@ class HTTPEnumWorker(QRunnable):
             if response.status_code in [200, 301, 302]:
                 self.wildcard_response = response.status_code
                 self.wildcard_length = len(response.content)
-                self.signals.output.emit(f"<p style='color: #FFAA00;'>Wildcard response detected (Status: {response.status_code}, Length: {self.wildcard_length})</p><br>")
+                self.signals.output.emit(f"<p style='color: #FFAA00;'>Wildcard response detected (Status: {h(response.status_code)}, Length: {h(self.wildcard_length)})</p><br>")
             
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def _check_403_catchall(self):
         """Check for 403 catch-all responses before directory enumeration"""
@@ -640,7 +657,7 @@ class HTTPEnumWorker(QRunnable):
                 if identical_count >= 2:
                     self.catchall_403_detected = True
                     self.catchall_403_length = first_response['length']
-                    self.signals.output.emit(f"<p style='color: #FFAA00;'>⚠️ 403 catch-all detected (Length: {first_response['length']} bytes)</p>")
+                    self.signals.output.emit(f"<p style='color: #FFAA00;'>⚠️ 403 catch-all detected (Length: {h(first_response['length'])} bytes)</p>")
                     self.signals.output.emit("<p style='color: #FFAA00;'>Directory enumeration will filter generic 403 responses</p><br>")
                 else:
                     self.catchall_403_detected = False
@@ -698,8 +715,8 @@ class HTTPEnumWorker(QRunnable):
                     # Intelligent filtering based on wildcard detection
                     if self._is_valid_response(response):
                         found_dirs.append({'path': directory, 'status': response.status_code, 'size': len(response.content)})
-                        self.signals.output.emit(f"<p style='color: #00FF41;'>Found: /{directory}</p>")
-                        self.signals.output.emit(f"<p>&nbsp;&nbsp;Status: {response.status_code}</p>")
+                        self.signals.output.emit(f"<p style='color: #00FF41;'>Found: /{h(directory)}</p>")
+                        self.signals.output.emit(f"<p>&nbsp;&nbsp;Status: {h(response.status_code)}</p>")
                         self.signals.output.emit(f"<p>&nbsp;&nbsp;Size: {len(response.content):,} bytes</p><br>")
                         
                         self._update_crawl_tree([{'path': directory, 'status': response.status_code}])
@@ -712,15 +729,17 @@ class HTTPEnumWorker(QRunnable):
                                 if self._is_valid_response(ext_response):
                                     ext_item = {'path': f"{directory}{ext}", 'status': ext_response.status_code, 'size': len(ext_response.content)}
                                     found_dirs.append(ext_item)
-                                    self.signals.output.emit(f"<p style='color: #00FF41;'>Found: /{directory}{ext}</p>")
-                                    self.signals.output.emit(f"<p>&nbsp;&nbsp;Status: {ext_response.status_code}</p>")
+                                    self.signals.output.emit(f"<p style='color: #00FF41;'>Found: /{h(directory)}{h(ext)}</p>")
+                                    self.signals.output.emit(f"<p>&nbsp;&nbsp;Status: {h(ext_response.status_code)}</p>")
                                     self.signals.output.emit(f"<p>&nbsp;&nbsp;Size: {len(ext_response.content):,} bytes</p><br>")
                                     self._update_crawl_tree([ext_item])
-                            except:
+                            except Exception as _exc:
                                 pass
+                                logger.debug("Suppressed exception", exc_info=True)
                 
-                except:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
                 
                 self.signals.progress_update.emit(i + 1, len(found_dirs), f"Checking: {directory}")
                 
@@ -744,7 +763,7 @@ class HTTPEnumWorker(QRunnable):
                 self.signals.output.emit("<p style='color: #FFAA00;'>No accessible directories found</p><br>")
                 
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>Directory enumeration failed: {str(e)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>Directory enumeration failed: {h(str(e))}</p><br>")
     
     def _display_formatted_source(self, content):
         """Display formatted source code with syntax highlighting"""
@@ -766,14 +785,14 @@ class HTTPEnumWorker(QRunnable):
                 # Fallback to plain text with basic formatting
                 self.signals.output.emit("<br><p style='color: #87CEEB;'><b>Source Code:</b></p><br>")
                 formatted_content = content[:2000].replace('<', '&lt;').replace('>', '&gt;')
-                self.signals.output.emit(f"<pre style='background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; max-height: 300px; overflow-y: auto; margin: 10px 0;'>{formatted_content}</pre>")
+                self.signals.output.emit(f"<pre style='background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; max-height: 300px; overflow-y: auto; margin: 10px 0;'>{h(formatted_content)}</pre>")
             
             # Add separator line before analysis results
             self.signals.output.emit("<hr style='border: 1px solid #444; margin: 20px 0;'>")
             self.signals.output.emit("<p style='color: #FFD700;'><b>📊 Source Code Analysis Results:</b></p><br>")
                 
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>Could not format source code: {str(e)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>Could not format source code: {h(str(e))}</p><br>")
     
     def _analyze_source_content(self, content):
         """Analyze source content using modular pattern scanner"""
@@ -946,11 +965,13 @@ class HTTPEnumWorker(QRunnable):
                 findings.append(f'Developer comments ({len(dev_comments)} found)')
                 detailed_findings['Developer comments'] = dev_comments
                 
-        except ImportError:
+        except ImportError as _exc:
             # Fallback if BeautifulSoup not available
             pass
-        except Exception:
+            logger.debug("Suppressed exception", exc_info=True)
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return findings, detailed_findings
     
@@ -967,8 +988,9 @@ class HTTPEnumWorker(QRunnable):
             if src_matches:
                 script_content += "\n" + "\n".join(src_matches)
                 
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         return script_content
     
     def _analyze_forms(self, content):
@@ -1001,8 +1023,9 @@ class HTTPEnumWorker(QRunnable):
                     
                     forms.append(form_info)
                     
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return forms
     
@@ -1034,8 +1057,9 @@ class HTTPEnumWorker(QRunnable):
                 avg_length = sum(r['length'] for r in catchall_responses) / len(catchall_responses)
                 self.signals.output.emit(f"<p style='color: #FFAA00;'>Catchall detected (Avg length: {avg_length:.0f}), skipping file enumeration...</p><br>")
                 return source_files  # Return empty list immediately
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         for file in common_files:
             if not self.is_running:
@@ -1066,12 +1090,13 @@ class HTTPEnumWorker(QRunnable):
                             continue  # Likely empty or error response
                         
                         source_files.append(f'{file} accessible ({len(file_response.content)} bytes)')
-                        self.signals.output.emit(f"<p style='color: #00FF41;'>Found source file: {file}</p><br>")
+                        self.signals.output.emit(f"<p style='color: #00FF41;'>Found source file: {h(file)}</p><br>")
                     else:
-                        self.signals.output.emit(f"<p style='color: #666666;'>Filtered catchall: {file}</p><br>")
+                        self.signals.output.emit(f"<p style='color: #666666;'>Filtered catchall: {h(file)}</p><br>")
                         
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         return source_files
     
@@ -1092,16 +1117,16 @@ class HTTPEnumWorker(QRunnable):
             with open(source_file, 'w', encoding='utf-8') as f:
                 f.write(content)
             
-            self.signals.output.emit(f"<p style='color: #87CEEB;'>Source code exported to: {source_file}</p>")
+            self.signals.output.emit(f"<p style='color: #87CEEB;'>Source code exported to: {h(source_file)}</p>")
             
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>Could not export source code: {str(e)}</p>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>Could not export source code: {h(str(e))}</p>")
     
     def _source_code_analysis(self, results):
         try:
             self.signals.output.emit("<p style='color: #FFD700;'>Performing comprehensive source code analysis...</p><br>")
             
-            response = self._make_request('GET', self.target, timeout=10, verify=False)
+            response = self._make_request('GET', self.target, timeout=10, verify=self.ssl_verify)
             content = response.text
             
             # Store raw source code for export
@@ -1121,15 +1146,15 @@ class HTTPEnumWorker(QRunnable):
             # APPEND ANALYSIS RESULTS BELOW SOURCE CODE
             # Display enhanced risk assessment with proper formatting
             risk_color = {'High': '#FF6B6B', 'Medium': '#FFD700', 'Low': '#00FF41'}.get(risk_assessment['risk_level'], '#87CEEB')
-            self.signals.output.emit(f"<p style='color: {risk_color};'><b>🎯 Risk Assessment:</b> {risk_assessment['risk_level']} (Score: {risk_assessment['risk_score']})</p><br>")
+            self.signals.output.emit(f"<p style='color: {risk_color};'><b>🎯 Risk Assessment:</b> {h(risk_assessment['risk_level'])} (Score: {h(risk_assessment['risk_score'])})</p><br>")
             
             # Show top findings by score with proper formatting
             if 'top_findings' in risk_assessment and risk_assessment['top_findings']:
                 self.signals.output.emit("<p style='color: #FFD700;'><b>🏆 Top Findings by Risk:</b></p><br>")
                 for i, finding in enumerate(risk_assessment['top_findings'], 1):
                     category_color = {'sensitive': '#FF6B6B', 'security': '#FF8C00', 'technology': '#87CEEB', 'information': '#98FB98'}.get(finding['category'], '#FFFFFF')
-                    self.signals.output.emit(f"<p style='color: {category_color}; margin-left: 20px;'>{i}. {finding['name']} (Score: {finding['score']}, Count: {finding['count']})</p><br>")
-                    self.signals.output.emit(f"<p style='margin-left: 20px; color: #CCCCCC;'>{finding['context']}</p><br>")
+                    self.signals.output.emit(f"<p style='color: {h(category_color)}; margin-left: 20px;'>{h(i)}. {h(finding['name'])} (Score: {h(finding['score'])}, Count: {h(finding['count'])})</p><br>")
+                    self.signals.output.emit(f"<p style='margin-left: 20px; color: #CCCCCC;'>{h(finding['context'])}</p><br>")
                 self.signals.output.emit("<br>")
             
             if risk_assessment['high_risk_findings']:
@@ -1140,7 +1165,7 @@ class HTTPEnumWorker(QRunnable):
                 self.signals.output.emit("<p style='color: #FFD700;'><b>📋 Detailed Findings:</b></p><br>")
                 
                 for finding in all_findings:
-                    self.signals.output.emit(f"<p style='color: #00FF41;'>• {finding}</p>")
+                    self.signals.output.emit(f"<p style='color: #00FF41;'>• {h(finding)}</p>")
                     
                     # Show detailed information for each finding
                     details_found = False
@@ -1149,10 +1174,10 @@ class HTTPEnumWorker(QRunnable):
                             details_found = True
                             if isinstance(details, list):
                                 for detail in details[:3]:  # Show first 3 details
-                                    self.signals.output.emit(f"<p style='margin-left: 20px; color: #87CEEB;'>  - {str(detail)[:100]}{'...' if len(str(detail)) > 100 else ''}</p>")
+                                    self.signals.output.emit(f"<p style='margin-left: 20px; color: #87CEEB;'>  - {h(str(detail)[:100])}{'...' if len(str(detail)) > 100 else ''}</p>")
                             elif isinstance(details, dict):
                                 for k, v in list(details.items())[:3]:
-                                    self.signals.output.emit(f"<p style='margin-left: 20px; color: #87CEEB;'>  - {k}: {str(v)[:100]}{'...' if len(str(v)) > 100 else ''}</p>")
+                                    self.signals.output.emit(f"<p style='margin-left: 20px; color: #87CEEB;'>  - {h(k)}: {h(str(v)[:100])}{'...' if len(str(v)) > 100 else ''}</p>")
                             break
                     
                     if not details_found:
@@ -1162,10 +1187,10 @@ class HTTPEnumWorker(QRunnable):
                                 details = detailed_findings[key]
                                 if isinstance(details, list):
                                     for detail in details[:3]:
-                                        self.signals.output.emit(f"<p style='margin-left: 20px; color: #87CEEB;'>  - {str(detail)[:100]}{'...' if len(str(detail)) > 100 else ''}</p>")
+                                        self.signals.output.emit(f"<p style='margin-left: 20px; color: #87CEEB;'>  - {h(str(detail)[:100])}{'...' if len(str(detail)) > 100 else ''}</p>")
                                 elif isinstance(details, dict):
                                     for k, v in list(details.items())[:3]:
-                                        self.signals.output.emit(f"<p style='margin-left: 20px; color: #87CEEB;'>  - {k}: {str(v)[:100]}{'...' if len(str(v)) > 100 else ''}</p>")
+                                        self.signals.output.emit(f"<p style='margin-left: 20px; color: #87CEEB;'>  - {h(k)}: {h(str(v)[:100])}{'...' if len(str(v)) > 100 else ''}</p>")
                                 break
                     
                     self.signals.output.emit("<br>")
@@ -1212,7 +1237,7 @@ class HTTPEnumWorker(QRunnable):
                     if count > 0:
                         color = category_colors[category]
                         icon = category_icons[category]
-                        self.signals.output.emit(f"<p style='color: {color}; margin-left: 20px;'>{icon} {category.title()}: {count} findings</p>")
+                        self.signals.output.emit(f"<p style='color: {color}; margin-left: 20px;'>{h(icon)} {h(category.title())}: {count} findings</p>")
                 
                 # Add proper line break after categories
                 self.signals.output.emit("<br>")
@@ -1221,7 +1246,7 @@ class HTTPEnumWorker(QRunnable):
                 results['risk_assessment'] = risk_assessment
                 
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>Source code analysis failed: {str(e)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>Source code analysis failed: {h(str(e))}</p><br>")
     
     def _update_crawl_tree_from_crawler(self, url, page_data):
         """Update crawl tree from crawler data"""
@@ -1269,8 +1294,9 @@ class HTTPEnumWorker(QRunnable):
             
             self.found_items.append(found_item)
             
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def _web_crawler(self, results):
         try:
@@ -1283,7 +1309,7 @@ class HTTPEnumWorker(QRunnable):
                 self._standard_crawler(results)
                 
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>Web crawling failed: {str(e)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>Web crawling failed: {h(str(e))}</p><br>")
     
     def _authenticated_crawler(self, results):
         """Run authenticated crawler"""
@@ -1302,7 +1328,7 @@ class HTTPEnumWorker(QRunnable):
             self.authenticated_crawler.token_extracted.connect(self._on_token_extracted)
             
             # Attempt authentication
-            self.signals.output.emit(f"<p style='color: #87CEEB;'>Attempting authentication using {self.auth_method}...</p><br>")
+            self.signals.output.emit(f"<p style='color: #87CEEB;'>Attempting authentication using {h(self.auth_method)}...</p><br>")
             
             auth_success = self.authenticated_crawler.authenticate(
                 target_url=self.target,
@@ -1335,7 +1361,7 @@ class HTTPEnumWorker(QRunnable):
                 self._standard_crawler(results)
                 
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>Authenticated crawling failed: {str(e)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>Authenticated crawling failed: {h(str(e))}</p><br>")
             self._standard_crawler(results)
     
     def _standard_crawler(self, results):
@@ -1360,9 +1386,9 @@ class HTTPEnumWorker(QRunnable):
             if not self.is_running:
                 break
             if 'error' not in page_data:
-                self.signals.output.emit(f"<p style='color: #00FF41;'>Crawled: {url}</p>")
-                self.signals.output.emit(f"<p>&nbsp;&nbsp;Title: {page_data.get('title', 'No title')}</p>")
-                self.signals.output.emit(f"<p>&nbsp;&nbsp;Status: {page_data.get('status_code', 'Unknown')}</p>")
+                self.signals.output.emit(f"<p style='color: #00FF41;'>Crawled: {h(url)}</p>")
+                self.signals.output.emit(f"<p>&nbsp;&nbsp;Title: {h(page_data.get('title', 'No title'))}</p>")
+                self.signals.output.emit(f"<p>&nbsp;&nbsp;Status: {h(page_data.get('status_code', 'Unknown'))}</p>")
                 
                 if page_data.get('forms'):
                     self.signals.output.emit(f"<p>&nbsp;&nbsp;Forms: {len(page_data['forms'])}</p>")
@@ -1381,7 +1407,7 @@ class HTTPEnumWorker(QRunnable):
                     'found_items': self.found_items
                 })
             else:
-                self.signals.output.emit(f"<p style='color: #FFAA00;'>Error crawling {url}: {page_data['error']}</p><br>")
+                self.signals.output.emit(f"<p style='color: #FFAA00;'>Error crawling {h(url)}: {h(page_data['error'])}</p><br>")
         
         if crawled_data:
             results['crawl_results'] = crawled_data
@@ -1391,23 +1417,23 @@ class HTTPEnumWorker(QRunnable):
     
     def _on_auth_success(self, method: str, credentials: dict):
         """Handle successful authentication"""
-        self.signals.output.emit(f"<p style='color: #00FF41;'>✅ Authentication successful via {method}</p><br>")
+        self.signals.output.emit(f"<p style='color: #00FF41;'>✅ Authentication successful via {h(method)}</p><br>")
         
         # Display extracted tokens/cookies
         if 'tokens' in credentials:
             for token_name, token_value in credentials['tokens'].items():
                 masked_token = token_value[:10] + "..." if len(token_value) > 10 else token_value
-                self.signals.output.emit(f"<p style='color: #87CEEB;'>🔑 Token extracted: {token_name} = {masked_token}</p><br>")
+                self.signals.output.emit(f"<p style='color: #87CEEB;'>🔑 Token extracted: {h(token_name)} = {h(masked_token)}</p><br>")
     
     def _on_auth_failed(self, method: str, error: str):
         """Handle authentication failure"""
-        self.signals.output.emit(f"<p style='color: #FF6B6B;'>❌ Authentication failed via {method}: {error}</p><br>")
+        self.signals.output.emit(f"<p style='color: #FF6B6B;'>❌ Authentication failed via {h(method)}: {h(error)}</p><br>")
     
     def _on_page_crawled(self, url: str, page_data: dict):
         """Handle page crawled event"""
-        self.signals.output.emit(f"<p style='color: #00FF41;'>🔍 Crawled (Auth): {url}</p>")
-        self.signals.output.emit(f"<p>&nbsp;&nbsp;Title: {page_data.get('title', 'No title')}</p>")
-        self.signals.output.emit(f"<p>&nbsp;&nbsp;Status: {page_data.get('status_code', 'Unknown')}</p>")
+        self.signals.output.emit(f"<p style='color: #00FF41;'>🔍 Crawled (Auth): {h(url)}</p>")
+        self.signals.output.emit(f"<p>&nbsp;&nbsp;Title: {h(page_data.get('title', 'No title'))}</p>")
+        self.signals.output.emit(f"<p>&nbsp;&nbsp;Status: {h(page_data.get('status_code', 'Unknown'))}</p>")
         
         # Display authentication artifacts if found
         auth_artifacts = page_data.get('auth_artifacts', {})
@@ -1416,7 +1442,7 @@ class HTTPEnumWorker(QRunnable):
         
         if auth_artifacts.get('storage_data'):
             storage_count = sum(len(data) for data in auth_artifacts['storage_data'].values())
-            self.signals.output.emit(f"<p>&nbsp;&nbsp;💾 Storage data: {storage_count} items</p>")
+            self.signals.output.emit(f"<p>&nbsp;&nbsp;💾 Storage data: {h(storage_count)} items</p>")
         
         self.signals.output.emit("<br>")
         
@@ -1432,7 +1458,7 @@ class HTTPEnumWorker(QRunnable):
     def _on_token_extracted(self, token_type: str, token_value: str, source: str):
         """Handle token extraction event"""
         masked_token = token_value[:15] + "..." if len(token_value) > 15 else token_value
-        self.signals.output.emit(f"<p style='color: #FFD700;'>🎯 {token_type} token found in {source}: {masked_token}</p><br>")
+        self.signals.output.emit(f"<p style='color: #FFD700;'>🎯 {h(token_type)} token found in {h(source)}: {h(masked_token)}</p><br>")
     
     def _enterprise_scripts(self, results):
         try:
@@ -1471,7 +1497,7 @@ class HTTPEnumWorker(QRunnable):
             self.signals.output.emit(f"<p style='color: #00FF41;'>Enterprise assessment completed successfully</p><br>")
             
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>Enterprise assessment failed: {str(e)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>Enterprise assessment failed: {h(str(e))}</p><br>")
     
     def _build_enterprise_tree(self, results):
         """Build tree structure for enterprise results"""
@@ -1539,8 +1565,9 @@ class HTTPEnumWorker(QRunnable):
                         'type': 'vulnerability'
                     })
                     
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def _build_directory_tree(self, results):
         """Build tree structure for directory enumeration results"""
@@ -1559,8 +1586,9 @@ class HTTPEnumWorker(QRunnable):
                         'value': f"Status: {directory['status']}",
                         'type': 'directory'
                     })
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def _build_source_tree(self, results):
         """Build tree structure for source code analysis results"""
@@ -1689,8 +1717,9 @@ class HTTPEnumWorker(QRunnable):
                                 'type': 'detail'
                             })
 
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def _build_crawler_tree(self, results):
         """Build tree structure for crawler results"""
@@ -1707,8 +1736,9 @@ class HTTPEnumWorker(QRunnable):
                             'extra': str(page_data.get('status_code', 200)),
                             'type': 'page'
                         }
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def _nikto_scan(self, results):
         """Perform Huggin vulnerability scan"""
@@ -1724,9 +1754,9 @@ class HTTPEnumWorker(QRunnable):
             # Display server info
             server_info = scan_results.get('server_info', {})
             if server_info.get('server'):
-                self.signals.output.emit(f"<p><b>Server:</b> {server_info['server']}</p><br>")
+                self.signals.output.emit(f"<p><b>Server:</b> {h(server_info['server'])}</p><br>")
             if server_info.get('powered_by'):
-                self.signals.output.emit(f"<p><b>Powered By:</b> {server_info['powered_by']}</p><br>")
+                self.signals.output.emit(f"<p><b>Powered By:</b> {h(server_info['powered_by'])}</p><br>")
             
             # Display vulnerabilities
             vulnerabilities = scan_results.get('vulnerabilities', [])
@@ -1735,10 +1765,10 @@ class HTTPEnumWorker(QRunnable):
                 
                 for vuln in vulnerabilities:
                     severity_color = {'High': '#FF6B6B', 'Medium': '#FFD700', 'Low': '#87CEEB'}.get(vuln.get('severity', 'Low'), '#87CEEB')
-                    self.signals.output.emit(f"<p style='color: {severity_color};'><b>[{vuln.get('severity', 'Unknown')}]</b> {vuln.get('type', 'Unknown')}</p>")
-                    self.signals.output.emit(f"<p style='margin-left: 20px;'>{vuln.get('description', 'No description')}</p>")
+                    self.signals.output.emit(f"<p style='color: {severity_color};'><b>[{h(vuln.get('severity', 'Unknown'))}]</b> {h(vuln.get('type', 'Unknown'))}</p>")
+                    self.signals.output.emit(f"<p style='margin-left: 20px;'>{h(vuln.get('description', 'No description'))}</p>")
                     if vuln.get('path'):
-                        self.signals.output.emit(f"<p style='margin-left: 20px;'><b>Path:</b> {vuln['path']}</p>")
+                        self.signals.output.emit(f"<p style='margin-left: 20px;'><b>Path:</b> {h(vuln['path'])}</p>")
                     self.signals.output.emit("<br>")
             
             # Display info items
@@ -1746,7 +1776,7 @@ class HTTPEnumWorker(QRunnable):
             if info_items:
                 self.signals.output.emit("<p style='color: #87CEEB;'><b>Information:</b></p><br>")
                 for info in info_items:
-                    self.signals.output.emit(f"<p style='margin-left: 20px;'>{info}</p><br>")
+                    self.signals.output.emit(f"<p style='margin-left: 20px;'>{h(info)}</p><br>")
             
             results['huggin_scan'] = scan_results
             
@@ -1758,7 +1788,7 @@ class HTTPEnumWorker(QRunnable):
                 self.signals.output.emit("<p style='color: #00FF41;'>Huggin scan completed: No vulnerabilities found</p><br>")
                 
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>Huggin scan failed: {str(e)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>Huggin scan failed: {h(str(e))}</p><br>")
     
     def _build_nikto_tree(self, results):
         """Build tree structure for Huggin scan results"""
@@ -1788,8 +1818,9 @@ class HTTPEnumWorker(QRunnable):
                         'value': vuln.get('severity', 'Unknown'),
                         'type': 'vulnerability'
                     })
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def _http_title(self):
         try:
@@ -1804,15 +1835,16 @@ class HTTPEnumWorker(QRunnable):
                 title_match = re.search(r'<title[^>]*>([^<]+)</title>', response.text, re.IGNORECASE)
                 if title_match:
                     title_text = title_match.group(1).strip()
-                    self.signals.output.emit(f"<p style='color: #00FF41;'><b>Page Title:</b> {title_text}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #00FF41;'><b>Page Title:</b> {h(title_text)}</p><br>")
                     return {'http_title': title_text}
                 return {}
             if title:
                 title_text = title.get_text().strip()
-                self.signals.output.emit(f"<p style='color: #00FF41;'><b>Page Title:</b> {title_text}</p><br>")
+                self.signals.output.emit(f"<p style='color: #00FF41;'><b>Page Title:</b> {h(title_text)}</p><br>")
                 return {'http_title': title_text}
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         return {}
     
     def _http_headers(self):
@@ -1821,7 +1853,7 @@ class HTTPEnumWorker(QRunnable):
             headers = dict(response.headers)
             self.signals.output.emit("<p style='color: #87CEEB;'><b>HTTP Headers:</b></p><br>")
             for header, value in headers.items():
-                self.signals.output.emit(f"<p style='margin-left: 20px;'><b>{header}:</b> {value}</p><br>")
+                self.signals.output.emit(f"<p style='margin-left: 20px;'><b>{h(header)}:</b> {h(value)}</p><br>")
             self.signals.output.emit("<br>")
             return {'http_headers': headers}
         except:
@@ -1837,8 +1869,9 @@ class HTTPEnumWorker(QRunnable):
                     response = session.request(method, self.target, timeout=5)
                     if response.status_code not in [405, 501]:
                         allowed_methods.append(method)
-                except:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
             
             if allowed_methods:
                 self.signals.output.emit(f"<p style='color: #00FF41;'><b>Allowed HTTP Methods:</b> {', '.join(allowed_methods)}</p><br>")
@@ -1858,11 +1891,12 @@ class HTTPEnumWorker(QRunnable):
                 lines = robots_content.split('\n')[:10]  # Show first 10 lines
                 for line in lines:
                     if line.strip():
-                        self.signals.output.emit(f"<p style='margin-left: 20px;'>{line}</p><br>")
+                        self.signals.output.emit(f"<p style='margin-left: 20px;'>{h(line)}</p><br>")
                 self.signals.output.emit("<br>")
                 return {'http_robots': robots_content}
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         return {}
     
     def _http_comments(self):
@@ -1874,17 +1908,18 @@ class HTTPEnumWorker(QRunnable):
                 self.signals.output.emit(f"<p style='color: #FFD700;'><b>HTML Comments found ({len(comments)}):</b></p><br>")
                 for i, comment in enumerate(comments[:5]):
                     clean_comment = comment.strip()[:100]
-                    self.signals.output.emit(f"<p style='margin-left: 20px;'>{i+1}. {clean_comment}...</p><br>")
+                    self.signals.output.emit(f"<p style='margin-left: 20px;'>{h(i+1)}. {h(clean_comment)}...</p><br>")
                 self.signals.output.emit("<br>")
                 return {'http_comments': comments}
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         return {}
     
     def _http_auth_finder(self):
         auth_indicators = []
         try:
-            response = self._make_request('GET', self.target, timeout=10, verify=False)
+            response = self._make_request('GET', self.target, timeout=10, verify=self.ssl_verify)
             
             # Check for HTTP auth
             if response.status_code == 401:
@@ -1908,7 +1943,7 @@ class HTTPEnumWorker(QRunnable):
             if auth_indicators:
                 self.signals.output.emit("<p style='color: #FFD700;'><b>Authentication Methods:</b></p><br>")
                 for indicator in auth_indicators:
-                    self.signals.output.emit(f"<p style='margin-left: 20px;'>{indicator}</p><br>")
+                    self.signals.output.emit(f"<p style='margin-left: 20px;'>{h(indicator)}</p><br>")
                 self.signals.output.emit("<br>")
             
             return {'http_auth': auth_indicators}
@@ -1919,7 +1954,7 @@ class HTTPEnumWorker(QRunnable):
         try:
             # Test with malicious payload
             test_payload = "<script>alert('xss')</script>"
-            response = self._make_request('GET', f"{self.target}?test={test_payload}", timeout=5, verify=False)
+            response = self._make_request('GET', f"{self.target}?test={test_payload}", timeout=5, verify=self.ssl_verify)
             
             waf_indicators = []
             
@@ -1943,7 +1978,7 @@ class HTTPEnumWorker(QRunnable):
             if waf_indicators:
                 self.signals.output.emit("<p style='color: #FF6B6B;'><b>WAF Detection:</b></p><br>")
                 for indicator in waf_indicators:
-                    self.signals.output.emit(f"<p style='margin-left: 20px;'>{indicator}</p><br>")
+                    self.signals.output.emit(f"<p style='margin-left: 20px;'>{h(indicator)}</p><br>")
                 self.signals.output.emit("<br>")
             
             return {'http_waf': waf_indicators}
@@ -1952,7 +1987,7 @@ class HTTPEnumWorker(QRunnable):
     
     def _http_php_version(self):
         try:
-            response = self._make_request('GET', self.target, timeout=10, verify=False)
+            response = self._make_request('GET', self.target, timeout=10, verify=self.ssl_verify)
             headers = response.headers
             
             php_version = None
@@ -1962,10 +1997,11 @@ class HTTPEnumWorker(QRunnable):
                     php_version = powered_by
             
             if php_version:
-                self.signals.output.emit(f"<p style='color: #00FF41;'><b>PHP Version:</b> {php_version}</p><br>")
+                self.signals.output.emit(f"<p style='color: #00FF41;'><b>PHP Version:</b> {h(php_version)}</p><br>")
                 return {'php_version': php_version}
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         return {}
     
     def _display_enterprise_fingerprint(self, fingerprint):
@@ -1973,13 +2009,13 @@ class HTTPEnumWorker(QRunnable):
         self.signals.output.emit("<p style='color: #87CEEB;'><b>🔍 Advanced Fingerprinting Results:</b></p><br>")
         
         if fingerprint.get('server'):
-            self.signals.output.emit(f"<p><b>Server:</b> {fingerprint['server']}</p><br>")
+            self.signals.output.emit(f"<p><b>Server:</b> {h(fingerprint['server'])}</p><br>")
         
         if fingerprint.get('title'):
-            self.signals.output.emit(f"<p><b>Title:</b> {fingerprint['title']}</p><br>")
+            self.signals.output.emit(f"<p><b>Title:</b> {h(fingerprint['title'])}</p><br>")
         
         if fingerprint.get('favicon_hash'):
-            self.signals.output.emit(f"<p><b>Favicon Hash:</b> {fingerprint['favicon_hash']}</p><br>")
+            self.signals.output.emit(f"<p><b>Favicon Hash:</b> {h(fingerprint['favicon_hash'])}</p><br>")
     
     def _display_security_audit(self, security_audit):
         """Display security audit results"""
@@ -2003,7 +2039,7 @@ class HTTPEnumWorker(QRunnable):
             for cred in security_audit['default_creds']:
                 username = cred['username']
                 password = cred['password']
-                self.signals.output.emit(f"<p style='margin-left: 20px;'>{cred['vendor']}: {username}/{password}</p><br>")
+                self.signals.output.emit(f"<p style='margin-left: 20px;'>{h(cred['vendor'])}: {h(username)}/{h(password)}</p><br>")
             self.signals.output.emit("<br>")
     
     def _display_surface_index(self, surface_index):
@@ -2013,7 +2049,7 @@ class HTTPEnumWorker(QRunnable):
         if 'routes' in surface_index and surface_index['routes']:
             self.signals.output.emit(f"<p><b>Accessible Routes:</b> {len(surface_index['routes'])}</p><br>")
             for route in surface_index['routes'][:10]:  # Show first 10
-                self.signals.output.emit(f"<p style='margin-left: 20px;'>{route['path']} (Status: {route['status']})</p><br>")
+                self.signals.output.emit(f"<p style='margin-left: 20px;'>{h(route['path'])} (Status: {h(route['status'])})</p><br>")
         
         if 'login_portals' in surface_index and surface_index['login_portals']:
             self.signals.output.emit(f"<p style='color: #FFD700;'><b>Login Portals Found:</b> {len(surface_index['login_portals'])}</p><br>")
@@ -2023,10 +2059,10 @@ class HTTPEnumWorker(QRunnable):
         if device_matches:
             self.signals.output.emit("<p style='color: #00FF41;'><b>🔍 Device Matches:</b></p><br>")
             for match in device_matches[:3]:  # Show top 3 matches
-                self.signals.output.emit(f"<p><b>{match['vendor'].upper()}:</b> {match['confidence']}% confidence</p><br>")
+                self.signals.output.emit(f"<p><b>{h(match['vendor'].upper())}:</b> {h(match['confidence'])}% confidence</p><br>")
                 if match.get('details'):
                     for key, value in match['details'].items():
-                        self.signals.output.emit(f"<p style='margin-left: 20px;'>{key}: {value}</p><br>")
+                        self.signals.output.emit(f"<p style='margin-left: 20px;'>{h(key)}: {h(value)}</p><br>")
                 self.signals.output.emit("<br>")
     
     def _display_vulnerabilities(self, vulnerabilities):
@@ -2035,8 +2071,8 @@ class HTTPEnumWorker(QRunnable):
             self.signals.output.emit("<p style='color: #FF6B6B;'><b>⚠️ Vulnerabilities Found:</b></p><br>")
             for vuln in vulnerabilities:
                 severity_color = {'High': '#FF6B6B', 'Medium': '#FFD700', 'Low': '#87CEEB'}.get(vuln.get('severity', 'Low'), '#87CEEB')
-                self.signals.output.emit(f"<p style='color: {severity_color};'><b>{vuln['type']}</b> ({vuln.get('severity', 'Unknown')})</p>")
-                self.signals.output.emit(f"<p style='margin-left: 20px;'>{vuln.get('description', 'No description')}</p><br>")
+                self.signals.output.emit(f"<p style='color: {severity_color};'><b>{h(vuln['type'])}</b> ({h(vuln.get('severity', 'Unknown'))})</p>")
+                self.signals.output.emit(f"<p style='margin-left: 20px;'>{h(vuln.get('description', 'No description'))}</p><br>")
             self.signals.output.emit("<br>")
     
 
@@ -2169,12 +2205,13 @@ class HTTPEnumWorker(QRunnable):
                             'type': 'vulnerability'
                         })
         
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def _http_csrf(self):
         try:
-            response = requests.get(self.target, timeout=10, verify=False)
+            response = requests.get(self.target, timeout=10, verify=self.ssl_verify)
             try:
                 from bs4 import BeautifulSoup
                 soup = BeautifulSoup(response.text, 'html.parser')
@@ -2213,12 +2250,13 @@ class HTTPEnumWorker(QRunnable):
                 for ext in backup_extensions:
                     backup_url = f"{self.target.rstrip('/')}/{file}{ext}"
                     try:
-                        response = requests.get(backup_url, timeout=3, verify=False)
+                        response = requests.get(backup_url, timeout=3, verify=self.ssl_verify)
                         if response.status_code == 200:
                             found_backups.append(f"{file}{ext}")
-                            self.signals.output.emit(f"<p style='color: #FF6B6B;'><b>Backup file found:</b> {file}{ext}</p>")
-                    except:
+                            self.signals.output.emit(f"<p style='color: #FF6B6B;'><b>Backup file found:</b> {h(file)}{h(ext)}</p>")
+                    except Exception as _exc:
                         pass
+                        logger.debug("Suppressed exception", exc_info=True)
             
             if found_backups:
                 self.signals.output.emit("<br>")
@@ -2230,14 +2268,15 @@ class HTTPEnumWorker(QRunnable):
     def _http_favicon(self):
         try:
             favicon_url = f"{self.target.rstrip('/')}/favicon.ico"
-            response = requests.get(favicon_url, timeout=5, verify=False)
+            response = requests.get(favicon_url, timeout=5, verify=self.ssl_verify)
             if response.status_code == 200:
                 import hashlib
                 favicon_hash = hashlib.md5(response.content).hexdigest()
-                self.signals.output.emit(f"<p style='color: #87CEEB;'><b>Favicon hash:</b> {favicon_hash}</p><br>")
+                self.signals.output.emit(f"<p style='color: #87CEEB;'><b>Favicon hash:</b> {h(favicon_hash)}</p><br>")
                 return {'favicon_hash': favicon_hash}
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         return {}
     
 
@@ -2374,8 +2413,9 @@ class HTTPEnumWorker(QRunnable):
                     'size': item.get('size', 0)
                 })
             
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def _build_directory_tree(self, results):
         """Build tree structure for Directory Enum results"""
@@ -2426,7 +2466,7 @@ class HTTPEnumWorker(QRunnable):
                 self.signals.output.emit(f"<p style='color: #FF6B6B;'>Listener not available for callbacks</p><br>")
                 return
             
-            self.signals.output.emit(f"<p style='color: #87CEEB;'>Using callback URL: {callback_url}</p><br>")
+            self.signals.output.emit(f"<p style='color: #87CEEB;'>Using callback URL: {h(callback_url)}</p><br>")
             logging.debug("[OOB] Using callback URL: %s", callback_url)
             
             # Enhanced OOB payloads including sandbox escape techniques
@@ -2476,7 +2516,7 @@ class HTTPEnumWorker(QRunnable):
             
             # Send payloads using detected parameter or common parameters
             if ssti_param:
-                self.signals.output.emit(f"<p style='color: #87CEEB;'>Using detected parameter: {ssti_param}</p><br>")
+                self.signals.output.emit(f"<p style='color: #87CEEB;'>Using detected parameter: {h(ssti_param)}</p><br>")
                 param_list = [ssti_param]
             else:
                 param_list = ['code', 'input', 'data', 'cmd', 'exec', 'system', 'eval', 'run', 'expression', 'formula']
@@ -2507,13 +2547,14 @@ class HTTPEnumWorker(QRunnable):
                                     endpoint_url = f"{self.target.rstrip('/')}{endpoint}"
                                     self._make_request('POST', endpoint_url, data={param: payload}, timeout=3)
                                     self._make_request('GET', f"{endpoint_url}?{param}={encoded}", timeout=3)
-                                except:
+                                except Exception as _exc:
                                     pass
+                                    logger.debug("Suppressed exception", exc_info=True)
                             
                         except Exception as e:
                             logging.error("[OOB] Error with param %s: %s", param, e)
                     
-                    self.signals.output.emit(f"<p style='color: #87CEEB;'>OOB payload {i+1} sent to {self.target} ({len(param_list)} methods)</p><br>")
+                    self.signals.output.emit(f"<p style='color: #87CEEB;'>OOB payload {h(i+1)} sent to {h(self.target)} ({len(param_list)} methods)</p><br>")
                     
                     # Add delay between payloads
                     import time
@@ -2521,12 +2562,12 @@ class HTTPEnumWorker(QRunnable):
                     
                 except Exception as e:
                     logging.error("[OOB] Error sending payload %d: %s", i+1, e)
-                    self.signals.output.emit(f"<p style='color: #FFAA00;'>Payload {i+1} failed: {str(e)}</p><br>")
+                    self.signals.output.emit(f"<p style='color: #FFAA00;'>Payload {h(i+1)} failed: {h(str(e))}</p><br>")
             
-            self.signals.output.emit(f"<p style='color: #00FF41;'>Enhanced OOB testing complete - payloads sent to {self.target} - check listener for callbacks</p><br>")
+            self.signals.output.emit(f"<p style='color: #00FF41;'>Enhanced OOB testing complete - payloads sent to {h(self.target)} - check listener for callbacks</p><br>")
                 
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>OOB payload error: {e}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>OOB payload error: {h(e)}</p><br>")
     
     def _send_generic_oob_test(self, listener_info):
         """Send generic OOB test payloads to target with callback URLs"""
@@ -2565,13 +2606,13 @@ class HTTPEnumWorker(QRunnable):
                         except Exception as e:
                             logging.debug("[OOB] Request to target failed: %s", e)
                 
-                self.signals.output.emit(f"<p style='color: #87CEEB;'>Generic OOB test sent to target {self.target} with callback {callback_url}</p><br>")
+                self.signals.output.emit(f"<p style='color: #87CEEB;'>Generic OOB test sent to target {h(self.target)} with callback {h(callback_url)}</p><br>")
                 
             except Exception as e:
-                self.signals.output.emit(f"<p style='color: #FFAA00;'>Generic OOB test failed: {str(e)}</p><br>")
+                self.signals.output.emit(f"<p style='color: #FFAA00;'>Generic OOB test failed: {h(str(e))}</p><br>")
                 
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>Generic OOB error: {str(e)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>Generic OOB error: {h(str(e))}</p><br>")
     
     def _integrate_with_assets(self, results):
         """Integrate HTTP scan results with asset management"""
@@ -2630,7 +2671,7 @@ class HTTPEnumWorker(QRunnable):
             scan_asset_integrator.process_http_results(asset_results)
             
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>Asset integration failed: {str(e)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>Asset integration failed: {h(str(e))}</p><br>")
     
     def _scan_for_rce_indicators(self, content, url):
         """Scan for RCE via Python Jail Bypass indicators"""

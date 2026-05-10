@@ -7,6 +7,7 @@ import socket
 import threading
 import time
 from typing import Dict, List, Optional
+from app.core.logger import logger
 
 class NTLMRelayClient:
     """NTLM Relay client for privilege escalation"""
@@ -95,8 +96,9 @@ class NTLMRelayClient:
             try:
                 client_socket.close()
                 target_socket.close()
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
     
     def _relay_ntlm_auth(self, client_socket, target_socket, client_ip):
         """Relay NTLM authentication between client and target"""

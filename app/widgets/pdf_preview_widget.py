@@ -2,6 +2,7 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QTextEdit
 from PyQt6.QtCore import Qt
 import os
+from app.core.logger import logger
 
 class PDFPreviewWidget(QWidget):
     """Simple widget to show PDF export status"""
@@ -76,5 +77,5 @@ class PDFPreviewWidget(QWidget):
                 os.startfile(exports_dir)
             elif os.name == 'posix':  # macOS and Linux
                 os.system(f'open "{exports_dir}"' if os.uname().sysname == 'Darwin' else f'xdg-open "{exports_dir}"')
-        except:
+        except Exception:
             self.update_status("Could not open exports folder")

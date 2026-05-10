@@ -5,9 +5,28 @@ from pathlib import Path
 from app.core.logger import logger
 
 class ConfigManager:
-    """Manages application configuration and user preferences"""
-    
+    """Manages application configuration and user preferences.
+
+    Implemented as a thread-safe singleton — only one instance is ever
+    created regardless of how many times the class is instantiated.
+    Use ``from app.core.config import config`` to access the shared instance.
+    """
+
+    _instance = None
+    _lock = __import__('threading').Lock()
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            with cls._lock:
+                if cls._instance is None:
+                    cls._instance = super().__new__(cls)
+        return cls._instance
+
     def __init__(self, config_file="config.json"):
+        # Guard against re-initialisation on subsequent __new__ returns
+        if hasattr(self, '_initialised'):
+            return
+        self._initialised = True
         self.config_file = Path(config_file)
         self.config = self._load_default_config()
         self.load_config()
@@ -42,8 +61,13 @@ class ConfigManager:
                 "max_wordlist_size_mb": 100,
                 "validate_inputs": True,
                 "sanitize_outputs": True,
-                "ssl_verify": False,
-                "suppress_ssl_warnings": True
+                # SSL certificate verification is ON by default.
+                # Targets with self-signed certs will fail until the user
+                # explicitly disables this in Settings → Security.
+                "ssl_verify": True,
+                # Only suppress urllib3 InsecureRequestWarning when the user
+                # has deliberately turned off ssl_verify.
+                "suppress_ssl_warnings": False
             }
         }
     

@@ -8,6 +8,7 @@ import base64
 from typing import Dict, List, Tuple, Optional, Any
 from dataclasses import dataclass
 from enum import IntEnum
+from app.core.logger import logger
 
 class TDSPacketType(IntEnum):
     """TDS packet types"""
@@ -707,6 +708,7 @@ class MSSQLClient:
         if self.socket:
             try:
                 self.socket.close()
-            except:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
             self.socket = None

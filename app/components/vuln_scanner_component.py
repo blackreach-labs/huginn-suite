@@ -6,6 +6,7 @@ from PyQt6.QtCore import pyqtSignal, QThreadPool, Qt, QThread
 from PyQt6.QtGui import QColor
 
 from app.core.base_worker import CommandWorker
+from app.core.html_utils import h
 
 class VulnScanWorker(QThread):
     output = pyqtSignal(str)
@@ -29,7 +30,7 @@ class VulnScanWorker(QThread):
                 sys.path.insert(0, tools_path)
             from tools.advanced_nse_scanner import AdvancedNSEScanner
             
-            self.output.emit(f"<p style='color: #00BFFF;'>[VULN SCAN] Starting vulnerability scan on {self.target}</p><br>")
+            self.output.emit(f"<p style='color: #00BFFF;'>[VULN SCAN] Starting vulnerability scan on {h(self.target)}</p><br>")
             self.progress.emit(10)
             self.output.emit("<br>")
             
@@ -37,7 +38,7 @@ class VulnScanWorker(QThread):
             
             # Custom output formatting instead of capturing print statements
             self.output.emit(f"<p style='color: #64C8FF; font-weight: bold;'>🔍 VULNERABILITY SCAN INITIATED</p><br>")
-            self.output.emit(f"<p style='color: #87CEEB;'>Target: {self.target}</p><br>")
+            self.output.emit(f"<p style='color: #87CEEB;'>Target: {h(self.target)}</p><br>")
             self.output.emit(f"<p style='color: #87CEEB;'>Scan Types: {', '.join(self.scan_types)}</p><br>")
             self.output.emit("<hr style='border: 1px solid #64C8FF;'><br>")
             
@@ -53,7 +54,7 @@ class VulnScanWorker(QThread):
             self.results.emit(scanner.results)
             
         except Exception as e:
-            self.output.emit(f"<p style='color: #FF6B6B;'>❌ SCAN FAILED: {e}</p><br>")
+            self.output.emit(f"<p style='color: #FF6B6B;'>❌ SCAN FAILED: {h(e)}</p><br>")
         finally:
             self.finished.emit()
     
@@ -84,9 +85,9 @@ class VulnScanWorker(QThread):
         }
         
         for category, tests in test_categories.items():
-            self.output.emit(f"<p style='color: #FFD700; font-weight: bold; margin-top: 15px;'>{category}</p><br>")
+            self.output.emit(f"<p style='color: #FFD700; font-weight: bold; margin-top: 15px;'>{h(category)}</p><br>")
             for test_name, test_func in tests:
-                self.output.emit(f"<p style='color: #87CEEB;'>  → Testing {test_name}...</p><br>")
+                self.output.emit(f"<p style='color: #87CEEB;'>  → Testing {h(test_name)}...</p><br>")
                 try:
                     result = test_func()
                     if result:
@@ -96,11 +97,11 @@ class VulnScanWorker(QThread):
                         else:
                             scanner.results.append(result)
                             severity_color = {'CRITICAL': '#FF0000', 'HIGH': '#FF6B6B', 'MEDIUM': '#FFA500'}.get(result.get('severity'), '#90EE90')
-                            self.output.emit(f"<p style='color: {severity_color};'>    🚨 {result.get('name', 'Vulnerability')} detected!</p><br>")
+                            self.output.emit(f"<p style='color: {severity_color};'>    🚨 {h(result.get('name', 'Vulnerability'))} detected!</p><br>")
                     else:
                         self.output.emit(f"<p style='color: #90EE90;'>    ✅ Not vulnerable</p><br>")
                 except Exception as e:
-                    self.output.emit(f"<p style='color: #FFA500;'>    ⚠️ Test failed: {str(e)[:50]}...</p><br>")
+                    self.output.emit(f"<p style='color: #FFA500;'>    ⚠️ Test failed: {h(str(e)[:50])}...</p><br>")
                 self.progress.emit(min(95, self.progress.value() + 5))
     
     def run_targeted_scan(self, scanner):
@@ -124,7 +125,7 @@ class VulnScanWorker(QThread):
     
     def run_single_test(self, test_name, test_func, scanner):
         """Run a single test with formatted output"""
-        self.output.emit(f"<p style='color: #87CEEB;'>  → {test_name}...</p><br>")
+        self.output.emit(f"<p style='color: #87CEEB;'>  → {h(test_name)}...</p><br>")
         try:
             result = test_func()
             if result:
@@ -134,11 +135,11 @@ class VulnScanWorker(QThread):
                 else:
                     scanner.results.append(result)
                     severity_color = {'CRITICAL': '#FF0000', 'HIGH': '#FF6B6B', 'MEDIUM': '#FFA500'}.get(result.get('severity'), '#90EE90')
-                    self.output.emit(f"<p style='color: {severity_color};'>    🚨 {result.get('name', 'Vulnerability')} - {result.get('severity', 'Unknown')}</p><br>")
+                    self.output.emit(f"<p style='color: {severity_color};'>    🚨 {h(result.get('name', 'Vulnerability'))} - {h(result.get('severity', 'Unknown'))}</p><br>")
             else:
                 self.output.emit(f"<p style='color: #90EE90;'>    ✅ Secure</p><br>")
         except Exception as e:
-            self.output.emit(f"<p style='color: #FFA500;'>    ⚠️ Test error: {str(e)[:50]}...</p><br>")
+            self.output.emit(f"<p style='color: #FFA500;'>    ⚠️ Test error: {h(str(e)[:50])}...</p><br>")
     
     def generate_scan_summary(self, results):
         """Generate formatted scan summary"""
@@ -403,7 +404,7 @@ class VulnScannerComponent(QWidget):
         
         output = "<h3 style='color: #64C8FF;'>Available Vulnerability Tests:</h3><br>"
         for test in tests:
-            output += f"<p style='color: #DCDCDC;'>• {test}</p><br>"
+            output += f"<p style='color: #DCDCDC;'>• {h(test)}</p><br>"
         
         self.terminal_output.setHtml(output)
         self.summary_text.setHtml(f"<p>Total available tests: {len(tests)}</p>")
@@ -479,8 +480,8 @@ class VulnScannerComponent(QWidget):
             self.worker.deleteLater()
 
     def show_error(self, message):
-        self.terminal_output.setHtml(f"<p style='color: #FF4500;'>[ERROR] {message}</p>")
-        self.summary_text.setHtml(f"<p style='color: #FF4500;'>❌ {message}</p>")
+        self.terminal_output.setHtml(f"<p style='color: #FF4500;'>[ERROR] {h(message)}</p>")
+        self.summary_text.setHtml(f"<p style='color: #FF4500;'>❌ {h(message)}</p>")
 
     def append_terminal_output(self, text):
         self.terminal_output.insertHtml(text)

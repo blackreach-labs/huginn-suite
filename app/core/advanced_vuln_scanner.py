@@ -9,6 +9,7 @@ from typing import Dict, List, Callable, Optional
 from urllib.parse import urljoin, urlparse
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
+from app.core.logger import logger
 
 class AdvancedVulnerabilityScanner:
     """Professional-grade vulnerability scanner with exploit correlation and evasion"""
@@ -18,6 +19,11 @@ class AdvancedVulnerabilityScanner:
         self.max_threads = 20
         self.evasion_enabled = False
         self.exploit_correlation = True
+        try:
+            from app.core.config import config as _cfg
+            self.ssl_verify = _cfg.get('security.ssl_verify', True)
+        except Exception:
+            self.ssl_verify = True
         
         # Critical CVE patterns for active exploitation
         self.critical_cves = {
@@ -101,7 +107,7 @@ class AdvancedVulnerabilityScanner:
                     'X-Forwarded-For': payload,
                     'Authorization': f'Basic {payload}'
                 }
-                response = requests.get(target, headers=headers, timeout=self.timeout, verify=False)
+                response = requests.get(target, headers=headers, timeout=self.timeout, verify=self.ssl_verify)
                 
                 if any(pattern in response.text.lower() for pattern in ['jndi', 'ldap', 'naming']):
                     vulnerabilities.append({
@@ -122,7 +128,7 @@ class AdvancedVulnerabilityScanner:
         try:
             spring_payload = 'class.module.classLoader.resources.context.parent.pipeline.first.pattern=%{c2}i'
             data = {spring_payload: 'test'}
-            response = requests.post(target, data=data, timeout=self.timeout, verify=False)
+            response = requests.post(target, data=data, timeout=self.timeout, verify=self.ssl_verify)
             
             if response.status_code == 400 and 'class.module.classLoader' in response.text:
                 vulnerabilities.append({
@@ -134,8 +140,9 @@ class AdvancedVulnerabilityScanner:
                     'exploit_available': True,
                     'url': target
                 })
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return vulnerabilities
     
@@ -158,7 +165,7 @@ class AdvancedVulnerabilityScanner:
         for path, technique in bypass_techniques:
             try:
                 url = target.rstrip('/') + path
-                response = requests.get(url, timeout=self.timeout, verify=False)
+                response = requests.get(url, timeout=self.timeout, verify=self.ssl_verify)
                 
                 if response.status_code == 200 and any(keyword in response.text.lower() 
                                                      for keyword in ['dashboard', 'admin', 'control panel']):
@@ -187,13 +194,13 @@ class AdvancedVulnerabilityScanner:
         for path in upload_paths:
             try:
                 url = target.rstrip('/') + path
-                response = requests.get(url, timeout=self.timeout, verify=False)
+                response = requests.get(url, timeout=self.timeout, verify=self.ssl_verify)
                 
                 if response.status_code == 200 and any(keyword in response.text.lower() 
                                                      for keyword in ['upload', 'file', 'browse']):
                     # Test malicious file upload
                     files = {'file': ('test.php', '<?php echo "vulnerable"; ?>', 'application/x-php')}
-                    upload_response = requests.post(url, files=files, timeout=self.timeout, verify=False)
+                    upload_response = requests.post(url, files=files, timeout=self.timeout, verify=self.ssl_verify)
                     
                     if upload_response.status_code in [200, 201] and 'success' in upload_response.text.lower():
                         vulnerabilities.append({
@@ -228,7 +235,7 @@ class AdvancedVulnerabilityScanner:
         for payload, expected in ssti_payloads:
             try:
                 url = f"{target}?q={payload}"
-                response = requests.get(url, timeout=self.timeout, verify=False)
+                response = requests.get(url, timeout=self.timeout, verify=self.ssl_verify)
                 
                 if expected in response.text:
                     vulnerabilities.append({
@@ -260,7 +267,7 @@ class AdvancedVulnerabilityScanner:
         try:
             headers = {'Content-Type': 'application/xml'}
             response = requests.post(target, data=xxe_payload, headers=headers, 
-                                   timeout=self.timeout, verify=False)
+                                   timeout=self.timeout, verify=self.ssl_verify)
             
             if 'root:' in response.text or 'daemon:' in response.text:
                 vulnerabilities.append({
@@ -272,8 +279,9 @@ class AdvancedVulnerabilityScanner:
                     'exploit_available': True,
                     'url': target
                 })
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return vulnerabilities
     
@@ -289,7 +297,7 @@ class AdvancedVulnerabilityScanner:
         for payload in ldap_payloads:
             try:
                 url = f"{target}?user={payload}"
-                response = requests.get(url, timeout=self.timeout, verify=False)
+                response = requests.get(url, timeout=self.timeout, verify=self.ssl_verify)
                 
                 if any(keyword in response.text.lower() for keyword in ['ldap', 'directory', 'invalid syntax']):
                     vulnerabilities.append({
@@ -318,7 +326,7 @@ class AdvancedVulnerabilityScanner:
         for payload in cmd_payloads:
             try:
                 url = f"{target}?cmd=ping{payload}"
-                response = requests.get(url, timeout=self.timeout, verify=False)
+                response = requests.get(url, timeout=self.timeout, verify=self.ssl_verify)
                 
                 if any(keyword in response.text for keyword in ['uid=', 'gid=', 'groups=']):
                     vulnerabilities.append({
@@ -349,7 +357,7 @@ class AdvancedVulnerabilityScanner:
         try:
             headers = {'Content-Type': 'application/x-java-serialized-object'}
             response = requests.post(target, data=java_payload, headers=headers, 
-                                   timeout=self.timeout, verify=False)
+                                   timeout=self.timeout, verify=self.ssl_verify)
             
             if response.status_code == 500 and 'java.io.StreamCorruptedException' in response.text:
                 vulnerabilities.append({
@@ -361,8 +369,9 @@ class AdvancedVulnerabilityScanner:
                     'exploit_available': True,
                     'url': target
                 })
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         
         return vulnerabilities
     
@@ -387,7 +396,7 @@ class AdvancedVulnerabilityScanner:
         for path in priv_esc_paths:
             try:
                 url = target.rstrip('/') + path
-                response = requests.get(url, timeout=self.timeout, verify=False)
+                response = requests.get(url, timeout=self.timeout, verify=self.ssl_verify)
                 
                 if response.status_code == 200 and any(keyword in response.text.lower() 
                                                      for keyword in ['password', 'secret', 'key']):

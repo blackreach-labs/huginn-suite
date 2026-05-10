@@ -7,6 +7,7 @@ from PyQt6.QtWidgets import (QWidget, QPushButton, QLabel, QLineEdit, QTextEdit,
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QFont
 import json
+from app.core.logger import logger
 
 try:
     from app.core.unified_request_handler import UnifiedRequestHandler
@@ -317,8 +318,9 @@ class CurlWidget(QWidget):
             if text:
                 formatted = json.dumps(json.loads(text), indent=2)
                 self.body_text.setPlainText(formatted)
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def url_encode_body(self):
         import urllib.parse

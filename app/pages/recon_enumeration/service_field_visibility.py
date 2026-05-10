@@ -1,5 +1,6 @@
 # app/pages/recon_enumeration/service_field_visibility.py
 import os
+from app.core.logger import logger
 
 class ServiceFieldVisibilityMixin:
     """Mixin for service field visibility management"""
@@ -132,8 +133,9 @@ class ServiceFieldVisibilityMixin:
                             widget.setVisible(False)
                             control_panel.layout().removeWidget(widget)
                             widget.setParent(None)
-                    except RuntimeError:
+                    except RuntimeError as _exc:
                         pass
+                        logger.debug("Suppressed exception", exc_info=True)
     
     def toggle_smb_auth_fields(self, tool_key, auth_type):
         """Toggle SMB authentication fields based on method selection"""
@@ -148,18 +150,21 @@ class ServiceFieldVisibilityMixin:
         if 'smb_username' in controls and controls['smb_username'] is not None:
             try:
                 controls['smb_username'].setVisible(show_creds)
-            except RuntimeError:
+            except RuntimeError as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         if 'smb_password' in controls and controls['smb_password'] is not None:
             try:
                 controls['smb_password'].setVisible(show_creds)
-            except RuntimeError:
+            except RuntimeError as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         if 'smb_domain' in controls and controls['smb_domain'] is not None:
             try:
                 controls['smb_domain'].setVisible(show_creds)
-            except RuntimeError:
+            except RuntimeError as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         # Hide/show rows if available
         if hasattr(control_panel, 'row_widgets'):
@@ -180,8 +185,9 @@ class ServiceFieldVisibilityMixin:
                         else:
                             control_panel.row_widgets[row_label].setMaximumHeight(30)
                             control_panel.row_widgets[row_label].setMinimumHeight(30)
-                    except RuntimeError:
+                    except RuntimeError as _exc:
                         pass
+                        logger.debug("Suppressed exception", exc_info=True)
     
     def on_http_scan_type_changed(self, tool_key, scan_type):
         """Handle HTTP scan type change to show/hide relevant fields"""
@@ -240,13 +246,15 @@ class ServiceFieldVisibilityMixin:
         if 'http_wordlist' in controls and controls['http_wordlist'] is not None:
             try:
                 controls['http_wordlist'].setVisible(show_wordlist)
-            except RuntimeError:
+            except RuntimeError as _exc:
                 pass  # Widget has been deleted
+                logger.debug("Suppressed exception", exc_info=True)
         if 'http_preset' in controls and controls['http_preset'] is not None:
             try:
                 controls['http_preset'].setVisible(show_preset)
-            except RuntimeError:
+            except RuntimeError as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         # Toggle listener options based on scan type
         self.toggle_http_listener_options(tool_key, scan_type)
@@ -265,8 +273,9 @@ class ServiceFieldVisibilityMixin:
             if ext_control in controls and controls[ext_control] is not None:
                 try:
                     controls[ext_control].setVisible(show_extensions)
-                except RuntimeError:
+                except RuntimeError as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
         
         # Authentication method field
         if 'http_auth_method' in controls and controls['http_auth_method'] is not None:
@@ -275,8 +284,9 @@ class ServiceFieldVisibilityMixin:
                 # Reset to None when hiding auth fields
                 if not show_auth:
                     controls['http_auth_method'].setCurrentText("None")
-            except RuntimeError:
+            except RuntimeError as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         # Username and password fields are controlled by auth method, not scan type
         # They should remain hidden unless Basic Auth is specifically selected
@@ -313,8 +323,9 @@ class ServiceFieldVisibilityMixin:
                             row_widget.setVisible(False)
                             row_widget.setMaximumHeight(0)
                             row_widget.setMinimumHeight(0)
-                    except RuntimeError:
+                    except RuntimeError as _exc:
                         pass  # Widget has been deleted
+                        logger.debug("Suppressed exception", exc_info=True)
         
         # Store current scan type first
         setattr(self, f"{tool_key}_current_scan_type", scan_type)
@@ -359,8 +370,9 @@ class ServiceFieldVisibilityMixin:
                     else:
                         listener_row.setMaximumHeight(0)
                         listener_row.setMinimumHeight(0)
-                except RuntimeError:
+                except RuntimeError as _exc:
                     pass  # Widget has been deleted
+                    logger.debug("Suppressed exception", exc_info=True)
     
     def toggle_http_listener_options(self, tool_key, scan_type):
         """Toggle HTTP listener options based on scan type"""
@@ -381,8 +393,9 @@ class ServiceFieldVisibilityMixin:
                 else:
                     # Refresh listeners when showing the option
                     self.populate_existing_listeners(tool_key, controls)
-            except RuntimeError:
+            except RuntimeError as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
     
     def show_add_listener_dialog(self, tool_key):
         """Show dialog to add new listener"""
@@ -533,9 +546,10 @@ class ServiceFieldVisibilityMixin:
             # Fallback if listener_manager not available
             listener_combo.addItem("No listeners available")
             listener_combo.setEnabled(False)
-        except RuntimeError:
+        except RuntimeError as _exc:
             # Widget was deleted during operation
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def on_http_oob_checkbox_changed(self, tool_key, state):
         """Handle OOB checkbox state change"""
@@ -547,14 +561,16 @@ class ServiceFieldVisibilityMixin:
         try:
             if listener_combo:
                 listener_combo.setVisible(enabled)
-        except RuntimeError:
+        except RuntimeError as _exc:
             pass  # Widget has been deleted
+            logger.debug("Suppressed exception", exc_info=True)
         
         try:
             if listener_input:
                 listener_input.setVisible(enabled)
-        except RuntimeError:
+        except RuntimeError as _exc:
             pass  # Widget has been deleted
+            logger.debug("Suppressed exception", exc_info=True)
     
     def switch_http_scan_view(self, tool_key, scan_type):
         """Switch HTTP results view to the appropriate scan type"""
@@ -616,8 +632,9 @@ class ServiceFieldVisibilityMixin:
                             row_widget.setVisible(False)
                             row_widget.setMaximumHeight(0)
                             row_widget.setMinimumHeight(0)
-                    except RuntimeError:
+                    except RuntimeError as _exc:
                         pass
+                        logger.debug("Suppressed exception", exc_info=True)
         
 
     
@@ -696,13 +713,15 @@ class ServiceFieldVisibilityMixin:
         if 'http_username' in controls and controls['http_username'] is not None:
             try:
                 controls['http_username'].setVisible(show_basic)
-            except RuntimeError:
+            except RuntimeError as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         if 'http_password' in controls and controls['http_password'] is not None:
             try:
                 controls['http_password'].setVisible(show_basic)
-            except RuntimeError:
+            except RuntimeError as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         # Hide/show rows if available
         if hasattr(control_panel, 'row_widgets'):
@@ -724,8 +743,9 @@ class ServiceFieldVisibilityMixin:
                             row_widget.setVisible(False)
                             row_widget.setMaximumHeight(0)
                             row_widget.setMinimumHeight(0)
-                    except RuntimeError:
+                    except RuntimeError as _exc:
                         pass
+                        logger.debug("Suppressed exception", exc_info=True)
     
     def toggle_db_fields(self, tool_key, db_type):
         """Toggle database fields based on database type selection"""
@@ -740,8 +760,9 @@ class ServiceFieldVisibilityMixin:
         if 'oracle_sid' in controls and controls['oracle_sid'] is not None:
             try:
                 controls['oracle_sid'].setVisible(show_oracle_sid)
-            except RuntimeError:
+            except RuntimeError as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         # Update default port based on database type
         if 'db_port' in controls and controls['db_port'] is not None:
@@ -755,8 +776,9 @@ class ServiceFieldVisibilityMixin:
                 }
                 default_port = port_defaults.get(db_type.upper(), '1433')
                 controls['db_port'].setText(default_port)
-            except RuntimeError:
+            except RuntimeError as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         # Update authentication options based on database type
         if 'db_auth_combo' in controls and controls['db_auth_combo'] is not None:
@@ -785,16 +807,18 @@ class ServiceFieldVisibilityMixin:
                 else:
                     auth_combo.setCurrentText("None")
                     
-            except RuntimeError:
+            except RuntimeError as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         # Hide/show rows if available
         if hasattr(control_panel, 'row_widgets'):
             if 'Oracle SID:' in control_panel.row_widgets and control_panel.row_widgets['Oracle SID:'] is not None:
                 try:
                     control_panel.row_widgets['Oracle SID:'].setVisible(show_oracle_sid)
-                except RuntimeError:
+                except RuntimeError as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
     
     def toggle_db_auth_fields(self, tool_key, auth_type):
         """Toggle database authentication fields based on method selection"""
@@ -812,28 +836,33 @@ class ServiceFieldVisibilityMixin:
         if 'db_domain' in controls and controls['db_domain'] is not None:
             try:
                 controls['db_domain'].setVisible(show_domain)
-            except RuntimeError:
+            except RuntimeError as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         if 'db_username' in controls and controls['db_username'] is not None:
             try:
                 controls['db_username'].setVisible(show_creds)
-            except RuntimeError:
+            except RuntimeError as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         if 'db_password' in controls and controls['db_password'] is not None:
             try:
                 controls['db_password'].setVisible(show_creds)
-            except RuntimeError:
+            except RuntimeError as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         if 'password_label' in controls and controls['password_label'] is not None:
             try:
                 controls['password_label'].setVisible(show_creds)
-            except RuntimeError:
+            except RuntimeError as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         if 'db_cred_manager_btn' in controls and controls['db_cred_manager_btn'] is not None:
             try:
                 controls['db_cred_manager_btn'].setVisible(show_creds)
-            except RuntimeError:
+            except RuntimeError as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         # Hide/show rows if available
         if hasattr(control_panel, 'row_widgets'):
@@ -855,8 +884,9 @@ class ServiceFieldVisibilityMixin:
                             row_widget.setVisible(False)
                             row_widget.setMaximumHeight(0)
                             row_widget.setMinimumHeight(0)
-                    except RuntimeError:
+                    except RuntimeError as _exc:
                         pass
+                        logger.debug("Suppressed exception", exc_info=True)
     
     def toggle_av_fields(self, tool_key, detection_type):
         """Toggle AV/Firewall detection specific fields"""
@@ -870,16 +900,18 @@ class ServiceFieldVisibilityMixin:
         if 'av_payload_type' in controls and controls['av_payload_type'] is not None:
             try:
                 controls['av_payload_type'].setVisible(show_payload)
-            except RuntimeError:
+            except RuntimeError as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         # Hide/show rows if available
         if hasattr(control_panel, 'row_widgets'):
             if 'Payload:' in control_panel.row_widgets and control_panel.row_widgets['Payload:'] is not None:
                 try:
                     control_panel.row_widgets['Payload:'].setVisible(show_payload)
-                except RuntimeError:
+                except RuntimeError as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
     
     def toggle_snmp_fields(self, tool_key, version):
         """Toggle SNMP fields based on version selection"""
@@ -896,8 +928,9 @@ class ServiceFieldVisibilityMixin:
             if field in controls and controls[field] is not None:
                 try:
                     controls[field].setVisible(show_v3_auth)
-                except RuntimeError:
+                except RuntimeError as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
         
         # Hide/show rows if available
         if hasattr(control_panel, 'row_widgets'):
@@ -906,8 +939,9 @@ class ServiceFieldVisibilityMixin:
                 if row_label in control_panel.row_widgets and control_panel.row_widgets[row_label] is not None:
                     try:
                         control_panel.row_widgets[row_label].setVisible(show_v3_auth)
-                    except RuntimeError:
+                    except RuntimeError as _exc:
                         pass
+                        logger.debug("Suppressed exception", exc_info=True)
     
     def toggle_ssh_auth_fields(self, tool_key, auth_type):
         """Toggle SSH authentication fields based on method selection"""
@@ -927,23 +961,27 @@ class ServiceFieldVisibilityMixin:
         if 'ssh_username' in controls and controls['ssh_username'] is not None:
             try:
                 controls['ssh_username'].setVisible(show_username)
-            except RuntimeError:
+            except RuntimeError as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         if 'ssh_password' in controls and controls['ssh_password'] is not None:
             try:
                 controls['ssh_password'].setVisible(show_password)
-            except RuntimeError:
+            except RuntimeError as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         if 'ssh_key_path' in controls and controls['ssh_key_path'] is not None:
             try:
                 controls['ssh_key_path'].setVisible(show_key_path)
-            except RuntimeError:
+            except RuntimeError as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         if 'ssh_wordlist' in controls and controls['ssh_wordlist'] is not None:
             try:
                 controls['ssh_wordlist'].setVisible(show_wordlist)
-            except RuntimeError:
+            except RuntimeError as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         # Hide/show rows if available
         if hasattr(control_panel, 'row_widgets'):
@@ -966,8 +1004,9 @@ class ServiceFieldVisibilityMixin:
                             row_widget.setVisible(False)
                             row_widget.setMaximumHeight(0)
                             row_widget.setMinimumHeight(0)
-                    except RuntimeError:
+                    except RuntimeError as _exc:
                         pass
+                        logger.debug("Suppressed exception", exc_info=True)
     
     def on_ssh_scan_type_changed(self, tool_key, scan_type):
         """Handle SSH scan type change to switch terminal views and hide auth fields"""

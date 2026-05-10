@@ -187,14 +187,14 @@ class LocalDNSServer(QObject):
                 ip_bytes = socket.inet_aton(value)
                 answer.extend(struct.pack('!HHIH', qtype, 1, 300, 4))
                 answer.extend(ip_bytes)
-            except:
+            except Exception:
                 return b''
         elif qtype == 28:  # AAAA record
             try:
                 ip_bytes = socket.inet_pton(socket.AF_INET6, value)
                 answer.extend(struct.pack('!HHIH', qtype, 1, 300, 16))
                 answer.extend(ip_bytes)
-            except:
+            except Exception:
                 return b''
         elif qtype == 5:  # CNAME record
             cname_bytes = self._encode_domain(value)
@@ -241,7 +241,7 @@ class LocalDNSServer(QObject):
             response.extend(original_query[12:offset])
             
             return bytes(response)
-        except:
+        except Exception:
             return b''
     
     def add_record(self, domain: str, record_type: str, value: str) -> bool:

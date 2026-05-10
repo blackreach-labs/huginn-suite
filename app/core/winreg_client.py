@@ -4,6 +4,7 @@ Implements remote registry access via RPC
 """
 import struct
 from typing import Optional, Dict, List
+from app.core.logger import logger
 
 class WinRegClient:
     def __init__(self, rpc_transport):
@@ -244,7 +245,7 @@ class WinRegClient:
                 return [s for s in strings if s]
             else:  # REG_BINARY or unknown
                 return data.hex()
-        except:
+        except Exception:
             return data.hex()
         
         return None

@@ -2,6 +2,8 @@
 import socket
 import os
 from PyQt6.QtCore import QObject, pyqtSignal, QRunnable
+from app.core.html_utils import h
+from app.core.logger import logger
 
 class SMTPWorkerSignals(QObject):
     output = pyqtSignal(str)
@@ -21,7 +23,7 @@ class SMTPWorker(QRunnable):
     
     def run(self):
         try:
-            self.signals.output.emit(f"<p style='color: #87CEEB;'>Starting SMTP enumeration on {self.target}:{self.port}...</p><br>")
+            self.signals.output.emit(f"<p style='color: #87CEEB;'>Starting SMTP enumeration on {h(self.target)}:{h(self.port)}...</p><br>")
             
             results = {}
             
@@ -34,7 +36,7 @@ class SMTPWorker(QRunnable):
             self.signals.output.emit(f"<p style='color: #00FF41;'>SMTP enumeration completed.</p><br>")
             
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FF6B6B;'>Error: {str(e)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FF6B6B;'>Error: {h(str(e))}</p><br>")
         finally:
             self.signals.finished.emit()
     
@@ -48,19 +50,19 @@ class SMTPWorker(QRunnable):
             sock.connect((self.target, self.port))
             
             banner = sock.recv(1024).decode('utf-8', errors='ignore')
-            self.signals.output.emit(f"<p style='color: #00FF41;'>SMTP Banner: {banner.strip()}</p><br>")
+            self.signals.output.emit(f"<p style='color: #00FF41;'>SMTP Banner: {h(banner.strip())}</p><br>")
             results['banner'] = banner.strip()
             
             # Send HELO
             sock.send(f"HELO {self.helo_name}\r\n".encode())
             response = sock.recv(1024).decode('utf-8', errors='ignore')
-            self.signals.output.emit(f"<p>HELO Response: {response.strip()}</p><br>")
+            self.signals.output.emit(f"<p>HELO Response: {h(response.strip())}</p><br>")
             
             sock.close()
             return True
             
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>SMTP connection failed: {str(e)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>SMTP connection failed: {h(str(e))}</p><br>")
             return False
     
     def _enumerate_users(self, results):
@@ -95,12 +97,13 @@ class SMTPWorker(QRunnable):
                     
                     if "250" in response or "252" in response:
                         valid_users.append(username)
-                        self.signals.output.emit(f"<p style='color: #00FF41;'>Valid user: {username}</p><br>")
+                        self.signals.output.emit(f"<p style='color: #00FF41;'>Valid user: {h(username)}</p><br>")
                     
                     sock.close()
                     
-                except:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
             
             if valid_users:
                 results['valid_users'] = valid_users
@@ -109,4 +112,4 @@ class SMTPWorker(QRunnable):
                 self.signals.output.emit("<p style='color: #FFAA00;'>No valid users found or VRFY disabled</p><br>")
                 
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>User enumeration failed: {str(e)}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>User enumeration failed: {h(str(e))}</p><br>")

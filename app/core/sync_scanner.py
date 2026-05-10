@@ -2,6 +2,7 @@
 import dns.resolver
 from concurrent.futures import ThreadPoolExecutor
 import threading
+from app.core.logger import logger
 
 def enumerate_hostnames_sync(target, wordlist_path, record_types):
     """Synchronous DNS enumeration for multi-target scanning"""
@@ -50,7 +51,7 @@ def enumerate_hostnames_sync(target, wordlist_path, record_types):
                 try:
                     answers = resolver.resolve(hostname, record_type)
                     subdomain_results[record_type] = [str(answer) for answer in answers]
-                except:
+                except Exception:
                     continue
             
             return hostname, subdomain_results
@@ -64,7 +65,7 @@ def enumerate_hostnames_sync(target, wordlist_path, record_types):
                     hostname, subdomain_results = future.result(timeout=5)
                     if subdomain_results:
                         results[hostname] = subdomain_results
-                except:
+                except Exception:
                     continue
     
     except Exception as e:

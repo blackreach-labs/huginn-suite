@@ -4,6 +4,7 @@ import requests
 import hashlib
 from shared.configuration.hash_config import API_PROVIDERS, API_TIMEOUT
 from shared.configuration.global_settings import global_settings
+import logging
 
 class HashAPIClient:
     def __init__(self):
@@ -105,7 +106,8 @@ class HashAPIClient:
                 if result.startswith("CODE ERREUR") or "ERROR" in result.upper():
                     return None
                 return result
-        except Exception:
+        except Exception as _exc:
             pass
+            logging.debug("Suppressed exception", exc_info=True)
         
         return None

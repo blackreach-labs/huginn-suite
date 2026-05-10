@@ -6,6 +6,7 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QTabWidget,
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
 from shared.configuration.global_settings import global_settings
+from app.core.logger import logger
 
 class GlobalSettingsPage(QWidget):
     def __init__(self):
@@ -481,6 +482,7 @@ class GlobalSettingsPage(QWidget):
             # Update the engine's API keys
             subdomain_engine.api_keys = api_keys
             
-        except ImportError:
+        except ImportError as _exc:
             # Subdomain engine not available
             pass
+            logger.debug("Suppressed exception", exc_info=True)

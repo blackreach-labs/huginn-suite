@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from datetime import datetime
 import hashlib
 import binascii
+from app.core.logger import logger
 
 @dataclass
 class SPNInfo:
@@ -220,8 +221,9 @@ class KerberosTools:
                     decoded_data = base64.b64decode(ticket_data)
                     if decoded_data.startswith(b'\x76'):
                         tickets = self._parse_kirbi(decoded_data)
-                except:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
             
         except Exception as e:
             print(f"Ticket parsing error: {e}")
@@ -335,8 +337,9 @@ class KerberosTools:
                 last_logon = int(entry.lastLogon.value)
                 if last_logon > 0:
                     risk += 2
-            except (ValueError, TypeError):
+            except (ValueError, TypeError) as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         # Check if account is enabled
         uac = entry.userAccountControl.value

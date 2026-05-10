@@ -2,6 +2,7 @@
 import asyncio
 import requests
 from app.core.ai_payload_engine import AIPayloadEngine, ResponseType
+import logging
 
 async def enhanced_ai_ssti_test():
     """Enhanced AI SSTI test with POST requests and form discovery"""
@@ -107,7 +108,7 @@ async def enhanced_ai_ssti_test():
                             if 'uid=' in adv_response.text or 'root' in adv_response.text:
                                 print(f"  COMMAND EXECUTION: {adv_payload}")
                                 print(f"  Output: {adv_response.text[:200]}...")
-                        except:
+                        except Exception:
                             continue
                 
                 print()

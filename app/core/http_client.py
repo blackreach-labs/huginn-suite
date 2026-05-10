@@ -5,6 +5,7 @@ from PyQt6.QtCore import QObject, pyqtSignal
 from typing import Dict, List, Optional, Any
 from urllib.parse import urlparse, parse_qs, urlencode
 import json
+from app.core.logger import logger
 
 class HttpRequest:
     """Unified HTTP request object"""
@@ -37,8 +38,9 @@ class HttpRequest:
                     decoded = base64.b64decode(auth_header[6:]).decode('utf-8')
                     if ':' in decoded:
                         auth = tuple(decoded.split(':', 1))
-                except:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
         
         # Safely extract request data
         try:
@@ -232,8 +234,9 @@ class UnifiedHttpClient(QObject):
                     if param_name in data:
                         data[param_name] = payload
                         new_request.data = json.dumps(data)
-                except json.JSONDecodeError:
+                except json.JSONDecodeError as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
             
             elif 'application/x-www-form-urlencoded' in content_type:
                 try:
@@ -241,8 +244,9 @@ class UnifiedHttpClient(QObject):
                     if param_name in data:
                         data[param_name] = [payload]
                         new_request.data = urlencode(data, doseq=True)
-                except:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
         
         return new_request
     

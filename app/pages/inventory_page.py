@@ -6,6 +6,7 @@ from PyQt6.QtCore import Qt, QTimer, pyqtSignal
 from PyQt6.QtGui import QAction, QFont
 from app.widgets.asset_graphics_widget import AssetGraphicsWidget, AssetDetailsWidget
 from app.core.asset_manager import asset_manager
+from app.core.logger import logger
 
 class InventoryPage(QWidget):
     navigate_signal = pyqtSignal(str)
@@ -41,7 +42,7 @@ class InventoryPage(QWidget):
             if hasattr(self.main_window, 'current_profile_name') and self.main_window.current_profile_name:
                 return self.main_window.current_profile_name
             return 'default'
-        except:
+        except Exception:
             return 'default'
 
     def setup_page(self, main_layout):

@@ -2,6 +2,7 @@
 import re
 import base64
 import json
+from app.core.logger import logger
 
 class CookieAnalyzer:
     """Analyze cookies for security issues"""
@@ -110,8 +111,9 @@ class CookieAnalyzer:
                         'description': f'JWT cookie uses weak algorithm: {header.get("alg")}',
                         'cookie': cookie_data['name']
                     })
-            except Exception:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         # Check for base64 encoded data
         elif self._is_base64(value):
@@ -129,8 +131,9 @@ class CookieAnalyzer:
                         'description': f'Cookie {cookie_data["name"]} contains serialized data',
                         'cookie': cookie_data['name']
                     })
-            except Exception:
+            except Exception as _exc:
                 pass
+                logger.debug("Suppressed exception", exc_info=True)
         
         # Check for predictable session IDs (more aggressive)
         if len(value) < 20:  # Increased threshold
@@ -167,6 +170,7 @@ class CookieAnalyzer:
             if len(s) % 4 == 0 and re.match(r'^[A-Za-z0-9+/]*={0,2}$', s):
                 base64.b64decode(s)
                 return True
-        except Exception:
+        except Exception as _exc:
             pass
+            logger.debug("Suppressed exception", exc_info=True)
         return False

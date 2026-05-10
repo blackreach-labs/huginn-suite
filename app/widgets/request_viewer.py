@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QTabWidget,
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
 import json
+from app.core.logger import logger
 
 class RequestViewerDialog(QDialog):
     def __init__(self, request_data, parent=None):
@@ -109,7 +110,7 @@ Size: {self.request_data.get('request_size', 0)} bytes"""
                     body_text.setPlainText(formatted_body)
                 else:
                     body_text.setPlainText(request_body)
-            except:
+            except Exception:
                 body_text.setPlainText(request_body)
         else:
             body_text.setPlainText("No request body")
@@ -167,7 +168,7 @@ Response Time: {self.request_data.get('response_time', 0)*1000:.2f}ms"""
                         body_text.setPlainText(response_body[:10000] + "\n\n... (truncated)")
                     else:
                         body_text.setPlainText(response_body)
-            except:
+            except Exception:
                 if len(response_body) > 10000:
                     body_text.setPlainText(response_body[:10000] + "\n\n... (truncated)")
                 else:

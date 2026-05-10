@@ -2,6 +2,7 @@
 import subprocess
 import socket
 from typing import List, Dict
+from app.core.logger import logger
 
 def enumerate_services_via_rpc(target: str) -> List[Dict]:
     """Enumerate services via SMB named pipe svcctl - the original working method"""
@@ -50,16 +51,18 @@ def parse_real_service_response(response: bytes) -> List[Dict]:
                                     'display_name': name,
                                     'state': 'RUNNING'
                                 })
-                except:
+                except Exception as _exc:
                     pass
+                    logger.debug("Suppressed exception", exc_info=True)
                 
                 offset += 64
                 
                 if len(services) > 50:  # Prevent infinite loop
                     break
     
-    except Exception:
+    except Exception as _exc:
         pass
+        logger.debug("Suppressed exception", exc_info=True)
     
     return services
 
@@ -93,8 +96,9 @@ def enumerate_services_comprehensive(target: str) -> List[Dict]:
                         })
             
             return services
-    except:
+    except Exception as _exc:
         pass
+        logger.debug("Suppressed exception", exc_info=True)
     
     # Method 3: Try PowerShell
     try:
@@ -116,8 +120,9 @@ def enumerate_services_comprehensive(target: str) -> List[Dict]:
                         })
             
             return services
-    except:
+    except Exception as _exc:
         pass
+        logger.debug("Suppressed exception", exc_info=True)
     
     # NO MOCK DATA - return empty if nothing works
     return []

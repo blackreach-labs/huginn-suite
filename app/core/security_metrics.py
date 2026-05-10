@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from .centralized_scan_data import centralized_scan_data
 from .cross_scan_correlator import create_cross_scan_correlator
 from .automated_remediation import create_remediation_engine
+from app.core.logger import logger
 
 @dataclass
 class SecurityMetric:
@@ -97,8 +98,9 @@ class SecurityMetricsEngine:
                         item_time = datetime.fromisoformat(item['last_seen'].replace('Z', '+00:00'))
                         if item_time > datetime.now() - timedelta(hours=1):
                             recent_count += 1
-                    except:
+                    except Exception as _exc:
                         pass
+                        logger.debug("Suppressed exception", exc_info=True)
                 
                 recent_activity[scan_type] = recent_count
                 if recent_count > 0:
