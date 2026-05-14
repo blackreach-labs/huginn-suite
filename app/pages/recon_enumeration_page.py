@@ -2,7 +2,7 @@
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
                              QFrame, QTabWidget, QPushButton, QLineEdit, QCheckBox, QComboBox, QSpinBox, QTextEdit,
                              QStackedWidget, QTableWidget, QTreeWidget, QToolButton, QSpacerItem, QSizePolicy)
-from PyQt6.QtCore import pyqtSignal, Qt, QSize, QThreadPool
+from PyQt6.QtCore import pyqtSignal, Qt, QThreadPool
 from PyQt6.QtGui import QIcon
 import os
 from app.core.logger import logger
@@ -48,71 +48,50 @@ class ReconEnumerationPage(QWidget, ServiceScannersMixin, ServiceUIComponentsMix
     def setup_ui(self):
         """Setup the UI components"""
         main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(15, 15, 15, 15)
+        main_layout.setContentsMargins(10, 10, 10, 10)
         main_layout.setSpacing(10)
         
         # Create tabs for different recon categories
         self.tab_widget = QTabWidget()
-        self.tab_widget.setStyleSheet("""
-            QTabWidget::pane {
-                border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-                background-color: rgba(0, 0, 0, 150);
-            }
-            QTabBar::tab {
-                background-color: rgba(20, 30, 40, 150);
-                color: #DCDCDC;
-                padding: 10px 20px;
-                margin-right: 2px;
-                border-top-left-radius: 5px;
-                border-top-right-radius: 5px;
-                font-size: 12pt;
-            }
-            QTabBar::tab:selected {
-                background-color: rgba(100, 200, 255, 100);
-                color: #000000;
-                font-weight: bold;
-            }
-        """)
         
         # OSINT tab
         try:
             from app.pages.osint_page import OSINTPage
             osint_widget = OSINTPage(self)
-            self.tab_widget.addTab(osint_widget, self.create_tab_icon("osint.png"), "OSINT")
+            self.tab_widget.addTab(osint_widget, "🔍 OSINT")
         except ImportError as _exc:
             pass
             logger.debug("Suppressed exception", exc_info=True)
         
         # Network Scanning tab (combines Network Discovery and Port Scanning)
         network_scanning_tab = self.create_network_scanning_tab()
-        self.tab_widget.addTab(network_scanning_tab, self.create_tab_icon("network_discovery.png"), "Network Scanning")
+        self.tab_widget.addTab(network_scanning_tab, "🌐 Network Scanning")
         
         # DNS tab - use dedicated DNS enumeration page
         try:
             from app.pages.dns_enumeration_page import DNSEnumerationPage
             dns_tab = DNSEnumerationPage(self)
-            self.tab_widget.addTab(dns_tab, self.create_tab_icon("dns.png"), "DNS")
+            self.tab_widget.addTab(dns_tab, "🔎 DNS")
         except ImportError:
             # Fallback to simple DNS tab
             dns_tab = self.create_dns_tab()
-            self.tab_widget.addTab(dns_tab, self.create_tab_icon("dns.png"), "DNS")
+            self.tab_widget.addTab(dns_tab, "🔎 DNS")
         
         # Service Enumeration tab
         service_tab = self.create_service_tab()
-        self.tab_widget.addTab(service_tab, self.create_tab_icon("service_enumeration.png"), "Service Enumeration")
+        self.tab_widget.addTab(service_tab, "⚙️ Service Enumeration")
         
         # AWS Penetration Testing tab
         aws_tab = self.create_aws_tab()
-        self.tab_widget.addTab(aws_tab, self.create_tab_icon("aws.png"), "AWS")
+        self.tab_widget.addTab(aws_tab, "☁️ AWS")
         
         # Azure Penetration Testing tab
         azure_tab = self.create_azure_tab()
-        self.tab_widget.addTab(azure_tab, self.create_tab_icon("azure.png"), "Azure")
+        self.tab_widget.addTab(azure_tab, "🔷 Azure")
         
         # Active Directory tab
         ad_tab = self.create_ad_tab()
-        self.tab_widget.addTab(ad_tab, self.create_tab_icon("active_directory.png"), "Active Directory")
+        self.tab_widget.addTab(ad_tab, "🏢 Active Directory")
         
         main_layout.addWidget(self.tab_widget)
     
@@ -170,35 +149,14 @@ class ReconEnumerationPage(QWidget, ServiceScannersMixin, ServiceUIComponentsMix
         
         # Create sub-tab widget
         sub_tab_widget = QTabWidget()
-        sub_tab_widget.setStyleSheet("""
-            QTabWidget::pane {
-                border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-                background-color: rgba(0, 0, 0, 100);
-            }
-            QTabBar::tab {
-                background-color: rgba(20, 30, 40, 150);
-                color: #DCDCDC;
-                padding: 8px 16px;
-                margin-right: 2px;
-                border-top-left-radius: 5px;
-                border-top-right-radius: 5px;
-                font-size: 11pt;
-            }
-            QTabBar::tab:selected {
-                background-color: rgba(100, 200, 255, 100);
-                color: #000000;
-                font-weight: bold;
-            }
-        """)
         
         # Cloud Discovery sub-tab
         cloud_tab = self.create_cloud_discovery_subtab()
-        sub_tab_widget.addTab(cloud_tab, "Cloud Discovery")
+        sub_tab_widget.addTab(cloud_tab, "☁️ Cloud Discovery")
         
         # Port Scanning sub-tab
         port_tab = self.create_port_scanning_subtab()
-        sub_tab_widget.addTab(port_tab, "Port Scanning")
+        sub_tab_widget.addTab(port_tab, "🔌 Port Scanning")
         
         # Removed Huggin Scanner - moved to Vulnerability Analysis section
         
@@ -416,43 +374,20 @@ class ReconEnumerationPage(QWidget, ServiceScannersMixin, ServiceUIComponentsMix
         # Create sub-tab widget for different service types
         sub_tab_widget = QTabWidget()
         sub_tab_widget.setContentsMargins(0, 0, 0, 0)
-        sub_tab_widget.setStyleSheet("""
-            QTabWidget::pane {
-                border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-                background-color: rgba(0, 0, 0, 100);
-                padding: 0px;
-                margin: 0px;
-            }
-            QTabBar::tab {
-                background-color: rgba(20, 30, 40, 150);
-                color: #DCDCDC;
-                padding: 8px 16px;
-                margin-right: 2px;
-                border-top-left-radius: 5px;
-                border-top-right-radius: 5px;
-                font-size: 11pt;
-            }
-            QTabBar::tab:selected {
-                background-color: rgba(100, 200, 255, 100);
-                color: #000000;
-                font-weight: bold;
-            }
-        """)
         
         # Service enumeration tabs with full functionality
         services = [
-            ("HTTP", "http_enum"),
-            ("RPC", "rpc_enum"), 
-            ("SMB", "smb_enum"),
-            ("SSH", "ssh_enum"),
-            ("SMTP", "smtp_enum"),
-            ("LDAP", "ldap_enum"),
-            ("SNMP", "snmp_enum"),
-            ("API", "api_enum"),
-            ("Database", "db_enum"),
-            ("IKE", "ike_enum"),
-            ("AV/FW", "av_detect")
+            ("🌍 HTTP",     "http_enum"),
+            ("📡 RPC",      "rpc_enum"),
+            ("📂 SMB",      "smb_enum"),
+            ("🔐 SSH",      "ssh_enum"),
+            ("📧 SMTP",     "smtp_enum"),
+            ("📒 LDAP",     "ldap_enum"),
+            ("📶 SNMP",     "snmp_enum"),
+            ("🔗 API",      "api_enum"),
+            ("🗄️ Database", "db_enum"),
+            ("🔑 IKE",      "ike_enum"),
+            ("🛡️ AV/FW",   "av_detect"),
         ]
         for service_name, tool_key in services:
             try:
@@ -642,21 +577,6 @@ class ReconEnumerationPage(QWidget, ServiceScannersMixin, ServiceUIComponentsMix
         tab = QWidget()
         layout = QVBoxLayout(tab)
         layout.setContentsMargins(20, 20, 20, 20)
-        
-        # Title
-        title = QLabel("Active Directory Enumeration & Attacks")
-        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        title.setStyleSheet("""
-            font-size: 18pt;
-            font-weight: bold;
-            color: #64C8FF;
-            padding: 10px;
-            background-color: rgba(0, 0, 0, 100);
-            border-radius: 5px;
-            border: 1px solid rgba(100, 200, 255, 100);
-            margin-bottom: 10px;
-        """)
-        layout.addWidget(title)
         
         # AD enumeration widget
         try:

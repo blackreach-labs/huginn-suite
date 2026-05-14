@@ -1,9 +1,10 @@
 # app/widgets/secure_credential_widget.py
-from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
+from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
                             QLineEdit, QPushButton, QTableWidget, QTableWidgetItem,
                             QComboBox, QTextEdit, QGroupBox, QTabWidget,
                             QMessageBox, QProgressBar, QCheckBox, QFormLayout,
-                            QDialog, QDialogButtonBox)
+                            QDialog, QDialogButtonBox, QHeaderView, QFrame,
+                            QSizePolicy, QGridLayout, QScrollArea)
 from PyQt6.QtCore import Qt, QThread, pyqtSignal
 from PyQt6.QtGui import QFont, QIcon
 from ..core.secure_credential_manager import secure_credential_manager
@@ -143,143 +144,215 @@ class SecureCredentialWidget(QWidget):
     def init_ui(self):
         """Initialize the user interface"""
         layout = QVBoxLayout(self)
-        
-        # Title with profile info
-        title_layout = QHBoxLayout()
-        title = QLabel("Credential Management")
-        title.setFont(QFont("Arial", 14, QFont.Weight.Bold))
-        title_layout.addWidget(title)
-        
-        # Profile indicator
-        self.profile_label = QLabel()
-        self.profile_label.setStyleSheet("color: #64C8FF; font-weight: bold;")
-        self.update_profile_label()
-        title_layout.addWidget(self.profile_label)
-        title_layout.addStretch()
-        
-        layout.addLayout(title_layout)
-        
-        # Tab widget
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+
+        # Tab widget — no title bar above it
         self.tab_widget = QTabWidget()
         layout.addWidget(self.tab_widget)
-        
+
         # Credentials tab
         self.credentials_tab = QWidget()
         self.init_credentials_tab()
-        self.tab_widget.addTab(self.credentials_tab, "Credentials")
-        
+        self.tab_widget.addTab(self.credentials_tab, "🔑 Credentials")
+
         # Security tab
         self.security_tab = QWidget()
         self.init_security_tab()
-        self.tab_widget.addTab(self.security_tab, "Security")
-        
+        self.tab_widget.addTab(self.security_tab, "🔒 Security")
+
         # Enterprise tab
         self.enterprise_tab = QWidget()
         self.init_enterprise_tab()
-        self.tab_widget.addTab(self.enterprise_tab, "Enterprise")
+        self.tab_widget.addTab(self.enterprise_tab, "🏢 Enterprise")
     
     def init_credentials_tab(self):
-        """Initialize credentials management tab"""
-        layout = QVBoxLayout(self.credentials_tab)
-        
-        # Add credential form
-        form_group = QGroupBox("Credential Management")
-        form_layout = QFormLayout(form_group)
-        
-        # Type dropdown
-        type_layout = QHBoxLayout()
+        """Initialize credentials management tab — original compact style."""
+
+        widget_layout = QVBoxLayout(self.credentials_tab)
+        widget_layout.setContentsMargins(10, 10, 10, 10)
+        widget_layout.setSpacing(8)
+
+        FIELD_HEIGHT = 30
+        LABEL_STYLE  = "font-size: 10pt; font-weight: bold; color: #DCDCDC;"
+        HDR_STYLE    = ("font-size: 10pt; font-weight: bold; color: #64C8FF;"
+                        " padding: 8px 0px 4px 0px;")
+
+        # ── Form frame ────────────────────────────────────────────────────
+        form_frame = QFrame()
+        form_frame.setStyleSheet("""
+            QFrame {
+                background-color: rgba(0, 0, 0, 150);
+                border-radius: 10px;
+                border: 1px solid rgba(100, 200, 255, 50);
+            }
+        """)
+        form_frame.setSizePolicy(QSizePolicy.Policy.Expanding,
+                                 QSizePolicy.Policy.Expanding)
+        form_layout = QVBoxLayout(form_frame)
+        form_layout.setContentsMargins(15, 15, 15, 15)
+        form_layout.setSpacing(0)
+
+        grid = QGridLayout()
+        grid.setHorizontalSpacing(10)
+        grid.setVerticalSpacing(6)
+        grid.setColumnStretch(1, 1)
+
+        def hdr(text):
+            l = QLabel(text); l.setStyleSheet(HDR_STYLE); return l
+
+        def lbl(text):
+            l = QLabel(text); l.setStyleSheet(LABEL_STYLE); return l
+
+        def field(placeholder, echo=False):
+            w = QLineEdit()
+            w.setPlaceholderText(placeholder)
+            w.setFixedHeight(FIELD_HEIGHT)
+            w.setStyleSheet("font-size: 10pt; color: #DCDCDC;")
+            if echo:
+                w.setEchoMode(QLineEdit.EchoMode.Password)
+            return w
+
+        r = 0
+        # Type header + dropdown
+        grid.addWidget(hdr("Type:"), r, 0)
         self.type_combo = QComboBox()
-        self.type_combo.addItems(["Username/Password", "NTLM Hash", "Kerberos Ticket", "SQL Server Auth", "Windows Auth"])
-        self.type_combo.setMinimumWidth(150)
+        self.type_combo.addItems(["Username/Password", "NTLM Hash",
+                                  "Kerberos Ticket", "SQL Server Auth",
+                                  "Windows Auth", "Contacts"])
+        self.type_combo.setFixedHeight(FIELD_HEIGHT)
+        self.type_combo.setStyleSheet("font-size: 10pt;")
         self.type_combo.currentTextChanged.connect(self.on_type_changed)
-        type_layout.addWidget(self.type_combo)
-        type_layout.addStretch()
-        form_layout.addRow("Type:", type_layout)
-        
-        # Dynamic fields with labels
-        self.username_label = QLabel("Username:")
-        self.username_edit = QLineEdit()
-        self.username_edit.setPlaceholderText("Username")
-        form_layout.addRow(self.username_label, self.username_edit)
-        
-        self.password_label = QLabel("Password:")
-        self.password_edit = QLineEdit()
-        self.password_edit.setEchoMode(QLineEdit.EchoMode.Password)
-        self.password_edit.setPlaceholderText("Password")
-        form_layout.addRow(self.password_label, self.password_edit)
-        
-        self.ntlm_hash_label = QLabel("NTLM Hash:")
-        self.ntlm_hash_edit = QLineEdit()
-        self.ntlm_hash_edit.setEchoMode(QLineEdit.EchoMode.Password)
-        self.ntlm_hash_edit.setPlaceholderText("NTLM Hash")
-        form_layout.addRow(self.ntlm_hash_label, self.ntlm_hash_edit)
-        
-        self.ticket_file_label = QLabel("Ticket File:")
-        self.ticket_file_edit = QLineEdit()
-        self.ticket_file_edit.setPlaceholderText("Path to ticket file")
-        form_layout.addRow(self.ticket_file_label, self.ticket_file_edit)
-        
-        self.domain_label = QLabel("Domain:")
-        self.domain_edit = QLineEdit()
-        self.domain_edit.setPlaceholderText("Domain (optional)")
-        form_layout.addRow(self.domain_label, self.domain_edit)
-        
-        self.service_label = QLabel("Service:")
-        self.service_edit = QLineEdit()
-        self.service_edit.setPlaceholderText("e.g., SSH, RDP, SMB")
-        form_layout.addRow(self.service_label, self.service_edit)
-        
-        self.notes_label = QLabel("Notes:")
-        self.notes_edit = QTextEdit()
-        self.notes_edit.setMaximumHeight(60)
-        self.notes_edit.setPlaceholderText("Notes (optional)")
-        form_layout.addRow(self.notes_label, self.notes_edit)
-        
-        # Form buttons
-        form_buttons = QHBoxLayout()
-        self.save_btn = QPushButton("Save Credential")
-        self.save_btn.clicked.connect(self.save_credential)
-        self.clear_btn = QPushButton("Clear Form")
-        self.clear_btn.clicked.connect(self.clear_form)
-        form_buttons.addWidget(self.save_btn)
-        form_buttons.addWidget(self.clear_btn)
-        form_buttons.addStretch()
-        form_layout.addRow("", form_buttons)
-        
-        layout.addWidget(form_group)
-        
-        # Initialize field visibility
-        self.on_type_changed("Username/Password")
-        
-        # Credentials table
-        table_group = QGroupBox("Stored Credentials")
-        table_layout = QVBoxLayout(table_group)
-        
-        # Table controls
-        table_controls = QHBoxLayout()
-        self.refresh_btn = QPushButton("Refresh")
-        self.refresh_btn.clicked.connect(self.refresh_credentials)
-        self.test_btn = QPushButton("Test Selected")
-        self.test_btn.clicked.connect(self.test_selected_credential)
-        self.delete_btn = QPushButton("Delete Selected")
-        self.delete_btn.clicked.connect(self.delete_selected_credential)
-        
-        table_controls.addWidget(self.refresh_btn)
-        table_controls.addWidget(self.test_btn)
-        table_controls.addWidget(self.delete_btn)
-        table_controls.addStretch()
-        table_layout.addLayout(table_controls)
-        
-        # Credentials table
+        grid.addWidget(self.type_combo, r, 1); r += 1
+
+        # Dynamic fields
+        self.username_label   = lbl("Username:")
+        self.username_edit    = field("Enter username")
+        self.password_label   = lbl("Password:")
+        self.password_edit    = field("Enter password", echo=True)
+        self.ntlm_hash_label  = lbl("NTLM Hash:")
+        self.ntlm_hash_edit   = field("Enter NTLM hash", echo=True)
+        self.ticket_file_label= lbl("Ticket File:")
+        self.ticket_file_edit = field("Path to ticket file")
+        self.domain_label     = lbl("Domain:")
+        self.domain_edit      = field("e.g., DOMAIN or leave blank")
+        self.service_label    = lbl("Service:")
+        self.service_edit     = field("e.g., SSH, RDP, SMB, HTTP")
+        self.notes_label      = lbl("Notes:")
+        self.notes_edit       = field("Optional notes")
+
+        # Contacts fields
+        self.account_name_label  = lbl("Account Name:")
+        self.account_name_edit   = field("e.g., jdoe, admin")
+        self.first_name_label    = lbl("First Name:")
+        self.first_name_edit     = field("First name")
+        self.middle_name_label   = lbl("Middle Name:")
+        self.middle_name_edit    = field("Middle name (optional)")
+        self.last_name_label     = lbl("Last Name:")
+        self.last_name_edit      = field("Last name")
+        self.email_label         = lbl("Email Address:")
+        self.email_edit          = field("e.g., john.doe@company.com")
+        self.mobile_label        = lbl("Mobile Phone:")
+        self.mobile_edit         = field("e.g., +1-555-123-4567")
+        self.address_label       = lbl("Address:")
+        self.address_edit        = field("Physical address (optional)")
+
+        all_fields = [
+            (self.username_label,    self.username_edit),
+            (self.password_label,    self.password_edit),
+            (self.ntlm_hash_label,   self.ntlm_hash_edit),
+            (self.ticket_file_label, self.ticket_file_edit),
+            (self.domain_label,      self.domain_edit),
+            (self.service_label,     self.service_edit),
+            (self.notes_label,       self.notes_edit),
+            (self.account_name_label,self.account_name_edit),
+            (self.first_name_label,  self.first_name_edit),
+            (self.middle_name_label, self.middle_name_edit),
+            (self.last_name_label,   self.last_name_edit),
+            (self.email_label,       self.email_edit),
+            (self.mobile_label,      self.mobile_edit),
+            (self.address_label,     self.address_edit),
+        ]
+        for label, widget in all_fields:
+            grid.addWidget(label, r, 0)
+            grid.addWidget(widget, r, 1)
+            r += 1
+
+        form_layout.addLayout(grid)
+        form_layout.addStretch()
+
+        # Buttons inside frame
+        btn_row = QHBoxLayout()
+        add_btn = QPushButton("Add Credential")
+        add_btn.setStyleSheet("""
+            QPushButton {
+                background-color: rgba(50, 150, 50, 150);
+                border: 2px solid #64C8FF; border-radius: 5px;
+                color: #000000; font-weight: bold;
+                padding: 8px 15px; font-size: 12pt;
+            }
+            QPushButton:hover { background-color: rgba(70, 170, 70, 200); }
+        """)
+        add_btn.clicked.connect(self.save_credential)
+        btn_row.addWidget(add_btn)
+
+        del_btn = QPushButton("Delete Selected")
+        del_btn.setStyleSheet("""
+            QPushButton {
+                background-color: rgba(50, 150, 50, 150);
+                border: 2px solid #FF6347; border-radius: 5px;
+                color: #FFFFFF; font-weight: bold;
+                padding: 8px 15px; font-size: 12pt;
+            }
+            QPushButton:hover { background-color: rgba(70, 170, 70, 200); }
+        """)
+        del_btn.clicked.connect(self.delete_selected_credential)
+        btn_row.addWidget(del_btn)
+        btn_row.addStretch()
+        form_layout.addLayout(btn_row)
+
+        widget_layout.addWidget(form_frame, stretch=1)
+
+        # ── Stored Credentials header ─────────────────────────────────────
+        cred_header = QHBoxLayout()
+        cred_lbl = QLabel("Stored Credentials:")
+        cred_lbl.setStyleSheet("font-weight: bold; color: #64C8FF; margin-top: 4px;")
+        cred_header.addWidget(cred_lbl)
+        cred_header.addStretch()
+
+        self.show_passwords_cb = QCheckBox("Show Passwords")
+        self.show_passwords_cb.setStyleSheet("color: #DCDCDC; font-weight: bold;")
+        self.show_passwords_cb.stateChanged.connect(self._toggle_password_display)
+        cred_header.addWidget(self.show_passwords_cb)
+        widget_layout.addLayout(cred_header)
+
+        # ── Credentials table — original 7-column format ──────────────────
         self.credentials_table = QTableWidget()
         self.credentials_table.setColumnCount(7)
-        self.credentials_table.setHorizontalHeaderLabels([
-            "Service", "Type", "Username", "Source", "Last Used", "Status", "Actions"
-        ])
-        self.credentials_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
-        table_layout.addWidget(self.credentials_table)
-        
-        layout.addWidget(table_group)
+        self.credentials_table.setHorizontalHeaderLabels(
+            ["Source", "Type", "Username", "Password", "Domain", "Service", "Notes"])
+        self.credentials_table.setMaximumHeight(200)
+        self.credentials_table.setSelectionBehavior(
+            QTableWidget.SelectionBehavior.SelectRows)
+        self.credentials_table.setStyleSheet("""
+            QTableWidget {
+                background-color: rgba(20, 30, 40, 150);
+                border: 1px solid rgba(100, 200, 255, 50);
+                border-radius: 5px; color: #DCDCDC;
+                gridline-color: rgba(100, 200, 255, 50); font-size: 9pt;
+            }
+            QHeaderView::section {
+                background-color: rgba(100, 200, 255, 100);
+                color: #000000; font-weight: bold; padding: 3px; border: none;
+            }
+        """)
+        hdr_view = self.credentials_table.horizontalHeader()
+        hdr_view.setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
+        hdr_view.setSectionResizeMode(6, QHeaderView.ResizeMode.Stretch)
+        widget_layout.addWidget(self.credentials_table)
+
+        # Initialise field visibility
+        self.on_type_changed("Username/Password")
     
     def init_security_tab(self):
         """Initialize security overview tab"""
@@ -389,232 +462,217 @@ with features like access logging, rotation, and fine-grained permissions.
     
     def save_credential(self):
         """Save credential to secure storage"""
+        from app.core.credential_manager import credential_manager
+
         credential_type = self.type_combo.currentText()
         service = self.service_edit.text().strip()
-        
-        if not service:
-            QMessageBox.warning(self, "Error", "Service name is required")
-            return
-        
-        # Use the basic credential manager for now
-        from app.core.credential_manager import credential_manager
-        
-        # Validate based on credential type
+        notes   = self.notes_edit.text().strip()
+        success = False
+
         if credential_type == "Username/Password":
             username = self.username_edit.text().strip()
             password = self.password_edit.text()
             if not username or not password:
                 QMessageBox.warning(self, "Error", "Username and password are required")
                 return
-            
             credential_manager.add_credential(
-                username=username,
-                password=password,
+                username=username, password=password,
                 domain=self.domain_edit.text().strip(),
-                service=service,
-                notes=self.notes_edit.toPlainText().strip(),
-                source="manual",
-                credential_type=credential_type
-            )
+                service=service, notes=notes,
+                source="manual", credential_type=credential_type)
             success = True
-        
+
         elif credential_type == "NTLM Hash":
-            username = self.username_edit.text().strip()
+            username  = self.username_edit.text().strip()
             ntlm_hash = self.ntlm_hash_edit.text()
             if not username or not ntlm_hash:
                 QMessageBox.warning(self, "Error", "Username and NTLM hash are required")
                 return
-            
             credential_manager.add_credential(
-                username=username,
-                password=ntlm_hash,  # Store hash as password
-                service=service,
-                notes=self.notes_edit.toPlainText().strip(),
-                source="manual",
-                credential_type=credential_type
-            )
+                username=username, password=ntlm_hash,
+                service=service, notes=notes,
+                source="manual", credential_type=credential_type)
             success = True
-        
+
         elif credential_type == "Kerberos Ticket":
-            ticket_file = self.ticket_file_edit.text().strip()
-            if not ticket_file:
+            ticket = self.ticket_file_edit.text().strip()
+            if not ticket:
                 QMessageBox.warning(self, "Error", "Ticket file path is required")
                 return
-            
             credential_manager.add_credential(
-                username="",  # No username for ticket
-                password=ticket_file,  # Store ticket path as password
-                service=service,
-                notes=self.notes_edit.toPlainText().strip(),
-                source="manual",
-                credential_type=credential_type
-            )
+                username="", password=ticket,
+                service=service, notes=notes,
+                source="manual", credential_type=credential_type)
             success = True
-        
+
         elif credential_type == "SQL Server Auth":
             username = self.username_edit.text().strip()
             password = self.password_edit.text()
             if not username or not password:
-                QMessageBox.warning(self, "Error", "Username and password are required for SQL Server Auth")
+                QMessageBox.warning(self, "Error", "Username and password are required")
                 return
-            
             credential_manager.add_credential(
-                username=username,
-                password=password,
-                service=service or "MSSQL",
-                notes=self.notes_edit.toPlainText().strip(),
-                source="manual",
-                credential_type=credential_type
-            )
+                username=username, password=password,
+                service=service or "MSSQL", notes=notes,
+                source="manual", credential_type=credential_type)
             success = True
-        
+
         elif credential_type == "Windows Auth":
             username = self.username_edit.text().strip()
             password = self.password_edit.text()
-            domain = self.domain_edit.text().strip()
+            domain   = self.domain_edit.text().strip()
             if not username or not password:
-                QMessageBox.warning(self, "Error", "Username and password are required for Windows Auth")
+                QMessageBox.warning(self, "Error", "Username and password are required")
                 return
             if not domain:
                 QMessageBox.warning(self, "Error", "Domain is required for Windows Auth")
                 return
-            
             credential_manager.add_credential(
-                username=username,
-                password=password,
-                domain=domain,
-                service=service or "MSSQL",
-                notes=self.notes_edit.toPlainText().strip(),
-                source="manual",
-                credential_type=credential_type
-            )
+                username=username, password=password, domain=domain,
+                service=service or "MSSQL", notes=notes,
+                source="manual", credential_type=credential_type)
             success = True
-        
+
+        elif credential_type == "Contacts":
+            account = self.account_name_edit.text().strip()
+            email   = self.email_edit.text().strip()
+            if not account and not email:
+                QMessageBox.warning(self, "Error", "Account name or email is required")
+                return
+            contact_info = " ".join(filter(None, [
+                self.first_name_edit.text().strip(),
+                self.middle_name_edit.text().strip(),
+                self.last_name_edit.text().strip(),
+            ]))
+            if self.mobile_edit.text().strip():
+                contact_info += f" | Phone: {self.mobile_edit.text().strip()}"
+            if self.address_edit.text().strip():
+                contact_info += f" | Address: {self.address_edit.text().strip()}"
+            credential_manager.add_credential(
+                username=account or email, password=contact_info,
+                domain=email, service="Contact", notes=notes,
+                source="manual", credential_type=credential_type)
+            success = True
+
         if success:
-            QMessageBox.information(self, "Success", f"{credential_type} for {service} saved successfully")
             self.clear_form()
             self.refresh_credentials()
-            self.update_profile_label()  # Update profile info
-        else:
-            QMessageBox.critical(self, "Error", "Failed to save credential")
     
     def on_type_changed(self, credential_type):
-        """Handle credential type change"""
-        # Hide all fields first
-        self.username_label.setVisible(False)
-        self.username_edit.setVisible(False)
-        self.password_label.setVisible(False)
-        self.password_edit.setVisible(False)
-        self.ntlm_hash_label.setVisible(False)
-        self.ntlm_hash_edit.setVisible(False)
-        self.ticket_file_label.setVisible(False)
-        self.ticket_file_edit.setVisible(False)
-        self.domain_label.setVisible(False)
-        self.domain_edit.setVisible(False)
-        self.service_label.setVisible(False)
-        self.service_edit.setVisible(False)
-        self.notes_label.setVisible(False)
-        self.notes_edit.setVisible(False)
-        
-        # Show fields based on type
-        if credential_type == "Username/Password":
-            self.username_label.setVisible(True)
-            self.username_edit.setVisible(True)
-            self.password_label.setVisible(True)
-            self.password_edit.setVisible(True)
-            self.domain_label.setVisible(True)
-            self.domain_edit.setVisible(True)
-            self.service_label.setVisible(True)
-            self.service_edit.setVisible(True)
-            self.notes_label.setVisible(True)
-            self.notes_edit.setVisible(True)
-        elif credential_type == "NTLM Hash":
-            self.username_label.setVisible(True)
-            self.username_edit.setVisible(True)
-            self.ntlm_hash_label.setVisible(True)
-            self.ntlm_hash_edit.setVisible(True)
-            self.service_label.setVisible(True)
-            self.service_edit.setVisible(True)
-            self.notes_label.setVisible(True)
-            self.notes_edit.setVisible(True)
-        elif credential_type == "Kerberos Ticket":
-            self.ticket_file_label.setVisible(True)
-            self.ticket_file_edit.setVisible(True)
-            self.service_label.setVisible(True)
-            self.service_edit.setVisible(True)
-            self.notes_label.setVisible(True)
-            self.notes_edit.setVisible(True)
-        elif credential_type == "SQL Server Auth":
-            self.username_label.setVisible(True)
-            self.username_edit.setVisible(True)
-            self.password_label.setVisible(True)
-            self.password_edit.setVisible(True)
-            self.service_label.setVisible(True)
-            self.service_edit.setVisible(True)
-            self.notes_label.setVisible(True)
-            self.notes_edit.setVisible(True)
-        elif credential_type == "Windows Auth":
-            self.username_label.setVisible(True)
-            self.username_edit.setVisible(True)
-            self.password_label.setVisible(True)
-            self.password_edit.setVisible(True)
-            self.domain_label.setVisible(True)
-            self.domain_edit.setVisible(True)
-            self.service_label.setVisible(True)
-            self.service_edit.setVisible(True)
-            self.notes_label.setVisible(True)
-            self.notes_edit.setVisible(True)
+        """Handle credential type change — show/hide fields."""
+        all_pairs = [
+            (self.username_label,    self.username_edit),
+            (self.password_label,    self.password_edit),
+            (self.ntlm_hash_label,   self.ntlm_hash_edit),
+            (self.ticket_file_label, self.ticket_file_edit),
+            (self.domain_label,      self.domain_edit),
+            (self.service_label,     self.service_edit),
+            (self.notes_label,       self.notes_edit),
+            (self.account_name_label,self.account_name_edit),
+            (self.first_name_label,  self.first_name_edit),
+            (self.middle_name_label, self.middle_name_edit),
+            (self.last_name_label,   self.last_name_edit),
+            (self.email_label,       self.email_edit),
+            (self.mobile_label,      self.mobile_edit),
+            (self.address_label,     self.address_edit),
+        ]
+        for lbl, wgt in all_pairs:
+            lbl.setVisible(False)
+            wgt.setVisible(False)
+
+        show_map = {
+            "Username/Password": [
+                (self.username_label, self.username_edit),
+                (self.password_label, self.password_edit),
+                (self.domain_label,   self.domain_edit),
+                (self.service_label,  self.service_edit),
+                (self.notes_label,    self.notes_edit),
+            ],
+            "NTLM Hash": [
+                (self.username_label,  self.username_edit),
+                (self.ntlm_hash_label, self.ntlm_hash_edit),
+                (self.service_label,   self.service_edit),
+                (self.notes_label,     self.notes_edit),
+            ],
+            "Kerberos Ticket": [
+                (self.ticket_file_label, self.ticket_file_edit),
+                (self.service_label,     self.service_edit),
+                (self.notes_label,       self.notes_edit),
+            ],
+            "SQL Server Auth": [
+                (self.username_label, self.username_edit),
+                (self.password_label, self.password_edit),
+                (self.service_label,  self.service_edit),
+                (self.notes_label,    self.notes_edit),
+            ],
+            "Windows Auth": [
+                (self.username_label, self.username_edit),
+                (self.password_label, self.password_edit),
+                (self.domain_label,   self.domain_edit),
+                (self.service_label,  self.service_edit),
+                (self.notes_label,    self.notes_edit),
+            ],
+            "Contacts": [
+                (self.account_name_label, self.account_name_edit),
+                (self.first_name_label,   self.first_name_edit),
+                (self.middle_name_label,  self.middle_name_edit),
+                (self.last_name_label,    self.last_name_edit),
+                (self.email_label,        self.email_edit),
+                (self.mobile_label,       self.mobile_edit),
+                (self.address_label,      self.address_edit),
+                (self.notes_label,        self.notes_edit),
+            ],
+        }
+        for lbl, wgt in show_map.get(credential_type, []):
+            lbl.setVisible(True)
+            wgt.setVisible(True)
     
     def clear_form(self):
         """Clear the credential form"""
-        self.username_edit.clear()
-        self.password_edit.clear()
-        self.ntlm_hash_edit.clear()
-        self.ticket_file_edit.clear()
-        self.domain_edit.clear()
-        self.service_edit.clear()
-        self.notes_edit.clear()
+        for w in (self.username_edit, self.password_edit, self.ntlm_hash_edit,
+                  self.ticket_file_edit, self.domain_edit, self.service_edit,
+                  self.notes_edit, self.account_name_edit, self.first_name_edit,
+                  self.middle_name_edit, self.last_name_edit, self.email_edit,
+                  self.mobile_edit, self.address_edit):
+            w.clear()
         self.type_combo.setCurrentIndex(0)
         self.on_type_changed("Username/Password")
     
     def refresh_credentials(self):
-        """Refresh the credentials table"""
+        """Refresh the credentials table — original 7-column format."""
         from app.core.credential_manager import credential_manager
-        
+
         credentials = credential_manager.get_credentials()
+        show_pw = (hasattr(self, 'show_passwords_cb')
+                   and self.show_passwords_cb.isChecked())
+
         self.credentials_table.setRowCount(len(credentials))
-        
-        for row, credential in enumerate(credentials):
-            # Service name
-            self.credentials_table.setItem(row, 0, QTableWidgetItem(credential.service))
-            
-            # Credential type
-            self.credentials_table.setItem(row, 1, QTableWidgetItem(credential.credential_type))
-            
-            # Username (or ticket file for Kerberos)
-            if credential.credential_type == "Kerberos Ticket":
-                username_display = f"Ticket: {credential.password[:20]}..." if len(credential.password) > 20 else f"Ticket: {credential.password}"
-            else:
-                username_display = credential.username or "N/A"
-            self.credentials_table.setItem(row, 2, QTableWidgetItem(username_display))
-            
-            # Source
-            self.credentials_table.setItem(row, 3, QTableWidgetItem(credential.source))
-            
-            # Last used (placeholder)
-            self.credentials_table.setItem(row, 4, QTableWidgetItem("Never"))
-            
-            # Status (placeholder)
-            status_item = QTableWidgetItem("Unknown")
-            self.credentials_table.setItem(row, 5, status_item)
-            
-            # Test button (placeholder)
-            test_btn = QPushButton("Test")
-            test_btn.clicked.connect(lambda checked, idx=row: self.test_credential_by_index(idx))
-            self.credentials_table.setCellWidget(row, 6, test_btn)
-        
+
+        for row, cred in enumerate(credentials):
+            source_icon = {
+                'manual':      '👤 Manual',
+                'enumeration': '🔍 Enum',
+                'exploitation':'💥 Exploit',
+                'scanned':     '🔍 Scanned',
+            }.get(cred.source, '❓ Unknown')
+
+            cred_type = getattr(cred, 'credential_type', 'Username/Password')
+            password  = cred.password if show_pw else '*' * len(cred.password)
+
+            for col, text in enumerate([
+                source_icon, cred_type, cred.username,
+                password, cred.domain, cred.service, cred.notes
+            ]):
+                item = QTableWidgetItem(text)
+                item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+                self.credentials_table.setItem(row, col, item)
+
         self.credentials_table.resizeColumnsToContents()
         self.update_security_summary()
+
+    def _toggle_password_display(self):
+        """Re-render the table when Show Passwords is toggled."""
+        self.refresh_credentials()
     
     def test_credential(self, service):
         """Test a specific credential"""
@@ -713,10 +771,8 @@ with features like access logging, rotation, and fine-grained permissions.
             self.secrets_status.setStyleSheet("color: red;")
     
     def update_profile_label(self):
-        """Update profile label with current profile info"""
-        from app.core.credential_manager import credential_manager
-        profile_name = credential_manager.get_current_profile()
-        self.profile_label.setText(f"Profile: {profile_name}")
+        """No-op — profile label removed from UI."""
+        pass
     
 
     

@@ -1,442 +1,74 @@
-2026-03-03 14:44:36 - huggin - ERROR - Error during application close: 'NoneType' object has no attribute 'handle_close_event'
-2026-03-03 14:45:03 - huggin - ERROR - Error during application close: 'NoneType' object has no attribute 'handle_close_event'
-2026-03-20 15:14:15 - huggin - ERROR - Error during application close: 'NoneType' object has no attribute 'handle_close_event'
-2026-03-20 15:16:12 - huggin - ERROR - Error during application close: 'NoneType' object has no attribute 'handle_close_event'
-2026-03-20 15:17:32 - huggin - ERROR - Error during application close: 'NoneType' object has no attribute 'handle_close_event'
-2026-03-21 17:48:24 - huggin - ERROR - Unexpected error in open_wireless_security: 'LicenseManager' object has no attribute 'validate_feature_access'
-2026-03-21 17:48:30 - huggin - ERROR - Unexpected error in open_social_engineering: 'LicenseManager' object has no attribute 'validate_feature_access'
-2026-03-21 17:48:34 - huggin - ERROR - Error opening AD enumeration: 'LicenseManager' object has no attribute 'validate_feature_access'
-2026-03-21 17:48:54 - huggin - ERROR - Unexpected error in open_anti_forensics: 'LicenseManager' object has no attribute 'validate_feature_access'
-2026-05-06 10:12:51 - huggin - ERROR - test error with exc_info
-NoneType: None
-2026-05-06 10:13:32 - huggin - ERROR - Migration failed for 'C:\Users\allie\Coding Projects\huggin_suite\huggin\profiles\default_credentials.json': super-class __init__() of type SecureCredentialManager was never called. Plaintext file left in place.
+2026-05-14 22:41:05 - huggin - ERROR - Unhandled exception:
 Traceback (most recent call last):
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 334, in _migrate_plaintext_file
-    scm = self._get_fernet()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 263, in _get_fernet
-    from app.core.secure_credential_manager import secure_credential_manager
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 670, in <module>
-    secure_credential_manager = SecureCredentialManager()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 189, in __init__
-    if hasattr(self, '_initialised'):
-       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: super-class __init__() of type SecureCredentialManager was never called
-2026-05-06 10:33:09 - huggin - ERROR - Error saving credentials for profile 'default': super-class __init__() of type SecureCredentialManager was never called
-Traceback (most recent call last):
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 271, in _save_profile_credentials
-    scm = self._get_fernet()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 263, in _get_fernet
-    from app.core.secure_credential_manager import secure_credential_manager
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 670, in <module>
-    secure_credential_manager = SecureCredentialManager()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 189, in __init__
-    if hasattr(self, '_initialised'):
-       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: super-class __init__() of type SecureCredentialManager was never called
-2026-05-06 10:33:09 - huggin - ERROR - Migration failed for 'C:\Users\allie\Coding Projects\huggin_suite\huggin\profiles\HTB-Code_credentials.json': super-class __init__() of type SecureCredentialManager was never called. Plaintext file left in place.
-Traceback (most recent call last):
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 334, in _migrate_plaintext_file
-    scm = self._get_fernet()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 263, in _get_fernet
-    from app.core.secure_credential_manager import secure_credential_manager
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 670, in <module>
-    secure_credential_manager = SecureCredentialManager()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 189, in __init__
-    if hasattr(self, '_initialised'):
-       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: super-class __init__() of type SecureCredentialManager was never called
-2026-05-06 10:33:09 - huggin - ERROR - Error saving credentials for profile 'HTB-Code': super-class __init__() of type SecureCredentialManager was never called
-Traceback (most recent call last):
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 271, in _save_profile_credentials
-    scm = self._get_fernet()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 263, in _get_fernet
-    from app.core.secure_credential_manager import secure_credential_manager
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 670, in <module>
-    secure_credential_manager = SecureCredentialManager()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 189, in __init__
-    if hasattr(self, '_initialised'):
-       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: super-class __init__() of type SecureCredentialManager was never called
-2026-05-06 10:33:10 - huggin - ERROR - Error saving credentials for profile 'HTB-Code': super-class __init__() of type SecureCredentialManager was never called
-Traceback (most recent call last):
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 271, in _save_profile_credentials
-    scm = self._get_fernet()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 263, in _get_fernet
-    from app.core.secure_credential_manager import secure_credential_manager
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 670, in <module>
-    secure_credential_manager = SecureCredentialManager()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 189, in __init__
-    if hasattr(self, '_initialised'):
-       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: super-class __init__() of type SecureCredentialManager was never called
-2026-05-06 10:33:10 - huggin - ERROR - Migration failed for 'C:\Users\allie\Coding Projects\huggin_suite\huggin\profiles\HTB-Editor_credentials.json': super-class __init__() of type SecureCredentialManager was never called. Plaintext file left in place.
-Traceback (most recent call last):
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 334, in _migrate_plaintext_file
-    scm = self._get_fernet()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 263, in _get_fernet
-    from app.core.secure_credential_manager import secure_credential_manager
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 670, in <module>
-    secure_credential_manager = SecureCredentialManager()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 189, in __init__
-    if hasattr(self, '_initialised'):
-       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: super-class __init__() of type SecureCredentialManager was never called
-2026-05-06 10:33:11 - huggin - ERROR - Error saving credentials for profile 'HTB-Editor': super-class __init__() of type SecureCredentialManager was never called
-Traceback (most recent call last):
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 271, in _save_profile_credentials
-    scm = self._get_fernet()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 263, in _get_fernet
-    from app.core.secure_credential_manager import secure_credential_manager
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 670, in <module>
-    secure_credential_manager = SecureCredentialManager()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 189, in __init__
-    if hasattr(self, '_initialised'):
-       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: super-class __init__() of type SecureCredentialManager was never called
-2026-05-06 10:33:11 - huggin - ERROR - Migration failed for 'C:\Users\allie\Coding Projects\huggin_suite\huggin\profiles\HTB_credentials.json': super-class __init__() of type SecureCredentialManager was never called. Plaintext file left in place.
-Traceback (most recent call last):
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 334, in _migrate_plaintext_file
-    scm = self._get_fernet()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 263, in _get_fernet
-    from app.core.secure_credential_manager import secure_credential_manager
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 670, in <module>
-    secure_credential_manager = SecureCredentialManager()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 189, in __init__
-    if hasattr(self, '_initialised'):
-       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: super-class __init__() of type SecureCredentialManager was never called
-2026-05-06 10:33:11 - huggin - ERROR - Error saving credentials for profile 'HTB': super-class __init__() of type SecureCredentialManager was never called
-Traceback (most recent call last):
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 271, in _save_profile_credentials
-    scm = self._get_fernet()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 263, in _get_fernet
-    from app.core.secure_credential_manager import secure_credential_manager
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 670, in <module>
-    secure_credential_manager = SecureCredentialManager()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 189, in __init__
-    if hasattr(self, '_initialised'):
-       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: super-class __init__() of type SecureCredentialManager was never called
-2026-05-06 10:33:11 - huggin - ERROR - Error saving credentials for profile 'HTB': super-class __init__() of type SecureCredentialManager was never called
-Traceback (most recent call last):
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 271, in _save_profile_credentials
-    scm = self._get_fernet()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 263, in _get_fernet
-    from app.core.secure_credential_manager import secure_credential_manager
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 670, in <module>
-    secure_credential_manager = SecureCredentialManager()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 189, in __init__
-    if hasattr(self, '_initialised'):
-       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: super-class __init__() of type SecureCredentialManager was never called
-2026-05-06 10:33:11 - huggin - ERROR - Migration failed for 'C:\Users\allie\Coding Projects\huggin_suite\huggin\profiles\LAB_credentials.json': super-class __init__() of type SecureCredentialManager was never called. Plaintext file left in place.
-Traceback (most recent call last):
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 334, in _migrate_plaintext_file
-    scm = self._get_fernet()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 263, in _get_fernet
-    from app.core.secure_credential_manager import secure_credential_manager
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 670, in <module>
-    secure_credential_manager = SecureCredentialManager()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 189, in __init__
-    if hasattr(self, '_initialised'):
-       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: super-class __init__() of type SecureCredentialManager was never called
-2026-05-06 10:33:11 - huggin - ERROR - Error saving credentials for profile 'LAB': super-class __init__() of type SecureCredentialManager was never called
-Traceback (most recent call last):
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 271, in _save_profile_credentials
-    scm = self._get_fernet()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 263, in _get_fernet
-    from app.core.secure_credential_manager import secure_credential_manager
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 670, in <module>
-    secure_credential_manager = SecureCredentialManager()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 189, in __init__
-    if hasattr(self, '_initialised'):
-       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: super-class __init__() of type SecureCredentialManager was never called
-2026-05-06 10:33:11 - huggin - ERROR - Error saving credentials for profile 'LAB': super-class __init__() of type SecureCredentialManager was never called
-Traceback (most recent call last):
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 271, in _save_profile_credentials
-    scm = self._get_fernet()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 263, in _get_fernet
-    from app.core.secure_credential_manager import secure_credential_manager
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 670, in <module>
-    secure_credential_manager = SecureCredentialManager()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 189, in __init__
-    if hasattr(self, '_initialised'):
-       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: super-class __init__() of type SecureCredentialManager was never called
-2026-05-06 10:33:11 - huggin - ERROR - Error saving credentials for profile 'LAB': super-class __init__() of type SecureCredentialManager was never called
-Traceback (most recent call last):
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 271, in _save_profile_credentials
-    scm = self._get_fernet()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 263, in _get_fernet
-    from app.core.secure_credential_manager import secure_credential_manager
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 670, in <module>
-    secure_credential_manager = SecureCredentialManager()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 189, in __init__
-    if hasattr(self, '_initialised'):
-       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: super-class __init__() of type SecureCredentialManager was never called
-2026-05-06 10:33:12 - huggin - ERROR - Error saving credentials for profile 'LAB': super-class __init__() of type SecureCredentialManager was never called
-Traceback (most recent call last):
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 271, in _save_profile_credentials
-    scm = self._get_fernet()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 263, in _get_fernet
-    from app.core.secure_credential_manager import secure_credential_manager
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 670, in <module>
-    secure_credential_manager = SecureCredentialManager()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 189, in __init__
-    if hasattr(self, '_initialised'):
-       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: super-class __init__() of type SecureCredentialManager was never called
-2026-05-06 10:33:12 - huggin - ERROR - Migration failed for 'C:\Users\allie\Coding Projects\huggin_suite\huggin\profiles\HTB-Code_credentials.json': super-class __init__() of type SecureCredentialManager was never called. Plaintext file left in place.
-Traceback (most recent call last):
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 334, in _migrate_plaintext_file
-    scm = self._get_fernet()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 263, in _get_fernet
-    from app.core.secure_credential_manager import secure_credential_manager
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 670, in <module>
-    secure_credential_manager = SecureCredentialManager()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 189, in __init__
-    if hasattr(self, '_initialised'):
-       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: super-class __init__() of type SecureCredentialManager was never called
-2026-05-06 10:33:12 - huggin - ERROR - Error saving credentials for profile 'HTB-Code': super-class __init__() of type SecureCredentialManager was never called
-Traceback (most recent call last):
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 271, in _save_profile_credentials
-    scm = self._get_fernet()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 263, in _get_fernet
-    from app.core.secure_credential_manager import secure_credential_manager
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 670, in <module>
-    secure_credential_manager = SecureCredentialManager()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 189, in __init__
-    if hasattr(self, '_initialised'):
-       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: super-class __init__() of type SecureCredentialManager was never called
-2026-05-06 10:33:17 - huggin - ERROR - Error saving credentials for profile 'HTB-Code': super-class __init__() of type SecureCredentialManager was never called
-Traceback (most recent call last):
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 271, in _save_profile_credentials
-    scm = self._get_fernet()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 263, in _get_fernet
-    from app.core.secure_credential_manager import secure_credential_manager
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 670, in <module>
-    secure_credential_manager = SecureCredentialManager()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 189, in __init__
-    if hasattr(self, '_initialised'):
-       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: super-class __init__() of type SecureCredentialManager was never called
-2026-05-06 10:33:17 - huggin - ERROR - Migration failed for 'C:\Users\allie\Coding Projects\huggin_suite\huggin\profiles\LAB_credentials.json': super-class __init__() of type SecureCredentialManager was never called. Plaintext file left in place.
-Traceback (most recent call last):
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 334, in _migrate_plaintext_file
-    scm = self._get_fernet()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 263, in _get_fernet
-    from app.core.secure_credential_manager import secure_credential_manager
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 670, in <module>
-    secure_credential_manager = SecureCredentialManager()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 189, in __init__
-    if hasattr(self, '_initialised'):
-       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: super-class __init__() of type SecureCredentialManager was never called
-2026-05-06 10:33:17 - huggin - ERROR - Error saving credentials for profile 'LAB': super-class __init__() of type SecureCredentialManager was never called
-Traceback (most recent call last):
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 271, in _save_profile_credentials
-    scm = self._get_fernet()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 263, in _get_fernet
-    from app.core.secure_credential_manager import secure_credential_manager
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 670, in <module>
-    secure_credential_manager = SecureCredentialManager()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 189, in __init__
-    if hasattr(self, '_initialised'):
-       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: super-class __init__() of type SecureCredentialManager was never called
-2026-05-06 10:33:17 - huggin - ERROR - Error saving credentials for profile 'LAB': super-class __init__() of type SecureCredentialManager was never called
-Traceback (most recent call last):
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 271, in _save_profile_credentials
-    scm = self._get_fernet()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 263, in _get_fernet
-    from app.core.secure_credential_manager import secure_credential_manager
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 670, in <module>
-    secure_credential_manager = SecureCredentialManager()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 189, in __init__
-    if hasattr(self, '_initialised'):
-       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: super-class __init__() of type SecureCredentialManager was never called
-2026-05-06 10:33:17 - huggin - ERROR - Error saving credentials for profile 'LAB': super-class __init__() of type SecureCredentialManager was never called
-Traceback (most recent call last):
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 271, in _save_profile_credentials
-    scm = self._get_fernet()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\credential_manager.py", line 263, in _get_fernet
-    from app.core.secure_credential_manager import secure_credential_manager
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 670, in <module>
-    secure_credential_manager = SecureCredentialManager()
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 189, in __init__
-    if hasattr(self, '_initialised'):
-       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: super-class __init__() of type SecureCredentialManager was never called
-2026-05-06 10:35:22 - huggin - ERROR - Failed to create recon enumeration page: 'AWSPentestWidget' object has no attribute 'test_conn_btn'
-2026-05-10 19:40:33 - huggin - ERROR - Unhandled exception:
-Traceback (most recent call last):
-  File "<string>", line 13, in <module>
-    exec(open('main.py').read())
-    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<string>", line 112, in <module>
-  File "<string>", line 92, in main
-NameError: name '__file__' is not defined. Did you mean: '__name__'?
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\main_window\components\menu_manager.py", line 98, in <lambda>
+    self._add_action(view_menu, '&Inventory', 'Ctrl+Shift+I', 'View and manage discovered assets', lambda: self.main_window.navigate_to('inventory'))
+                                                                                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\main_window\main_window_refactored.py", line 393, in navigate_to
+    page = self.page_manager.get_page(page_name)
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\lazy_initialization.py", line 22, in get_page
+    self.initialized_pages[name] = self.page_factories[name]()
+                                   ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\main_window\main_window_refactored.py", line 179, in <lambda>
+    self.page_manager.register_page('inventory', lambda: self._create_inventory())
+                                                         ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\main_window\main_window_refactored.py", line 229, in _create_inventory
+    page = InventoryPage(self)
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\inventory_page.py", line 25, in __init__
+    self._setup_ui()
+    ~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\inventory_page.py", line 79, in _setup_ui
+    self.asset_table = self._build_table()
+                       ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\inventory_page.py", line 224, in _build_table
+    table.setMinimumSectionSize(50)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'QTableWidget' object has no attribute 'setMinimumSectionSize'
 
-2026-05-10 19:52:31 - huggin - ERROR - Credential encryption init failed: Fernet key must be 32 url-safe base64-encoded bytes.
+2026-05-14 22:41:30 - huggin - ERROR - Unhandled exception:
 Traceback (most recent call last):
-  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\cryptography\fernet.py", line 34, in __init__
-    key = base64.urlsafe_b64decode(key)
-  File "c:\Python313\Lib\base64.py", line 134, in urlsafe_b64decode
-    return b64decode(s)
-  File "c:\Python313\Lib\base64.py", line 88, in b64decode
-    return binascii.a2b_base64(s, strict_mode=validate)
-           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
-binascii.Error: Incorrect padding
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\main_window\components\menu_manager.py", line 98, in <lambda>
+    self._add_action(view_menu, '&Inventory', 'Ctrl+Shift+I', 'View and manage discovered assets', lambda: self.main_window.navigate_to('inventory'))
+                                                                                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\main_window\main_window_refactored.py", line 393, in navigate_to
+    page = self.page_manager.get_page(page_name)
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\lazy_initialization.py", line 22, in get_page
+    self.initialized_pages[name] = self.page_factories[name]()
+                                   ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\main_window\main_window_refactored.py", line 179, in <lambda>
+    self.page_manager.register_page('inventory', lambda: self._create_inventory())
+                                                         ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\main_window\main_window_refactored.py", line 229, in _create_inventory
+    page = InventoryPage(self)
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\inventory_page.py", line 25, in __init__
+    self._setup_ui()
+    ~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\inventory_page.py", line 79, in _setup_ui
+    self.asset_table = self._build_table()
+                       ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\inventory_page.py", line 224, in _build_table
+    table.setMinimumSectionSize(50)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'QTableWidget' object has no attribute 'setMinimumSectionSize'
 
-The above exception was the direct cause of the following exception:
-
+2026-05-14 22:46:51 - huggin - ERROR - Unhandled exception:
 Traceback (most recent call last):
-  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 239, in _init_encryption
-    self._fernet = Fernet(raw.strip())
-                   ~~~~~~^^^^^^^^^^^^^
-  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\cryptography\fernet.py", line 36, in __init__
-    raise ValueError(
-        "Fernet key must be 32 url-safe base64-encoded bytes."
-    ) from exc
-ValueError: Fernet key must be 32 url-safe base64-encoded bytes.
-2026-05-10 19:52:40 - huggin - ERROR - Credential encryption init failed: Fernet key must be 32 url-safe base64-encoded bytes.
-Traceback (most recent call last):
-  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\cryptography\fernet.py", line 34, in __init__
-    key = base64.urlsafe_b64decode(key)
-  File "c:\Python313\Lib\base64.py", line 134, in urlsafe_b64decode
-    return b64decode(s)
-  File "c:\Python313\Lib\base64.py", line 88, in b64decode
-    return binascii.a2b_base64(s, strict_mode=validate)
-           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
-binascii.Error: Incorrect padding
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\attack_chain_home.py", line 778, in on_profile_selected
+    self.refresh_credential_display()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\attack_chain_home.py", line 1452, in refresh_credential_display
+    self.cred_table.setRowCount(len(credential_manager.credentials))
+    ^^^^^^^^^^^^^^^
+AttributeError: 'AttackChainHomePage' object has no attribute 'cred_table'. Did you mean: 'target_table'?
 
-The above exception was the direct cause of the following exception:
-
+2026-05-14 22:48:05 - huggin - ERROR - Unhandled exception:
 Traceback (most recent call last):
-  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 239, in _init_encryption
-    self._fernet = Fernet(raw.strip())
-                   ~~~~~~^^^^^^^^^^^^^
-  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\cryptography\fernet.py", line 36, in __init__
-    raise ValueError(
-        "Fernet key must be 32 url-safe base64-encoded bytes."
-    ) from exc
-ValueError: Fernet key must be 32 url-safe base64-encoded bytes.
-2026-05-10 19:52:45 - huggin - ERROR - Credential encryption init failed: Fernet key must be 32 url-safe base64-encoded bytes.
-Traceback (most recent call last):
-  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\cryptography\fernet.py", line 34, in __init__
-    key = base64.urlsafe_b64decode(key)
-  File "c:\Python313\Lib\base64.py", line 134, in urlsafe_b64decode
-    return b64decode(s)
-  File "c:\Python313\Lib\base64.py", line 88, in b64decode
-    return binascii.a2b_base64(s, strict_mode=validate)
-           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
-binascii.Error: Incorrect padding
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\attack_chain_home.py", line 778, in on_profile_selected
+    self.refresh_credential_display()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\attack_chain_home.py", line 1452, in refresh_credential_display
+    self.cred_table.setRowCount(len(credential_manager.credentials))
+    ^^^^^^^^^^^^^^^
+AttributeError: 'AttackChainHomePage' object has no attribute 'cred_table'. Did you mean: 'target_table'?
 
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 239, in _init_encryption
-    self._fernet = Fernet(raw.strip())
-                   ~~~~~~^^^^^^^^^^^^^
-  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\cryptography\fernet.py", line 36, in __init__
-    raise ValueError(
-        "Fernet key must be 32 url-safe base64-encoded bytes."
-    ) from exc
-ValueError: Fernet key must be 32 url-safe base64-encoded bytes.
-2026-05-10 19:52:47 - huggin - ERROR - Credential encryption init failed: Fernet key must be 32 url-safe base64-encoded bytes.
-Traceback (most recent call last):
-  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\cryptography\fernet.py", line 34, in __init__
-    key = base64.urlsafe_b64decode(key)
-  File "C:\Users\allie\anaconda3\Lib\base64.py", line 134, in urlsafe_b64decode
-    return b64decode(s)
-  File "C:\Users\allie\anaconda3\Lib\base64.py", line 88, in b64decode
-    return binascii.a2b_base64(s, strict_mode=validate)
-           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
-binascii.Error: Incorrect padding
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 239, in _init_encryption
-    self._fernet = Fernet(raw.strip())
-                   ~~~~~~^^^^^^^^^^^^^
-  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\cryptography\fernet.py", line 36, in __init__
-    raise ValueError(
-        "Fernet key must be 32 url-safe base64-encoded bytes."
-    ) from exc
-ValueError: Fernet key must be 32 url-safe base64-encoded bytes.
-2026-05-10 19:52:53 - huggin - ERROR - Credential encryption init failed: Fernet key must be 32 url-safe base64-encoded bytes.
-Traceback (most recent call last):
-  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\cryptography\fernet.py", line 34, in __init__
-    key = base64.urlsafe_b64decode(key)
-  File "C:\Users\allie\anaconda3\Lib\base64.py", line 134, in urlsafe_b64decode
-    return b64decode(s)
-  File "C:\Users\allie\anaconda3\Lib\base64.py", line 88, in b64decode
-    return binascii.a2b_base64(s, strict_mode=validate)
-           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
-binascii.Error: Incorrect padding
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 239, in _init_encryption
-    self._fernet = Fernet(raw.strip())
-                   ~~~~~~^^^^^^^^^^^^^
-  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\cryptography\fernet.py", line 36, in __init__
-    raise ValueError(
-        "Fernet key must be 32 url-safe base64-encoded bytes."
-    ) from exc
-ValueError: Fernet key must be 32 url-safe base64-encoded bytes.
-2026-05-10 19:55:22 - huggin - ERROR - Credential encryption init failed: Fernet key must be 32 url-safe base64-encoded bytes.
-Traceback (most recent call last):
-  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\cryptography\fernet.py", line 34, in __init__
-    key = base64.urlsafe_b64decode(key)
-  File "C:\Users\allie\anaconda3\Lib\base64.py", line 134, in urlsafe_b64decode
-    return b64decode(s)
-  File "C:\Users\allie\anaconda3\Lib\base64.py", line 88, in b64decode
-    return binascii.a2b_base64(s, strict_mode=validate)
-           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
-binascii.Error: Incorrect padding
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 239, in _init_encryption
-    self._fernet = Fernet(raw.strip())
-                   ~~~~~~^^^^^^^^^^^^^
-  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\cryptography\fernet.py", line 36, in __init__
-    raise ValueError(
-        "Fernet key must be 32 url-safe base64-encoded bytes."
-    ) from exc
-ValueError: Fernet key must be 32 url-safe base64-encoded bytes.
-2026-05-10 19:55:22 - huggin - ERROR - Failed to decrypt credentials for profile 'default' — wrong key or corrupted file.
-2026-05-10 20:02:39 - huggin - ERROR - Credential encryption init failed: Fernet key must be 32 url-safe base64-encoded bytes.
-Traceback (most recent call last):
-  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\cryptography\fernet.py", line 34, in __init__
-    key = base64.urlsafe_b64decode(key)
-  File "c:\Python313\Lib\base64.py", line 134, in urlsafe_b64decode
-    return b64decode(s)
-  File "c:\Python313\Lib\base64.py", line 88, in b64decode
-    return binascii.a2b_base64(s, strict_mode=validate)
-           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
-binascii.Error: Incorrect padding
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "c:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\secure_credential_manager.py", line 239, in _init_encryption
-    self._fernet = Fernet(raw.strip())
-                   ~~~~~~^^^^^^^^^^^^^
-  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\cryptography\fernet.py", line 36, in __init__
-    raise ValueError(
-        "Fernet key must be 32 url-safe base64-encoded bytes."
-    ) from exc
-ValueError: Fernet key must be 32 url-safe base64-encoded bytes.
-2026-05-10 20:02:56 - huggin - ERROR - Failed to decrypt credentials for profile 'default' — wrong key or corrupted file.
-2026-05-10 21:55:47 - huggin - ERROR - Failed to decrypt credentials for profile 'default' — wrong key or corrupted file.
+2026-05-14 23:25:39 - huggin - ERROR - Failed to load SecureCredentialWidget: name 'QHeaderView' is not defined
+2026-05-14 23:32:11 - huggin - ERROR - Failed to load SecureCredentialWidget: name 'QHeaderView' is not defined

@@ -6,7 +6,7 @@
   "cloud_assets": "",
   "out_scope": "",
   "restrictions": "",
-  "dos_allowed": true,
+  "dos_allowed": false,
   "social_eng_allowed": false,
   "physical_allowed": false,
   "credentials": {

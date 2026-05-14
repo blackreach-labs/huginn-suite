@@ -635,15 +635,14 @@ class MainWindow(QMainWindow):
             self.status_bar.showMessage("Failed to open License Manager")
     
     def open_reports_dialog(self):
-        """Open advanced reports dialog."""
+        """Navigate to the Findings page and switch to the Advanced Reporting tab."""
         try:
-            from app.widgets.advanced_reporting_widget import AdvancedReportingWidget
-            dialog = self._create_dialog("Advanced Reporting Engine", AdvancedReportingWidget, (1000, 750))
-            self.status_bar.showMessage("Advanced Reporting Engine opened")
-            dialog.exec()
-        except ImportError as e:
-            logger.error(f"Reporting widget import failed in open_reports_dialog: {e}")
-            self.status_bar.showMessage("Advanced Reporting not available")
+            self.navigate_to('findings')
+            # Switch to the Advanced Reporting tab (index 1) once the page is loaded
+            page = self.page_manager.get_page('findings')
+            if page and hasattr(page, 'tab_widget'):
+                page.tab_widget.setCurrentIndex(1)
+            self.status_bar.showMessage("Advanced Reporting & Compliance opened")
         except Exception as e:
             logger.error(f"Unexpected error in open_reports_dialog: {e}")
             self.status_bar.showMessage("Failed to open Advanced Reporting")
@@ -857,70 +856,47 @@ class MainWindow(QMainWindow):
     
 
     
+    def _get_attack_chain_home(self):
+        """Retrieve (and lazily create) the attack chain home page."""
+        return self.page_manager.get_page('attack_chain_home')
+
     def new_profile(self):
-        """Create a new engagement profile"""
+        """Navigate to Target Profiles and create a new blank profile."""
         try:
-            if hasattr(self, 'attack_chain_home'):
-                # Navigate to attack chain home first
-                self.navigate_to("attack_chain_home")
-                # Call the new_profile method on attack_chain_home
-                self.attack_chain_home.new_profile()
+            self.navigate_to("attack_chain_home")
+            page = self._get_attack_chain_home()
+            if page:
+                page.new_profile()
             else:
                 self.status_bar.showMessage("Profile management not available")
-        except AttributeError as e:
-            logger.error(f"Profile management method not found in new_profile: {e}")
-            self.status_bar.showMessage("Profile creation method not available")
         except Exception as e:
             logger.error(f"Unexpected error in new_profile: {e}")
             self.status_bar.showMessage("Failed to create new profile")
-    
+
     def load_profile(self):
-        """Load an engagement profile"""
+        """Navigate to Target Profiles and show the load-profile dialog."""
         try:
-            if hasattr(self, 'attack_chain_home'):
-                self.attack_chain_home.load_profile()
+            self.navigate_to("attack_chain_home")
+            page = self._get_attack_chain_home()
+            if page:
+                page.load_profile()
             else:
                 self.status_bar.showMessage("Profile management not available")
-        except AttributeError as e:
-            logger.error(f"Profile management method not found in load_profile: {e}")
-            self.status_bar.showMessage("Profile loading method not available")
         except Exception as e:
             logger.error(f"Unexpected error in load_profile: {e}")
             self.status_bar.showMessage("Failed to load profile")
-    
-    def save_profile(self):
-        """Save current engagement profile"""
+
+    def delete_profile(self):
+        """Show a list of profiles and delete the selected one."""
         try:
-            if hasattr(self, 'attack_chain_home'):
-                self.attack_chain_home.save_profile()
+            page = self._get_attack_chain_home()
+            if page:
+                page.delete_profile_dialog()
             else:
                 self.status_bar.showMessage("Profile management not available")
-        except AttributeError as e:
-            logger.error(f"Profile management method not found in save_profile: {e}")
-            self.status_bar.showMessage("Profile saving method not available")
         except Exception as e:
-            logger.error(f"Unexpected error in save_profile: {e}")
-            self.status_bar.showMessage("Failed to save profile")
-    
-    def save_profile_as(self):
-        """Save current profile with new name"""
-        try:
-            if hasattr(self, 'attack_chain_home'):
-                # Force save as by clearing current profile name
-                old_name = getattr(self, 'current_profile_name', None)
-                self.current_profile_name = None
-                self.attack_chain_home.save_profile()
-                # Restore name if save was cancelled
-                if not hasattr(self, 'current_profile_name') or not self.current_profile_name:
-                    self.current_profile_name = old_name
-            else:
-                self.status_bar.showMessage("Profile management not available")
-        except AttributeError as e:
-            logger.error(f"Profile management method not found in save_profile_as: {e}")
-            self.status_bar.showMessage("Profile save-as method not available")
-        except Exception as e:
-            logger.error(f"Unexpected error in save_profile_as: {e}")
-            self.status_bar.showMessage("Failed to save profile")
+            logger.error(f"Unexpected error in delete_profile: {e}")
+            self.status_bar.showMessage("Failed to delete profile")
     
     def open_database_management(self):
         """Open database management page"""

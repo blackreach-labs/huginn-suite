@@ -4,11 +4,11 @@
   "scope": "*.lab.local, 192.168.1.0/24",
   "subdomains": "",
   "cloud_assets": "",
-  "out_scope": "",
+  "out_scope": "192.168.1.1",
   "restrictions": "",
   "dos_allowed": true,
-  "social_eng_allowed": true,
-  "physical_allowed": true,
+  "social_eng_allowed": false,
+  "physical_allowed": false,
   "credentials": {
     "credentials": [
       {

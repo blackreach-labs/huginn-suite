@@ -1,443 +1,506 @@
 #!/usr/bin/env python3
 """
 Correlation Dashboard Widget
-Real-time correlation analysis and attack chain visualization
+Real-time correlation analysis and attack chain visualization.
+
+Layout mirrors create_target_profiles_tab() in attack_chain_home.py:
+  QVBoxLayout(widget, margins=10, spacing=8)
+    └─ QFrame (dark, rounded, border)          ← form_frame, stretch=1
+         └─ QVBoxLayout (margins=15)
+              ├─ section headers + content
+              └─ (no buttons inside frame)
+    └─ QHBoxLayout                             ← action buttons
+    └─ QLabel                                  ← table header label
+    └─ QTableWidget (fixed height)             ← summary table
+    └─ QLabel (score badge)                    ← status badge at bottom
 """
 
-from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
-                            QLabel, QTableWidget, QTableWidgetItem, QTextEdit,
-                            QTabWidget, QFrame, QProgressBar, QComboBox)
+from PyQt6.QtWidgets import (
+    QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
+    QLabel, QTableWidget, QTableWidgetItem, QTextEdit,
+    QTabWidget, QFrame, QComboBox, QHeaderView, QSizePolicy
+)
 from PyQt6.QtCore import QTimer, Qt
-from PyQt6.QtGui import QFont
 import json
+
+
+# ── exact copies of the style constants used in attack_chain_home.py ──────
+_FRAME_STYLE = """
+    QFrame {
+        background-color: rgba(0, 0, 0, 150);
+        border-radius: 10px;
+        border: 1px solid rgba(100, 200, 255, 50);
+    }
+"""
+_TABLE_STYLE = """
+    QTableWidget {
+        background-color: rgba(20, 30, 40, 150);
+        border: 1px solid rgba(100, 200, 255, 100);
+        border-radius: 5px;
+        color: #DCDCDC;
+        gridline-color: rgba(100, 200, 255, 50);
+    }
+    QHeaderView::section {
+        background-color: rgba(100, 200, 255, 100);
+        color: #000000;
+        font-weight: bold;
+        padding: 5px;
+        border: none;
+    }
+"""
+_HDR_STYLE = (
+    "font-size: 10pt; font-weight: bold; color: #64C8FF;"
+    " padding: 8px 0px 4px 0px;"
+)
+_SECTION_STYLE = "font-weight: bold; color: #64C8FF; margin-top: 4px;"
+
+
+def _get_button_style(border_color, text_color="#FFFFFF"):
+    """Exact copy of AttackChainHomePage.get_button_style()."""
+    return f"""
+        QPushButton {{
+            background-color: rgba(50, 150, 50, 150);
+            border: 2px solid {border_color};
+            border-radius: 5px;
+            color: {text_color};
+            font-weight: bold;
+            padding: 8px 15px;
+            font-size: 12pt;
+        }}
+        QPushButton:hover {{
+            background-color: rgba(70, 170, 70, 200);
+        }}
+    """
+
+
+def _make_table(columns, fixed_height=None):
+    t = QTableWidget()
+    t.setColumnCount(len(columns))
+    t.setHorizontalHeaderLabels(columns)
+    t.setStyleSheet(_TABLE_STYLE)
+    t.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+    hdr = t.horizontalHeader()
+    hdr.setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
+    if columns:
+        hdr.setSectionResizeMode(len(columns) - 1, QHeaderView.ResizeMode.Stretch)
+    if fixed_height is not None:
+        t.setFixedHeight(fixed_height)
+    return t
+
 
 class CorrelationDashboardWidget(QWidget):
     def __init__(self, tenant_id="default", parent=None):
         super().__init__(parent)
         self.tenant_id = tenant_id
-        self.setup_ui()
-        self.setup_refresh_timer()
+        self._setup_ui()
+        self._setup_refresh_timer()
         self.load_correlations()
-    
-    def setup_ui(self):
+
+    # ------------------------------------------------------------------ #
+    #  Top-level layout  (mirrors create_target_profiles_tab exactly)     #
+    # ------------------------------------------------------------------ #
+
+    def _setup_ui(self):
+        # Outer layout — same margins/spacing as Target Profiles
         layout = QVBoxLayout(self)
-        
-        # Header
-        header = QLabel("🔗 Cross-Scan Correlations & Attack Chains")
-        header.setStyleSheet("font-size: 16pt; font-weight: bold; color: #64C8FF; padding: 10px;")
-        layout.addWidget(header)
-        
-        # Control panel
-        controls = QHBoxLayout()
-        
-        self.refresh_btn = QPushButton("🔄 Refresh Correlations")
-        self.refresh_btn.clicked.connect(self.load_correlations)
-        controls.addWidget(self.refresh_btn)
-        
-        self.export_btn = QPushButton("📊 Export Analysis")
-        self.export_btn.clicked.connect(self.export_analysis)
-        controls.addWidget(self.export_btn)
-        
-        controls.addStretch()
-        
-        # Correlation score
-        self.score_label = QLabel("Correlation Score: 0/100")
-        self.score_label.setStyleSheet("font-weight: bold; color: #FFD700;")
-        controls.addWidget(self.score_label)
-        
-        layout.addLayout(controls)
-        
-        # Main tabs
+        layout.setContentsMargins(10, 10, 10, 10)
+        layout.setSpacing(8)
+
+        # Match the black background of the Target Profiles tab
+        self.setAutoFillBackground(True)
+        self.setStyleSheet("CorrelationDashboardWidget { background-color: black; }")
+
+        # ── Subtabs sit directly on the layout, no wrapping frame ─────────
+        # (mirrors how Target Profiles / Credential Management are direct
+        #  children of setup_subtabs in attack_chain_home.py)
         self.tabs = QTabWidget()
-        
-        # Attack Chains tab
-        self.attack_chains_tab = self.create_attack_chains_tab()
-        self.tabs.addTab(self.attack_chains_tab, "⚔️ Attack Chains")
-        
-        # Risk Amplifiers tab
-        self.risk_amplifiers_tab = self.create_risk_amplifiers_tab()
-        self.tabs.addTab(self.risk_amplifiers_tab, "📈 Risk Amplifiers")
-        
-        # Asset Correlation tab
-        self.asset_correlation_tab = self.create_asset_correlation_tab()
-        self.tabs.addTab(self.asset_correlation_tab, "🎯 Asset Correlation")
-        
-        layout.addWidget(self.tabs)
-    
-    def create_attack_chains_tab(self):
+        self.tabs.addTab(self._build_attack_chains_tab(),     "⚔️ Attack Chains")
+        self.tabs.addTab(self._build_risk_amplifiers_tab(),   "📈 Risk Amplifiers")
+        self.tabs.addTab(self._build_asset_correlation_tab(), "🎯 Asset Correlation")
+        layout.addWidget(self.tabs, stretch=1)
+
+        # ── Buttons below frame (mirrors Save / Delete pattern) ───────────
+        btn_layout = QHBoxLayout()
+        btn_layout.setSpacing(8)
+
+        refresh_btn = QPushButton("🔄 Refresh Correlations")
+        refresh_btn.setStyleSheet(_get_button_style("#64C8FF", "#000000"))
+        refresh_btn.clicked.connect(self.load_correlations)
+        btn_layout.addWidget(refresh_btn)
+
+        export_btn = QPushButton("📊 Export Analysis")
+        export_btn.setStyleSheet(_get_button_style("#FFA500", "#000000"))
+        export_btn.clicked.connect(self.export_analysis)
+        btn_layout.addWidget(export_btn)
+
+        btn_layout.addStretch()
+        layout.addLayout(btn_layout)
+
+        # ── Table header label (mirrors "📋 Profiles:" label) ─────────────
+        table_lbl = QLabel("🔗 Correlation Summary:")
+        table_lbl.setStyleSheet("font-weight: bold; color: #64C8FF; margin-top: 4px;")
+        layout.addWidget(table_lbl)
+
+        # ── Summary table (fixed height, mirrors target_table) ────────────
+        self.summary_table = _make_table(
+            ["Chain Type", "Source", "Target", "Risk Score", "Impact"],
+            fixed_height=160
+        )
+        self.summary_table.itemDoubleClicked.connect(self.view_attack_chain_details)
+        layout.addWidget(self.summary_table)
+
+        # ── Score badge at the very bottom (mirrors scope_status) ─────────
+        self.score_label = QLabel("Correlation Score: 0 / 100")
+        self._set_score(0)
+        layout.addWidget(self.score_label)
+
+    # ------------------------------------------------------------------ #
+    #  Subtab builders                                                     #
+    # ------------------------------------------------------------------ #
+
+    def _build_attack_chains_tab(self):
         widget = QWidget()
         layout = QVBoxLayout(widget)
-        
-        # Attack chains table
-        self.chains_table = QTableWidget()
-        self.chains_table.setColumnCount(5)
-        self.chains_table.setHorizontalHeaderLabels([
-            "Chain Type", "Source", "Target", "Risk Score", "Impact"
-        ])
+        layout.setContentsMargins(10, 10, 10, 10)
+        layout.setSpacing(8)
+
+        # Form frame — mirrors Target Profiles
+        form_frame = QFrame()
+        form_frame.setStyleSheet(_FRAME_STYLE)
+        form_frame.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        form_layout = QVBoxLayout(form_frame)
+        form_layout.setContentsMargins(15, 15, 15, 15)
+        form_layout.setSpacing(8)
+
+        self.chains_table = _make_table(
+            ["Chain Type", "Source", "Target", "Risk Score", "Impact"]
+        )
         self.chains_table.itemDoubleClicked.connect(self.view_attack_chain_details)
-        layout.addWidget(self.chains_table)
-        
-        # Playbook generation
-        playbook_layout = QHBoxLayout()
-        self.generate_playbook_btn = QPushButton("📋 Generate HTB Playbook")
-        self.generate_playbook_btn.clicked.connect(self.generate_playbook)
-        playbook_layout.addWidget(self.generate_playbook_btn)
-        
+        form_layout.addWidget(self.chains_table, 1)
+
+        layout.addWidget(form_frame, stretch=1)
+
+        # Buttons below frame
+        row = QHBoxLayout()
+        row.setSpacing(8)
+
+        gen_btn = QPushButton("📋 Generate Playbook")
+        gen_btn.setStyleSheet(_get_button_style("#64C8FF", "#000000"))
+        gen_btn.clicked.connect(self.generate_playbook)
+        row.addWidget(gen_btn)
+
         self.playbook_format = QComboBox()
         self.playbook_format.addItems(["HTB Format", "THM Format", "Generic"])
-        playbook_layout.addWidget(self.playbook_format)
-        
-        playbook_layout.addStretch()
-        layout.addLayout(playbook_layout)
-        
+        self.playbook_format.setFixedHeight(30)
+        self.playbook_format.setStyleSheet("""
+            QComboBox {
+                background-color: rgba(30, 40, 50, 180);
+                border: 1px solid rgba(100, 200, 255, 100);
+                border-radius: 4px;
+                color: #DCDCDC;
+                padding: 4px 8px;
+                font-size: 10pt;
+            }
+            QComboBox::drop-down { border: none; }
+            QComboBox QAbstractItemView {
+                background-color: rgba(30, 40, 50, 240);
+                color: #DCDCDC;
+                selection-background-color: rgba(100, 200, 255, 150);
+            }
+        """)
+        row.addWidget(self.playbook_format)
+        row.addStretch()
+        layout.addLayout(row)
+
         return widget
-    
-    def create_risk_amplifiers_tab(self):
+
+    def _build_risk_amplifiers_tab(self):
         widget = QWidget()
         layout = QVBoxLayout(widget)
-        
-        # Risk amplifiers table
-        self.amplifiers_table = QTableWidget()
-        self.amplifiers_table.setColumnCount(4)
-        self.amplifiers_table.setHorizontalHeaderLabels([
-            "Amplifier Type", "Risk Level", "Count", "Description"
-        ])
-        layout.addWidget(self.amplifiers_table)
-        
-        # Security gaps
-        gaps_label = QLabel("🔒 Security Gaps Identified:")
-        gaps_label.setStyleSheet("font-weight: bold; color: #FF6347; margin-top: 10px;")
-        layout.addWidget(gaps_label)
-        
+        layout.setContentsMargins(10, 10, 10, 10)
+        layout.setSpacing(8)
+
+        # Form frame
+        form_frame = QFrame()
+        form_frame.setStyleSheet(_FRAME_STYLE)
+        form_frame.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        form_layout = QVBoxLayout(form_frame)
+        form_layout.setContentsMargins(15, 15, 15, 15)
+        form_layout.setSpacing(8)
+
+        self.amplifiers_table = _make_table(
+            ["Amplifier Type", "Risk Level", "Count", "Description"]
+        )
+        form_layout.addWidget(self.amplifiers_table, 1)
+
+        gaps_lbl = QLabel("🔒 Security Gaps Identified:")
+        gaps_lbl.setStyleSheet(_SECTION_STYLE)
+        form_layout.addWidget(gaps_lbl)
+
         self.gaps_text = QTextEdit()
-        self.gaps_text.setMaximumHeight(150)
-        layout.addWidget(self.gaps_text)
-        
+        self.gaps_text.setReadOnly(True)
+        self.gaps_text.setFixedHeight(130)
+        self.gaps_text.setStyleSheet("""
+            QTextEdit {
+                background-color: rgba(20, 30, 40, 150);
+                border: 1px solid rgba(100, 200, 255, 50);
+                border-radius: 5px;
+                color: #DCDCDC;
+                font-size: 10pt;
+            }
+        """)
+        form_layout.addWidget(self.gaps_text)
+
+        layout.addWidget(form_frame, stretch=1)
         return widget
-    
-    def create_asset_correlation_tab(self):
+
+    def _build_asset_correlation_tab(self):
         widget = QWidget()
         layout = QVBoxLayout(widget)
-        
-        # Asset correlation table
-        self.assets_table = QTableWidget()
-        self.assets_table.setColumnCount(6)
-        self.assets_table.setHorizontalHeaderLabels([
-            "Asset", "Services", "Vulnerabilities", "Attack Vectors", "Risk Score", "Priority"
-        ])
-        layout.addWidget(self.assets_table)
-        
-        # High-value targets
-        hvt_label = QLabel("🎯 High-Value Targets:")
-        hvt_label.setStyleSheet("font-weight: bold; color: #FFD700; margin-top: 10px;")
-        layout.addWidget(hvt_label)
-        
-        self.hvt_table = QTableWidget()
-        self.hvt_table.setColumnCount(3)
-        self.hvt_table.setHorizontalHeaderLabels(["Target", "Value Type", "Description"])
-        self.hvt_table.setMaximumHeight(150)
+        layout.setContentsMargins(10, 10, 10, 10)
+        layout.setSpacing(8)
+
+        # Form frame
+        form_frame = QFrame()
+        form_frame.setStyleSheet(_FRAME_STYLE)
+        form_frame.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        form_layout = QVBoxLayout(form_frame)
+        form_layout.setContentsMargins(15, 15, 15, 15)
+        form_layout.setSpacing(8)
+
+        self.assets_table = _make_table(
+            ["Asset", "Services", "Vulnerabilities", "Attack Vectors", "Risk Score", "Priority"]
+        )
+        form_layout.addWidget(self.assets_table, 1)
+
+        layout.addWidget(form_frame, stretch=1)
+
+        # High-value targets below frame (mirrors Profiles table pattern)
+        hvt_lbl = QLabel("🎯 High-Value Targets:")
+        hvt_lbl.setStyleSheet("font-weight: bold; color: #64C8FF; margin-top: 4px;")
+        layout.addWidget(hvt_lbl)
+
+        self.hvt_table = _make_table(
+            ["Target", "Value Type", "Description"],
+            fixed_height=160
+        )
         layout.addWidget(self.hvt_table)
-        
+
         return widget
-    
-    def setup_refresh_timer(self):
-        """Setup auto-refresh timer"""
+
+    # ------------------------------------------------------------------ #
+    #  Score badge (mirrors scope_status styling)                         #
+    # ------------------------------------------------------------------ #
+
+    def _set_score(self, score: int):
+        self.score_label.setText(f"Correlation Score: {score} / 100")
+        if score >= 80:
+            bg, border = "rgba(255, 68, 68, 100)", "#FF4444"
+        elif score >= 60:
+            bg, border = "rgba(255, 165, 0, 100)", "#FFA500"
+        elif score >= 40:
+            bg, border = "rgba(255, 255, 0, 80)", "#FFFF00"
+        else:
+            bg, border = "rgba(50, 205, 50, 100)", "#32CD32"
+        self.score_label.setStyleSheet(f"""
+            QLabel {{
+                background-color: {bg};
+                border: 1px solid {border};
+                border-radius: 5px;
+                padding: 5px 12px;
+                color: #FFFFFF;
+                font-size: 10pt;
+                font-weight: bold;
+                margin-top: 8px;
+            }}
+        """)
+
+    # ------------------------------------------------------------------ #
+    #  Timer & data loading                                                #
+    # ------------------------------------------------------------------ #
+
+    def _setup_refresh_timer(self):
         self.refresh_timer = QTimer()
         self.refresh_timer.timeout.connect(self.load_correlations)
-        self.refresh_timer.start(30000)  # Refresh every 30 seconds
-    
+        self.refresh_timer.start(30000)
+
     def load_correlations(self):
-        """Load correlation data"""
         try:
             from app.core.vulnerability_correlator_enhanced import enhanced_vulnerability_correlator
             from app.core.centralized_scan_data import get_scan_data_manager
-            
-            # Get scan results for tenant
+
             scan_manager = get_scan_data_manager(self.tenant_id)
             scan_results = scan_manager.get_tenant_overview(self.tenant_id)
-            
+
             if not scan_results:
                 self.show_no_data_message()
                 return
-            
-            # Perform correlation analysis
+
             correlations = enhanced_vulnerability_correlator.correlate_findings(scan_results)
-            
-            # Update UI with correlation results
+
             self.update_attack_chains_display(correlations.get('attack_chains', []))
             self.update_risk_amplifiers_display(correlations.get('risk_amplifiers', []))
             self.update_asset_correlation_display(correlations.get('correlated_findings', []))
             self.update_high_value_targets(correlations.get('high_value_targets', []))
             self.update_security_gaps(correlations.get('security_gaps', []))
-            
-            # Update correlation score
-            score = correlations.get('correlation_score', 0)
-            self.score_label.setText(f"Correlation Score: {score}/100")
-            
-            # Update score color based on risk level
-            if score >= 80:
-                color = "#FF4444"  # High risk - red
-            elif score >= 60:
-                color = "#FFA500"  # Medium risk - orange
-            elif score >= 40:
-                color = "#FFFF00"  # Low risk - yellow
-            else:
-                color = "#32CD32"  # Very low risk - green
-            
-            self.score_label.setStyleSheet(f"font-weight: bold; color: {color};")
-            
+            self._set_score(correlations.get('correlation_score', 0))
+
         except Exception as e:
-            print(f"Error loading correlations: {e}")
             self.show_error_message(str(e))
-    
+
+    # ------------------------------------------------------------------ #
+    #  Table updaters                                                      #
+    # ------------------------------------------------------------------ #
+
+    def _fill_table(self, table, rows):
+        table.setRowCount(len(rows))
+        for i, row in enumerate(rows):
+            for col, val in enumerate(row):
+                table.setItem(i, col, QTableWidgetItem(str(val)))
+
     def update_attack_chains_display(self, attack_chains):
-        """Update attack chains table"""
-        self.chains_table.setRowCount(len(attack_chains))
-        
-        for i, chain in enumerate(attack_chains):
+        rows = []
+        for chain in attack_chains:
             if hasattr(chain, 'chain_type'):
-                # AttackChain object
-                self.chains_table.setItem(i, 0, QTableWidgetItem(chain.chain_type))
-                self.chains_table.setItem(i, 1, QTableWidgetItem(chain.source_host))
-                self.chains_table.setItem(i, 2, QTableWidgetItem(chain.target_host))
-                self.chains_table.setItem(i, 3, QTableWidgetItem(str(chain.risk_score)))
-                self.chains_table.setItem(i, 4, QTableWidgetItem(chain.impact))
+                rows.append([chain.chain_type, chain.source_host, chain.target_host,
+                             chain.risk_score, chain.impact])
             else:
-                # Dictionary format
-                self.chains_table.setItem(i, 0, QTableWidgetItem(chain.get('chain_type', 'Unknown')))
-                self.chains_table.setItem(i, 1, QTableWidgetItem(chain.get('source', 'Unknown')))
-                self.chains_table.setItem(i, 2, QTableWidgetItem(chain.get('target', 'Unknown')))
-                self.chains_table.setItem(i, 3, QTableWidgetItem(str(chain.get('risk_score', 0))))
-                self.chains_table.setItem(i, 4, QTableWidgetItem(chain.get('impact', 'Unknown')))
-    
+                rows.append([chain.get('chain_type', ''), chain.get('source', ''),
+                             chain.get('target', ''), chain.get('risk_score', 0),
+                             chain.get('impact', '')])
+        self._fill_table(self.chains_table, rows)
+        self._fill_table(self.summary_table, rows)
+
     def update_risk_amplifiers_display(self, risk_amplifiers):
-        """Update risk amplifiers table"""
-        self.amplifiers_table.setRowCount(len(risk_amplifiers))
-        
-        for i, amplifier in enumerate(risk_amplifiers):
-            self.amplifiers_table.setItem(i, 0, QTableWidgetItem(amplifier.get('type', 'Unknown')))
-            self.amplifiers_table.setItem(i, 1, QTableWidgetItem(amplifier.get('risk', 'Unknown')))
-            self.amplifiers_table.setItem(i, 2, QTableWidgetItem(str(amplifier.get('count', 0))))
-            self.amplifiers_table.setItem(i, 3, QTableWidgetItem(amplifier.get('description', '')))
-    
-    def update_asset_correlation_display(self, correlated_findings):
-        """Update asset correlation table"""
+        rows = [[a.get('type', ''), a.get('risk', ''), a.get('count', 0), a.get('description', '')]
+                for a in risk_amplifiers]
+        self._fill_table(self.amplifiers_table, rows)
+
+    def update_asset_correlation_display(self, _correlated_findings):
         try:
-            from app.core.centralized_scan_data import get_scan_data_manager
-            
-            scan_manager = get_scan_data_manager(self.tenant_id)
-            asset_data = {"example.com": {"services": ["HTTP", "HTTPS"], "vulnerabilities": [], "attack_vectors": ["Web"], "risk_score": 25}}
-            
-            self.assets_table.setRowCount(len(asset_data))
-            
-            for i, (host, data) in enumerate(asset_data.items()):
-                self.assets_table.setItem(i, 0, QTableWidgetItem(host))
-                self.assets_table.setItem(i, 1, QTableWidgetItem(", ".join(data.get('services', [])[:3])))
-                self.assets_table.setItem(i, 2, QTableWidgetItem(str(len(data.get('vulnerabilities', [])))))
-                self.assets_table.setItem(i, 3, QTableWidgetItem(", ".join(data.get('attack_vectors', [])[:2])))
-                self.assets_table.setItem(i, 4, QTableWidgetItem(str(data.get('risk_score', 0))))
-                
-                # Determine priority based on risk score
-                risk_score = data.get('risk_score', 0)
-                if risk_score >= 80:
-                    priority = "Critical"
-                elif risk_score >= 60:
-                    priority = "High"
-                elif risk_score >= 40:
-                    priority = "Medium"
-                else:
-                    priority = "Low"
-                
-                self.assets_table.setItem(i, 5, QTableWidgetItem(priority))
-                
-        except Exception as e:
-            print(f"Error updating asset correlation: {e}")
-    
+            asset_data = {
+                "example.com": {"services": ["HTTP", "HTTPS"], "vulnerabilities": [],
+                                "attack_vectors": ["Web"], "risk_score": 25}
+            }
+            rows = []
+            for host, data in asset_data.items():
+                risk = data.get('risk_score', 0)
+                priority = ("Critical" if risk >= 80 else "High" if risk >= 60
+                            else "Medium" if risk >= 40 else "Low")
+                rows.append([host,
+                             ", ".join(data.get('services', [])[:3]),
+                             len(data.get('vulnerabilities', [])),
+                             ", ".join(data.get('attack_vectors', [])[:2]),
+                             risk, priority])
+            self._fill_table(self.assets_table, rows)
+        except Exception:
+            pass
+
     def update_high_value_targets(self, high_value_targets):
-        """Update high-value targets table"""
-        self.hvt_table.setRowCount(len(high_value_targets))
-        
-        for i, target in enumerate(high_value_targets):
-            self.hvt_table.setItem(i, 0, QTableWidgetItem(target.get('host', 'Unknown')))
-            self.hvt_table.setItem(i, 1, QTableWidgetItem(target.get('value_type', 'Unknown')))
-            self.hvt_table.setItem(i, 2, QTableWidgetItem(target.get('description', '')))
-    
+        rows = [[t.get('host', ''), t.get('value_type', ''), t.get('description', '')]
+                for t in high_value_targets]
+        self._fill_table(self.hvt_table, rows)
+
     def update_security_gaps(self, security_gaps):
-        """Update security gaps display"""
-        gaps_text = ""
+        lines = []
         for gap in security_gaps:
-            gaps_text += f"• {gap.get('type', 'Unknown')}: {gap.get('description', '')}\n"
+            lines.append(f"• {gap.get('type', '')}: {gap.get('description', '')}")
             if 'recommendation' in gap:
-                gaps_text += f"  Recommendation: {gap['recommendation']}\n"
-            gaps_text += "\n"
-        
-        self.gaps_text.setPlainText(gaps_text)
-    
+                lines.append(f"  Recommendation: {gap['recommendation']}")
+            lines.append("")
+        self.gaps_text.setPlainText("\n".join(lines))
+
+    # ------------------------------------------------------------------ #
+    #  Actions                                                             #
+    # ------------------------------------------------------------------ #
+
     def view_attack_chain_details(self, item):
-        """View detailed attack chain information"""
+        from PyQt6.QtWidgets import QDialog, QVBoxLayout, QTextEdit, QPushButton
         row = item.row()
-        try:
-            from PyQt6.QtWidgets import QDialog, QVBoxLayout, QTextEdit, QPushButton
-            
-            dialog = QDialog(self)
-            dialog.setWindowTitle("Attack Chain Details")
-            dialog.setMinimumSize(600, 400)
-            
-            layout = QVBoxLayout(dialog)
-            
-            details_text = QTextEdit()
-            details_text.setPlainText(f"Attack Chain Details for row {row + 1}\n\nDetailed analysis would be shown here...")
-            layout.addWidget(details_text)
-            
-            close_btn = QPushButton("Close")
-            close_btn.clicked.connect(dialog.close)
-            layout.addWidget(close_btn)
-            
-            dialog.exec()
-            
-        except Exception as e:
-            print(f"Error showing attack chain details: {e}")
-    
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Attack Chain Details")
+        dialog.setMinimumSize(600, 400)
+        dlg_layout = QVBoxLayout(dialog)
+        details = QTextEdit()
+        details.setPlainText(f"Attack Chain Details — row {row + 1}\n\nDetailed analysis would appear here.")
+        dlg_layout.addWidget(details)
+        close_btn = QPushButton("Close")
+        close_btn.clicked.connect(dialog.close)
+        dlg_layout.addWidget(close_btn)
+        dialog.exec()
+
     def generate_playbook(self):
-        """Generate attack playbook for selected chain"""
-        current_row = self.chains_table.currentRow()
-        if current_row < 0:
+        if self.chains_table.currentRow() < 0:
             return
-        
-        try:
-            from PyQt6.QtWidgets import QDialog, QVBoxLayout, QTextEdit, QPushButton
-            
-            dialog = QDialog(self)
-            dialog.setWindowTitle("Generated Attack Playbook")
-            dialog.setMinimumSize(800, 600)
-            
-            layout = QVBoxLayout(dialog)
-            
-            playbook_text = QTextEdit()
-            
-            # Generate sample playbook
-            format_type = self.playbook_format.currentText().lower()
-            playbook_content = self.create_sample_playbook(format_type)
-            
-            playbook_text.setPlainText(playbook_content)
-            layout.addWidget(playbook_text)
-            
-            close_btn = QPushButton("Close")
-            close_btn.clicked.connect(dialog.close)
-            layout.addWidget(close_btn)
-            
-            dialog.exec()
-            
-        except Exception as e:
-            print(f"Error generating playbook: {e}")
-    
-    def create_sample_playbook(self, format_type):
-        """Create sample attack playbook"""
-        if "htb" in format_type:
-            return """# HTB Attack Chain Playbook
+        from PyQt6.QtWidgets import QDialog, QVBoxLayout, QTextEdit, QPushButton
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Generated Attack Playbook")
+        dialog.setMinimumSize(800, 600)
+        dlg_layout = QVBoxLayout(dialog)
+        text = QTextEdit()
+        text.setPlainText(self._sample_playbook(self.playbook_format.currentText().lower()))
+        dlg_layout.addWidget(text)
+        close_btn = QPushButton("Close")
+        close_btn.clicked.connect(dialog.close)
+        dlg_layout.addWidget(close_btn)
+        dialog.exec()
 
-## Target: Multi-Service Host Compromise
-
-### Step 1: Initial Reconnaissance
-```bash
-# Enumerate RPC services
-impacket-rpcmap target.htb
-rpcclient -U "" -N target.htb
-```
-
-### Step 2: RPC Exploitation
-```bash
-# Exploit RPC vulnerability
-impacket-psexec domain/user:password@target.htb
-```
-
-### Step 3: SMB Enumeration
-```bash
-# Enumerate SMB shares
-smbclient -L //target.htb -U ""
-smbmap -H target.htb
-```
-
-### Step 4: Lateral Movement
-```bash
-# Access writable shares
-smbclient //target.htb/share -U "user%password"
-```
-
-### Verification
-- [ ] RPC service accessible
-- [ ] SMB shares enumerated
-- [ ] Lateral movement successful
-"""
-        else:
-            return """# Generic Attack Chain Playbook
-
-## Overview
-This playbook demonstrates a multi-stage attack chain targeting network services.
-
-## Prerequisites
-- Network access to target
-- Basic enumeration tools
-
-## Attack Steps
-1. Service Discovery
-2. Vulnerability Identification
-3. Initial Exploitation
-4. Privilege Escalation
-5. Lateral Movement
-
-## Tools Required
-- Nmap
-- Impacket suite
-- SMB enumeration tools
-"""
-    
-    def export_analysis(self):
-        """Export correlation analysis"""
-        try:
-            from PyQt6.QtWidgets import QFileDialog, QMessageBox
-            
-            filename, _ = QFileDialog.getSaveFileName(
-                self, "Export Correlation Analysis", 
-                f"correlation_analysis_{self.tenant_id}.json",
-                "JSON files (*.json)"
+    def _sample_playbook(self, fmt):
+        if "htb" in fmt:
+            return (
+                "# HTB Attack Chain Playbook\n\n"
+                "## Target: Multi-Service Host Compromise\n\n"
+                "### Step 1: Initial Reconnaissance\n"
+                "```bash\nimpacket-rpcmap target.htb\nrpcclient -U \"\" -N target.htb\n```\n\n"
+                "### Step 2: RPC Exploitation\n"
+                "```bash\nimpacket-psexec domain/user:password@target.htb\n```\n\n"
+                "### Step 3: SMB Enumeration\n"
+                "```bash\nsmbclient -L //target.htb -U \"\"\nsmbmap -H target.htb\n```\n\n"
+                "### Verification\n- [ ] RPC service accessible\n- [ ] SMB shares enumerated\n"
             )
-            
-            if filename:
-                # Export correlation data
-                export_data = {
-                    "tenant_id": self.tenant_id,
-                    "timestamp": "2024-01-01T00:00:00",
-                    "correlation_score": 75,
-                    "attack_chains": [],
-                    "risk_amplifiers": [],
-                    "security_gaps": []
-                }
-                
-                with open(filename, 'w') as f:
-                    json.dump(export_data, f, indent=2)
-                
-                QMessageBox.information(self, "Export Complete", f"Analysis exported to {filename}")
-                
+        return (
+            "# Generic Attack Chain Playbook\n\n"
+            "## Overview\nMulti-stage attack chain targeting network services.\n\n"
+            "## Attack Steps\n1. Service Discovery\n2. Vulnerability Identification\n"
+            "3. Initial Exploitation\n4. Privilege Escalation\n5. Lateral Movement\n"
+        )
+
+    def export_analysis(self):
+        from PyQt6.QtWidgets import QFileDialog, QMessageBox
+        filename, _ = QFileDialog.getSaveFileName(
+            self, "Export Correlation Analysis",
+            f"correlation_analysis_{self.tenant_id}.json",
+            "JSON files (*.json)"
+        )
+        if not filename:
+            return
+        export_data = {
+            "tenant_id": self.tenant_id,
+            "correlation_score": 0,
+            "attack_chains": [],
+            "risk_amplifiers": [],
+            "security_gaps": [],
+        }
+        try:
+            with open(filename, 'w') as f:
+                json.dump(export_data, f, indent=2)
+            QMessageBox.information(self, "Export Complete", f"Analysis exported to {filename}")
         except Exception as e:
-            print(f"Error exporting analysis: {e}")
-    
+            QMessageBox.warning(self, "Export Failed", str(e))
+
     def show_no_data_message(self):
-        """Show message when no scan data is available"""
-        for table in [self.chains_table, self.amplifiers_table, self.assets_table, self.hvt_table]:
+        for table in [self.chains_table, self.amplifiers_table,
+                      self.assets_table, self.hvt_table, self.summary_table]:
             table.setRowCount(1)
             table.setItem(0, 0, QTableWidgetItem("No scan data available"))
-        
-        self.gaps_text.setPlainText("No security gaps identified - run scans to populate data.")
-        self.score_label.setText("Correlation Score: 0/100 (No Data)")
-    
+        self.gaps_text.setPlainText("No security gaps identified — run scans to populate data.")
+        self._set_score(0)
+
     def show_error_message(self, error):
-        """Show error message"""
         self.gaps_text.setPlainText(f"Error loading correlation data: {error}")
         self.score_label.setText("Correlation Score: Error")
         self.score_label.setStyleSheet("font-weight: bold; color: #FF4444;")
-    
+
     def refresh_for_tenant(self, tenant_id):
-        """Refresh data for new tenant"""
         self.tenant_id = tenant_id
         self.load_correlations()

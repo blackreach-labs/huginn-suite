@@ -44,12 +44,15 @@ class FindingsListComponent(QWidget):
         
         for finding in self.findings_data:
             button = HoverButton(finding["title"], finding["desc"], self)
+            button.setText(finding["title"])
             button.setMinimumHeight(50)
             button.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
             button.clicked.connect(lambda checked, f=finding: self.finding_selected.emit(f))
             button.enter_signal.connect(self.finding_hovered.emit)
             button.leave_signal.connect(self.finding_unhovered.emit)
             scroll_layout.addWidget(button)
+
+        scroll_layout.addStretch()
 
         scroll_area.setWidget(scroll_widget)
         scroll_area.setWidgetResizable(True)

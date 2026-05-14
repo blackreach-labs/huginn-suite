@@ -1,7 +1,7 @@
 {
   "target_name": "HTB-Code",
-  "primary_target": "10.10.11.62",
-  "scope": "10.10.11.62",
+  "primary_target": "10.10.11.64",
+  "scope": "10.10.11.64",
   "subdomains": "",
   "cloud_assets": "",
   "out_scope": "",

@@ -88,14 +88,13 @@ class ModeSelectionDialog(QDialog):
         """)
     
     def create_mode_button(self, title, description, color, callback):
-        """Create a mode selection button"""
+        """Create a mode selection button as a single cohesive card."""
         frame = QFrame()
         frame.setStyleSheet(f"""
             QFrame {{
                 background-color: rgba(0, 0, 0, 150);
                 border: 2px solid {color};
                 border-radius: 10px;
-                padding: 20px;
             }}
             QFrame:hover {{
                 background-color: rgba(50, 50, 50, 150);
@@ -104,36 +103,37 @@ class ModeSelectionDialog(QDialog):
         """)
         frame.setMinimumSize(450, 220)
         frame.setCursor(Qt.CursorShape.PointingHandCursor)
-        
+
         layout = QVBoxLayout(frame)
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.setSpacing(15)
-        
-        # Title
+        layout.setContentsMargins(30, 30, 30, 30)
+        layout.setSpacing(10)
+
+        # Single combined label — title line + description line
         title_label = QLabel(title)
         title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title_label.setStyleSheet(f"""
             font-size: 16pt;
             font-weight: bold;
             color: {color};
-            padding: 10px;
+            background: transparent;
+            border: none;
         """)
         layout.addWidget(title_label)
-        
-        # Description
+
         desc_label = QLabel(description)
         desc_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         desc_label.setWordWrap(True)
         desc_label.setStyleSheet("""
             font-size: 11pt;
             color: #DCDCDC;
-            line-height: 1.4;
+            background: transparent;
+            border: none;
         """)
         layout.addWidget(desc_label)
-        
-        # Make frame clickable
+
         frame.mousePressEvent = lambda event: callback() if event.button() == Qt.MouseButton.LeftButton else None
-        
+
         return frame
     
     def select_mode(self, mode):

@@ -76,12 +76,15 @@ class AttackChainHomePage(BasePage):
     
     def create_target_profiles_tab(self):
         """Create the Target Profiles subtab"""
+        from PyQt6.QtWidgets import QGridLayout, QSplitter
+        from PyQt6.QtCore import Qt
+
         widget = QWidget()
         layout = QVBoxLayout(widget)
-        
+        layout.setContentsMargins(10, 10, 10, 10)
+        layout.setSpacing(8)
 
-        
-        # Target configuration form with two-column layout
+        # ── Form frame ───────────────────────────────────────────────────────
         form_frame = QFrame()
         form_frame.setStyleSheet("""
             QFrame {
@@ -91,144 +94,142 @@ class AttackChainHomePage(BasePage):
             }
         """)
         form_layout = QVBoxLayout(form_frame)
-        form_layout.setContentsMargins(20, 20, 20, 20)
-        
-        # Two-column layout
-        columns_layout = QHBoxLayout()
-        columns_layout.setSpacing(30)
-        
-        # Left column - Target Information
-        left_column = QVBoxLayout()
-        left_column.setSpacing(10)
-        
-        # Target section header
-        target_header = QLabel("📋 Target Information")
-        target_header.setStyleSheet("""
-            font-size: 12pt;
-            font-weight: bold;
-            color: #FFD700;
-            padding: 2px;
-        """)
-        left_column.addWidget(target_header)
-        
-        # Target name
-        left_column.addWidget(QLabel("Target Name:"))
-        self.target_name = QLineEdit()
-        self.target_name.setPlaceholderText("e.g., Company XYZ")
-        left_column.addWidget(self.target_name)
-        
-        # In-scope targets
-        left_column.addWidget(QLabel("In-scope Targets:"))
-        self.primary_target = QTextEdit()
-        self.primary_target.setFixedHeight(60)
-        self.primary_target.setPlaceholderText("Domains, IPs, networks (e.g., example.com, 192.168.1.0/24)")
+        form_layout.setContentsMargins(15, 15, 15, 15)
+        form_layout.setSpacing(0)
+
+        FIELD_HEIGHT = 30
+        LABEL_STYLE  = "font-size: 10pt; font-weight: bold; color: #DCDCDC;"
+        HDR_STYLE    = ("font-size: 10pt; font-weight: bold; color: #64C8FF;"
+                        " padding: 8px 0px 4px 0px;")
+
+        def hdr(text):
+            l = QLabel(text)
+            l.setStyleSheet(HDR_STYLE)
+            return l
+
+        def lbl(text):
+            l = QLabel(text)
+            l.setStyleSheet(LABEL_STYLE)
+            return l
+
+        def line(placeholder):
+            w = QLineEdit()
+            w.setPlaceholderText(placeholder)
+            w.setFixedHeight(FIELD_HEIGHT)
+            w.setStyleSheet("font-size: 10pt; color: #DCDCDC;")
+            return w
+
+        grid = QGridLayout()
+        grid.setHorizontalSpacing(10)
+        grid.setVerticalSpacing(6)
+        grid.setColumnStretch(1, 1)
+
+        r = 0
+
+        # ── Primary fields ───────────────────────────────────────────────────
+        grid.addWidget(hdr("📋 Target Information"), r, 0, 1, 2); r += 1
+
+        grid.addWidget(lbl("Target Name:"), r, 0)
+        self.target_name = line("e.g., Company XYZ")
+        grid.addWidget(self.target_name, r, 1); r += 1
+
+        grid.addWidget(lbl("In-Scope Targets:"), r, 0)
+        self.primary_target = line("Domains, IPs, networks (e.g., example.com, 192.168.1.0/24)")
         self.primary_target.textChanged.connect(self.update_scope_validation)
-        left_column.addWidget(self.primary_target)
-        
-        # Known subdomains
-        left_column.addWidget(QLabel("Known Subdomains:"))
-        self.subdomains = QTextEdit()
-        self.subdomains.setFixedHeight(45)
-        self.subdomains.setPlaceholderText("e.g., api.example.com, staging.example.com")
-        left_column.addWidget(self.subdomains)
-        
-        # Cloud assets
-        left_column.addWidget(QLabel("Cloud Assets:"))
-        self.cloud_assets = QTextEdit()
-        self.cloud_assets.setFixedHeight(45)
-        self.cloud_assets.setPlaceholderText("e.g., s3://bucket-name, Azure VM IPs")
-        left_column.addWidget(self.cloud_assets)
-        
-        columns_layout.addLayout(left_column)
-        
-        # Right column - Scope & Rules
-        right_column = QVBoxLayout()
-        right_column.setSpacing(10)
-        
-        # Scope section header
-        scope_header = QLabel("🎯 Scope & Rules of Engagement")
-        scope_header.setStyleSheet("""
-            font-size: 12pt;
-            font-weight: bold;
-            color: #FFD700;
-            padding: 2px;
-        """)
-        right_column.addWidget(scope_header)
-        
-        # Out of scope
-        right_column.addWidget(QLabel("Out of Scope:"))
-        self.out_scope = QTextEdit()
-        self.out_scope.setFixedHeight(60)
-        self.out_scope.setPlaceholderText("Excluded targets, IPs, domains")
+        grid.addWidget(self.primary_target, r, 1); r += 1
+
+        grid.addWidget(lbl("Out of Scope:"), r, 0)
+        self.out_scope = line("Excluded targets, IPs, domains")
         self.out_scope.textChanged.connect(self.update_scope_validation)
-        right_column.addWidget(self.out_scope)
-        
-        # Restrictions/Notes
-        right_column.addWidget(QLabel("Restrictions/Notes:"))
-        self.restrictions = QTextEdit()
-        self.restrictions.setFixedHeight(45)
-        self.restrictions.setPlaceholderText("Special restrictions or notes")
-        right_column.addWidget(self.restrictions)
-        
-        # Permission checkboxes
-        permissions_label = QLabel("Testing Permissions:")
-        permissions_label.setStyleSheet("font-weight: bold; color: #64C8FF; margin-top: 10px;")
-        right_column.addWidget(permissions_label)
-        
-        self.dos_allowed = QCheckBox("DOS Attacks Allowed")
-        self.dos_allowed.setStyleSheet("color: #DCDCDC; font-weight: bold; padding: 3px;")
-        right_column.addWidget(self.dos_allowed)
-        
-        self.social_eng_allowed = QCheckBox("Social Engineering Allowed")
-        self.social_eng_allowed.setStyleSheet("color: #DCDCDC; font-weight: bold; padding: 3px;")
-        right_column.addWidget(self.social_eng_allowed)
-        
-        self.physical_allowed = QCheckBox("Physical Access Allowed")
-        self.physical_allowed.setStyleSheet("color: #DCDCDC; font-weight: bold; padding: 3px;")
-        right_column.addWidget(self.physical_allowed)
-        
-        columns_layout.addLayout(right_column)
-        form_layout.addLayout(columns_layout)
-        
-        # Bottom section - Scope status and Add button
-        bottom_layout = QHBoxLayout()
-        
-        # Add target button
-        add_btn = QPushButton("📝 Add Target Profile")
-        add_btn.setStyleSheet(self.get_button_style("#64C8FF", "#000000"))
-        add_btn.clicked.connect(self.add_target)
-        bottom_layout.addWidget(add_btn)
-        
-        bottom_layout.addStretch()
-        
-        # Scope validation status
+        grid.addWidget(self.out_scope, r, 1); r += 1
+
+        # ── Secondary fields ─────────────────────────────────────────────────
+        grid.addWidget(hdr("🔍 Additional Scope Details"), r, 0, 1, 2); r += 1
+
+        grid.addWidget(lbl("Known Subdomains:"), r, 0)
+        self.subdomains = line("e.g., api.example.com, staging.example.com")
+        grid.addWidget(self.subdomains, r, 1); r += 1
+
+        grid.addWidget(lbl("Cloud Assets:"), r, 0)
+        self.cloud_assets = line("e.g., s3://bucket-name, Azure VM IPs")
+        grid.addWidget(self.cloud_assets, r, 1); r += 1
+
+        grid.addWidget(lbl("Restrictions / Notes:"), r, 0)
+        self.restrictions = line("Special restrictions or notes")
+        grid.addWidget(self.restrictions, r, 1); r += 1
+
+        # ── Permissions row ──────────────────────────────────────────────────
+        grid.addWidget(hdr("🛡 Testing Permissions:"), r, 0)
+
+        perm_row = QHBoxLayout()
+        perm_row.setSpacing(20)
+        perm_row.setContentsMargins(0, 0, 0, 0)
+        self.dos_allowed = QCheckBox("DoS Attacks")
+        self.dos_allowed.setStyleSheet(LABEL_STYLE)
+        self.social_eng_allowed = QCheckBox("Social Engineering")
+        self.social_eng_allowed.setStyleSheet(LABEL_STYLE)
+        self.physical_allowed = QCheckBox("Physical Access")
+        self.physical_allowed.setStyleSheet(LABEL_STYLE)
+        perm_row.addWidget(self.dos_allowed)
+        perm_row.addWidget(self.social_eng_allowed)
+        perm_row.addWidget(self.physical_allowed)
+        perm_row.addStretch()
+
+        perm_widget = QWidget()
+        perm_widget.setLayout(perm_row)
+        perm_widget.setFixedHeight(FIELD_HEIGHT)
+        grid.addWidget(perm_widget, r, 1); r += 1
+
+        form_layout.addLayout(grid)
+        form_layout.addStretch()
+
+        # ── Scope status badge (full width, below fields) ────────────────────
         self.scope_status = QLabel("Scope: Not configured")
         self.scope_status.setStyleSheet("""
             QLabel {
                 background-color: rgba(255, 165, 0, 100);
                 border: 1px solid #FFA500;
                 border-radius: 5px;
-                padding: 8px 12px;
+                padding: 5px 12px;
                 color: #FFFFFF;
-                font-size: 11pt;
+                font-size: 10pt;
                 font-weight: bold;
+                margin-top: 8px;
             }
         """)
-        bottom_layout.addWidget(self.scope_status)
-        
-        form_layout.addLayout(bottom_layout)
-        
-        layout.addWidget(form_frame)
-        
-        # Target list table
+        form_layout.addWidget(self.scope_status)
+
+        from PyQt6.QtWidgets import QSizePolicy
+        form_frame.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        layout.addWidget(form_frame, stretch=1)
+
+        # ── Buttons below form, above table ──────────────────────────────────
+        btn_layout = QHBoxLayout()
+        btn_layout.setSpacing(8)
+
+        add_btn = QPushButton("💾 Save Profile")
+        add_btn.setStyleSheet(self.get_button_style("#64C8FF", "#000000"))
+        add_btn.clicked.connect(self.save_current_profile)
+        btn_layout.addWidget(add_btn)
+
+        delete_btn = QPushButton("🗑 Delete")
+        delete_btn.setStyleSheet(self.get_button_style("#FF4444", "#FFFFFF"))
+        delete_btn.clicked.connect(self.delete_selected_profile)
+        btn_layout.addWidget(delete_btn)
+
+        btn_layout.addStretch()
+        layout.addLayout(btn_layout)
+
+        # ── Profiles summary table ────────────────────────────────────────────
         list_label = QLabel("📋 Profiles:")
-        list_label.setStyleSheet("font-weight: bold; color: #64C8FF; margin-top: 15px;")
+        list_label.setStyleSheet("font-weight: bold; color: #64C8FF; margin-top: 4px;")
         layout.addWidget(list_label)
-        
+
         self.target_table = QTableWidget()
         self.target_table.setColumnCount(5)
-        self.target_table.setHorizontalHeaderLabels(["Tenant", "Type", "Target", "Priority", "Status"])
-        self.target_table.setMinimumHeight(120)
+        self.target_table.setHorizontalHeaderLabels(
+            ["Profile Name", "In-Scope Targets", "Credentials", "Permissions", "Status"])
+        self.target_table.setFixedHeight(160)
         self.target_table.setStyleSheet("""
             QTableWidget {
                 background-color: rgba(20, 30, 40, 150);
@@ -245,51 +246,51 @@ class AttackChainHomePage(BasePage):
                 border: none;
             }
         """)
-        
-        # Auto-resize table columns
+
         header = self.target_table.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
-        header.setSectionResizeMode(2, QHeaderView.ResizeMode.Stretch)
-        
+        header.setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
+
         self.target_table.itemSelectionChanged.connect(self.on_profile_selected)
         layout.addWidget(self.target_table)
-        
-        # Load existing profiles
+
+        # ── Autosave connections ──────────────────────────────────────────────
+        self.target_name.textChanged.connect(self._autosave_current_profile)
+        self.primary_target.textChanged.connect(self._autosave_current_profile)
+        self.subdomains.textChanged.connect(self._autosave_current_profile)
+        self.cloud_assets.textChanged.connect(self._autosave_current_profile)
+        self.out_scope.textChanged.connect(self._autosave_current_profile)
+        self.restrictions.textChanged.connect(self._autosave_current_profile)
+        self.dos_allowed.stateChanged.connect(self._autosave_current_profile)
+        self.social_eng_allowed.stateChanged.connect(self._autosave_current_profile)
+        self.physical_allowed.stateChanged.connect(self._autosave_current_profile)
+
+        self._loading_profile = False
         self.load_existing_profiles()
-        
+
         return widget
     
     def create_credential_management_tab(self):
-        """Create the Credential Management subtab"""
+        """Create the Credential Management subtab — embeds SecureCredentialWidget."""
         widget = QWidget()
         layout = QVBoxLayout(widget)
-        
-        # Header
-        title_layout = QHBoxLayout()
-        title = QLabel("Credential Management")
-        title.setStyleSheet("""
-            font-size: 16pt;
-            font-weight: bold;
-            color: #64C8FF;
-            padding: 10px;
-        """)
-        title_layout.addWidget(title)
-        title_layout.addStretch()
-        
-        # Type dropdown
-        type_label = QLabel("Type:")
-        type_label.setStyleSheet("font-weight: bold; color: #64C8FF;")
-        title_layout.addWidget(type_label)
-        
-        self.type_combo = QComboBox()
-        self.type_combo.addItems(["Username/Password", "NTLM Hash", "Kerberos Ticket", "SQL Server Auth", "Windows Auth", "Contacts"])
-        self.type_combo.setMinimumWidth(180)
-        self.type_combo.currentTextChanged.connect(self.on_credential_type_changed)
-        title_layout.addWidget(self.type_combo)
-        
-        layout.addLayout(title_layout)
-        
-        # Credential form
+        layout.setContentsMargins(10, 10, 10, 10)
+        layout.setSpacing(0)
+
+        try:
+            from app.widgets.secure_credential_widget import SecureCredentialWidget
+            self.secure_cred_widget = SecureCredentialWidget()
+            layout.addWidget(self.secure_cred_widget)
+        except Exception as e:
+            logger.error(f"Failed to load SecureCredentialWidget: {e}")
+            # Fallback: keep the original inline implementation
+            self._build_inline_credential_tab(layout)
+
+        return widget
+
+    def _build_inline_credential_tab(self, layout):
+        """Fallback inline credential tab (used if SecureCredentialWidget unavailable)."""
+        from PyQt6.QtWidgets import QFrame
         form_frame = QFrame()
         form_frame.setStyleSheet("""
             QFrame {
@@ -300,81 +301,59 @@ class AttackChainHomePage(BasePage):
         """)
         form_layout = QVBoxLayout(form_frame)
         form_layout.setContentsMargins(15, 15, 15, 15)
-        
-        # Create all credential fields (will be shown/hidden based on type)
+
         self.create_credential_fields(form_layout)
-        
-        # Buttons
+        form_layout.addStretch()
+
         btn_layout = QHBoxLayout()
         add_cred_btn = QPushButton("Add Credential")
         add_cred_btn.setStyleSheet(self.get_button_style("#64C8FF", "#000000"))
         add_cred_btn.clicked.connect(self.add_credential)
         btn_layout.addWidget(add_cred_btn)
-        
+
         delete_cred_btn = QPushButton("Delete Selected")
         delete_cred_btn.setStyleSheet(self.get_button_style("#FF6347"))
         delete_cred_btn.clicked.connect(self.delete_selected_credential)
         btn_layout.addWidget(delete_cred_btn)
-        
-        clear_creds_btn = QPushButton("Clear All")
-        clear_creds_btn.setStyleSheet(self.get_button_style("#CD5C5C"))
-        clear_creds_btn.clicked.connect(self.clear_credentials)
-        btn_layout.addWidget(clear_creds_btn)
-        
         btn_layout.addStretch()
         form_layout.addLayout(btn_layout)
-        
+
         layout.addWidget(form_frame)
-        
-        # Credential table
+
         cred_header = QHBoxLayout()
         cred_header.addWidget(QLabel("Stored Credentials:"))
         cred_header.addStretch()
-        
         self.show_passwords_cb = QCheckBox("Show Passwords")
         self.show_passwords_cb.setStyleSheet("color: #DCDCDC; font-weight: bold;")
         self.show_passwords_cb.stateChanged.connect(self.toggle_password_display)
         cred_header.addWidget(self.show_passwords_cb)
-        
         layout.addLayout(cred_header)
-        
+
         self.cred_table = QTableWidget()
         self.cred_table.setColumnCount(7)
-        self.cred_table.setHorizontalHeaderLabels(["Source", "Type", "Username", "Password", "Domain", "Service", "Notes"])
+        self.cred_table.setHorizontalHeaderLabels(
+            ["Source", "Type", "Username", "Password", "Domain", "Service", "Notes"])
         self.cred_table.setMaximumHeight(200)
         self.cred_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.cred_table.setStyleSheet("""
             QTableWidget {
                 background-color: rgba(20, 30, 40, 150);
                 border: 1px solid rgba(100, 200, 255, 50);
-                border-radius: 5px;
-                color: #DCDCDC;
-                gridline-color: rgba(100, 200, 255, 50);
-                font-size: 9pt;
+                border-radius: 5px; color: #DCDCDC;
+                gridline-color: rgba(100, 200, 255, 50); font-size: 9pt;
             }
             QHeaderView::section {
                 background-color: rgba(100, 200, 255, 100);
-                color: #000000;
-                font-weight: bold;
-                padding: 3px;
-                border: none;
+                color: #000000; font-weight: bold; padding: 3px; border: none;
             }
         """)
-        
-        # Auto-resize columns
-        header = self.cred_table.horizontalHeader()
-        header.setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
-        header.setSectionResizeMode(6, QHeaderView.ResizeMode.Stretch)
-        
+        hdr = self.cred_table.horizontalHeader()
+        hdr.setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
+        hdr.setSectionResizeMode(6, QHeaderView.ResizeMode.Stretch)
         layout.addWidget(self.cred_table)
-        
-        # Initialize field visibility
+
         self.on_credential_type_changed("Username/Password")
-        
-        # Load existing credentials
         self.refresh_credential_display()
-        
-        return widget
     
     def create_mindmap_tab(self):
         """Create the Mindmap tab"""
@@ -417,23 +396,15 @@ class AttackChainHomePage(BasePage):
     
     def create_correlations_tab(self):
         """Create the Correlations tab"""
-        widget = QWidget()
-        layout = QVBoxLayout(widget)
-        
-        # Try to create correlation dashboard widget
         try:
             from app.widgets.correlation_dashboard_widget import CorrelationDashboardWidget
             tenant_id = getattr(self.main_window, 'current_profile_name', 'default')
-            correlation_dashboard = CorrelationDashboardWidget(tenant_id)
-            layout.addWidget(correlation_dashboard)
+            return CorrelationDashboardWidget(tenant_id)
         except ImportError:
-            # Placeholder for correlations dashboard
             placeholder = QLabel("🔗 Cross-Scan Correlations Dashboard\n(Vulnerability correlation and analysis)")
             placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
             placeholder.setStyleSheet("color: #DCDCDC; padding: 20px; font-size: 14pt;")
-            layout.addWidget(placeholder)
-        
-        return widget
+            return placeholder
     
     def create_remediation_tab(self):
         """Create the Remediation tab"""
@@ -513,114 +484,112 @@ class AttackChainHomePage(BasePage):
         """
     
     def create_credential_fields(self, layout):
-        """Create all credential form fields"""
-        # Username field
-        self.username_label = QLabel("Username:")
-        self.username_label.setStyleSheet("font-weight: bold;")
-        layout.addWidget(self.username_label)
-        self.username = QLineEdit()
-        self.username.setPlaceholderText("Enter username")
-        layout.addWidget(self.username)
-        
-        # Password field
-        self.password_label = QLabel("Password:")
-        self.password_label.setStyleSheet("font-weight: bold;")
-        layout.addWidget(self.password_label)
-        self.password = QLineEdit()
-        self.password.setEchoMode(QLineEdit.EchoMode.Password)
-        self.password.setPlaceholderText("Enter password")
-        layout.addWidget(self.password)
-        
-        # Domain field
-        self.domain_label = QLabel("Domain:")
-        self.domain_label.setStyleSheet("font-weight: bold;")
-        layout.addWidget(self.domain_label)
-        self.domain = QLineEdit()
-        self.domain.setPlaceholderText("e.g., DOMAIN or leave blank")
-        layout.addWidget(self.domain)
-        
-        # Service field
-        self.service_label = QLabel("Service:")
-        self.service_label.setStyleSheet("font-weight: bold;")
-        layout.addWidget(self.service_label)
-        self.service = QLineEdit()
-        self.service.setPlaceholderText("e.g., SSH, RDP, SMB, HTTP")
-        layout.addWidget(self.service)
-        
-        # Notes field
-        self.notes_label = QLabel("Notes:")
-        self.notes_label.setStyleSheet("font-weight: bold;")
-        layout.addWidget(self.notes_label)
-        self.notes = QLineEdit()
-        self.notes.setPlaceholderText("Optional notes")
-        layout.addWidget(self.notes)
-        
-        # NTLM Hash field
-        self.ntlm_hash_label = QLabel("NTLM Hash:")
-        self.ntlm_hash_label.setStyleSheet("font-weight: bold;")
-        layout.addWidget(self.ntlm_hash_label)
-        self.ntlm_hash = QLineEdit()
-        self.ntlm_hash.setEchoMode(QLineEdit.EchoMode.Password)
-        self.ntlm_hash.setPlaceholderText("Enter NTLM hash")
-        layout.addWidget(self.ntlm_hash)
-        
-        # Ticket File field
-        self.ticket_file_label = QLabel("Ticket File:")
-        self.ticket_file_label.setStyleSheet("font-weight: bold;")
-        layout.addWidget(self.ticket_file_label)
-        self.ticket_file = QLineEdit()
-        self.ticket_file.setPlaceholderText("Path to ticket file")
-        layout.addWidget(self.ticket_file)
-        
-        # Contact fields
-        self.account_name_label = QLabel("Account Name:")
-        self.account_name_label.setStyleSheet("font-weight: bold;")
-        layout.addWidget(self.account_name_label)
-        self.account_name = QLineEdit()
-        self.account_name.setPlaceholderText("e.g., jdoe, admin")
-        layout.addWidget(self.account_name)
-        
-        self.first_name_label = QLabel("First Name:")
-        self.first_name_label.setStyleSheet("font-weight: bold;")
-        layout.addWidget(self.first_name_label)
-        self.first_name = QLineEdit()
-        self.first_name.setPlaceholderText("First name")
-        layout.addWidget(self.first_name)
-        
-        self.middle_name_label = QLabel("Middle Name:")
-        self.middle_name_label.setStyleSheet("font-weight: bold;")
-        layout.addWidget(self.middle_name_label)
-        self.middle_name = QLineEdit()
-        self.middle_name.setPlaceholderText("Middle name (optional)")
-        layout.addWidget(self.middle_name)
-        
-        self.last_name_label = QLabel("Last Name:")
-        self.last_name_label.setStyleSheet("font-weight: bold;")
-        layout.addWidget(self.last_name_label)
-        self.last_name = QLineEdit()
-        self.last_name.setPlaceholderText("Last name")
-        layout.addWidget(self.last_name)
-        
-        self.email_address_label = QLabel("Email Address:")
-        self.email_address_label.setStyleSheet("font-weight: bold;")
-        layout.addWidget(self.email_address_label)
-        self.email_address = QLineEdit()
-        self.email_address.setPlaceholderText("e.g., john.doe@company.com")
-        layout.addWidget(self.email_address)
-        
-        self.mobile_phone_label = QLabel("Mobile Phone:")
-        self.mobile_phone_label.setStyleSheet("font-weight: bold;")
-        layout.addWidget(self.mobile_phone_label)
-        self.mobile_phone = QLineEdit()
-        self.mobile_phone.setPlaceholderText("e.g., +1-555-123-4567")
-        layout.addWidget(self.mobile_phone)
-        
-        self.address_label = QLabel("Address:")
-        self.address_label.setStyleSheet("font-weight: bold;")
-        layout.addWidget(self.address_label)
-        self.address = QLineEdit()
-        self.address.setPlaceholderText("Physical address (optional)")
-        layout.addWidget(self.address)
+        """Create all credential form fields in a compact single-column layout."""
+        from PyQt6.QtWidgets import QGridLayout
+
+        FIELD_HEIGHT = 30
+        LABEL_STYLE = "font-size: 10pt; font-weight: bold; color: #DCDCDC;"
+
+        grid = QGridLayout()
+        grid.setHorizontalSpacing(10)
+        grid.setVerticalSpacing(6)
+
+        def make_label(text):
+            lbl = QLabel(text)
+            lbl.setStyleSheet(LABEL_STYLE)
+            return lbl
+
+        def make_line(placeholder, echo=False):
+            le = QLineEdit()
+            le.setPlaceholderText(placeholder)
+            le.setFixedHeight(FIELD_HEIGHT)
+            le.setStyleSheet("font-size: 10pt; color: #DCDCDC;")
+            if echo:
+                le.setEchoMode(QLineEdit.EchoMode.Password)
+            return le
+
+        # ── Type dropdown — row 0, always visible ───────────────────────────
+        type_lbl = QLabel("Type:")
+        type_lbl.setStyleSheet("font-size: 10pt; font-weight: bold; color: #64C8FF;")
+        grid.addWidget(type_lbl, 0, 0)
+
+        self.type_combo = QComboBox()
+        self.type_combo.addItems(["Username/Password", "NTLM Hash", "Kerberos Ticket",
+                                  "SQL Server Auth", "Windows Auth", "Contacts"])
+        self.type_combo.setFixedHeight(FIELD_HEIGHT)
+        self.type_combo.setStyleSheet("font-size: 10pt;")
+        self.type_combo.currentTextChanged.connect(self.on_credential_type_changed)
+        grid.addWidget(self.type_combo, 0, 1)
+
+        # ── Username/Password + NTLM + Kerberos shared fields ──────────────
+        self.username_label   = make_label("Username:")
+        self.username         = make_line("Enter username")
+
+        self.password_label   = make_label("Password:")
+        self.password         = make_line("Enter password", echo=True)
+
+        self.ntlm_hash_label  = make_label("NTLM Hash:")
+        self.ntlm_hash        = make_line("Enter NTLM hash", echo=True)
+
+        self.ticket_file_label = make_label("Ticket File:")
+        self.ticket_file      = make_line("Path to ticket file")
+
+        self.domain_label     = make_label("Domain:")
+        self.domain           = make_line("e.g., DOMAIN or leave blank")
+
+        self.service_label    = make_label("Service:")
+        self.service          = make_line("e.g., SSH, RDP, SMB, HTTP")
+
+        self.notes_label      = make_label("Notes:")
+        self.notes            = make_line("Optional notes")
+
+        # ── Contacts fields ─────────────────────────────────────────────────
+        self.account_name_label  = make_label("Account Name:")
+        self.account_name        = make_line("e.g., jdoe, admin")
+
+        self.first_name_label    = make_label("First Name:")
+        self.first_name          = make_line("First name")
+
+        self.middle_name_label   = make_label("Middle Name:")
+        self.middle_name         = make_line("Middle name (optional)")
+
+        self.last_name_label     = make_label("Last Name:")
+        self.last_name           = make_line("Last name")
+
+        self.email_address_label = make_label("Email Address:")
+        self.email_address       = make_line("e.g., john.doe@company.com")
+
+        self.mobile_phone_label  = make_label("Mobile Phone:")
+        self.mobile_phone        = make_line("e.g., +1-555-123-4567")
+
+        self.address_label       = make_label("Address:")
+        self.address             = make_line("Physical address (optional)")
+
+        # ── Single column layout: label in col 0, field in col 1 ────────────
+        fields = [
+            (self.username_label,    self.username),
+            (self.password_label,    self.password),
+            (self.ntlm_hash_label,   self.ntlm_hash),
+            (self.ticket_file_label, self.ticket_file),
+            (self.domain_label,      self.domain),
+            (self.service_label,     self.service),
+            (self.notes_label,       self.notes),
+            (self.account_name_label,self.account_name),
+            (self.first_name_label,  self.first_name),
+            (self.middle_name_label, self.middle_name),
+            (self.last_name_label,   self.last_name),
+            (self.email_address_label,self.email_address),
+            (self.mobile_phone_label,self.mobile_phone),
+            (self.address_label,     self.address),
+        ]
+
+        for r, (label, field) in enumerate(fields):
+            grid.addWidget(label, r + 1, 0)
+            grid.addWidget(field, r + 1, 1)
+
+        grid.setColumnStretch(1, 1)
+
+        layout.addLayout(grid)
     
     # Placeholder methods for functionality
     def on_credential_type_changed(self, credential_type):
@@ -680,31 +649,54 @@ class AttackChainHomePage(BasePage):
                 label.setVisible(True)
                 field.setVisible(True)
     
-    def add_target(self):
-        """Add target to list"""
+    def save_current_profile(self):
+        """Save the current form data into the selected profile (or create a new one if none selected)."""
+        import os
+        import json
+
         name = self.target_name.text().strip()
-        target = self.primary_target.toPlainText().strip()
-        
-        if not name or not target:
+        target = self.primary_target.text().strip()
+
+        if not name:
+            from PyQt6.QtWidgets import QMessageBox
+            QMessageBox.warning(self, "No Profile Name", "Please enter a Target Name before saving.")
             return
-        
-        row = self.target_table.rowCount()
-        self.target_table.insertRow(row)
-        self.target_table.setItem(row, 0, QTableWidgetItem(name))
-        self.target_table.setItem(row, 1, QTableWidgetItem("External"))
-        self.target_table.setItem(row, 2, QTableWidgetItem(target))
-        self.target_table.setItem(row, 3, QTableWidgetItem("High"))
-        self.target_table.setItem(row, 4, QTableWidgetItem("Active"))
-        
-        self.target_name.clear()
-        self.primary_target.clear()
-        self.subdomains.clear()
-        self.cloud_assets.clear()
-        self.out_scope.clear()
-        self.restrictions.clear()
-        self.dos_allowed.setChecked(False)
-        self.social_eng_allowed.setChecked(False)
-        self.physical_allowed.setChecked(False)
+
+        profiles_dir = os.path.join(os.getcwd(), 'profiles')
+        os.makedirs(profiles_dir, exist_ok=True)
+
+        profile_data = {
+            'target_name': name,
+            'primary_target': target,
+            'scope': target,
+            'subdomains': self.subdomains.text(),
+            'cloud_assets': self.cloud_assets.text(),
+            'out_scope': self.out_scope.text(),
+            'restrictions': self.restrictions.text(),
+            'dos_allowed': self.dos_allowed.isChecked(),
+            'social_eng_allowed': self.social_eng_allowed.isChecked(),
+            'physical_allowed': self.physical_allowed.isChecked(),
+            'credentials': self.get_credentials_for_save(),
+        }
+
+        profile_file = os.path.join(profiles_dir, f"{name}.json")
+        try:
+            with open(profile_file, 'w') as f:
+                json.dump(profile_data, f, indent=2)
+        except Exception as e:
+            from PyQt6.QtWidgets import QMessageBox
+            QMessageBox.warning(self, 'Error', f'Failed to save profile: {str(e)}')
+            return
+
+        # Refresh the table so the row reflects the latest data
+        self.load_existing_profiles()
+
+        # Re-select the saved profile row
+        for row in range(self.target_table.rowCount()):
+            item = self.target_table.item(row, 0)
+            if item and item.text() == name:
+                self.target_table.selectRow(row)
+                break
     
     def on_profile_selected(self):
         """Handle profile selection from table"""
@@ -717,73 +709,78 @@ class AttackChainHomePage(BasePage):
             if name_item:
                 profile_name = name_item.text()
                 
-                # Set current profile name for tenant ID
-                if hasattr(self.main_window, 'current_profile_name'):
-                    self.main_window.current_profile_name = profile_name
-                else:
-                    setattr(self.main_window, 'current_profile_name', profile_name)
-                
-                # Switch credential manager to this profile
+                # Suppress autosave while we populate the form
+                self._loading_profile = True
                 try:
-                    from app.core.credential_manager import credential_manager
-                    credential_manager.set_profile(profile_name)
-                except ImportError as _exc:
-                    pass
-                    logger.debug("Suppressed exception", exc_info=True)
-                
-                # Trigger tenant change via tenant-aware updater
-                try:
-                    from app.core.tenant_aware_updater import tenant_aware_updater
-                    tenant_aware_updater.set_tenant(profile_name)
-                except ImportError:
-                    # Fallback to old method
-                    self.trigger_tenant_change_updates(profile_name)
-                
-                # Load profile data from disk if exists
-                import os
-                import json
-                profiles_dir = os.path.join(os.getcwd(), 'profiles')
-                profile_file = os.path.join(profiles_dir, f"{profile_name}.json")
-                
-                if os.path.exists(profile_file):
+                    # Set current profile name for tenant ID
+                    if hasattr(self.main_window, 'current_profile_name'):
+                        self.main_window.current_profile_name = profile_name
+                    else:
+                        setattr(self.main_window, 'current_profile_name', profile_name)
+                    
+                    # Switch credential manager to this profile
                     try:
-                        with open(profile_file, 'r') as f:
-                            profile_data = json.load(f)
-                        
-                        # Load target information fields
-                        self.target_name.setText(profile_data.get('target_name', profile_name))
-                        target_text = profile_data.get('primary_target', '') or profile_data.get('scope', '')
-                        self.primary_target.setPlainText(target_text)
-                        self.subdomains.setPlainText(profile_data.get('subdomains', ''))
-                        self.cloud_assets.setPlainText(profile_data.get('cloud_assets', ''))
-                        self.out_scope.setPlainText(profile_data.get('out_scope', ''))
-                        self.restrictions.setPlainText(profile_data.get('restrictions', ''))
-                        self.dos_allowed.setChecked(profile_data.get('dos_allowed', False))
-                        self.social_eng_allowed.setChecked(profile_data.get('social_eng_allowed', False))
-                        self.physical_allowed.setChecked(profile_data.get('physical_allowed', False))
-                        
-                        # Load credentials
-                        self.load_credentials_from_profile(profile_data.get('credentials', {}))
-                        
-                        # Update inventory with profile assets
-                        self.update_inventory_with_profile_data(profile_data)
-                        
-                    except Exception as e:
-                        # If file load fails, just load basic data from table
+                        from app.core.credential_manager import credential_manager
+                        credential_manager.set_profile(profile_name)
+                    except ImportError as _exc:
+                        pass
+                        logger.debug("Suppressed exception", exc_info=True)
+                    
+                    # Trigger tenant change via tenant-aware updater
+                    try:
+                        from app.core.tenant_aware_updater import tenant_aware_updater
+                        tenant_aware_updater.set_tenant(profile_name)
+                    except ImportError:
+                        # Fallback to old method
+                        self.trigger_tenant_change_updates(profile_name)
+                    
+                    # Load profile data from disk if exists
+                    import os
+                    import json
+                    profiles_dir = os.path.join(os.getcwd(), 'profiles')
+                    profile_file = os.path.join(profiles_dir, f"{profile_name}.json")
+                    
+                    if os.path.exists(profile_file):
+                        try:
+                            with open(profile_file, 'r') as f:
+                                profile_data = json.load(f)
+                            
+                            # Load target information fields
+                            self.target_name.setText(profile_data.get('target_name', profile_name))
+                            target_text = profile_data.get('primary_target', '') or profile_data.get('scope', '')
+                            self.primary_target.setText(target_text)
+                            self.subdomains.setText(profile_data.get('subdomains', ''))
+                            self.cloud_assets.setText(profile_data.get('cloud_assets', ''))
+                            self.out_scope.setText(profile_data.get('out_scope', ''))
+                            self.restrictions.setText(profile_data.get('restrictions', ''))
+                            self.dos_allowed.setChecked(profile_data.get('dos_allowed', False))
+                            self.social_eng_allowed.setChecked(profile_data.get('social_eng_allowed', False))
+                            self.physical_allowed.setChecked(profile_data.get('physical_allowed', False))
+                            
+                            # Load credentials
+                            self.load_credentials_from_profile(profile_data.get('credentials', {}))
+                            
+                            # Update inventory with profile assets
+                            self.update_inventory_with_profile_data(profile_data)
+                            
+                        except Exception as e:
+                            # If file load fails, just load basic data from table
+                            self.target_name.setText(profile_name)
+                            if target_item:
+                                self.primary_target.setText(target_item.text())
+                    else:
+                        # No saved file, load basic data from table
                         self.target_name.setText(profile_name)
                         if target_item:
-                            self.primary_target.setPlainText(target_item.text())
-                else:
-                    # No saved file, load basic data from table
-                    self.target_name.setText(profile_name)
-                    if target_item:
-                        self.primary_target.setPlainText(target_item.text())
-                
-                # Refresh credential display
-                self.refresh_credential_display()
-                
-                # Update scope validation
-                self.update_scope_validation()
+                            self.primary_target.setText(target_item.text())
+                    
+                    # Refresh credential display
+                    self.refresh_credential_display()
+                    
+                    # Update scope validation
+                    self.update_scope_validation()
+                finally:
+                    self._loading_profile = False
     
     def save_profile(self):
         """Save current engagement profile"""
@@ -797,12 +794,12 @@ class AttackChainHomePage(BasePage):
             
         profile_data = {
             'target_name': self.target_name.text(),
-            'primary_target': self.primary_target.toPlainText(),
-            'scope': self.primary_target.toPlainText(),
-            'subdomains': self.subdomains.toPlainText(),
-            'cloud_assets': self.cloud_assets.toPlainText(),
-            'out_scope': self.out_scope.toPlainText(),
-            'restrictions': self.restrictions.toPlainText(),
+            'primary_target': self.primary_target.text(),
+            'scope': self.primary_target.text(),
+            'subdomains': self.subdomains.text(),
+            'cloud_assets': self.cloud_assets.text(),
+            'out_scope': self.out_scope.text(),
+            'restrictions': self.restrictions.text(),
             'dos_allowed': self.dos_allowed.isChecked(),
             'social_eng_allowed': self.social_eng_allowed.isChecked(),
             'physical_allowed': self.physical_allowed.isChecked(),
@@ -888,8 +885,8 @@ class AttackChainHomePage(BasePage):
         self.update_scope_validation()
     
     def load_profile(self):
-        """Load an engagement profile"""
-        from PyQt6.QtWidgets import QFileDialog, QMessageBox
+        """Show a list of saved profiles and load the selected one."""
+        from PyQt6.QtWidgets import QDialog, QVBoxLayout, QListWidget, QDialogButtonBox, QLabel, QMessageBox
         import json
         import os
 
@@ -898,55 +895,103 @@ class AttackChainHomePage(BasePage):
             QMessageBox.information(self, 'No Profiles', 'No saved profiles found.')
             return
 
-        profile_file, _ = QFileDialog.getOpenFileName(
-            self, 'Load Profile', profiles_dir, 'JSON files (*.json)'
-        )
-
-        if not profile_file:
+        profile_names = [f.replace('.json', '') for f in os.listdir(profiles_dir) if f.endswith('.json')]
+        if not profile_names:
+            QMessageBox.information(self, 'No Profiles', 'No saved profiles found.')
             return
+
+        # Build a simple list-picker dialog
+        dialog = QDialog(self)
+        dialog.setWindowTitle('📁 Load Profile')
+        dialog.setModal(True)
+        dialog.resize(400, 300)
+        dlg_layout = QVBoxLayout(dialog)
+
+        dlg_layout.addWidget(QLabel('Select a profile to load:'))
+
+        list_widget = QListWidget()
+        list_widget.addItems(sorted(profile_names))
+        list_widget.setCurrentRow(0)
+        dlg_layout.addWidget(list_widget)
+
+        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
+        buttons.accepted.connect(dialog.accept)
+        buttons.rejected.connect(dialog.reject)
+        dlg_layout.addWidget(buttons)
+
+        # Double-click also accepts
+        list_widget.itemDoubleClicked.connect(lambda _: dialog.accept())
+
+        if dialog.exec() != QDialog.DialogCode.Accepted:
+            return
+
+        selected = list_widget.currentItem()
+        if not selected:
+            return
+
+        profile_name = selected.text()
+        profile_file = os.path.join(profiles_dir, f"{profile_name}.json")
 
         try:
             with open(profile_file, 'r') as f:
                 profile_data = json.load(f)
-            
-            # Load target information fields
-            self.target_name.setText(profile_data.get('target_name', ''))
-            target_text = profile_data.get('primary_target', '') or profile_data.get('scope', '')
-            self.primary_target.setPlainText(target_text)
-            self.subdomains.setPlainText(profile_data.get('subdomains', ''))
-            self.cloud_assets.setPlainText(profile_data.get('cloud_assets', ''))
-            self.out_scope.setPlainText(profile_data.get('out_scope', ''))
-            self.restrictions.setPlainText(profile_data.get('restrictions', ''))
-            self.dos_allowed.setChecked(profile_data.get('dos_allowed', False))
-            self.social_eng_allowed.setChecked(profile_data.get('social_eng_allowed', False))
-            self.physical_allowed.setChecked(profile_data.get('physical_allowed', False))
-            
-            # Load credentials
-            self.load_credentials_from_profile(profile_data.get('credentials', {}))
-            
-            profile_name = os.path.basename(profile_file).replace('.json', '')
-            
-            # Set current profile in main window
-            if hasattr(self.main_window, 'current_profile_name'):
-                self.main_window.current_profile_name = profile_name
-            else:
-                setattr(self.main_window, 'current_profile_name', profile_name)
-            
-            # Add loaded profile to target table if not already present
+
+            # Select the row in the table (or add it if missing), which triggers on_profile_selected
             self.add_profile_to_table(profile_name, profile_data)
-            
-            # Update inventory with profile assets
-            self.update_inventory_with_profile_data(profile_data)
-            
-            # Refresh the target profiles table
             self.load_existing_profiles()
-            
-            QMessageBox.information(self, 'Success', f'Profile "{profile_name}" loaded successfully!')
-            self.refresh_credential_display()
-            self.update_scope_validation()
+
+            # Find and select the row
+            for row in range(self.target_table.rowCount()):
+                item = self.target_table.item(row, 0)
+                if item and item.text() == profile_name:
+                    self.target_table.selectRow(row)
+                    break
 
         except Exception as e:
             QMessageBox.warning(self, 'Error', f'Failed to load profile: {str(e)}')
+
+    def _autosave_current_profile(self):
+        """Silently save the currently selected profile whenever a form field changes."""
+        if getattr(self, '_loading_profile', False):
+            return
+
+        import os
+        import json
+
+        # Determine the active profile name from the selected table row
+        current_row = self.target_table.currentRow()
+        if current_row < 0:
+            return
+        name_item = self.target_table.item(current_row, 0)
+        if not name_item:
+            return
+        profile_name = name_item.text().strip()
+        if not profile_name:
+            return
+
+        profiles_dir = os.path.join(os.getcwd(), 'profiles')
+        os.makedirs(profiles_dir, exist_ok=True)
+
+        profile_data = {
+            'target_name': self.target_name.text(),
+            'primary_target': self.primary_target.text(),
+            'scope': self.primary_target.text(),
+            'subdomains': self.subdomains.text(),
+            'cloud_assets': self.cloud_assets.text(),
+            'out_scope': self.out_scope.text(),
+            'restrictions': self.restrictions.text(),
+            'dos_allowed': self.dos_allowed.isChecked(),
+            'social_eng_allowed': self.social_eng_allowed.isChecked(),
+            'physical_allowed': self.physical_allowed.isChecked(),
+            'credentials': self.get_credentials_for_save(),
+        }
+
+        profile_file = os.path.join(profiles_dir, f"{profile_name}.json")
+        try:
+            with open(profile_file, 'w') as f:
+                json.dump(profile_data, f, indent=2)
+        except Exception as e:
+            logger.debug(f"Autosave failed for profile '{profile_name}': {e}")
     
     def delete_selected_profile(self):
         """Delete the selected profile from table and disk"""
@@ -976,6 +1021,95 @@ class AttackChainHomePage(BasePage):
                         QMessageBox.warning(self, "Error", f"Failed to delete profile file: {str(e)}")
         else:
             QMessageBox.information(self, "No Selection", "Please select a profile to delete")
+
+    def delete_profile_dialog(self):
+        """Show a list of all saved profiles and delete the one the user selects."""
+        from PyQt6.QtWidgets import (QDialog, QVBoxLayout, QListWidget,
+                                     QDialogButtonBox, QLabel, QMessageBox)
+        import os
+
+        profiles_dir = os.path.join(os.getcwd(), 'profiles')
+        if not os.path.exists(profiles_dir):
+            QMessageBox.information(self, 'No Profiles', 'No saved profiles found.')
+            return
+
+        profile_names = sorted(
+            f.replace('.json', '') for f in os.listdir(profiles_dir) if f.endswith('.json')
+        )
+        if not profile_names:
+            QMessageBox.information(self, 'No Profiles', 'No saved profiles found.')
+            return
+
+        dialog = QDialog(self)
+        dialog.setWindowTitle('🗑 Delete Profile')
+        dialog.setModal(True)
+        dialog.resize(400, 300)
+        dlg_layout = QVBoxLayout(dialog)
+
+        dlg_layout.addWidget(QLabel('Select a profile to delete:'))
+
+        list_widget = QListWidget()
+        list_widget.addItems(profile_names)
+        list_widget.setCurrentRow(0)
+        dlg_layout.addWidget(list_widget)
+
+        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
+        buttons.button(QDialogButtonBox.StandardButton.Ok).setText('Delete')
+        buttons.accepted.connect(dialog.accept)
+        buttons.rejected.connect(dialog.reject)
+        dlg_layout.addWidget(buttons)
+
+        list_widget.itemDoubleClicked.connect(lambda _: dialog.accept())
+
+        if dialog.exec() != QDialog.DialogCode.Accepted:
+            return
+
+        selected = list_widget.currentItem()
+        if not selected:
+            return
+
+        profile_name = selected.text()
+        reply = QMessageBox.question(
+            self, 'Confirm Delete',
+            f"Delete profile '{profile_name}' permanently?\n\nThis cannot be undone.",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+        )
+        if reply != QMessageBox.StandardButton.Yes:
+            return
+
+        # Remove from disk
+        profile_file = os.path.join(profiles_dir, f"{profile_name}.json")
+        try:
+            if os.path.exists(profile_file):
+                os.remove(profile_file)
+        except Exception as e:
+            QMessageBox.warning(self, 'Error', f'Failed to delete profile file: {str(e)}')
+            return
+
+        # Remove from the table if present
+        for row in range(self.target_table.rowCount()):
+            item = self.target_table.item(row, 0)
+            if item and item.text() == profile_name:
+                self.target_table.removeRow(row)
+                break
+
+        # Clear the form if the deleted profile was active
+        active = getattr(self.main_window, 'current_profile_name', None)
+        if active == profile_name:
+            self.main_window.current_profile_name = None
+            self._loading_profile = True
+            try:
+                self.target_name.clear()
+                self.primary_target.clear()
+                self.subdomains.clear()
+                self.cloud_assets.clear()
+                self.out_scope.clear()
+                self.restrictions.clear()
+                self.dos_allowed.setChecked(False)
+                self.social_eng_allowed.setChecked(False)
+                self.physical_allowed.setChecked(False)
+            finally:
+                self._loading_profile = False
     
     def load_existing_profiles(self):
         """Load existing profiles from the profiles directory"""
@@ -990,74 +1124,65 @@ class AttackChainHomePage(BasePage):
         self.target_table.setRowCount(0)
         
         # Load all JSON files from profiles directory
-        for filename in os.listdir(profiles_dir):
+        for filename in sorted(os.listdir(profiles_dir)):
             if filename.endswith('.json'):
                 try:
                     profile_path = os.path.join(profiles_dir, filename)
                     with open(profile_path, 'r') as f:
                         profile_data = json.load(f)
                     
-                    # Extract profile information
                     profile_name = filename.replace('.json', '')
+
+                    # In-Scope Targets — first line only, truncated
                     target = profile_data.get('primary_target', '') or profile_data.get('scope', '')
-                    
-                    if not target:
-                        continue
-                    
-                    # Determine target type based on content
-                    target_type = "External"
-                    if any(keyword in target.lower() for keyword in ["api", "rest", "graphql"]):
-                        target_type = "API"
-                    elif any(keyword in target.lower() for keyword in ["app", "web", "http"]):
-                        target_type = "Web Application"
-                    elif any(keyword in target.lower() for keyword in ["192.168", "10.", "172."]):
-                        target_type = "Internal"
-                    
+                    first_line = target.strip().splitlines()[0] if target.strip() else '—'
+                    if len(first_line) > 40:
+                        first_line = first_line[:38] + '…'
+
+                    # Credentials count
+                    creds = profile_data.get('credentials', {})
+                    cred_list = creds.get('credentials', []) if isinstance(creds, dict) else []
+                    cred_count = f"{len(cred_list)} saved" if cred_list else "None"
+
+                    # Permissions
+                    perms = []
+                    if profile_data.get('dos_allowed'):
+                        perms.append('DoS')
+                    if profile_data.get('social_eng_allowed'):
+                        perms.append('Social')
+                    if profile_data.get('physical_allowed'):
+                        perms.append('Physical')
+                    permissions = ', '.join(perms) if perms else '—'
+
                     # Add to table
                     row = self.target_table.rowCount()
                     self.target_table.insertRow(row)
                     self.target_table.setItem(row, 0, QTableWidgetItem(profile_name))
-                    self.target_table.setItem(row, 1, QTableWidgetItem(target_type))
-                    self.target_table.setItem(row, 2, QTableWidgetItem(target))
-                    self.target_table.setItem(row, 3, QTableWidgetItem("High"))
+                    self.target_table.setItem(row, 1, QTableWidgetItem(first_line))
+                    self.target_table.setItem(row, 2, QTableWidgetItem(cred_count))
+                    self.target_table.setItem(row, 3, QTableWidgetItem(permissions))
                     self.target_table.setItem(row, 4, QTableWidgetItem("Active"))
                     
                 except Exception:
                     continue
     
     def add_profile_to_table(self, profile_name, profile_data):
-        """Add loaded profile to target table if not already present"""
-        # Check if profile already exists in table
+        """Add loaded profile to target table if not already present."""
+        # If already in the table just select it; otherwise refresh so the
+        # new columns are populated correctly via load_existing_profiles.
         for row in range(self.target_table.rowCount()):
             name_item = self.target_table.item(row, 0)
             if name_item and name_item.text() == profile_name:
-                # Profile already exists, select it
                 self.target_table.selectRow(row)
                 return
-        
-        # Profile doesn't exist, add it
-        target = profile_data.get('primary_target', '') or profile_data.get('scope', '')
-        if target:
-            # Determine target type
-            target_type = "External"
-            if any(keyword in target.lower() for keyword in ["api", "rest", "graphql"]):
-                target_type = "API"
-            elif any(keyword in target.lower() for keyword in ["app", "web", "http"]):
-                target_type = "Web Application"
-            elif any(keyword in target.lower() for keyword in ["192.168", "10.", "172."]):
-                target_type = "Internal"
-            
-            # Add to table
-            row = self.target_table.rowCount()
-            self.target_table.insertRow(row)
-            self.target_table.setItem(row, 0, QTableWidgetItem(profile_name))
-            self.target_table.setItem(row, 1, QTableWidgetItem(target_type))
-            self.target_table.setItem(row, 2, QTableWidgetItem(target))
-            self.target_table.setItem(row, 3, QTableWidgetItem("High"))
-            self.target_table.setItem(row, 4, QTableWidgetItem("Active"))
-            
-            # Select the newly added row
-            self.target_table.selectRow(row)
+
+        # Not present — refresh the whole table then select the new row
+        self.load_existing_profiles()
+        for row in range(self.target_table.rowCount()):
+            name_item = self.target_table.item(row, 0)
+            if name_item and name_item.text() == profile_name:
+                self.target_table.selectRow(row)
+                return
     
     def get_credentials_for_save(self):
         """Get credentials data for profile saving"""
@@ -1318,54 +1443,58 @@ class AttackChainHomePage(BasePage):
     
     def refresh_credential_display(self):
         """Refresh credential display"""
+        # If the new SecureCredentialWidget is active, delegate to it
+        if hasattr(self, 'secure_cred_widget'):
+            try:
+                self.secure_cred_widget.refresh_credentials()
+            except Exception as _exc:
+                logger.debug("Suppressed exception", exc_info=True)
+            return
+
+        # Fallback: update the inline cred_table (only present when
+        # SecureCredentialWidget failed to load)
+        if not hasattr(self, 'cred_table'):
+            return
+
         try:
             from app.core.credential_manager import credential_manager
-            
-            # Update credential table
             from PyQt6.QtWidgets import QTableWidgetItem
-            
+
             self.cred_table.setRowCount(len(credential_manager.credentials))
-            
+
             for i, cred in enumerate(credential_manager.credentials):
                 source_icon = {
                     'manual': '👤 Manual',
-                    'enumeration': '🔍 Enum', 
+                    'enumeration': '🔍 Enum',
                     'exploitation': '💥 Exploit',
                     'scanned': '🔍 Scanned'
                 }.get(cred.source, '❓ Unknown')
-                
+
                 self.cred_table.setItem(i, 0, QTableWidgetItem(source_icon))
-                
-                # Credential type
                 cred_type = getattr(cred, 'credential_type', 'Username/Password')
                 self.cred_table.setItem(i, 1, QTableWidgetItem(cred_type))
-                
-                # Username
                 self.cred_table.setItem(i, 2, QTableWidgetItem(cred.username))
-                
-                # Password - check if should be shown
+
                 if hasattr(self, 'show_passwords_cb') and self.show_passwords_cb.isChecked():
                     self.cred_table.setItem(i, 3, QTableWidgetItem(cred.password))
                 else:
                     self.cred_table.setItem(i, 3, QTableWidgetItem('*' * len(cred.password)))
-                
+
                 self.cred_table.setItem(i, 4, QTableWidgetItem(cred.domain))
                 self.cred_table.setItem(i, 5, QTableWidgetItem(cred.service))
                 self.cred_table.setItem(i, 6, QTableWidgetItem(cred.notes))
-            
-            # Update summary
+
             summary = credential_manager.get_credential_summary()
             if hasattr(self, 'cred_summary'):
                 self.cred_summary.setText(f"📊 {summary}")
-                
+
         except ImportError as _exc:
-            pass
             logger.debug("Suppressed exception", exc_info=True)
     
     def update_scope_validation(self):
         """Update scope validation status display"""
-        in_scope_text = self.primary_target.toPlainText().strip()
-        out_scope_text = self.out_scope.toPlainText().strip() if hasattr(self, 'out_scope') else ""
+        in_scope_text = self.primary_target.text().strip()
+        out_scope_text = self.out_scope.text().strip() if hasattr(self, 'out_scope') else ""
         
         if not in_scope_text:
             self.scope_status.setText("⚠️ Scope: Not configured")

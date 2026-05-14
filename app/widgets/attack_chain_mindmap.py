@@ -49,9 +49,9 @@ class AttackChainMindmap(QWidget):
                 "color": QColor(255, 200, 100),
                 "description": "Information gathering & enumeration",
                 "tools": ["AD Enumerator", "Kerberos Tools", "DNS/Port Scanning"],
-                "connections": ["VULN"]
+                "connections": ["SCAN"]
             },
-            "VULN": {
+            "SCAN": {
                 "pos": (400, 60),
                 "color": QColor(255, 150, 150),
                 "description": "Vulnerability identification & correlation",
@@ -63,9 +63,9 @@ class AttackChainMindmap(QWidget):
                 "color": QColor(255, 100, 100),
                 "description": "Active exploitation & initial access",
                 "tools": ["RPC Exploits", "SMB Attacks", "Web Exploits"],
-                "connections": ["POST-EX"]
+                "connections": ["ELEVATE"]
             },
-            "POST-EX": {
+            "ELEVATE": {
                 "pos": (700, 60),
                 "color": QColor(200, 100, 255),
                 "description": "Privilege escalation & lateral movement",
@@ -209,9 +209,7 @@ class AttackChainMindmap(QWidget):
             
 
         
-        # Draw tooltip last so it appears on top
-        if hovered_phase_data:
-            self._draw_phase_tooltip(painter, hovered_phase_data[0], hovered_phase_data[1], hovered_phase_data[2])
+        # Tooltip drawing removed
     
     def _draw_phase_tooltip(self, painter, phase_name, phase_data, pos):
         """Draw tooltip with phase details"""
@@ -236,7 +234,8 @@ class AttackChainMindmap(QWidget):
         
         # Phase name and description only
         text_rect = QRect(tooltip_x + 10, tooltip_y + 10, tooltip_width - 20, tooltip_height - 20)
-        painter.drawText(text_rect, Qt.TextFlag.TextWordWrap, f"{phase_name}: {phase_data['description']}")
+        display_name = phase_data.get(phase_name)
+        painter.drawText(text_rect, Qt.TextFlag.TextWordWrap, f"{display_name}: {phase_data['description']}")
     
     def mousePressEvent(self, event):
         """Handle mouse clicks on phases"""

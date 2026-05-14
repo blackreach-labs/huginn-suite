@@ -61,8 +61,7 @@ class MenuManager:
         profiles_menu = file_menu.addMenu('&Profiles')
         self._add_action(profiles_menu, '&New Profile', 'Ctrl+N', 'Create a new engagement profile', self.main_window.new_profile)
         self._add_action(profiles_menu, '&Load Profile...', 'Ctrl+O', 'Load an existing engagement profile', self.main_window.load_profile)
-        self._add_action(profiles_menu, '&Save Profile', 'Ctrl+S', 'Save current engagement profile', self.main_window.save_profile)
-        self._add_action(profiles_menu, 'Save &As...', 'Ctrl+Shift+S', 'Save current profile with new name', self.main_window.save_profile_as)
+        self._add_action(profiles_menu, '&Delete Profile...', None, 'Delete an engagement profile', self.main_window.delete_profile)
         
         file_menu.addSeparator()
         self._add_action(file_menu, '&Export Results', 'Ctrl+E', 'Export scan results', self.main_window.export_current_results)
@@ -95,7 +94,7 @@ class MenuManager:
         self._add_action(view_menu, '&Running Scans...', 'Ctrl+Shift+R', 'Monitor and control active scans', self.main_window.show_running_scans)
         self._add_action(view_menu, '&Sessions', 'Ctrl+Shift+S', 'Manage scanning sessions', self.main_window.open_sessions_dialog)
         self._add_action(view_menu, 'Session &Info', 'Ctrl+I', 'View current session information and exports', self.main_window.show_session_info)
-        self._add_action(view_menu, '&Reports', 'Ctrl+R', 'Generate advanced reports from file', self.main_window.open_reports_dialog)
+        self._add_action(view_menu, '&Reports', 'Ctrl+R', 'Advanced reporting and compliance', self.main_window.open_reports_dialog)
         self._add_action(view_menu, '&Inventory', 'Ctrl+Shift+I', 'View and manage discovered assets', lambda: self.main_window.navigate_to('inventory'))
         
         view_menu.addSeparator()

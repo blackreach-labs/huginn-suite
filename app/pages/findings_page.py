@@ -14,8 +14,8 @@ class FindingsPage(BasePage):
 
     def setup_ui(self):
         self.main_layout = QVBoxLayout(self)
-        self.main_layout.setContentsMargins(20, 20, 20, 20)
-        self.main_layout.setSpacing(15)
+        self.main_layout.setContentsMargins(10, 10, 10, 10)
+        self.main_layout.setSpacing(10)
 
         self.create_tab_widget()
         self.setup_shortcuts()
@@ -26,11 +26,11 @@ class FindingsPage(BasePage):
         
         # Findings tab
         findings_tab = self.create_findings_tab()
-        self.tab_widget.addTab(findings_tab, "Common Findings")
+        self.tab_widget.addTab(findings_tab, "🔎 Common Findings")
         
         # Advanced Reporting tab
         reporting_tab = self.create_reporting_tab()
-        self.tab_widget.addTab(reporting_tab, "Advanced Reporting")
+        self.tab_widget.addTab(reporting_tab, "📈 Advanced Reporting")
         
         self.main_layout.addWidget(self.tab_widget)
 
@@ -81,26 +81,6 @@ class FindingsPage(BasePage):
             QPushButton:hover {
                 background-color: rgba(50, 70, 90, 200);
                 border: 2px solid #64C8FF;
-            }
-            QTabWidget::pane {
-                border: 1px solid rgba(100, 200, 255, 50);
-                background-color: rgba(0, 0, 0, 50);
-            }
-            QTabBar::tab {
-                background-color: rgba(30, 40, 50, 150);
-                color: #DCDCDC;
-                padding: 8px 16px;
-                margin-right: 2px;
-                border-radius: 4px 4px 0px 0px;
-            }
-            QTabBar::tab:selected {
-                background-color: rgba(50, 70, 90, 200);
-                color: #64C8FF;
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-bottom: none;
-            }
-            QTabBar::tab:hover {
-                background-color: rgba(40, 60, 80, 180);
             }
         """)
 
