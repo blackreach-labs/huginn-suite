@@ -103,6 +103,7 @@ python --version
 ```
 
 > "You want to see Python 3.10 or higher. If you're on an older version, head to python.org and grab the latest release."
+https://www.python.org/ftp/python/3.12.10/python-3.12.10-amd64.exe
 
 > "You'll also want Git installed. Check that with:"
 
@@ -149,6 +150,7 @@ python -m venv venv
 > "Now activate it. On Windows:"
 
 ```bash
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
 venv\Scripts\activate
 ```
 
