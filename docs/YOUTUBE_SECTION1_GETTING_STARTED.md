@@ -112,6 +112,7 @@ git --version
 ```
 
 > "If you don't have Git, grab it from git-scm.com. On Linux you can install it with your package manager — `sudo apt install git` on Debian/Ubuntu."
+https://github.com/git-for-windows/git/releases/download/v2.54.0.windows.1/Git-2.54.0-64-bit.exe
 
 > "I'd also strongly recommend using a virtual environment to keep Huginn's dependencies isolated from your system Python. We'll set that up in a moment."
 
@@ -124,9 +125,10 @@ git --version
 > "Navigate to wherever you want to keep the project. I'm going to put mine in a `tools` folder in my home directory."
 
 ```bash
-cd ~/tools
-git clone https://github.com/your-org/huginn
-cd huginn
+mkdir ~\tools
+cd ~\tools
+git clone https://github.com/whiteborr/huginn-suite.git
+cd huginn-suite
 ```
 
 > "Once that's done you should have the full project directory. Let's take a quick look at the structure."
@@ -189,7 +191,7 @@ pip install -e .
 > "Once that's done, let's verify everything installed correctly."
 
 ```bash
-pip list | grep PyQt6
+pip show PyQt6
 ```
 
 > "You should see PyQt6 and its related packages listed."
