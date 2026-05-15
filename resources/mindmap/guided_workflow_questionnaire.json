@@ -1,4 +1,4 @@
-{
+﻿{
   "Target Definition": [
     {
       "id": "target_selection",
@@ -95,7 +95,7 @@
       "id": "vuln_scan",
       "text": "Run automated vulnerability scanning?",
       "type": "boolean",
-      "action": "launch_huggin_scanner"
+      "action": "launch_huginn_scanner"
     },
     {
       "id": "web_vuln_test",

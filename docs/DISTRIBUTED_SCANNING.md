@@ -1,8 +1,8 @@
-# Distributed Scanning Guide
+﻿# Distributed Scanning Guide
 
 ## Overview
 
-Huggin's distributed scanning system enables scaling scan operations across multiple nodes for improved performance and parallel processing capabilities.
+Huginn's distributed scanning system enables scaling scan operations across multiple nodes for improved performance and parallel processing capabilities.
 
 ## Architecture
 

@@ -1,7 +1,7 @@
-# IKE Enumeration Tool Implementation
+﻿# IKE Enumeration Tool Implementation
 
 ## Overview
-Successfully implemented the IKE Enumeration tool as the 11th enumeration tool in Huggin, following the specification from `08 - IKE.md`.
+Successfully implemented the IKE Enumeration tool as the 11th enumeration tool in Huginn, following the specification from `08 - IKE.md`.
 
 ## Files Created/Modified
 
@@ -117,7 +117,7 @@ The implementation includes comprehensive testing:
 - **Command Generation**: Test ike-scan command building
 - **Config Information**: Verify IPSec configuration references
 
-## Integration with Huggin
+## Integration with Huginn
 
 The IKE enumeration tool is fully integrated with:
 - **Main Enumeration Interface**: Appears as 11th tool in the list
@@ -175,7 +175,7 @@ Potential improvements for future versions:
 
 ## Summary
 
-The IKE Enumeration tool has been successfully implemented as a comprehensive IKE/IPSec reconnaissance solution. It provides both basic connectivity testing and advanced parameter enumeration with support for multiple scan types and intelligent result parsing. The tool integrates seamlessly with the existing Huggin framework and provides a user-friendly interface for IKE security assessment activities.
+The IKE Enumeration tool has been successfully implemented as a comprehensive IKE/IPSec reconnaissance solution. It provides both basic connectivity testing and advanced parameter enumeration with support for multiple scan types and intelligent result parsing. The tool integrates seamlessly with the existing Huginn framework and provides a user-friendly interface for IKE security assessment activities.
 
 ### Key Achievements:
 - ✅ Complete ike-scan tool integration

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Test script for SMB blocking detection
 Tests the enhanced SMB scanner's ability to detect and report SMB blocking
@@ -90,7 +90,7 @@ if __name__ == "__main__":
     
     target = sys.argv[1]
     
-    print("Huggin SMB Scanner - SMB Blocking Detection Test")
+    print("Huginn SMB Scanner - SMB Blocking Detection Test")
     print("=" * 80)
     print(f"Target: {target}")
     print("Testing enhanced SMB blocking detection capabilities...")

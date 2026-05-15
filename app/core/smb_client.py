@@ -1,4 +1,4 @@
-# app/core/smb_client.py
+﻿# app/core/smb_client.py
 import socket
 import struct
 import hashlib
@@ -89,7 +89,7 @@ class SMBClient:
         try:
             # Build proper NetBIOS names
             called_name = self._build_netbios_name('*SMBSERVER', 0x20)  # Server service
-            calling_name = self._build_netbios_name('HUGGIN', 0x00)     # Workstation service
+            calling_name = self._build_netbios_name('HUGINN', 0x00)     # Workstation service
             
             # Calculate total length
             data_length = len(called_name) + len(calling_name)
@@ -288,7 +288,7 @@ class SMBClient:
         """NetBIOS session request with custom server name"""
         try:
             called_name = self._build_netbios_name(server_name, 0x20)
-            calling_name = self._build_netbios_name('HUGGIN', 0x00)
+            calling_name = self._build_netbios_name('HUGINN', 0x00)
             
             data_length = len(called_name) + len(calling_name)
             session_request = b'\x81' + struct.pack('>I', data_length)[1:] + called_name + calling_name
@@ -897,7 +897,7 @@ class SMBClient:
             flags = struct.pack('<I', 0x62890235)  # Negotiate flags
             
             domain_len = len(domain)
-            workstation = "HUGGIN"
+            workstation = "HUGINN"
             workstation_len = len(workstation)
             
             # Security buffer descriptors
@@ -940,7 +940,7 @@ class SMBClient:
             domain_offset = base_offset
             username_offset = domain_offset + len(domain.encode('utf-16le'))
             workstation_offset = username_offset + len(username.encode('utf-16le'))
-            lm_offset = workstation_offset + len("HUGGIN".encode('utf-16le'))
+            lm_offset = workstation_offset + len("HUGINN".encode('utf-16le'))
             nt_offset = lm_offset + len(lm_response)
             session_key_offset = nt_offset + len(nt_response)
             
@@ -960,7 +960,7 @@ class SMBClient:
             # Append data
             type3_msg += domain.encode('utf-16le')
             type3_msg += username.encode('utf-16le')
-            type3_msg += "HUGGIN".encode('utf-16le')
+            type3_msg += "HUGINN".encode('utf-16le')
             type3_msg += lm_response
             type3_msg += nt_response
             

@@ -1,8 +1,8 @@
-# Machine Learning Pattern Detection Guide
+﻿# Machine Learning Pattern Detection Guide
 
 ## Overview
 
-Huggin's ML pattern detection system provides automated analysis of scan results to identify patterns, anomalies, and generate actionable insights.
+Huginn's ML pattern detection system provides automated analysis of scan results to identify patterns, anomalies, and generate actionable insights.
 
 ## Supported Analysis Types
 

@@ -1,8 +1,8 @@
-# Plugin Development Guide
+﻿# Plugin Development Guide
 
 ## Overview
 
-Huggin's plugin architecture allows developers to extend functionality with custom tools and scripts.
+Huginn's plugin architecture allows developers to extend functionality with custom tools and scripts.
 
 ## Plugin Structure
 

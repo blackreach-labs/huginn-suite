@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Test Normal Profile Fix - Verify phase tracking works correctly
 """
@@ -7,7 +7,7 @@ import asyncio
 import sys
 import time
 import logging
-from app.tools.huggin_vuln_scanner import HugginVulnScanner
+from app.tools.huginn_vuln_scanner import HuginnVulnScanner
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -17,7 +17,7 @@ async def test_normal_profile_fix(target_url):
     logger.info(f"Testing NORMAL profile fix for {target_url}")
     
     try:
-        scanner = HugginVulnScanner(target_url, 'normal')
+        scanner = HuginnVulnScanner(target_url, 'normal')
         
         # Monitor progress
         async def monitor_progress():
@@ -63,7 +63,7 @@ async def compare_profiles(target_url):
     logger.info("Testing LIGHT profile...")
     light_start = time.time()
     try:
-        light_scanner = HugginVulnScanner(target_url, 'light')
+        light_scanner = HuginnVulnScanner(target_url, 'light')
         light_results = await asyncio.wait_for(light_scanner.scan(), timeout=60)
         light_time = time.time() - light_start
         light_vulns = len(light_results.get('vulnerabilities', []))

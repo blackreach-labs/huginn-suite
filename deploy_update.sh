@@ -7,12 +7,12 @@ if [ $# -eq 0 ]; then
 fi
 
 VERSION=$1
-S3_BASE="s3://arn:aws:s3:ap-southeast-2:917026075470:accesspoint/huggin-secure-updater"
+S3_BASE="s3://arn:aws:s3:ap-southeast-2:917026075470:accesspoint/huginn-secure-updater"
 
-echo "Deploying Huggin v$VERSION..."
+echo "Deploying Huginn v$VERSION..."
 
 # Upload release file
-aws s3 cp "huggin_$VERSION.zip" "$S3_BASE/releases/"
+aws s3 cp "huginn_$VERSION.zip" "$S3_BASE/releases/"
 
 # Upload manifest
 aws s3 cp "manifest.json" "$S3_BASE/manifest/"

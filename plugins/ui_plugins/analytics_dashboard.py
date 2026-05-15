@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QTextEdit
+﻿from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QTextEdit
 from shared.plugins.ui_plugin_interface import UIPluginInterface, PluginMetadata
 from shared.analytics.analytics_engine import AnalyticsEngine
 from typing import Dict, Any
@@ -9,7 +9,7 @@ class AnalyticsDashboard(UIPluginInterface):
             name="analytics_dashboard",
             version="1.0.0",
             description="Analytics dashboard for scan data visualization",
-            author="Huggin Team",
+            author="Huginn Team",
             category="ui"
         )
     

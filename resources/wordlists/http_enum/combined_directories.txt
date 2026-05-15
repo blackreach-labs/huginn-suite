@@ -1,4 +1,4 @@
-cgi-bin
+﻿cgi-bin
 images
 admin
 includes
@@ -446761,7 +446761,7 @@ button_mid
 198436682_87f5ad3338
 signup_acc
 addyourcomments
-puppies_hugging65fcd5
+puppies_huginng65fcd5
 tire_budda95b6db
 boob_sign3fa892
 198436631_3628c14c34
@@ -447282,7 +447282,7 @@ defective_wiiw70St
 Monkeys_Tattoo
 Museum_Prank
 bergman
-Hugging_puppies
+Huginng_puppies
 loga-motorola
 canigula
 Tire_Buddha
@@ -758621,7 +758621,7 @@ kaladhar
 %7Ebuy
 JayCorbett
 %7Egurevich
-%7Ejhuggins
+%7Ejhuginns
 %7Ewwshen
 %7Ewallace
 %7Ealex
@@ -976085,7 +976085,7 @@ william_hodgson
 adventure_gifts
 smithfield
 prince_george
-william_huggins
+william_huginns
 aeroplane_gifts
 aesop_gifts
 courtiers_gifts
@@ -1020051,7 +1020051,7 @@ soe_01
 immune_sc12
 programme1_5
 jamesii
-HUGGINS
+HUGINNS
 Huygens-e
 holoc-ex1
 prisonservice
@@ -1260909,7 +1260909,7 @@ availabot
 daringfireball
 BNSto%0Ary
 Kaycee_Nicole
-hugging
+huginng
 anagrahams
 AR2006101500913
 tracking_hasan
@@ -1302445,7 +1302445,7 @@ junkmailon
 bas1
 front_door
 107thdate
-hugginisms
+huginnisms
 pri1
 inacted
 000414Hatch-Schumer
@@ -1335679,9 +1335679,9 @@ intldealers
 092805trager
 readmore_btn
 left_cor
-atlantichugginsopp
+atlantichuginnsopp
 right_cor
-atlantichugginsopp2
+atlantichuginnsopp2
 pressrelease_000251
 sism771_features
 btvoyager-getconfig
@@ -1335866,7 +1335866,7 @@ atlantic_does
 greytab_lft
 047794
 proposed_order
-atlantic_huggins
+atlantic_huginns
 Exhibit_A
 Miller_declaration
 greytab_rght
@@ -1353524,7 +1353524,7 @@ henry_viii_king
 hero_of_alexandria
 hickman_henry_hill
 hindenburg_paul_von
-huggins_margaret_lindsay
+huginns_margaret_lindsay
 huxley_thomas_henry
 inayat_khan_noor
 james_i_king

@@ -1,4 +1,4 @@
-# examples/security_dashboard_demo.py
+﻿# examples/security_dashboard_demo.py
 """
 Real-Time Security Dashboard Demo
 
@@ -259,7 +259,7 @@ def main():
         print(f"   Target Coverage: {target_data['coverage_percentage']:.0f}%")
         
         print(f"\n🎯 Next Steps:")
-        print(f"   1. Launch Huggin application")
+        print(f"   1. Launch Huginn application")
         print(f"   2. Navigate to Attack Chain Home")
         print(f"   3. Click '🛡️ Dashboard' tab")
         print(f"   4. View real-time security metrics")

@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QTabWidget, QWidget
+﻿from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QTabWidget, QWidget
 from PyQt6.QtCore import pyqtSignal
 
 from app.pages.components.base_page import BasePage
@@ -50,13 +50,13 @@ class VulnScanningPage(BasePage):
         except Exception as e:
             print(f"Failed to load SSH vulnerability scanner: {e}")
         
-        # Huggin Advanced Scanner tab
+        # Huginn Advanced Scanner tab
         try:
-            from app.components.huggin_scanner_component import HugginScannerComponent
-            self.huggin_scanner = HugginScannerComponent(self)
-            self.tab_widget.addTab(self.huggin_scanner, "🚀 Huggin Advanced Scanner")
+            from app.components.huginn_scanner_component import HuginnScannerComponent
+            self.huginn_scanner = HuginnScannerComponent(self)
+            self.tab_widget.addTab(self.huginn_scanner, "🚀 Huginn Advanced Scanner")
         except Exception as e:
-            print(f"Failed to load Huggin scanner: {e}")
+            print(f"Failed to load Huginn scanner: {e}")
         
         layout.addWidget(self.tab_widget)
 

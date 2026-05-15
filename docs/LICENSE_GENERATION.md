@@ -1,4 +1,4 @@
-# 🔑 Huggin License Generation Guide
+﻿# 🔑 Huginn License Generation Guide
 
 ## Quick Start
 
@@ -122,4 +122,4 @@ Track license generation for revenue management:
 - Enterprise: $299/month per license  
 - Trial: Free (conversion tracking)
 
-**The license system provides secure, flexible licensing for Huggin's professional features with automated validation and feature control.**
+**The license system provides secure, flexible licensing for Huginn's professional features with automated validation and feature control.**

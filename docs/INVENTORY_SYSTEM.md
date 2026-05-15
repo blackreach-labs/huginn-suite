@@ -1,6 +1,6 @@
-# Asset Inventory System
+﻿# Asset Inventory System
 
-The Huggin Asset Inventory System provides centralized management and visualization of discovered network assets. As reconnaissance and enumeration scans are performed, the system automatically collects and correlates information about discovered targets, building a comprehensive asset database.
+The Huginn Asset Inventory System provides centralized management and visualization of discovered network assets. As reconnaissance and enumeration scans are performed, the system automatically collects and correlates information about discovered targets, building a comprehensive asset database.
 
 ## 🎯 Key Features
 
@@ -224,7 +224,7 @@ Assets are displayed as interactive cards showing:
 
 ### Theme Integration
 
-The inventory follows the Huggin theme system:
+The inventory follows the Huginn theme system:
 - **Dark Blue Theme**: Default cybersecurity aesthetic
 - **Matrix Theme**: Green-on-black terminal styling
 - **Responsive Design**: Adapts to window resizing
@@ -267,4 +267,4 @@ if __name__ == "__main__":
     show_statistics()      # Show analytics
 ```
 
-The Asset Inventory System transforms Huggin from a collection of individual tools into a comprehensive asset management platform, providing security professionals with the situational awareness needed for effective penetration testing and security assessment.
+The Asset Inventory System transforms Huginn from a collection of individual tools into a comprehensive asset management platform, providing security professionals with the situational awareness needed for effective penetration testing and security assessment.

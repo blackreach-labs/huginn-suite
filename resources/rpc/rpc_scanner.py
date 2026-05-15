@@ -1,4 +1,4 @@
-# app/tools/rpc_scanner.py
+﻿# app/tools/rpc_scanner.py
 import subprocess
 import re
 import socket
@@ -1326,7 +1326,7 @@ class RPCWorker(QRunnable):
     def _test_svcctl_privileged_access(self):
         """Test if service creation is possible"""
         try:
-            test_service = f"HugginTest{hash(self.target) % 10000}"
+            test_service = f"HuginnTest{hash(self.target) % 10000}"
             cmd = ["sc", f"\\\\{self.target}", "create", test_service, "binPath=", "C:\\Windows\\System32\\calc.exe", "start=", "disabled"]
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=5)
             
@@ -1681,7 +1681,7 @@ class RPCWorker(QRunnable):
         """Test Service Control Manager permissions"""
         try:
             # Test service creation (dry run)
-            test_service = f"HugginDryRun{hash(self.target) % 10000}"
+            test_service = f"HuginnDryRun{hash(self.target) % 10000}"
             cmd = ["sc", f"\\\\{self.target}", "create", test_service, "binPath=", "C:\\Windows\\System32\\calc.exe", "start=", "disabled"]
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=5)
             

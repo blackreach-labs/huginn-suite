@@ -1,4 +1,4 @@
-# app/core/proxychains_manager.py
+﻿# app/core/proxychains_manager.py
 import os
 import tempfile
 import subprocess
@@ -39,7 +39,7 @@ class ProxyChainsManager(QObject):
     def generate_proxychains_config(self) -> str:
         """Generate proxychains configuration"""
         config_content = f"""
-# Huggin ProxyChains Configuration
+# Huginn ProxyChains Configuration
 {self.chain_type}_chain
 
 # Proxy DNS requests

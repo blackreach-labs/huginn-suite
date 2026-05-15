@@ -1,11 +1,11 @@
-# app/core/logger.py
+﻿# app/core/logger.py
 import logging
 import os
 from pathlib import Path
 from datetime import datetime
 
-class HugginLogger:
-    """Centralized logging system for Huggin"""
+class HuginnLogger:
+    """Centralized logging system for Huginn"""
     
     _instance = None
     _logger = None
@@ -28,14 +28,14 @@ class HugginLogger:
         log_dir.mkdir(exist_ok=True)
         
         # Create logger
-        self._logger = logging.getLogger("huggin")
+        self._logger = logging.getLogger("huginn")
         self._logger.setLevel(logging.DEBUG)
         
         # Clear existing handlers
         self._logger.handlers.clear()
         
         # File handler for all logs
-        log_file = log_dir / f"huggin_{datetime.now().strftime('%Y%m%d')}.log"
+        log_file = log_dir / f"huginn_{datetime.now().strftime('%Y%m%d')}.log"
         file_handler = logging.FileHandler(log_file, encoding='utf-8')
         file_handler.setLevel(logging.DEBUG)
         
@@ -107,4 +107,4 @@ class HugginLogger:
         self.debug(f"DNS error for {domain}: {error}")
 
 # Global logger instance
-logger = HugginLogger()
+logger = HuginnLogger()

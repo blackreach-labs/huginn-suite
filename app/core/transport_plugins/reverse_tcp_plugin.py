@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Reverse TCP Transport Plugin
 """
@@ -150,7 +150,7 @@ class ReverseTCPPlugin(TransportPlugin):
         try:
             while session['status'] == 'active':
                 # Simple command shell
-                client_sock.send(b"huggin> ")
+                client_sock.send(b"huginn> ")
                 data = client_sock.recv(1024)
                 
                 if not data:

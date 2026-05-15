@@ -1,4 +1,4 @@
-from shared.plugins.plugin_interface import PluginInterface, PluginMetadata
+﻿from shared.plugins.plugin_interface import PluginInterface, PluginMetadata
 from typing import Dict, Any
 
 class PortScanEnhancer(PluginInterface):
@@ -9,7 +9,7 @@ class PortScanEnhancer(PluginInterface):
             name="port_scan_enhancer",
             version="1.0.0",
             description="Enhances port scan results with service analysis",
-            author="Huggin Team",
+            author="Huginn Team",
             category="scanner",
             dependencies=["nmap"]
         )

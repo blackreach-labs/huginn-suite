@@ -1,7 +1,7 @@
-# LDAP/S Enumeration Tool Implementation
+﻿# LDAP/S Enumeration Tool Implementation
 
 ## Overview
-Successfully implemented the LDAP/S enumeration tool as the 9th enumeration tool in Huggin, following the specification from `07 - LDAP_S.md`.
+Successfully implemented the LDAP/S enumeration tool as the 9th enumeration tool in Huginn, following the specification from `07 - LDAP_S.md`.
 
 ## Files Created/Modified
 
@@ -142,4 +142,4 @@ The implementation follows the original specification from `07 - LDAP_S.md`:
 
 ## Summary
 
-The LDAP/S enumeration tool has been successfully implemented as a comprehensive directory service enumeration solution. It provides both basic connectivity testing and advanced enumeration capabilities, with support for both anonymous and authenticated access. The tool integrates seamlessly with the existing Huggin framework and provides a user-friendly interface for LDAP reconnaissance activities.
+The LDAP/S enumeration tool has been successfully implemented as a comprehensive directory service enumeration solution. It provides both basic connectivity testing and advanced enumeration capabilities, with support for both anonymous and authenticated access. The tool integrates seamlessly with the existing Huginn framework and provides a user-friendly interface for LDAP reconnaissance activities.

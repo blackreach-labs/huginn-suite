@@ -1,11 +1,11 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
-Enterprise Huggin Scanner Usage Examples
+Enterprise Huginn Scanner Usage Examples
 Demonstrates Phase 6 enterprise integration features
 """
 
 import asyncio
-from app.tools.huggin_vuln_scanner import HugginVulnScanner
+from app.tools.huginn_vuln_scanner import HuginnVulnScanner
 from app.core.multi_target_orchestrator import MultiTargetOrchestrator
 
 async def enterprise_scan_campaign():
@@ -43,7 +43,7 @@ async def enterprise_scan_campaign():
 
 async def compliance_reporting_demo():
     """Demonstrate compliance reporting features"""
-    scanner = HugginVulnScanner('https://demo.testfire.net', profile='normal')
+    scanner = HuginnVulnScanner('https://demo.testfire.net', profile='normal')
     results = await scanner.scan()
     
     # Generate compliance reports
@@ -67,7 +67,7 @@ async def compliance_reporting_demo():
 
 def generate_cicd_configs():
     """Generate CI/CD pipeline configurations"""
-    scanner = HugginVulnScanner('https://api.company.com')
+    scanner = HuginnVulnScanner('https://api.company.com')
     
     # Generate Jenkins pipeline
     jenkins_config = scanner.generate_cicd_config('jenkins')
@@ -83,7 +83,7 @@ def generate_cicd_configs():
 
 async def devsecops_integration_demo():
     """Demonstrate DevSecOps integration"""
-    scanner = HugginVulnScanner('https://staging.company.com', profile='normal')
+    scanner = HuginnVulnScanner('https://staging.company.com', profile='normal')
     results = await scanner.scan()
     
     # Check security gate

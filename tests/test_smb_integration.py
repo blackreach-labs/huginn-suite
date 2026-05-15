@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Test script to verify SMB scanner integration with centralized data collection
 
@@ -139,7 +139,7 @@ def main():
     if passed == total:
         print("All SMB integration tests passed!")
         print("\nSMB Scanner is ready to use:")
-        print("   1. Launch Huggin application")
+        print("   1. Launch Huginn application")
         print("   2. Go to Reconnaissance & Enumeration")
         print("   3. Click Service Enumeration tab")
         print("   4. Click SMB sub-tab")

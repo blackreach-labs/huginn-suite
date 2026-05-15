@@ -1,9 +1,9 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 WAF Evasion Engine Demonstration
 Phase 3: Advanced Features - WAF Evasion Engine
 
-This script demonstrates the enhanced WAF evasion capabilities of the Huggin Advanced Security Scanner.
+This script demonstrates the enhanced WAF evasion capabilities of the Huginn Advanced Security Scanner.
 """
 
 import sys
@@ -15,7 +15,7 @@ from app.core.evasion_engine import EvasionEngine
 def demonstrate_waf_evasion():
     """Demonstrate advanced WAF evasion techniques"""
     
-    print("🛡️ Huggin Advanced WAF Evasion Engine - Phase 3 Demo")
+    print("🛡️ Huginn Advanced WAF Evasion Engine - Phase 3 Demo")
     print("=" * 60)
     
     # Initialize the evasion engine

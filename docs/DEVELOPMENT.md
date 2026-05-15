@@ -1,4 +1,4 @@
-# Development Guide
+﻿# Development Guide
 
 ## Getting Started
 
@@ -10,7 +10,7 @@
 ### Setup Development Environment
 ```bash
 git clone <repository>
-cd huggin
+cd huginn
 pip install -r requirements.txt
 ```
 

@@ -1,13 +1,13 @@
-# Session Management Features
+﻿# Session Management Features
 
 ## Overview
 
-The Huggin application now includes comprehensive session management that automatically tracks your scanning activities and exported data. Each time you launch the application, a new session is created to organize your work.
+The Huginn application now includes comprehensive session management that automatically tracks your scanning activities and exported data. Each time you launch the application, a new session is created to organize your work.
 
 ## Key Features
 
 ### 1. Automatic Session Creation
-- **New session on each launch**: Every time you start Huggin, a new session is automatically created
+- **New session on each launch**: Every time you start Huginn, a new session is automatically created
 - **Unique session IDs**: Each session gets a unique identifier for easy tracking
 - **Timestamp naming**: Sessions are named with the current date and time
 
@@ -34,7 +34,7 @@ The Huggin application now includes comprehensive session management that automa
 ## How to Use
 
 ### Viewing Current Session Information
-1. Launch Huggin (a new session is automatically created)
+1. Launch Huginn (a new session is automatically created)
 2. Press Ctrl+I or go to View menu → "Session Info"
 3. A separate window opens showing your session data across different tabs
 4. You can keep this window open while working in the main application

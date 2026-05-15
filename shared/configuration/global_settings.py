@@ -1,4 +1,4 @@
-"""Global settings manager for Huggin"""
+﻿"""Global settings manager for Huginn"""
 
 import json
 import os

@@ -1,4 +1,4 @@
-# Universal Run Button Implementation
+﻿# Universal Run Button Implementation
 
 ## Summary
 Standardized all scan buttons across the application to use a consistent universal run button with the following behavior:
@@ -35,8 +35,8 @@ Standardized all scan buttons across the application to use a consistent univers
   - Changed from `PulsingButton` to `UniversalRunButton`
   - Updated button creation for all service enumeration tools
 
-### 5. Huggin Scanner
-- **Updated**: `app/components/huggin_scanner_component.py`
+### 5. Huginn Scanner
+- **Updated**: `app/components/huginn_scanner_component.py`
   - Replaced separate start/stop buttons with single toggle button
   - Changed from dual-button to `UniversalRunButton` approach
   - Added toggle functionality
@@ -53,7 +53,7 @@ Standardized all scan buttons across the application to use a consistent univers
 - **Port Scanning**: Used "End" when running
 - **DNS Enumeration**: Used "End" when running  
 - **Service Scanners**: Used "Stop" when running
-- **Huggin Scanner**: Had separate "Start" and "Stop" buttons
+- **Huginn Scanner**: Had separate "Start" and "Stop" buttons
 - **Web Scanner**: Had separate "Start" and "Stop" buttons
 
 ### After

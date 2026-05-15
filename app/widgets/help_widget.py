@@ -1,4 +1,4 @@
-# app/widgets/help_widget.py
+﻿# app/widgets/help_widget.py
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
                             QPushButton, QTextEdit, QGroupBox, QTabWidget)
 from PyQt6.QtCore import Qt
@@ -114,9 +114,9 @@ class HelpWidget(QWidget):
         about_text.setStyleSheet(self._get_text_style())
         
         about_html = """
-        <h3 style='color: #64C8FF;'>About Huggin</h3>
+        <h3 style='color: #64C8FF;'>About Huginn</h3>
         <p style='color: #DCDCDC;'>
-        Huggin is a comprehensive penetration testing toolkit built with PyQt6, 
+        Huginn is a comprehensive penetration testing toolkit built with PyQt6, 
         featuring a complete enumeration suite with modern GUI interface and advanced 
         security analysis capabilities.
         </p>

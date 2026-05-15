@@ -1,7 +1,7 @@
-# Credential Auto-Save Implementation
+﻿# Credential Auto-Save Implementation
 
 ## Overview
-Implemented automatic saving of stored credentials for profile/tenant isolation in the Huggin security framework.
+Implemented automatic saving of stored credentials for profile/tenant isolation in the Huginn security framework.
 
 ## Key Features
 

@@ -1,10 +1,10 @@
-from setuptools import setup, find_packages
+﻿from setuptools import setup, find_packages
 
 setup(
-    name="huggin-scanner",
+    name="huginn-scanner",
     version="8.0.0",
     description="Advanced AI-Powered Security Scanner with Neural Networks and Quantum Fuzzing",
-    author="Huggin Security Team",
+    author="Huginn Security Team",
     packages=find_packages(),
     install_requires=[
         "aiohttp>=3.8.0",
@@ -14,7 +14,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'huggin-scan=app.tools.__main__:main',
+            'huginn-scan=app.tools.__main__:main',
         ],
     },
     python_requires=">=3.8",

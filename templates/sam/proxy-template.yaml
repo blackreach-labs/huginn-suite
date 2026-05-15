@@ -1,6 +1,6 @@
-AWSTemplateFormatVersion: '2010-09-09'
+﻿AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Huggin Proxy Servers
+Description: Huginn Proxy Servers
 
 Parameters:
   InstanceCount:
@@ -14,7 +14,7 @@ Resources:
   ProxySecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Huggin proxy servers
+      GroupDescription: Huginn proxy servers
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 22

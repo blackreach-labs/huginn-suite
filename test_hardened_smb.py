@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Test script for hardened SMB 3.1.1 detection capabilities
 Tests the new Windows Server 2025 DC bypass functionality
@@ -139,7 +139,7 @@ if __name__ == "__main__":
     
     target = sys.argv[1]
     
-    print("🛡️ Huggin SMB Scanner - Hardened SMB 3.1.1 Detection Test")
+    print("🛡️ Huginn SMB Scanner - Hardened SMB 3.1.1 Detection Test")
     print("=" * 80)
     print(f"Target: {target}")
     print("Testing new Windows Server 2025 DC bypass capabilities...")

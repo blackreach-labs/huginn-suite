@@ -1,4 +1,4 @@
-# app/widgets/smart_tool_selector.py
+﻿# app/widgets/smart_tool_selector.py
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
                              QPushButton, QFrame, QButtonGroup, QScrollArea)
 from PyQt6.QtCore import pyqtSignal, Qt
@@ -91,14 +91,14 @@ class SmartToolSelector(QWidget):
                 ],
                 "Service-Specific": self.get_service_specific_recon_tools(),
                 "Advanced": [
-                    ("🎯 Huggin Scanner", "huggin_scanner", "AI-powered comprehensive scanning")
+                    ("🎯 Huginn Scanner", "huginn_scanner", "AI-powered comprehensive scanning")
                 ] if "HTTP" in self.discovered_services else []
             }
         
         elif self.current_phase == "vulnerability_assessment":
             return {
                 "Automated": [
-                    ("🚀 Huggin Advanced Scanner", "huggin_scanner", "AI-powered vulnerability detection"),
+                    ("🚀 Huginn Advanced Scanner", "huginn_scanner", "AI-powered vulnerability detection"),
                     ("🔍 Web Vulnerability Scanner", "vuln_scanning", "Traditional web app scanning")
                 ],
                 "Manual Testing": [

@@ -1,4 +1,4 @@
-# app/core/secure_credential_manager.py
+﻿# app/core/secure_credential_manager.py
 import os
 import json
 import base64
@@ -211,7 +211,7 @@ class SecureCredentialManager(QObject):
         """Initialise the Fernet cipher.
 
         Key derivation (v2 format):
-            password  = HUGGIN_MASTER_PASSWORD env var, or a random secret
+            password  = HUGINN_MASTER_PASSWORD env var, or a random secret
                         generated once and embedded in the key file.
             salt      = 16 random bytes stored in the key file.
             key       = PBKDF2-HMAC-SHA256(password, salt, 100_000, 32 bytes)
@@ -266,13 +266,13 @@ class SecureCredentialManager(QObject):
     def _write_new_key_file(self):
         """Generate a new v2 key file and initialise self._fernet."""
         salt = os.urandom(_SALT_LEN)
-        password = os.environ.get('HUGGIN_MASTER_PASSWORD', '').encode()
+        password = os.environ.get('HUGINN_MASTER_PASSWORD', '').encode()
         if not password:
             # No env var — generate a random per-installation password and
             # embed it in the key file (the key file IS the secret).
             password = secrets.token_bytes(32)
             logger.info(
-                "HUGGIN_MASTER_PASSWORD not set — using random per-installation key. "
+                "HUGINN_MASTER_PASSWORD not set — using random per-installation key. "
                 "Set the env var to use a portable password."
             )
         kdf = PBKDF2HMAC(
@@ -467,7 +467,7 @@ class SecureCredentialManager(QObject):
     ) -> Optional[SecureCredential]:
         """Get credential from enterprise secrets manager."""
         if self._secrets_manager.vault_client:
-            vault_data = self._secrets_manager.get_secret_vault(f"huggin/{service}")
+            vault_data = self._secrets_manager.get_secret_vault(f"huginn/{service}")
             if vault_data:
                 return SecureCredential(
                     service=service,
@@ -479,7 +479,7 @@ class SecureCredentialManager(QObject):
                 )
 
         if self._secrets_manager.aws_client:
-            aws_secret = self._secrets_manager.get_secret_aws(f"huggin/{service}")
+            aws_secret = self._secrets_manager.get_secret_aws(f"huginn/{service}")
             if aws_secret:
                 try:
                     secret_data = json.loads(aws_secret)
@@ -497,7 +497,7 @@ class SecureCredentialManager(QObject):
 
         if self._secrets_manager.azure_client:
             azure_secret = self._secrets_manager.get_secret_azure(
-                f"huggin-{service}"
+                f"huginn-{service}"
             )
             if azure_secret:
                 try:

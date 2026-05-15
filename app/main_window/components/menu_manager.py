@@ -1,4 +1,4 @@
-"""Menu management for the main window."""
+﻿"""Menu management for the main window."""
 from PyQt6.QtWidgets import QMenuBar, QMenu
 from PyQt6.QtGui import QAction, QKeySequence
 
@@ -147,7 +147,7 @@ class MenuManager:
         
         self._add_action(help_menu, '&Tool Help', 'F1', 'Show detailed tool help and documentation', self.main_window.show_enhanced_help)
         help_menu.addSeparator()
-        self._add_action(help_menu, '&About', None, 'About Huggin', self.main_window.show_about)
+        self._add_action(help_menu, '&About', None, 'About Huginn', self.main_window.show_about)
     
     def _add_action(self, menu, text, shortcut, status_tip, callback):
         """Helper method to add an action to a menu."""

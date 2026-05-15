@@ -34,13 +34,11 @@ class AssetTableComponent(QWidget):
         self.status_filter = QComboBox()
         self.status_filter.addItems(["All", "DISCOVERED", "IDENTIFIED", "KNOWN"])
         self.status_filter.currentTextChanged.connect(self.on_filters_changed)
-        self.status_filter.setFixedWidth(120)
         header_layout.addWidget(self.status_filter)
         
         self.os_filter = QComboBox()
         self.os_filter.addItem("All OS")
         self.os_filter.currentTextChanged.connect(self.on_filters_changed)
-        self.os_filter.setFixedWidth(120)
         header_layout.addWidget(self.os_filter)
         
         layout.addLayout(header_layout)
@@ -213,6 +211,7 @@ class AssetTableComponent(QWidget):
                 border: 1px solid rgba(100, 200, 255, 100);
                 border-radius: 3px;
                 padding: 5px;
+                min-width: 160px;
             }
             QTableWidget {
                 background-color: rgba(0, 0, 0, 100);

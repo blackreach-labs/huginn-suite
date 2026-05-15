@@ -1,4 +1,4 @@
-# Huggin API Documentation
+﻿# Huginn API Documentation
 
 ## Core Components
 

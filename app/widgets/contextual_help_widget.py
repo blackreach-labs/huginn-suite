@@ -1,4 +1,4 @@
-# app/widgets/contextual_help_widget.py
+﻿# app/widgets/contextual_help_widget.py
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
                              QPushButton, QFrame, QTextEdit, QScrollArea, QTabWidget)
 from PyQt6.QtCore import pyqtSignal, Qt
@@ -168,7 +168,7 @@ evidence for comprehensive reporting.
 
 🎯 VULNERABILITY ASSESSMENT TOOLS:
 
-🚀 Huggin Advanced Scanner
+🚀 Huginn Advanced Scanner
 • Purpose: AI-powered comprehensive vulnerability scanning
 • When to use: After service enumeration
 • What it finds: Web app vulnerabilities, misconfigurations, security issues

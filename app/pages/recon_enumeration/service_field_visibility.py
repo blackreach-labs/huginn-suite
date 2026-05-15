@@ -1,4 +1,4 @@
-# app/pages/recon_enumeration/service_field_visibility.py
+﻿# app/pages/recon_enumeration/service_field_visibility.py
 import os
 from app.core.logger import logger
 
@@ -223,13 +223,13 @@ class ServiceFieldVisibilityMixin:
             show_extensions = False
             show_preset = False
             show_auth = False
-        elif scan_type == "Huggin Scan":
+        elif scan_type == "Huginn Scan":
             show_wordlist = False
             show_extensions = False
             show_preset = False
             show_auth = False
-            # Launch Huggin Advanced Scanner
-            self.launch_huggin_scanner(tool_key)
+            # Launch Huginn Advanced Scanner
+            self.launch_huginn_scanner(tool_key)
         elif scan_type == "Full Scan":
             show_wordlist = True
             show_extensions = True
@@ -1237,10 +1237,10 @@ class ServiceFieldVisibilityMixin:
                 self.wordlist_combo.setCurrentIndex(i)
                 break
     
-    def launch_huggin_scanner(self, tool_key):
-        """Launch Huggin Advanced Scanner dialog"""
+    def launch_huginn_scanner(self, tool_key):
+        """Launch Huginn Advanced Scanner dialog"""
         try:
-            from app.components.huggin_scanner_component import HugginScannerComponent
+            from app.components.huginn_scanner_component import HuginnScannerComponent
             from PyQt6.QtWidgets import QDialog, QVBoxLayout
             
             # Get target from the HTTP target input
@@ -1248,53 +1248,53 @@ class ServiceFieldVisibilityMixin:
             target = target_input.text().strip() if target_input else ""
             
             if not target:
-                self.status_updated.emit("Please enter a target URL for Huggin scanner")
+                self.status_updated.emit("Please enter a target URL for Huginn scanner")
                 return
             
-            # Create dialog for Huggin scanner
+            # Create dialog for Huginn scanner
             dialog = QDialog(self)
-            dialog.setWindowTitle("🚀 Huggin Advanced Security Scanner")
+            dialog.setWindowTitle("🚀 Huginn Advanced Security Scanner")
             dialog.setModal(True)
             dialog.resize(1200, 800)
             
             layout = QVBoxLayout(dialog)
             layout.setContentsMargins(10, 10, 10, 10)
             
-            # Create Huggin scanner component
-            huggin_component = HugginScannerComponent(dialog)
+            # Create Huginn scanner component
+            huginn_component = HuginnScannerComponent(dialog)
             
             # Pre-fill target if provided
             if target:
-                huggin_component.target_input.setText(target)
+                huginn_component.target_input.setText(target)
             
-            layout.addWidget(huggin_component)
+            layout.addWidget(huginn_component)
             
             # Connect signals
-            huggin_component.scan_completed.connect(lambda results: self.on_huggin_scan_completed(tool_key, results))
+            huginn_component.scan_completed.connect(lambda results: self.on_huginn_scan_completed(tool_key, results))
             
-            self.status_updated.emit("Huggin Advanced Scanner opened")
+            self.status_updated.emit("Huginn Advanced Scanner opened")
             dialog.exec()
             
         except ImportError as e:
-            self.status_updated.emit(f"Huggin scanner not available: {e}")
+            self.status_updated.emit(f"Huginn scanner not available: {e}")
         except Exception as e:
-            self.status_updated.emit(f"Error launching Huggin scanner: {e}")
+            self.status_updated.emit(f"Error launching Huginn scanner: {e}")
     
-    def on_huggin_scan_completed(self, tool_key, results):
-        """Handle Huggin scan completion"""
+    def on_huginn_scan_completed(self, tool_key, results):
+        """Handle Huginn scan completion"""
         try:
             # Display results in the HTTP terminal
-            current_scan_type = getattr(self, f"{tool_key}_current_scan_type", "Huggin Scan")
+            current_scan_type = getattr(self, f"{tool_key}_current_scan_type", "Huginn Scan")
             
             vuln_count = len(results.get('vulnerabilities', []))
             
             # Use append_http_output if available, otherwise append_service_output
             if hasattr(self, 'append_http_output'):
                 self.append_http_output(tool_key, current_scan_type, 
-                    f"<p style='color: #00FF41;'>[HUGGIN] Scan completed - {vuln_count} vulnerabilities found</p><br>")
+                    f"<p style='color: #00FF41;'>[HUGINN] Scan completed - {vuln_count} vulnerabilities found</p><br>")
             elif hasattr(self, 'append_service_output'):
                 self.append_service_output(tool_key, 
-                    f"<p style='color: #00FF41;'>[HUGGIN] Scan completed - {vuln_count} vulnerabilities found</p><br>")
+                    f"<p style='color: #00FF41;'>[HUGINN] Scan completed - {vuln_count} vulnerabilities found</p><br>")
             
             # Store results if method available
             if hasattr(self, 'store_http_results'):
@@ -1305,10 +1305,10 @@ class ServiceFieldVisibilityMixin:
             if export_button:
                 export_button.setEnabled(True)
                 
-            self.status_updated.emit(f"Huggin scan completed - {vuln_count} vulnerabilities found")
+            self.status_updated.emit(f"Huginn scan completed - {vuln_count} vulnerabilities found")
             
         except Exception as e:
-            self.status_updated.emit(f"Error processing Huggin results: {e}")
+            self.status_updated.emit(f"Error processing Huginn results: {e}")
     
 
     

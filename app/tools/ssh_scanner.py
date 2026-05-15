@@ -1,4 +1,4 @@
-# app/tools/ssh_scanner.py
+﻿# app/tools/ssh_scanner.py
 import socket
 import time
 from PyQt6.QtCore import QObject, pyqtSignal, QRunnable
@@ -537,7 +537,7 @@ class SSHWorker(QRunnable):
             banner = sock.recv(1024).decode('utf-8', errors='ignore')
             
             # Send SSH version
-            sock.send(b'SSH-2.0-HugginSSH\r\n')
+            sock.send(b'SSH-2.0-HuginnSSH\r\n')
             
             # Simple auth test - if we get this far, connection works
             # For a real test, we'd need full SSH protocol implementation

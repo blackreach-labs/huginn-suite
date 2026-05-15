@@ -1,7 +1,7 @@
-# Database Enumeration Tool Implementation
+﻿# Database Enumeration Tool Implementation
 
 ## Overview
-Successfully implemented the Database Enumeration tool as the 10th enumeration tool in Huggin, following the specification from `08 - Database Enumeration.md`.
+Successfully implemented the Database Enumeration tool as the 10th enumeration tool in Huginn, following the specification from `08 - Database Enumeration.md`.
 
 ## Files Created/Modified
 
@@ -121,7 +121,7 @@ The implementation includes comprehensive testing:
 - **Query Templates**: Test common SQL queries
 - **Error Handling**: Verify graceful failure handling
 
-## Integration with Huggin
+## Integration with Huginn
 
 The Database enumeration tool is fully integrated with:
 - **Main Enumeration Interface**: Appears as 10th tool in the list
@@ -170,7 +170,7 @@ Potential improvements for future versions:
 
 ## Summary
 
-The Database Enumeration tool has been successfully implemented as a comprehensive database reconnaissance solution. It provides both MSSQL and Oracle enumeration capabilities with support for basic connectivity testing, script execution, custom queries, and brute force attacks. The tool integrates seamlessly with the existing Huggin framework and provides a user-friendly interface for database security assessment activities.
+The Database Enumeration tool has been successfully implemented as a comprehensive database reconnaissance solution. It provides both MSSQL and Oracle enumeration capabilities with support for basic connectivity testing, script execution, custom queries, and brute force attacks. The tool integrates seamlessly with the existing Huginn framework and provides a user-friendly interface for database security assessment activities.
 
 ### Key Achievements:
 - ✅ Complete MSSQL enumeration suite

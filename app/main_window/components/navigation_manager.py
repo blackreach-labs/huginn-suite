@@ -1,4 +1,4 @@
-"""Navigation management for the main window."""
+﻿"""Navigation management for the main window."""
 from typing import Dict, Any
 from PyQt6.QtCore import Qt
 from app.pages.components.page_factory import PageFactory
@@ -45,7 +45,7 @@ class NavigationManager:
             "shell_management": self._navigate_shell_management,
             "interactive_shell": self._navigate_interactive_shell,
             "post_exploitation": self._navigate_post_exploitation,
-            "huggin_scanner": self._navigate_huggin_scanner,
+            "huginn_scanner": self._navigate_huginn_scanner,
             "inventory": self._navigate_inventory,
             "guided_workflow": self._navigate_guided_workflow,
             # New dashboard navigation
@@ -249,13 +249,13 @@ class NavigationManager:
         self.main_window.stack.animate_to_widget(self.main_window.post_exploitation_page)
         self.main_window.status_bar.showMessage("Post-Exploitation Tools & Techniques")
     
-    def _navigate_huggin_scanner(self):
-        """Navigate to Huggin scanner page."""
-        if hasattr(self.main_window, 'huggin_scanner_page'):
-            self.main_window.stack.animate_to_widget(self.main_window.huggin_scanner_page)
-            self.main_window.status_bar.showMessage("Huggin Advanced Security Scanner")
+    def _navigate_huginn_scanner(self):
+        """Navigate to Huginn scanner page."""
+        if hasattr(self.main_window, 'huginn_scanner_page'):
+            self.main_window.stack.animate_to_widget(self.main_window.huginn_scanner_page)
+            self.main_window.status_bar.showMessage("Huginn Advanced Security Scanner")
         else:
-            self.main_window.status_bar.showMessage("Error: Huggin scanner page not found")
+            self.main_window.status_bar.showMessage("Error: Huginn scanner page not found")
     
     def _navigate_inventory(self):
         """Navigate to inventory page."""

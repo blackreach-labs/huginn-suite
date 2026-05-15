@@ -1,12 +1,12 @@
-# 🏢 Huggin Enterprise Intelligence Platform - Integration Guide
+﻿# 🏢 Huginn Enterprise Intelligence Platform - Integration Guide
 
-This guide provides comprehensive instructions for integrating and deploying the Huggin Enterprise Intelligence Platform with its advanced analytics, AI-driven orchestration, and automated remediation capabilities.
+This guide provides comprehensive instructions for integrating and deploying the Huginn Enterprise Intelligence Platform with its advanced analytics, AI-driven orchestration, and automated remediation capabilities.
 
 ## 🚀 Quick Start
 
 ### 1. Run the Enterprise Demo
 ```bash
-cd "c:\Users\allie\Coding Projects\huggin"
+cd "c:\Users\allie\Coding Projects\huginn"
 python examples\enterprise_intelligence_demo.py
 ```
 
@@ -27,11 +27,11 @@ python examples\automated_remediation_demo.py
 
 ## 🏗️ Architecture Overview
 
-The Huggin Enterprise Intelligence Platform consists of several integrated components:
+The Huginn Enterprise Intelligence Platform consists of several integrated components:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    HUGGIN ENTERPRISE INTELLIGENCE               │
+│                    HUGINN ENTERPRISE INTELLIGENCE               │
 ├─────────────────────────────────────────────────────────────────┤
 │  🔬 Advanced Analytics Engine                                   │
 │  ├── Trend Analysis & Pattern Detection                        │
@@ -364,7 +364,7 @@ class CustomReportGenerator:
 
 ```python
 # config.py
-HUGGIN_CONFIG = {
+HUGINN_CONFIG = {
     'tenant_id': 'your_organization',
     'database_path': 'path/to/your/database.db',
     'update_intervals': {
@@ -423,7 +423,7 @@ import logging
 from app.core.advanced_analytics_engine import create_advanced_analytics_engine
 from app.core.intelligent_scan_orchestrator import create_intelligent_scan_orchestrator
 
-class HugginEnterpriseDeployment:
+class HuginnEnterpriseDeployment:
     def __init__(self, tenant_id, config):
         self.tenant_id = tenant_id
         self.config = config
@@ -435,7 +435,7 @@ class HugginEnterpriseDeployment:
             level=logging.INFO,
             format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
             handlers=[
-                logging.FileHandler(f'huggin_{self.tenant_id}.log'),
+                logging.FileHandler(f'huginn_{self.tenant_id}.log'),
                 logging.StreamHandler()
             ]
         )
@@ -444,7 +444,7 @@ class HugginEnterpriseDeployment:
         self.analytics_engine = create_advanced_analytics_engine(self.tenant_id)
         self.orchestrator = create_intelligent_scan_orchestrator(self.tenant_id)
         
-        logging.info(f"Huggin Enterprise Intelligence initialized for tenant: {self.tenant_id}")
+        logging.info(f"Huginn Enterprise Intelligence initialized for tenant: {self.tenant_id}")
     
     def start_monitoring(self):
         # Start real-time monitoring
@@ -465,7 +465,7 @@ class HugginEnterpriseDeployment:
 
 # Deploy for production
 if __name__ == "__main__":
-    deployment = HugginEnterpriseDeployment("production", HUGGIN_CONFIG)
+    deployment = HuginnEnterpriseDeployment("production", HUGINN_CONFIG)
     deployment.start_monitoring()
 ```
 
@@ -593,4 +593,4 @@ For technical support and advanced integration assistance:
 
 ---
 
-The Huggin Enterprise Intelligence Platform provides a complete, enterprise-grade security intelligence solution with advanced analytics, AI-driven automation, and comprehensive reporting capabilities. This integration guide should help you deploy and customize the platform for your specific organizational needs.
+The Huginn Enterprise Intelligence Platform provides a complete, enterprise-grade security intelligence solution with advanced analytics, AI-driven automation, and comprehensive reporting capabilities. This integration guide should help you deploy and customize the platform for your specific organizational needs.

@@ -1,7 +1,7 @@
-# UI Improvements & Theme Enhancement Plan
+﻿# UI Improvements & Theme Enhancement Plan
 
 ## Overview
-This document outlines comprehensive UI improvements to make Huggin's interface more polished, professional, and visually engaging. The improvements include enhanced animations, visual feedback, graphics integration, and a tiered theme licensing system.
+This document outlines comprehensive UI improvements to make Huginn's interface more polished, professional, and visually engaging. The improvements include enhanced animations, visual feedback, graphics integration, and a tiered theme licensing system.
 
 ## Current Theme System Analysis
 
@@ -466,7 +466,7 @@ requirements = [
 ### 9. File Structure Changes
 
 ```
-huggin/
+huginn/
 ├── app/
 │   ├── ui/
 │   │   ├── animations/
@@ -546,4 +546,4 @@ huggin/
 }
 ```
 
-This comprehensive UI improvement plan will transform Huggin into a visually stunning, professional-grade penetration testing toolkit while implementing a clear licensing structure for premium themes.
+This comprehensive UI improvement plan will transform Huginn into a visually stunning, professional-grade penetration testing toolkit while implementing a clear licensing structure for premium themes.

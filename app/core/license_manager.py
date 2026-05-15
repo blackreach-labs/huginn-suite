@@ -1,4 +1,4 @@
-# app/core/license_manager.py
+﻿# app/core/license_manager.py
 import hashlib
 import json
 import base64
@@ -34,7 +34,7 @@ class LicenseManager(QObject):
             'local_dns_server': False,
             'vpn_connection': False
         }
-        self.license_file = "huggin.lic"
+        self.license_file = "huginn.lic"
         self.load_license()
         
     def validate_license(self, license_key: str) -> Dict:
@@ -85,7 +85,7 @@ class LicenseManager(QObject):
         signature_string = json.dumps(signature_data, sort_keys=True)
         
         # Use a secret key for signature verification (in production, this would be more secure)
-        secret_key = "huggin_license_secret_2024"
+        secret_key = "huginn_license_secret_2024"
         expected_signature = hashlib.sha256((signature_string + secret_key).encode()).hexdigest()
         
         return license_data.get('signature') == expected_signature
@@ -230,7 +230,7 @@ class LicenseManager(QObject):
         
         # Generate signature
         signature_string = json.dumps(license_data, sort_keys=True)
-        secret_key = "huggin_license_secret_2024"
+        secret_key = "huginn_license_secret_2024"
         signature = hashlib.sha256((signature_string + secret_key).encode()).hexdigest()
         license_data['signature'] = signature
         
@@ -321,7 +321,7 @@ class LicenseManager(QObject):
         
     def get_purchase_url(self) -> str:
         """Get purchase URL for license"""
-        return "https://huggin.com/purchase"
+        return "https://huginn.com/purchase"
         
     def check_license_expiry(self) -> Dict:
         """Check license expiry and send warnings"""

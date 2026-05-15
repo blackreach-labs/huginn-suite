@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Payload Builder & Installer Generator
 Produces stagers/agents and service installers with embedded metadata
@@ -60,7 +60,7 @@ class PayloadBuilder:
             content = f.read()
         
         metadata_json = json.dumps(metadata.__dict__, indent=2)
-        metadata_marker = b"###HUGGIN_METADATA###"
+        metadata_marker = b"###HUGINN_METADATA###"
         
         # Embed metadata at end of file
         embedded_content = content + metadata_marker + metadata_json.encode()
@@ -73,7 +73,7 @@ class PayloadBuilder:
     
     def _create_metadata(self, transport: str, options: Dict[str, Any]) -> PayloadMetadata:
         """Create payload metadata"""
-        engagement_id = options.get('engagement_id', f"huggin_{int(time.time())}")
+        engagement_id = options.get('engagement_id', f"huginn_{int(time.time())}")
         scope = options.get('scope', {"targets": ["*"], "restrictions": []})
         
         # Lab mode: 24 hour expiry, Pro mode: configurable
@@ -273,7 +273,7 @@ if __name__ == "__main__":
     
     def _build_smb_stager(self, metadata: PayloadMetadata, options: Dict[str, Any]) -> str:
         """Build SMB named pipe stager"""
-        pipe_name = options.get('pipe_name', 'huggin_pipe')
+        pipe_name = options.get('pipe_name', 'huginn_pipe')
         
         stager_code = f'''
 import win32pipe
@@ -375,5 +375,5 @@ if __name__ == "__main__":
     print(f"TCP Stager created: {stager_path}")
     
     # Generate service installer
-    installer_path = builder.generate_service_installer(stager_path, "HugginAgent", {})
+    installer_path = builder.generate_service_installer(stager_path, "HuginnAgent", {})
     print(f"Installer created: {installer_path}")

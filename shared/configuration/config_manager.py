@@ -1,4 +1,4 @@
-"""Configuration management for the Huggin application."""
+﻿"""Configuration management for the Huginn application."""
 import json
 import os
 from pathlib import Path
@@ -15,7 +15,7 @@ class ScannerConfig:
     timeout: int = 30
     max_concurrent: int = 50
     retry_count: int = 3
-    user_agent: str = "Huggin-Scanner/1.0"
+    user_agent: str = "Huginn-Scanner/1.0"
     rate_limit: int = 10
 
 @dataclass

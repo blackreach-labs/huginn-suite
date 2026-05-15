@@ -1,4 +1,4 @@
-# app/pages/guided_workflow_page.py
+﻿# app/pages/guided_workflow_page.py
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
                              QPushButton, QProgressBar, QFrame, QTextEdit, QScrollArea,
                              QDialog, QLineEdit, QComboBox, QCheckBox, QFormLayout, QDialogButtonBox,
@@ -60,7 +60,7 @@ class GuidedWorkflowPage(QWidget):
             WorkflowStep(
                 "Network Discovery",
                 "Discover live hosts and open ports on the target network",
-                ["Port Scanning", "Huggin Advanced Scanner"],
+                ["Port Scanning", "Huginn Advanced Scanner"],
                 "15-25 minutes", 
                 ["Target Definition"]
             ),
@@ -74,7 +74,7 @@ class GuidedWorkflowPage(QWidget):
             WorkflowStep(
                 "Automated Vulnerability Scanning",
                 "Run automated scanners to identify potential security issues",
-                ["Huggin Advanced Scanner", "Web Vulnerability Scanner"],
+                ["Huginn Advanced Scanner", "Web Vulnerability Scanner"],
                 "20-40 minutes",
                 ["Service Enumeration"]
             ),
@@ -294,7 +294,7 @@ class GuidedWorkflowPage(QWidget):
             "OSINT Collection": "osint",
             "DNS Records": "recon_enumeration",
             "Port Scanning": "recon_enumeration", 
-            "Huggin Advanced Scanner": "huggin_scanner",
+            "Huginn Advanced Scanner": "huginn_scanner",
             "HTTP": "recon_enumeration",
             "RPC": "recon_enumeration",
             "SMB": "recon_enumeration",
@@ -478,7 +478,7 @@ class GuidedWorkflowPage(QWidget):
             'launch_http_enum': 'recon_enumeration',
             'launch_smb_enum': 'recon_enumeration', 
             'launch_rpc_enum': 'recon_enumeration',
-            'launch_huggin_scanner': 'huggin_scanner',
+            'launch_huginn_scanner': 'huginn_scanner',
             'shell_management': 'shell_management',
             'generate_report': 'reporting'
         }

@@ -1,11 +1,11 @@
-# app/core/system_tray.py
+﻿# app/core/system_tray.py
 from PyQt6.QtWidgets import QSystemTrayIcon, QMenu
 from PyQt6.QtGui import QIcon, QAction
 from PyQt6.QtCore import QObject, pyqtSignal
 import os
 
 class SystemTrayManager(QObject):
-    """Manages system tray functionality for Huggin"""
+    """Manages system tray functionality for Huginn"""
     
     show_window = pyqtSignal()
     hide_window = pyqtSignal()
@@ -46,7 +46,7 @@ class SystemTrayManager(QObject):
         self.quit_application.connect(self.main_window.close)
         
         # Set tooltip
-        self.tray_icon.setToolTip("Huggin - Cybersecurity Toolkit")
+        self.tray_icon.setToolTip("Huginn - Cybersecurity Toolkit")
         
         return True
         
@@ -55,7 +55,7 @@ class SystemTrayManager(QObject):
         tray_menu = QMenu()
         
         # Show/Hide action
-        show_action = QAction("Show Huggin", self.main_window)
+        show_action = QAction("Show Huginn", self.main_window)
         show_action.triggered.connect(self.show_window.emit)
         tray_menu.addAction(show_action)
         

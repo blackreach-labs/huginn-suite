@@ -1,4 +1,4 @@
-
+﻿
 # 🔧 Functional Enhancements for Windows RPC Penetration Suite (No External Dependencies)
 
 ## 📌 Context
@@ -7,7 +7,7 @@ This is a fully in-house RPC exploitation suite targeting the latest Windows Ser
 
 ## ✅ IMPLEMENTATION STATUS: COMPLETE
 
-**All 6 enhancements have been successfully implemented and integrated into the Huggin RPC scanner.**
+**All 6 enhancements have been successfully implemented and integrated into the Huginn RPC scanner.**
 
 - **Implementation Date:** Current
 - **Integration Status:** Active in "Complete Assessment" scans

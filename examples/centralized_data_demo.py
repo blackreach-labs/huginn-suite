@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
-Huggin Centralized Data Collection Demo
+Huginn Centralized Data Collection Demo
 
 This demo shows how to use the centralized data collection system
 with real-time UI updates across multiple scan types.
@@ -24,7 +24,7 @@ from app.core.centralized_reporting import create_reporting_engine
 async def demo_centralized_data_collection():
     """Demonstrate centralized data collection across multiple scan types"""
     
-    print("Huggin Centralized Data Collection Demo")
+    print("Huginn Centralized Data Collection Demo")
     print("=" * 50)
     
     # Create tenant-specific collectors

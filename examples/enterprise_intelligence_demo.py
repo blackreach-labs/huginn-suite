@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
-Enterprise Intelligence Demo for Huggin Framework
+Enterprise Intelligence Demo for Huginn Framework
 
 This demo showcases the complete enterprise intelligence capabilities including:
 - Centralized data collection across all scan types
@@ -41,7 +41,7 @@ def print_banner():
     banner = """
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║                                                                              ║
-║    🏢 HUGGIN ENTERPRISE INTELLIGENCE PLATFORM DEMO                          ║
+║    🏢 HUGINN ENTERPRISE INTELLIGENCE PLATFORM DEMO                          ║
 ║                                                                              ║
 ║    🔬 Advanced Security Analytics & AI-Driven Threat Intelligence           ║
 ║    📊 Real-time Correlation & Predictive Security Modeling                  ║
@@ -489,7 +489,7 @@ def generate_executive_report():
     }
     
     # Export report
-    filename = f"huggin_executive_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+    filename = f"huginn_executive_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
     
     try:
         with open(filename, 'w') as f:
@@ -542,7 +542,7 @@ def main():
     
     print("🚀 Starting Enterprise Intelligence Platform Demo...")
     print("This comprehensive demo showcases the complete enterprise-grade")
-    print("security intelligence capabilities of the Huggin framework.")
+    print("security intelligence capabilities of the Huginn framework.")
     
     try:
         # Step 1: Simulate enterprise environment
@@ -582,7 +582,7 @@ def main():
         print("   📊 Executive reporting and business intelligence")
         print("   📡 Real-time security monitoring")
         
-        print("\n🚀 The Huggin Enterprise Intelligence Platform is ready for production deployment!")
+        print("\n🚀 The Huginn Enterprise Intelligence Platform is ready for production deployment!")
         print("🎯 This represents a complete enterprise-grade security intelligence solution.")
         
         return 0

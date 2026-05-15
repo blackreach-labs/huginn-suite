@@ -1,4 +1,4 @@
-"""Domain service for scanner operations."""
+﻿"""Domain service for scanner operations."""
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 
@@ -103,7 +103,7 @@ class ScannerService:
             http_config = {
                 'ports': [port for port in web_ports if port in open_ports],
                 'timeout': 10,
-                'user_agent': 'Huggin-Scanner/1.0'
+                'user_agent': 'Huginn-Scanner/1.0'
             }
             
             try:

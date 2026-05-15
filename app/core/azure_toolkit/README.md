@@ -1,4 +1,4 @@
-# Azure Tenant Enumeration Toolkit
+﻿# Azure Tenant Enumeration Toolkit
 
 A comprehensive, modern Azure enumeration toolkit built using official Azure SDKs for Python. This toolkit provides authenticated enumeration of Azure tenants with compliance-focused design and professional-grade capabilities.
 
@@ -121,7 +121,7 @@ comprehensive_results = toolkit.run_comprehensive_scan(
 
 ### GUI Integration
 
-The toolkit integrates with the Huggin framework through:
+The toolkit integrates with the Huginn framework through:
 
 - **AzureToolkitWidget** - Modern Qt-based interface
 - **Enhanced AzurePentestEngine** - Legacy compatibility layer
@@ -211,7 +211,7 @@ azure_toolkit/
 ```
 
 ### Integration Points
-- **Huggin Framework** - Native Qt widget integration
+- **Huginn Framework** - Native Qt widget integration
 - **Legacy Engine** - Backward compatibility layer
 - **External Tools** - JSON/API output for automation
 - **CI/CD Pipelines** - Command-line automation support
@@ -252,7 +252,7 @@ pytest app/core/azure_toolkit/tests/unit/
 ## 🔄 Migration from Legacy
 
 ### Compatibility Layer
-The new toolkit maintains compatibility with existing Huggin Azure features:
+The new toolkit maintains compatibility with existing Huginn Azure features:
 
 ```python
 # Legacy usage still works
@@ -273,7 +273,7 @@ legacy_results = results['legacy_scan']
 
 ## 📝 License
 
-This toolkit is part of the Huggin security framework and follows the same licensing terms.
+This toolkit is part of the Huginn security framework and follows the same licensing terms.
 
 ## 🤝 Contributing
 
@@ -285,7 +285,7 @@ This toolkit is part of the Huggin security framework and follows the same licen
 
 ## 📞 Support
 
-For issues and feature requests, please use the main Huggin framework issue tracker.
+For issues and feature requests, please use the main Huginn framework issue tracker.
 
 ---
 

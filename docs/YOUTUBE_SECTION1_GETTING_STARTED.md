@@ -1,9 +1,9 @@
-# YouTube Playlist — Section 1: Getting Started
+﻿# YouTube Playlist — Section 1: Getting Started
 ## Complete Video Scripts & Content Guide
 
 ---
 
-# VIDEO 1: What is Huggin?
+# VIDEO 1: What is Huginn?
 ### Platform Overview, Use Cases & Who It's For
 **Suggested length:** 8–12 minutes
 
@@ -11,19 +11,19 @@
 
 ## INTRO (0:00 – 1:00)
 
-**[Screen: Huggin running, showing the Attack Chain home screen]**
+**[Screen: Huginn running, showing the Attack Chain home screen]**
 
-> "Hey everyone, welcome to the Huggin tutorial series. In this first video I'm going to give you a high-level overview of what Huggin actually is, what it's designed to do, and whether it's the right tool for you. If you're already sold and just want to get it installed, feel free to skip ahead to Video 2 — but I'd recommend watching this one first so you understand the philosophy behind the tool before you start using it."
+> "Hey everyone, welcome to the Huginn tutorial series. In this first video I'm going to give you a high-level overview of what Huginn actually is, what it's designed to do, and whether it's the right tool for you. If you're already sold and just want to get it installed, feel free to skip ahead to Video 2 — but I'd recommend watching this one first so you understand the philosophy behind the tool before you start using it."
 
 ---
 
-## SECTION 1: What is Huggin? (1:00 – 3:00)
+## SECTION 1: What is Huginn? (1:00 – 3:00)
 
 **[Screen: Show the main Attack Chain mindmap on the home screen]**
 
-> "Huggin is a professional-grade penetration testing platform built in Python using PyQt6. It's a desktop application — not a web app, not a CLI-only tool — it has a full graphical interface designed to guide you through the entire penetration testing lifecycle from start to finish."
+> "Huginn is a professional-grade penetration testing platform built in Python to run on Windows. It's a desktop application — not a web app, not a CLI-only tool — it has a full graphical interface designed to guide you through the entire penetration testing lifecycle from start to finish."
 
-> "The core idea behind Huggin is that a penetration test follows a structured methodology. You start with reconnaissance, move into vulnerability scanning, then exploitation, post-exploitation, and finally reporting. Huggin organises all of its tools around that workflow, so instead of jumping between a dozen different terminal windows and tools, everything lives in one place."
+> "The core idea behind Huginn is that a penetration test follows a structured methodology. You start with reconnaissance, move into vulnerability scanning, then exploitation, post-exploitation, and finally reporting. Huginn organises all of its tools around that workflow, so instead of jumping between a dozen different terminal windows and tools, everything lives in one place."
 
 **[Point to the Attack Chain mindmap on screen]**
 
@@ -35,15 +35,15 @@
 
 **[Screen: Stay on home page]**
 
-> "So who is Huggin actually for? There are a few different audiences."
+> "So who is Huginn actually for? There are a few different audiences."
 
-> "First — **penetration testers and red teamers**. If you're doing professional security assessments, Huggin gives you a full suite of enumeration and exploitation tools in a single organised interface. It's designed to speed up your workflow and keep your findings organised by project."
+> "First — **penetration testers and red teamers**. If you're doing professional security assessments, Huginn gives you a full suite of enumeration and exploitation tools in a single organised interface. It's designed to speed up your workflow and keep your findings organised by project."
 
-> "Second — **security students and learners**. Huggin has a Guided Mode that walks you through a penetration testing methodology step by step. If you're studying for OSCP, CEH, or just learning ethical hacking, this is a great way to understand the process while having real tools at your fingertips."
+> "Second — **security students and learners**. Huginn has a Guided Mode that walks you through a penetration testing methodology step by step. If you're studying for OSCP, CEH, or just learning ethical hacking, this is a great way to understand the process while having real tools at your fingertips."
 
-> "Third — **security teams and consultants** who need professional reporting. Huggin can generate executive summaries, technical reports, and compliance-mapped reports for frameworks like NIST, ISO 27001, and PCI-DSS."
+> "Third — **security teams and consultants** who need professional reporting. Huginn can generate executive summaries, technical reports, and compliance-mapped reports for frameworks like NIST, ISO 27001, and PCI-DSS."
 
-> "One important note — Huggin is a penetration testing tool. You should only ever use it against systems you own or have explicit written permission to test. Unauthorised use is illegal. We'll be using lab environments and intentionally vulnerable machines throughout this series."
+> "One important note — Huginn is a penetration testing tool. You should only ever use it against systems you own or have explicit written permission to test. Unauthorised use is illegal. We'll be using lab environments and intentionally vulnerable machines throughout this series."
 
 ---
 
@@ -51,7 +51,7 @@
 
 **[Screen: Briefly navigate to Recon/Enumeration page to show the tool list]**
 
-> "Let me give you a quick tour of what Huggin can actually do."
+> "Let me give you a quick tour of what Huginn can actually do."
 
 > "The core of the platform is a **12-tool enumeration suite**. This covers DNS enumeration, port scanning, SMB, SMTP, SNMP, HTTP fingerprinting, API enumeration, LDAP, database enumeration, IKE/VPN assessment, RPC, and AV/firewall detection. Each of these gets its own dedicated video later in the series."
 
@@ -61,7 +61,7 @@
 
 > "There's an **OSINT framework** for gathering intelligence from public sources, an **HTTP interceptor and proxy** for traffic analysis, and a full **post-exploitation framework** for managing sessions after you've gained access."
 
-> "For reporting, Huggin can produce HTML reports, JSON exports, executive summaries, and compliance-mapped outputs."
+> "For reporting, Huginn can produce HTML reports, JSON exports, executive summaries, and compliance-mapped outputs."
 
 > "And then there are the **Professional and Enterprise features** — things like Stealth Mode for evasion, ProxyChains and Tor integration, Active Directory enumeration, advanced analytics, and AWS infrastructure deployment for spinning up proxy servers. We'll cover all of that in later sections."
 
@@ -69,7 +69,7 @@
 
 ## OUTRO (8:00 – end)
 
-> "That's the overview. In the next video we're going to get Huggin installed and running on your machine. After that we'll do a full UI tour so you know exactly where everything lives before we start diving into the individual tools."
+> "That's the overview. In the next video we're going to get Huginn installed and running on your machine. After that we'll do a full UI tour so you know exactly where everything lives before we start diving into the individual tools."
 
 > "If you have any questions drop them in the comments. Let's get into it."
 
@@ -77,7 +77,7 @@
 ---
 
 # VIDEO 2: Installation & Setup
-### Getting Huggin Running on Your Machine
+### Getting Huginn Running on Your Machine
 **Suggested length:** 10–15 minutes
 
 ---
@@ -86,7 +86,7 @@
 
 **[Screen: Terminal / file explorer]**
 
-> "Welcome back. In this video we're going to get Huggin installed and running. I'll walk through the full process from cloning the repository to launching the application for the first time. This should take about 10 minutes."
+> "Welcome back. In this video we're going to get Huginn installed and running. I'll walk through the full process from cloning the repository to launching the application for the first time. This should take about 10 minutes."
 
 > "You'll need Python 3.10 or higher installed on your system. I'll be demonstrating on Windows, but the process is essentially the same on Linux and macOS."
 
@@ -112,7 +112,7 @@ git --version
 
 > "If you don't have Git, grab it from git-scm.com. On Linux you can install it with your package manager — `sudo apt install git` on Debian/Ubuntu."
 
-> "I'd also strongly recommend using a virtual environment to keep Huggin's dependencies isolated from your system Python. We'll set that up in a moment."
+> "I'd also strongly recommend using a virtual environment to keep Huginn's dependencies isolated from your system Python. We'll set that up in a moment."
 
 ---
 
@@ -124,8 +124,8 @@ git --version
 
 ```bash
 cd ~/tools
-git clone https://github.com/your-org/huggin
-cd huggin
+git clone https://github.com/your-org/huginn
+cd huginn
 ```
 
 > "Once that's done you should have the full project directory. Let's take a quick look at the structure."
@@ -140,7 +140,7 @@ cd huggin
 
 **[Screen: Terminal]**
 
-> "Let's create a virtual environment. This keeps all of Huggin's Python packages separate from your system."
+> "Let's create a virtual environment. This keeps all of Huginn's Python packages separate from your system."
 
 ```bash
 python -m venv venv
@@ -174,7 +174,7 @@ pip install -r requirements.txt
 
 > "This will take a minute or two depending on your connection. The main dependencies are PyQt6 for the GUI, and a collection of networking and security libraries."
 
-> "Alternatively, if you want to install Huggin as a proper Python package so you can run it from anywhere:"
+> "Alternatively, if you want to install Huginn as a proper Python package so you can run it from anywhere:"
 
 ```bash
 pip install -e .
@@ -198,7 +198,7 @@ pip list | grep PyQt6
 
 **[Screen: Terminal]**
 
-> "Now let's launch Huggin for the first time."
+> "Now let's launch Huginn for the first time."
 
 ```bash
 python main.py
@@ -207,10 +207,10 @@ python main.py
 > "Or if you installed it as a package:"
 
 ```bash
-python -m huggin
+python -m huginn
 ```
 
-**[Screen: Huggin launches, Mode Selection dialog appears]**
+**[Screen: Huginn launches, Mode Selection dialog appears]**
 
 > "The first thing you'll see is the Mode Selection dialog. This asks whether you want to start in **Guided Mode** or **Advanced Mode**."
 
@@ -222,7 +222,7 @@ python -m huggin
 
 **[Screen: Main window opens in fullscreen]**
 
-> "And there it is — Huggin is running. It opens in fullscreen by default. You can press F11 or go to View → Navigation Style to adjust that."
+> "And there it is — Huginn is running. It opens in fullscreen by default. You can press F11 or go to View → Navigation Style to adjust that."
 
 > "You'll notice the Attack Chain mindmap at the top of the screen and the main content area below it. We'll cover all of this in the next video."
 
@@ -259,17 +259,17 @@ python -m huggin
 
 ## INTRO (0:00 – 0:45)
 
-**[Screen: Huggin open in Advanced Mode, Attack Chain home screen]**
+**[Screen: Huginn open in Advanced Mode, Attack Chain home screen]**
 
-> "Welcome back. Now that Huggin is installed, let's do a proper tour of the interface. By the end of this video you'll know exactly where everything lives and how to navigate between the different sections. This is the foundation for everything else in the series."
+> "Welcome back. Now that Huginn is installed, let's do a proper tour of the interface. By the end of this video you'll know exactly where everything lives and how to navigate between the different sections. This is the foundation for everything else in the series."
 
 ---
 
 ## SECTION 1: The Mode Selection Dialog (0:45 – 2:00)
 
-**[Screen: Close and relaunch Huggin to show the dialog again]**
+**[Screen: Close and relaunch Huginn to show the dialog again]**
 
-> "Every time you launch Huggin, you'll see this Mode Selection dialog. Let's talk about what each option actually means."
+> "Every time you launch Huginn, you'll see this Mode Selection dialog. Let's talk about what each option actually means."
 
 > "**Guided Mode** launches a step-by-step questionnaire that walks you through a penetration testing engagement. It asks about your target, scope, and objectives, then guides you through each phase in order. This is great for structured engagements or if you're still building your methodology."
 
@@ -283,7 +283,7 @@ python -m huggin
 
 **[Screen: Focus on the mindmap at the top of the screen]**
 
-> "The first thing you'll notice in Advanced Mode is this Attack Chain mindmap running across the top of the screen. This is the primary navigation element in Huggin."
+> "The first thing you'll notice in Advanced Mode is this Attack Chain mindmap running across the top of the screen. This is the primary navigation element in Huginn."
 
 > "It shows the six phases of a penetration test as clickable nodes:"
 
@@ -291,7 +291,7 @@ python -m huggin
 
 > "**RECON** — Reconnaissance and enumeration. All 12 of the enumeration tools live here — DNS, port scanning, SMB, HTTP fingerprinting, and so on."
 
-> "**VULN** — Vulnerability scanning. This is where you run the Huggin scanner against your targets."
+> "**VULN** — Vulnerability scanning. This is where you run the Huginn scanner against your targets."
 
 > "**EXPLOIT** — Web exploits, OS exploits, database attacks. The offensive tooling."
 
@@ -373,7 +373,7 @@ python -m huggin
 
 **[Click VULN in mindmap]**
 
-> "The Vulnerability Scanning page is where you configure and run the Huggin scanner. You set your target, choose a scan profile, and kick it off."
+> "The Vulnerability Scanning page is where you configure and run the Huginn scanner. You set your target, choose a scan profile, and kick it off."
 
 **[Click EXPLOIT in mindmap]**
 
@@ -391,7 +391,7 @@ python -m huggin
 
 > "Let's talk about sessions, because this is how you keep your work organised."
 
-> "Every time you launch Huggin, a new session is automatically created with a timestamp name. All scans you run and all exports you generate are automatically tracked in that session."
+> "Every time you launch Huginn, a new session is automatically created with a timestamp name. All scans you run and all exports you generate are automatically tracked in that session."
 
 > "The Session Management dialog — open it with `Ctrl+Shift+S` or View → Sessions — shows you all your sessions."
 
@@ -446,9 +446,9 @@ python -m huggin
 
 ## INTRO (0:00 – 0:45)
 
-**[Screen: Huggin open, navigate to File → License Manager]**
+**[Screen: Huginn open, navigate to File → License Manager]**
 
-> "Welcome back. In this video we're going to cover Huggin's licensing system — what features are available for free, what's in the Professional and Enterprise tiers, and how to activate a trial license so you can follow along with the advanced features in this series."
+> "Welcome back. In this video we're going to cover Huginn's licensing system — what features are available for free, what's in the Professional and Enterprise tiers, and how to activate a trial license so you can follow along with the advanced features in this series."
 
 ---
 
@@ -456,7 +456,7 @@ python -m huggin
 
 **[Screen: License Manager dialog open]**
 
-> "Huggin has three tiers: Free, Professional, and Enterprise."
+> "Huginn has three tiers: Free, Professional, and Enterprise."
 
 ### Free Tier
 
@@ -572,8 +572,8 @@ python -m huggin
 ### Installation Commands (Quick Reference)
 ```bash
 # Clone
-git clone https://github.com/your-org/huggin
-cd huggin
+git clone https://github.com/your-org/huginn
+cd huginn
 
 # Virtual environment
 python -m venv venv

@@ -1,4 +1,4 @@
-
+﻿
 # 🚀 Secure Self-Updating Mechanism for Python-Based Penetration Testing Application
 
 ## 🎯 Objective
@@ -13,7 +13,7 @@ Design and implement a secure, automated update system for a Windows-based penet
 |----------|---------|
 | **S3 Bucket** | Host application versions (zip/exe/patch). |
 | **CloudFront (Optional)** | CDN for S3 to improve delivery speed & DDoS protection. |
-| **Route53 / DNS** | Point to update metadata server (e.g. `updates.huggin.local`). |
+| **Route53 / DNS** | Point to update metadata server (e.g. `updates.huginn.local`). |
 | **HTTPS/SSL** | All update communications **must** be over HTTPS. |
 | **Signed Metadata + Payloads** | Prevent tampering and unauthorized updates. |
 
@@ -30,7 +30,7 @@ Design and implement a secure, automated update system for a Windows-based penet
 {
   "version": "1.3.2",
   "hash": "SHA256:abc123...",
-  "url": "https://updates.huggin.local/releases/huggin_1.3.2.zip",
+  "url": "https://updates.huginn.local/releases/huginn_1.3.2.zip",
   "signature": "base64-rsa-sig"
 }
 ```
@@ -53,8 +53,8 @@ Design and implement a secure, automated update system for a Windows-based penet
 ### 📁 Folder Structure in S3:
 ```
 /releases/
-    huggin_1.3.1.zip
-    huggin_1.3.2.zip
+    huginn_1.3.1.zip
+    huginn_1.3.2.zip
     ...
 /manifest/
     manifest.json

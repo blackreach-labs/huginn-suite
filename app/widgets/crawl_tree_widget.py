@@ -1,4 +1,4 @@
-# app/widgets/crawl_tree_widget.py
+﻿# app/widgets/crawl_tree_widget.py
 from PyQt6.QtWidgets import QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget, QLabel
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
@@ -306,7 +306,7 @@ class CrawlTreeWidget(QWidget):
         # Check scan type first, then data structure
         if scan_type == "Fingerprinting" or (scan_type != "Crawler" and self._is_fingerprint_data(crawl_data)):
             self._build_fingerprint_tree(crawl_data)
-        elif scan_type in ["Directory Enum", "Source Code", "Crawler", "Enterprise Scripts", "Huggin Scan"]:
+        elif scan_type in ["Directory Enum", "Source Code", "Crawler", "Enterprise Scripts", "Huginn Scan"]:
             self._build_scan_type_tree(crawl_data, scan_type)
         else:
             # Regular crawl data - reset to crawl view

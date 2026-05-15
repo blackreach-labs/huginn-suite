@@ -1,4 +1,4 @@
-# Security Review — Huggin Framework
+﻿# Security Review — Huginn Framework
 
 **Review date:** May 2026  
 **Scope:** Full codebase — `app/`, `tools/`, `resources/`, `app/agent/`  
@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-A deep inspection of the Huggin codebase identified **8 security issues** ranging
+A deep inspection of the Huginn codebase identified **8 security issues** ranging
 from Critical to Medium severity, plus **5 code quality issues** that affected
 maintainability and reliability.  All 13 issues have been remediated.
 

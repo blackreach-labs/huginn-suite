@@ -1,4 +1,4 @@
-# Changelog
+﻿# Changelog
 
 ## [Unreleased]
 
@@ -31,7 +31,7 @@ results list with no indication they were synthetic.
 - Automated exploitation is not implemented in live mode either — returns a
   "not-executed" result directing operators to use dedicated tools.
 
-**Changes in `app/tools/huggin_vuln_scanner.py`:**
+**Changes in `app/tools/huginn_vuln_scanner.py`:**
 
 - Agent is now instantiated with `simulation_mode=(profile != 'insane')` —
   live mode only when the operator explicitly selects the Insane profile.
@@ -150,7 +150,7 @@ def __init__(self, ...):
     ...
 ```
 
-`HugginLogger` and `ConnectionPool` already had this pattern.
+`HuginnLogger` and `ConnectionPool` already had this pattern.
 
 ---
 
@@ -246,10 +246,10 @@ All variables embedded in HTML strings are now wrapped with `h()`.
 ---
 
 #### Fix: Weak Attestation in `windows_agent.py` (High)
-The original attestation check compared `sha256(f"{operation}:huggin_agent")`
+The original attestation check compared `sha256(f"{operation}:huginn_agent")`
 to `sha256(attestation_data)` — meaning the check passed whenever
-`attestation_data == f"{operation}:huggin_agent"`.  The "secret" was the
-literal string `huggin_agent`, visible in source code.  Anyone who read the
+`attestation_data == f"{operation}:huginn_agent"`.  The "secret" was the
+literal string `huginn_agent`, visible in source code.  Anyone who read the
 file could forge any attestation and call `modify_firewall` or
 `modify_defender` without restriction.
 
@@ -269,8 +269,8 @@ Additional issues fixed in the same file:
 Token = HMAC-SHA256(secret, "<operation>:<nonce>:<expiry_unix_ts>")
 ```
 
-- **Secret** — read from `HUGGIN_AGENT_SECRET` env var (hex-encoded, ≥ 32 bytes),
-  or from `~/.huggin/agent.key` (auto-generated on first run, chmod 600).
+- **Secret** — read from `HUGINN_AGENT_SECRET` env var (hex-encoded, ≥ 32 bytes),
+  or from `~/.huginn/agent.key` (auto-generated on first run, chmod 600).
   Never in source code.
 - **Nonce** — 32-byte random hex per token; stored in the audit DB and
   rejected on any subsequent use (replay protection).

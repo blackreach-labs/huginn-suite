@@ -2,6 +2,7 @@
 import json
 import sqlite3
 import hashlib
+import ipaddress
 from datetime import datetime
 from typing import Dict, List, Optional, Any
 from pathlib import Path
@@ -384,8 +385,6 @@ class AssetManager:
                     query += " AND os_type = ?"
                     params.append(os_type)
                 
-                query += " ORDER BY last_seen DESC"
-                
                 cursor = conn.execute(query, params)
                 assets = []
                 
@@ -397,6 +396,15 @@ class AssetManager:
                     asset['vulnerabilities'] = json.loads(asset['vulnerabilities'])
                     asset['metadata'] = json.loads(asset['metadata'])
                     assets.append(asset)
+                
+                # Sort by IP address numerically (lowest to highest)
+                def ip_sort_key(asset):
+                    try:
+                        return ipaddress.ip_address(asset['ip_address'])
+                    except ValueError:
+                        return ipaddress.ip_address('0.0.0.0')
+                
+                assets.sort(key=ip_sort_key)
                 
                 return assets
         except Exception as e:

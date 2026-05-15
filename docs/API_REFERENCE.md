@@ -1,13 +1,13 @@
-# Huggin Scanner API Reference
+﻿# Huginn Scanner API Reference
 
 ## Core Classes
 
-### HugginVulnScanner
+### HuginnVulnScanner
 
 Main scanner class that orchestrates the vulnerability assessment process.
 
 ```python
-class HugginVulnScanner:
+class HuginnVulnScanner:
     def __init__(self, target_url: str, profile: str = 'normal', config_path: str = None)
 ```
 
@@ -311,19 +311,19 @@ class OSINTCollector:
 
 ### Custom Exceptions
 ```python
-class HugginScannerError(Exception):
+class HuginnScannerError(Exception):
     """Base exception for scanner errors"""
     pass
 
-class ConfigurationError(HugginScannerError):
+class ConfigurationError(HuginnScannerError):
     """Configuration-related errors"""
     pass
 
-class ScanTimeoutError(HugginScannerError):
+class ScanTimeoutError(HuginnScannerError):
     """Scan timeout errors"""
     pass
 
-class AuthenticationError(HugginScannerError):
+class AuthenticationError(HuginnScannerError):
     """Authentication-related errors"""
     pass
 ```
@@ -333,10 +333,10 @@ class AuthenticationError(HugginScannerError):
 ### Basic Scanning
 ```python
 import asyncio
-from app.tools.huggin_vuln_scanner import HugginVulnScanner
+from app.tools.huginn_vuln_scanner import HuginnVulnScanner
 
 async def basic_scan():
-    scanner = HugginVulnScanner('https://example.com')
+    scanner = HuginnVulnScanner('https://example.com')
     results = await scanner.scan()
     return results
 
@@ -346,7 +346,7 @@ results = asyncio.run(basic_scan())
 ### Advanced Configuration
 ```python
 async def advanced_scan():
-    scanner = HugginVulnScanner('https://example.com', profile='aggressive')
+    scanner = HuginnVulnScanner('https://example.com', profile='aggressive')
     
     # Configure authentication
     scanner.config_manager.set_auth('login', username='admin', password='pass')
@@ -392,7 +392,7 @@ async def campaign_scan():
 ### Flask Web Application
 ```python
 from flask import Flask, request, jsonify
-from app.tools.huggin_vuln_scanner import HugginVulnScanner
+from app.tools.huginn_vuln_scanner import HuginnVulnScanner
 
 app = Flask(__name__)
 
@@ -402,7 +402,7 @@ async def scan_endpoint():
     target = data.get('target')
     profile = data.get('profile', 'normal')
     
-    scanner = HugginVulnScanner(target, profile=profile)
+    scanner = HuginnVulnScanner(target, profile=profile)
     results = await scanner.scan()
     
     return jsonify(results)
@@ -411,17 +411,17 @@ async def scan_endpoint():
 ### Celery Task
 ```python
 from celery import Celery
-from app.tools.huggin_vuln_scanner import HugginVulnScanner
+from app.tools.huginn_vuln_scanner import HuginnVulnScanner
 
-app = Celery('huggin_scanner')
+app = Celery('huginn_scanner')
 
 @app.task
 async def scan_task(target_url, profile='normal'):
-    scanner = HugginVulnScanner(target_url, profile=profile)
+    scanner = HuginnVulnScanner(target_url, profile=profile)
     results = await scanner.scan()
     return results
 ```
 
 ---
 
-*This API reference covers the core components and usage patterns of the Huggin Advanced Security Scanner. For additional examples and advanced usage, refer to the examples/ directory in the project repository.*
+*This API reference covers the core components and usage patterns of the Huginn Advanced Security Scanner. For additional examples and advanced usage, refer to the examples/ directory in the project repository.*

@@ -1,4 +1,4 @@
-# app/widgets/advanced_analytics_widget.py
+﻿# app/widgets/advanced_analytics_widget.py
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 from PyQt6.QtGui import *
@@ -438,7 +438,7 @@ class AdvancedAnalyticsWidget(QWidget):
             # Save to file
             filename, _ = QFileDialog.getSaveFileName(
                 self, "Export Analytics Report", 
-                f"huggin_analytics_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+                f"huginn_analytics_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
                 "JSON Files (*.json)"
             )
             

@@ -1,6 +1,6 @@
-# Security Improvements Implementation
+﻿# Security Improvements Implementation
 
-This document outlines the security enhancements implemented in the Huggin tools.
+This document outlines the security enhancements implemented in the Huginn tools.
 
 ## 1. Input Validation (`input_validator.py`)
 

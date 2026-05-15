@@ -1,4 +1,4 @@
-# app/core/http_client.py
+﻿# app/core/http_client.py
 import requests
 import time
 from PyQt6.QtCore import QObject, pyqtSignal
@@ -136,7 +136,7 @@ class UnifiedHttpClient(QObject):
         super().__init__()
         self.session = requests.Session()
         self.session.headers.update({
-            'User-Agent': 'Huggin Security Scanner/1.0'
+            'User-Agent': 'Huginn Security Scanner/1.0'
         })
     
     def send_request(self, http_request: HttpRequest) -> Optional[HttpResponse]:

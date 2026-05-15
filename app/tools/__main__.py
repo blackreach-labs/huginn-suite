@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
-Command-line interface for Huggin Scanner
+Command-line interface for Huginn Scanner
 """
 
 import argparse
@@ -9,7 +9,7 @@ import sys
 import json
 
 async def main():
-    parser = argparse.ArgumentParser(description='Huggin Advanced Security Scanner')
+    parser = argparse.ArgumentParser(description='Huginn Advanced Security Scanner')
     parser.add_argument('--target', '-t', required=True, help='Target URL to scan')
     parser.add_argument('--profile', '-p', default='normal', 
                        choices=['light', 'normal', 'aggressive', 'insane'],
@@ -25,14 +25,14 @@ async def main():
     args = parser.parse_args()
     
     # Import here to avoid circular imports
-    from .huggin_vuln_scanner import HugginVulnScanner
+    from .huginn_vuln_scanner import HuginnVulnScanner
     
     if not args.quiet:
-        print(f"🔍 Starting Huggin scan of {args.target}")
+        print(f"🔍 Starting Huginn scan of {args.target}")
         print(f"📊 Profile: {args.profile}")
     
     # Initialize scanner
-    scanner = HugginVulnScanner(args.target, profile=args.profile, config_path=args.config)
+    scanner = HuginnVulnScanner(args.target, profile=args.profile, config_path=args.config)
     
     # Configure webhook if provided
     if args.webhook:

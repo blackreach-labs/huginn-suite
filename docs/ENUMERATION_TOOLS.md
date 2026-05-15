@@ -1,10 +1,10 @@
-# Enumeration Tools Documentation
+﻿# Enumeration Tools Documentation
 
-This document provides detailed information about all enumeration tools available in Huggin.
+This document provides detailed information about all enumeration tools available in Huginn.
 
 ## Overview
 
-Huggin includes 8 comprehensive enumeration tools, each designed for specific network reconnaissance and security assessment tasks. All tools feature:
+Huginn includes 8 comprehensive enumeration tools, each designed for specific network reconnaissance and security assessment tasks. All tools feature:
 
 - **Multi-threaded scanning** for improved performance
 - **Real-time progress tracking** with visual feedback
@@ -283,4 +283,4 @@ All enumeration tools use native Python libraries where possible:
 - **Threat intelligence** integration for IOC checking
 - **Machine learning** pattern detection for anomaly analysis
 
-This documentation provides a comprehensive overview of all enumeration capabilities in Huggin. For specific usage examples and detailed configuration options, refer to the individual tool documentation and built-in help system.
+This documentation provides a comprehensive overview of all enumeration capabilities in Huginn. For specific usage examples and detailed configuration options, refer to the individual tool documentation and built-in help system.

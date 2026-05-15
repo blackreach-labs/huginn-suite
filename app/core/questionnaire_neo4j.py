@@ -1,4 +1,4 @@
-from neo4j import GraphDatabase
+﻿from neo4j import GraphDatabase
 import json
 import os
 from typing import Dict, List, Optional, Any
@@ -6,7 +6,7 @@ from typing import Dict, List, Optional, Any
 class QuestionnaireNeo4j:
     def __init__(self, uri="bolt://localhost:7687", user="neo4j", password="password"):
         self.driver = GraphDatabase.driver(uri, auth=(user, password))
-        self.questionnaire_path = "c:\\Users\\allie\\Coding Projects\\huggin\\resources\\mindmap"
+        self.questionnaire_path = "c:\\Users\\allie\\Coding Projects\\huginn\\resources\\mindmap"
         
     def close(self):
         self.driver.close()

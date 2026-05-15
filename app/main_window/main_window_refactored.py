@@ -1,4 +1,4 @@
-"""Refactored main window using component-based architecture."""
+﻿"""Refactored main window using component-based architecture."""
 import os
 from PyQt6.QtWidgets import QMainWindow, QStatusBar, QWidget, QVBoxLayout, QSizePolicy
 from PyQt6.QtCore import QSize, Qt
@@ -28,10 +28,12 @@ class MainWindow(QMainWindow):
     # Phase mapping for mindmap navigation
     PHASE_MAP = {
         "SETUP": "attack_chain_home",
-        "RECON": "recon_enumeration", 
+        "RECON": "recon_enumeration",
         "VULN": "vuln_scanning",
+        "SCAN": "vuln_scanning",
         "EXPLOIT": "web_exploits",
         "POST-EX": "post_exploitation",
+        "ELEVATE": "post_exploitation",
         "REPORT": "findings"
     }
     
@@ -72,7 +74,7 @@ class MainWindow(QMainWindow):
     
     def _setup_window(self):
         """Set up basic window properties."""
-        self.setWindowTitle("Huggin (PyQt6 Edition) - Layout Version")
+        self.setWindowTitle("Huginn (PyQt6 Edition) - Layout Version")
         
         # Dynamic sizing based on screen
         from PyQt6.QtGui import QGuiApplication
@@ -116,7 +118,7 @@ class MainWindow(QMainWindow):
         self._apply_status_bar_styling()
         self._add_status_bar_widgets()
         self.setStatusBar(self.status_bar)
-        self.status_bar.showMessage("Ready - Huggin Layout Version")
+        self.status_bar.showMessage("Ready - Huginn Layout Version")
     
     def _apply_status_bar_styling(self):
         """Apply styling to status bar."""

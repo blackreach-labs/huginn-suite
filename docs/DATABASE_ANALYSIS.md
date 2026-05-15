@@ -1,7 +1,7 @@
-# Huggin Framework - Complete Database Analysis
+﻿# Huginn Framework - Complete Database Analysis
 
 ## Overview
-The Huggin security framework utilizes **15 distinct SQLite databases** for different aspects of security assessment, data collection, and operational management. Each database serves a specific purpose in the comprehensive security testing workflow.
+The Huginn security framework utilizes **15 distinct SQLite databases** for different aspects of security assessment, data collection, and operational management. Each database serves a specific purpose in the comprehensive security testing workflow.
 
 ## Database Inventory
 
@@ -423,7 +423,7 @@ The Huggin security framework utilizes **15 distinct SQLite databases** for diff
 
 ## Summary
 
-The Huggin framework employs a sophisticated multi-database architecture with **15 specialized databases** serving different aspects of security assessment:
+The Huginn framework employs a sophisticated multi-database architecture with **15 specialized databases** serving different aspects of security assessment:
 
 1. **Primary Data Hub**: `centralized_scan_data.db` - Central repository with tenant isolation
 2. **Traffic Analysis**: `proxy.db` - HTTP/HTTPS traffic interception

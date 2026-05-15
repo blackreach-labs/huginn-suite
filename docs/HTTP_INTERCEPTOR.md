@@ -1,8 +1,8 @@
-# HTTP Interceptor & Proxy System
+﻿# HTTP Interceptor & Proxy System
 
 ## Overview
 
-The HTTP Interceptor & Proxy System provides comprehensive HTTP traffic analysis, interception, and manipulation capabilities for web application security testing. Built on mitmproxy, it offers professional-grade proxy functionality with seamless integration into the Huggin platform.
+The HTTP Interceptor & Proxy System provides comprehensive HTTP traffic analysis, interception, and manipulation capabilities for web application security testing. Built on mitmproxy, it offers professional-grade proxy functionality with seamless integration into the Huginn platform.
 
 ## Architecture
 
@@ -362,7 +362,7 @@ class AutomatedTester:
 from selenium import webdriver
 from selenium.webdriver.common.proxy import Proxy, ProxyType
 
-# Configure Selenium to use Huggin proxy
+# Configure Selenium to use Huginn proxy
 proxy = Proxy()
 proxy.proxy_type = ProxyType.MANUAL
 proxy.http_proxy = "127.0.0.1:8080"
@@ -391,6 +391,6 @@ driver = webdriver.Chrome(desired_capabilities=capabilities)
 
 ## Conclusion
 
-The HTTP Interceptor & Proxy System provides enterprise-grade HTTP traffic analysis capabilities essential for modern web application security testing. With its comprehensive feature set, professional database storage, and seamless integration with the Huggin platform, it serves as a powerful foundation for security assessment workflows.
+The HTTP Interceptor & Proxy System provides enterprise-grade HTTP traffic analysis capabilities essential for modern web application security testing. With its comprehensive feature set, professional database storage, and seamless integration with the Huginn platform, it serves as a powerful foundation for security assessment workflows.
 
 The system's architecture ensures scalability, performance, and reliability while maintaining the flexibility needed for diverse testing scenarios. Whether used for manual security testing, automated vulnerability assessment, or traffic analysis, the HTTP Interceptor provides the tools necessary for thorough web application security evaluation.

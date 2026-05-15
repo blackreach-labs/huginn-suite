@@ -1,8 +1,8 @@
-# Shell Management System Documentation
+﻿# Shell Management System Documentation
 
 ## Overview
 
-The Shell Management System is a comprehensive post-exploitation framework integrated into Huggin that provides advanced capabilities for establishing, maintaining, and managing shell connections to compromised targets. This system bridges the gap between initial exploitation and post-exploitation activities.
+The Shell Management System is a comprehensive post-exploitation framework integrated into Huginn that provides advanced capabilities for establishing, maintaining, and managing shell connections to compromised targets. This system bridges the gap between initial exploitation and post-exploitation activities.
 
 ## Architecture
 
@@ -294,6 +294,6 @@ payload = shell_manager.generate_reverse_shell_payload(shell_type, lhost, lport)
 
 ## Conclusion
 
-The Shell Management System provides a comprehensive solution for post-exploitation shell management within the Huggin framework. It combines ease of use with advanced features, making it suitable for both beginners and experienced penetration testers.
+The Shell Management System provides a comprehensive solution for post-exploitation shell management within the Huginn framework. It combines ease of use with advanced features, making it suitable for both beginners and experienced penetration testers.
 
 The system's modular design allows for easy extension and customization, while its integration with the existing post-exploitation framework ensures seamless workflow continuity from initial exploitation through advanced post-exploitation activities.

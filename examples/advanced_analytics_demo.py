@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
-Advanced Analytics Demo for Huggin Framework
+Advanced Analytics Demo for Huginn Framework
 
 This demo showcases the advanced analytics capabilities including:
 - Trend analysis and pattern detection
@@ -390,7 +390,7 @@ def export_demo_results():
     }
     
     # Export to file
-    filename = f"huggin_advanced_analytics_demo_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+    filename = f"huginn_advanced_analytics_demo_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
     
     try:
         with open(filename, 'w') as f:
@@ -403,8 +403,8 @@ def export_demo_results():
 
 def main():
     """Main demo function"""
-    print_header("Huggin Advanced Analytics Demo")
-    print("This demo showcases the advanced analytics capabilities of the Huggin framework.")
+    print_header("Huginn Advanced Analytics Demo")
+    print("This demo showcases the advanced analytics capabilities of the Huginn framework.")
     print("The demo includes trend analysis, anomaly detection, predictive insights,")
     print("security maturity assessment, and intelligent scan orchestration.")
     

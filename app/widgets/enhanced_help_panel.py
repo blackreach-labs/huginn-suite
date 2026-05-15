@@ -1,4 +1,4 @@
-# app/widgets/enhanced_help_panel.py
+﻿# app/widgets/enhanced_help_panel.py
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
                              QPushButton, QTextEdit, QTabWidget, QScrollArea,
                              QFrame, QSplitter)
@@ -12,7 +12,7 @@ class EnhancedHelpPanel(QWidget):
     
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Huggin Help & Documentation")
+        self.setWindowTitle("Huginn Help & Documentation")
         self.setWindowFlags(Qt.WindowType.Window)
         self.resize(1400, 900)
         self.setMinimumSize(1200, 800)
@@ -27,7 +27,7 @@ class EnhancedHelpPanel(QWidget):
         # Header
         header_layout = QHBoxLayout()
         
-        title_label = QLabel("Huggin Help & Documentation")
+        title_label = QLabel("Huginn Help & Documentation")
         title_label.setStyleSheet("font-size: 18pt; font-weight: bold; color: #64C8FF;")
         header_layout.addWidget(title_label)
         
@@ -82,7 +82,7 @@ class EnhancedHelpPanel(QWidget):
             ("LDAP Enumeration", "ldap"),
             ("Database Enumeration", "db"),
             ("🔮 Runecraft Guide", "runecraft"),
-            ("🚀 Huggin Scanner", "huggin_scanner")
+            ("🚀 Huginn Scanner", "huginn_scanner")
         ]
         
         for tool_name, tool_id in tools:
@@ -251,8 +251,8 @@ class EnhancedHelpPanel(QWidget):
                     "<b>Advanced Features:</b> Use custom code section in wizard or manual interface for specialized requirements"
                 ]
             },
-            "huggin_scanner": {
-                "title": "🚀 Huggin Advanced Security Scanner",
+            "huginn_scanner": {
+                "title": "🚀 Huginn Advanced Security Scanner",
                 "description": "Revolutionary AI-powered vulnerability assessment tool combining traditional security testing with cutting-edge artificial intelligence and quantum-inspired algorithms for comprehensive security analysis.",
                 "features": [
                     "<b>🧠 Neural Network Vulnerability Analysis:</b> Deep learning-based pattern recognition for advanced threat detection",
@@ -267,7 +267,7 @@ class EnhancedHelpPanel(QWidget):
                     "<b>📊 Multi-threaded Scanning:</b> Intelligent rate limiting with memory-optimized operations"
                 ],
                 "usage": [
-                    "<b>Access the Scanner:</b> Navigate to Reconnaissance & Enumeration → Service Enumeration → HTTP Service Enumeration → 🚀 Huggin Advanced Scanner",
+                    "<b>Access the Scanner:</b> Navigate to Reconnaissance & Enumeration → Service Enumeration → HTTP Service Enumeration → 🚀 Huginn Advanced Scanner",
                     "<b>Configure Target:</b> Enter target URL (https://example.com) in the target field",
                     "<b>Select Scan Profile:</b> Choose from Light (20 concurrent), Normal (50), Aggressive (100), or Insane (200) profiles",
                     "<b>Authentication Setup:</b> Configure credentials, headers, or session tokens if required",
@@ -337,8 +337,8 @@ class EnhancedHelpPanel(QWidget):
     def get_overview_content(self):
         """Get overview content"""
         return """
-        <h2 style="color: #64C8FF;">Huggin Overview</h2>
-        <p>Huggin is a comprehensive penetration testing toolkit with advanced enumeration capabilities.</p>
+        <h2 style="color: #64C8FF;">Huginn Overview</h2>
+        <p>Huginn is a comprehensive penetration testing toolkit with advanced enumeration capabilities.</p>
         
         <h3 style="color: #87CEEB;">Main Features</h3>
         <ul>
@@ -350,7 +350,7 @@ class EnhancedHelpPanel(QWidget):
             <li><strong>HTTP Enumeration:</strong> Web server fingerprinting and directory discovery</li>
             <li><strong>API Enumeration:</strong> REST API endpoint discovery</li>
             <li><strong>🔮 Runecraft Forge:</strong> Magical payload crafting with Norse runic components</li>
-            <li><strong>🚀 Huggin Scanner:</strong> AI-powered vulnerability assessment with neural network analysis</li>
+            <li><strong>🚀 Huginn Scanner:</strong> AI-powered vulnerability assessment with neural network analysis</li>
             <li><strong>Advanced Reporting:</strong> Professional PDF and HTML reports</li>
         </ul>
         

@@ -1,4 +1,4 @@
-# app/pages/page_registry.py
+﻿# app/pages/page_registry.py
 """
 Page registry for registering all application pages with the factory.
 """
@@ -12,12 +12,12 @@ def register_all_pages():
     # Import pages
     from app.pages.home_page import HomePage
     from app.pages.dns_enumeration_page import DNSEnumerationPage
-    from app.pages.huggin_scanner_page import HugginScannerPage
+    from app.pages.huginn_scanner_page import HuginnScannerPage
     
     # Register core pages
     PageFactory.register_page("home", HomePage)
     PageFactory.register_page("dns_enumeration", DNSEnumerationPage)
-    PageFactory.register_page("huggin_scanner", HugginScannerPage)
+    PageFactory.register_page("huginn_scanner", HuginnScannerPage)
     
     # Register legacy pages (for backward compatibility)
     try:

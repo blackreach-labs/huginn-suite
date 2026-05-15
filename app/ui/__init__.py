@@ -1,4 +1,4 @@
-# app/ui/__init__.py
+﻿# app/ui/__init__.py
 """
-Enhanced UI components for Huggin
+Enhanced UI components for Huginn
 """

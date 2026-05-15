@@ -1,6 +1,6 @@
-# Huggin Documentation
+﻿# Huginn Documentation
 
-Welcome to the Huggin documentation. This directory contains comprehensive documentation for the professional-grade penetration testing platform with advanced reconnaissance, exploitation, and reporting capabilities.
+Welcome to the Huginn documentation. This directory contains comprehensive documentation for the professional-grade penetration testing platform with advanced reconnaissance, exploitation, and reporting capabilities.
 
 ## 🚀 Quick Start
 

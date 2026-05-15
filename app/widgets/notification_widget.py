@@ -1,4 +1,4 @@
-# app/widgets/notification_widget.py
+﻿# app/widgets/notification_widget.py
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
                             QPushButton, QTextEdit, QTableWidget, 
                             QTableWidgetItem, QGroupBox, QCheckBox, QTabWidget)
@@ -303,7 +303,7 @@ class NotificationWidget(QWidget):
         """Send test notification"""
         notification_manager.show_info_notification(
             "Test Notification",
-            "This is a test notification from Huggin"
+            "This is a test notification from Huginn"
         )
         
         self.status_label.setText("Test notification sent")

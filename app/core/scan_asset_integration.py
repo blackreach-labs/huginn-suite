@@ -1,4 +1,4 @@
-# app/core/scan_asset_integration.py
+﻿# app/core/scan_asset_integration.py
 from PyQt6.QtCore import QObject, pyqtSignal
 from app.core.asset_manager import asset_manager
 from datetime import datetime
@@ -45,7 +45,7 @@ class ScanAssetIntegrator(QObject):
             # Try to get from global state or settings
             try:
                 from PyQt6.QtCore import QSettings
-                settings = QSettings('Huggin', 'SecurityFramework')
+                settings = QSettings('Huginn', 'SecurityFramework')
                 last_profile = settings.value('last_profile', 'default')
                 if last_profile and last_profile != 'default':
                     print(f"Found profile from settings: {last_profile}")
@@ -554,7 +554,7 @@ class ScanAssetIntegrator(QObject):
                     })
                 metadata['top_risk_findings'] = security_findings
         
-        # Extract vulnerability data (from Huggin Scanner) - only if we have server info
+        # Extract vulnerability data (from Huginn Scanner) - only if we have server info
         vulnerabilities = source_vulnerabilities.copy()  # Start with source code vulnerabilities
         if 'vulnerabilities' in results and 'server' in results and results['server'] != 'Unknown':
             print(f"[DEBUG] Scanner returned {len(results['vulnerabilities'])} vulnerabilities")

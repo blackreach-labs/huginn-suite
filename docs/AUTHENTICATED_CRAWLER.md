@@ -1,6 +1,6 @@
-# Authenticated Web Crawler
+﻿# Authenticated Web Crawler
 
-The Huggin framework now includes an advanced authenticated web crawler that can perform comprehensive website crawling with various authentication methods. This feature enables security assessments of authenticated areas of web applications.
+The Huginn framework now includes an advanced authenticated web crawler that can perform comprehensive website crawling with various authentication methods. This feature enables security assessments of authenticated areas of web applications.
 
 ## 🔐 Authentication Methods Supported
 
@@ -300,7 +300,7 @@ For issues, questions, or feature requests related to the authenticated crawler:
 
 1. Check the troubleshooting section above
 2. Review the example scripts in `/examples/`
-3. Consult the main Huggin documentation
+3. Consult the main Huginn documentation
 4. Report bugs through the project issue tracker
 
 ---

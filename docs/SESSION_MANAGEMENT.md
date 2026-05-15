@@ -1,6 +1,6 @@
-# Session Management
+﻿# Session Management
 
-The Session Management feature in Huggin allows users to organize their scanning activities into projects and manage scan results efficiently.
+The Session Management feature in Huginn allows users to organize their scanning activities into projects and manage scan results efficiently.
 
 ## Features
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 
 import sys
 import os
@@ -10,7 +10,7 @@ sys.path.insert(0, project_root)
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel
 from PyQt6.QtCore import Qt
 
-class MinimalHugginPage(QWidget):
+class MinimalHuginnPage(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.main_window = parent
@@ -18,12 +18,12 @@ class MinimalHugginPage(QWidget):
     
     def setup_ui(self):
         layout = QVBoxLayout(self)
-        label = QLabel("Huggin Advanced Scanner")
+        label = QLabel("Huginn Advanced Scanner")
         label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(label)
     
     def get_page_title(self):
-        return "Huggin Advanced Scanner"
+        return "Huginn Advanced Scanner"
     
     def get_page_icon(self):
         return None
@@ -31,7 +31,7 @@ class MinimalHugginPage(QWidget):
 def test_minimal_page():
     try:
         print("Creating minimal page...")
-        page = MinimalHugginPage(None)
+        page = MinimalHuginnPage(None)
         print("Page created successfully")
         print("Title:", page.get_page_title())
         return True

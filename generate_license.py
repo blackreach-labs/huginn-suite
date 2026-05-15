@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
-Huggin License Generator
+Huginn License Generator
 Generate professional and enterprise licenses for customers
 """
 
@@ -10,7 +10,7 @@ import hashlib
 from datetime import datetime, timedelta
 
 def generate_license(user_id: str, license_type: str, duration_days: int = 365, features: list = None):
-    """Generate a license key for Huggin"""
+    """Generate a license key for Huginn"""
     
     # Default features based on license type
     if features is None:
@@ -52,7 +52,7 @@ def generate_license(user_id: str, license_type: str, duration_days: int = 365, 
     
     # Generate signature
     signature_string = json.dumps(license_data, sort_keys=True)
-    secret_key = "huggin_license_secret_2024"
+    secret_key = "huginn_license_secret_2024"
     signature = hashlib.sha256((signature_string + secret_key).encode()).hexdigest()
     license_data['signature'] = signature
     
@@ -71,7 +71,7 @@ def validate_license_key(license_key: str):
         # Verify signature
         signature_data = {k: v for k, v in license_data.items() if k != 'signature'}
         signature_string = json.dumps(signature_data, sort_keys=True)
-        secret_key = "huggin_license_secret_2024"
+        secret_key = "huginn_license_secret_2024"
         expected_signature = hashlib.sha256((signature_string + secret_key).encode()).hexdigest()
         
         if license_data.get('signature') != expected_signature:
@@ -89,7 +89,7 @@ def validate_license_key(license_key: str):
 
 def main():
     """Interactive license generator"""
-    print("🔑 Huggin License Generator")
+    print("🔑 Huginn License Generator")
     print("=" * 40)
     
     while True:

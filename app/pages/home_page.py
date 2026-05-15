@@ -1,4 +1,4 @@
-# app/pages/home_page.py
+﻿# app/pages/home_page.py
 from PyQt6.QtWidgets import (QVBoxLayout, QHBoxLayout, QLabel, QFrame, 
                              QPushButton, QTextEdit, QSizePolicy, QSplitter)
 from PyQt6.QtCore import Qt, QSize
@@ -74,7 +74,7 @@ class HomePage(BasePage):
         nav_layout.setSpacing(10)
         
         # Title
-        title = QLabel("HUGGIN")
+        title = QLabel("HUGINN")
         title.setObjectName("TitleLabel")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title.setStyleSheet("""

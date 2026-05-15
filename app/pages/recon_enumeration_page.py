@@ -1,4 +1,4 @@
-# app/pages/recon_enumeration_page.py
+﻿# app/pages/recon_enumeration_page.py
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
                              QFrame, QTabWidget, QPushButton, QLineEdit, QCheckBox, QComboBox, QSpinBox, QTextEdit,
                              QStackedWidget, QTableWidget, QTreeWidget, QToolButton, QSpacerItem, QSizePolicy)
@@ -158,7 +158,7 @@ class ReconEnumerationPage(QWidget, ServiceScannersMixin, ServiceUIComponentsMix
         port_tab = self.create_port_scanning_subtab()
         sub_tab_widget.addTab(port_tab, "🔌 Port Scanning")
         
-        # Removed Huggin Scanner - moved to Vulnerability Analysis section
+        # Removed Huginn Scanner - moved to Vulnerability Analysis section
         
         layout.addWidget(sub_tab_widget)
         return tab
@@ -216,7 +216,7 @@ class ReconEnumerationPage(QWidget, ServiceScannersMixin, ServiceUIComponentsMix
             self.port_main_container = QWidget()
             container_layout = QVBoxLayout(self.port_main_container)
             
-            for scan_type in ["Ping Sweep", "Huggin Sweep", "Layer2 Sweep", "TCP Scan", "UDP Scan"]:
+            for scan_type in ["Ping Sweep", "Huginn Sweep", "Layer2 Sweep", "TCP Scan", "UDP Scan"]:
                 # Create stack for this scan type
                 stack = QStackedWidget()
                 
@@ -232,7 +232,7 @@ class ReconEnumerationPage(QWidget, ServiceScannersMixin, ServiceUIComponentsMix
                 if scan_type == "Ping Sweep":
                     table.setColumnCount(2)
                     table.setHorizontalHeaderLabels(["IP Address", "Status"])
-                elif scan_type == "Huggin Sweep":
+                elif scan_type == "Huginn Sweep":
                     table.setColumnCount(3)
                     table.setHorizontalHeaderLabels(["IP Address", "Open Ports", "Services"])
                 elif scan_type == "Layer2 Sweep":
@@ -308,7 +308,7 @@ class ReconEnumerationPage(QWidget, ServiceScannersMixin, ServiceUIComponentsMix
         scan_type_layout.addWidget(scan_type_label)
         
         self.port_scan_type = QComboBox()
-        self.port_scan_type.addItems(["Ping Sweep", "Huggin Sweep", "TCP Scan", "UDP Scan"])
+        self.port_scan_type.addItems(["Ping Sweep", "Huginn Sweep", "TCP Scan", "UDP Scan"])
         scan_type_layout.addWidget(self.port_scan_type)
         scan_type_layout.addStretch()
         controls_layout.addLayout(scan_type_layout)
@@ -349,7 +349,7 @@ class ReconEnumerationPage(QWidget, ServiceScannersMixin, ServiceUIComponentsMix
         
         layout.addWidget(controls_frame)
     
-    # Huggin Scanner moved to Vulnerability Analysis section
+    # Huginn Scanner moved to Vulnerability Analysis section
     
     def create_dns_tab(self):
         """Create simple DNS enumeration tab as fallback"""
@@ -495,7 +495,7 @@ class ReconEnumerationPage(QWidget, ServiceScannersMixin, ServiceUIComponentsMix
             cmd_label.setStyleSheet("color: #FFAA00; font-family: monospace; font-size: 12pt; padding: 10px;")
             install_layout.addWidget(cmd_label)
             
-            restart_label = QLabel("Restart Huggin after installation to enable AWS features")
+            restart_label = QLabel("Restart Huginn after installation to enable AWS features")
             restart_label.setStyleSheet("color: #87CEEB; font-size: 11pt;")
             install_layout.addWidget(restart_label)
             

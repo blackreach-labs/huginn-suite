@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Windows Agent - Native service component
 Handles privileged operations with HMAC attestation and audit logging.
@@ -11,7 +11,7 @@ MAC over a canonical message:
 
     "<operation>:<nonce>:<expiry_unix_timestamp>"
 
-using a shared secret read from the ``HUGGIN_AGENT_SECRET`` environment
+using a shared secret read from the ``HUGINN_AGENT_SECRET`` environment
 variable (or a key file — see ``_load_agent_secret``).
 
 The orchestrator creates a token with :func:`create_attestation_token` and
@@ -53,11 +53,11 @@ logger = logging.getLogger(__name__)
 ATTESTATION_VALIDITY_SECONDS = 300  # 5 minutes
 
 # Environment variable that holds the shared HMAC secret.
-_SECRET_ENV_VAR = "HUGGIN_AGENT_SECRET"
+_SECRET_ENV_VAR = "HUGINN_AGENT_SECRET"
 
 # Fallback key-file path (owner-read-only, 0o600).
-_SECRET_KEY_FILE = Path(os.environ.get("HUGGIN_AGENT_KEY_FILE",
-                                        str(Path.home() / ".huggin" / "agent.key")))
+_SECRET_KEY_FILE = Path(os.environ.get("HUGINN_AGENT_KEY_FILE",
+                                        str(Path.home() / ".huginn" / "agent.key")))
 
 
 # ---------------------------------------------------------------------------
@@ -68,8 +68,8 @@ def _load_agent_secret() -> bytes:
     """Load the HMAC secret for attestation.
 
     Priority:
-    1. ``HUGGIN_AGENT_SECRET`` environment variable (hex-encoded).
-    2. Key file at ``HUGGIN_AGENT_KEY_FILE`` (default ``~/.huggin/agent.key``).
+    1. ``HUGINN_AGENT_SECRET`` environment variable (hex-encoded).
+    2. Key file at ``HUGINN_AGENT_KEY_FILE`` (default ``~/.huginn/agent.key``).
     3. Generate a new random secret, persist it to the key file, and warn.
 
     The secret must be at least 32 bytes (256 bits).  Shorter values are
@@ -102,7 +102,7 @@ def _load_agent_secret() -> bytes:
     # 3. Generate and persist
     logger.warning(
         f"No agent secret found in {_SECRET_ENV_VAR} or {_SECRET_KEY_FILE}. "
-        "Generating a new random secret.  Set HUGGIN_AGENT_SECRET or "
+        "Generating a new random secret.  Set HUGINN_AGENT_SECRET or "
         f"protect {_SECRET_KEY_FILE} (chmod 600)."
     )
     raw = secrets.token_bytes(32)
@@ -704,12 +704,12 @@ try:
     import win32event
     import servicemanager
 
-    class HugginAgentService(win32serviceutil.ServiceFramework):
-        """Windows Service wrapper for Huggin Agent."""
+    class HuginnAgentService(win32serviceutil.ServiceFramework):
+        """Windows Service wrapper for Huginn Agent."""
 
-        _svc_name_ = "HugginAgent"
-        _svc_display_name_ = "Huggin Security Agent"
-        _svc_description_ = "Huggin Security Assessment Agent Service"
+        _svc_name_ = "HuginnAgent"
+        _svc_display_name_ = "Huginn Security Agent"
+        _svc_description_ = "Huginn Security Assessment Agent Service"
 
         def __init__(self, args):
             win32serviceutil.ServiceFramework.__init__(self, args)
@@ -735,7 +735,7 @@ try:
 
 except ImportError:
     # pywin32 not available (e.g. running on Linux for testing).
-    HugginAgentService = None  # type: ignore
+    HuginnAgentService = None  # type: ignore
 
 
 # ---------------------------------------------------------------------------
@@ -757,8 +757,8 @@ if __name__ == "__main__":
         proc_path = agent.collect_processes()
         logger.info(f"Process list saved to: {proc_path}")
 
-    elif HugginAgentService is not None:
-        win32serviceutil.HandleCommandLine(HugginAgentService)
+    elif HuginnAgentService is not None:
+        win32serviceutil.HandleCommandLine(HuginnAgentService)
     else:
         logger.error("pywin32 not available — cannot run as Windows service.")
         sys.exit(1)

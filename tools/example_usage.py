@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
-Example usage of the improved Huggin tools with security enhancements
+Example usage of the improved Huginn tools with security enhancements
 """
 
 from credential_manager import CredentialManager
@@ -71,7 +71,7 @@ def demonstrate_structured_output():
     print(json.dumps(results, indent=2))
 
 if __name__ == "__main__":
-    print("=== Huggin Security Improvements Demo ===\n")
+    print("=== Huginn Security Improvements Demo ===\n")
     
     print("1. Setting up secure credentials...")
     setup_credentials()

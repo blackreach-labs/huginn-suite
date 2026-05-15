@@ -1,6 +1,6 @@
-AWSTemplateFormatVersion: '2010-09-09'
+﻿AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Huggin VPN Servers
+Description: Huginn VPN Servers
 
 Parameters:
   InstanceCount:
@@ -14,7 +14,7 @@ Resources:
   VPNSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Huggin VPN servers
+      GroupDescription: Huginn VPN servers
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 22

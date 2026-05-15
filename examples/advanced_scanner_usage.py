@@ -1,15 +1,15 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
-Advanced Huggin Scanner Usage Examples
+Advanced Huginn Scanner Usage Examples
 Demonstrates Phase 1-3 enhancements
 """
 
 import asyncio
-from app.tools.huggin_vuln_scanner import HugginVulnScanner
+from app.tools.huginn_vuln_scanner import HuginnVulnScanner
 
 async def basic_scan():
     """Basic scan with normal profile"""
-    scanner = HugginVulnScanner('https://example.com', profile='normal')
+    scanner = HuginnVulnScanner('https://example.com', profile='normal')
     results = await scanner.scan()
     
     print(f"Found {len(results['vulnerabilities'])} vulnerabilities")
@@ -18,7 +18,7 @@ async def basic_scan():
 
 async def aggressive_scan_with_auth():
     """Aggressive scan with authentication"""
-    scanner = HugginVulnScanner('https://app.example.com', profile='aggressive')
+    scanner = HuginnVulnScanner('https://app.example.com', profile='aggressive')
     
     # Configure authentication
     scanner.config_manager.set_auth('login', username='testuser', password='testpass')
@@ -35,7 +35,7 @@ async def aggressive_scan_with_auth():
 
 async def custom_profile_scan():
     """Scan with custom configuration"""
-    scanner = HugginVulnScanner('https://target.com', profile='insane')
+    scanner = HuginnVulnScanner('https://target.com', profile='insane')
     
     # Update profile for maximum coverage
     scanner.config_manager.update_profile('insane', {

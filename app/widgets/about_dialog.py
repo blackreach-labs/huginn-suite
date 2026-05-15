@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QTextEdit, QProgressBar
+﻿from PyQt6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QTextEdit, QProgressBar
 from PyQt6.QtCore import QThread, pyqtSignal, Qt
 from PyQt6.QtGui import QFont
 from ..core.update_manager import update_manager
@@ -40,7 +40,7 @@ class UpdateInstallWorker(QThread):
 class AboutDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("About Huggin")
+        self.setWindowTitle("About Huginn")
         self.setFixedSize(500, 650)
         self.setup_ui()
         
@@ -48,7 +48,7 @@ class AboutDialog(QDialog):
         layout = QVBoxLayout()
         
         # Title
-        title = QLabel("Huggin Advanced Security Framework")
+        title = QLabel("Huginn Advanced Security Framework")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title.setFont(QFont("Arial", 16, QFont.Weight.Bold))
         layout.addWidget(title)

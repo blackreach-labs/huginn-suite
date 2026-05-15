@@ -1,22 +1,22 @@
-"""Custom exceptions for the Huggin scanner framework."""
+﻿"""Custom exceptions for the Huginn scanner framework."""
 
 
-class HugginException(Exception):
-    """Base exception for Huggin framework."""
+class HuginnException(Exception):
+    """Base exception for Huginn framework."""
     pass
 
 
-class ScannerException(HugginException):
+class ScannerException(HuginnException):
     """Base exception for scanner operations."""
     pass
 
 
-class ConfigurationException(HugginException):
+class ConfigurationException(HuginnException):
     """Exception for configuration-related errors."""
     pass
 
 
-class DatabaseException(HugginException):
+class DatabaseException(HuginnException):
     """Exception for database-related errors."""
     pass
 
@@ -31,7 +31,7 @@ class AuthenticationException(ScannerException):
     pass
 
 
-class ValidationException(HugginException):
+class ValidationException(HuginnException):
     """Exception for validation errors."""
     pass
 

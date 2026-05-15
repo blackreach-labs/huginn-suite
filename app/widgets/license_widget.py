@@ -1,4 +1,4 @@
-# app/widgets/license_widget.py
+﻿# app/widgets/license_widget.py
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
                             QLineEdit, QPushButton, QTextEdit, QGroupBox,
                             QTableWidget, QTableWidgetItem, QHeaderView,
@@ -23,7 +23,7 @@ class LicenseWidget(QWidget):
         layout.setSpacing(10)
         
         # Header
-        header = QLabel("Huggin Licensed Features")
+        header = QLabel("Huginn Licensed Features")
         header.setStyleSheet("font-size: 22pt; font-weight: bold; color: #2c3e50; padding: 15px; background: #ecf0f1; border-radius: 8px;")
         header.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(header)
@@ -188,11 +188,11 @@ Current License: {license_info['license_type']}
 Features Enabled: {len(license_info['features'])}
 Days Remaining: {license_info.get('days_remaining', 'N/A')}
 
-Thank you for supporting Huggin Professional!
+Thank you for supporting Huginn Professional!
             """
         else:
             text = """
-Upgrade to Huggin Professional for advanced features:
+Upgrade to Huginn Professional for advanced features:
 
 Professional Tier ($99/month):
 • Stealth Mode - Advanced evasion techniques
@@ -219,10 +219,10 @@ Enterprise Tier ($299/month):
         
     def show_upgrade_info(self):
         QMessageBox.information(self, "Upgrade Information", 
-                              "Visit https://huggin.net/upgrade to purchase a license.\n\n"
+                              "Visit https://huginn.net/upgrade to purchase a license.\n\n"
                               "Professional Tier: $99/month\n"
                               "Enterprise Tier: $299/month\n\n"
-                              "Contact sales@huggin.net for enterprise pricing.")
+                              "Contact sales@huginn.net for enterprise pricing.")
                               
     def handle_license_event(self, event_type, message, data):
         if event_type == 'license_validated':

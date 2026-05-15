@@ -1,11 +1,11 @@
-# Huggin Scanner - Quick Start
+﻿# Huginn Scanner - Quick Start
 
 ## Installation
 
 ```bash
 # Clone repository
-git clone https://github.com/your-org/huggin
-cd huggin
+git clone https://github.com/your-org/huginn
+cd huginn
 
 # Install dependencies
 pip install -r requirements.txt
@@ -18,12 +18,12 @@ pip install -e .
 
 ### 1. Simple Scan
 ```bash
-python -m app.tools.huggin_vuln_scanner --target https://example.com
+python -m app.tools.huginn_vuln_scanner --target https://example.com
 ```
 
 ### 2. Aggressive Scan with Report
 ```bash
-python -m app.tools.huggin_vuln_scanner \
+python -m app.tools.huginn_vuln_scanner \
   --target https://example.com \
   --profile aggressive \
   --format html \
@@ -33,10 +33,10 @@ python -m app.tools.huggin_vuln_scanner \
 ### 3. Python Script
 ```python
 import asyncio
-from app.tools.huggin_vuln_scanner import HugginVulnScanner
+from app.tools.huginn_vuln_scanner import HuginnVulnScanner
 
 async def scan():
-    scanner = HugginVulnScanner('https://example.com', profile='normal')
+    scanner = HuginnVulnScanner('https://example.com', profile='normal')
     results = await scanner.scan()
     
     print(f"Found {len(results['vulnerabilities'])} vulnerabilities")
@@ -81,7 +81,7 @@ asyncio.run(scan())
 # GitHub Actions
 - name: Security Scan
   run: |
-    python -m app.tools.huggin_vuln_scanner \
+    python -m app.tools.huginn_vuln_scanner \
       --target ${{ env.STAGING_URL }} \
       --profile normal \
       --format json \

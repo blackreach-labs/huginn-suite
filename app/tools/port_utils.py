@@ -1,4 +1,4 @@
-# app/tools/port_utils.py
+﻿# app/tools/port_utils.py
 from PyQt6.QtCore import QThreadPool
 from .port_scanner import PortScanWorker, NetworkSweepWorker, EnhancedPortScanWorker, Layer2SweepWorker, get_common_ports, get_top_ports
 
@@ -268,10 +268,10 @@ def ping_sweep(target, output_callback, status_callback, finished_callback, resu
     QThreadPool.globalInstance().start(worker)
     return worker
 
-def huggin_sweep(target, output_callback, status_callback, finished_callback, results_callback=None, progress_callback=None, progress_start_callback=None, tenant_id="default"):
-    """Run Huggin sweep (host discovery only - no port scanning)"""
+def huginn_sweep(target, output_callback, status_callback, finished_callback, results_callback=None, progress_callback=None, progress_start_callback=None, tenant_id="default"):
+    """Run Huginn sweep (host discovery only - no port scanning)"""
     worker = NetworkSweepWorker(target, timeout=1, tenant_id=tenant_id)
-    worker.scan_type = 'huggin_sweep'  # Set scan type for differentiation
+    worker.scan_type = 'huginn_sweep'  # Set scan type for differentiation
     
     # Connect signals
     worker.signals.output.connect(output_callback)

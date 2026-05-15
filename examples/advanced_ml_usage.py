@@ -1,11 +1,11 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Advanced ML and Zero-Day Discovery Usage Examples
 Demonstrates Phase 7 machine learning and fuzzing capabilities
 """
 
 import asyncio
-from app.tools.huggin_vuln_scanner import HugginVulnScanner
+from app.tools.huginn_vuln_scanner import HuginnVulnScanner
 from app.core.ml_vulnerability_predictor import MLVulnerabilityPredictor
 from app.core.zero_day_fuzzer import ZeroDayFuzzer
 
@@ -13,7 +13,7 @@ async def ml_behavioral_analysis_demo():
     """Demonstrate ML-based behavioral analysis"""
     print("=== ML BEHAVIORAL ANALYSIS ===")
     
-    scanner = HugginVulnScanner('https://demo.testfire.net', profile='aggressive')
+    scanner = HuginnVulnScanner('https://demo.testfire.net', profile='aggressive')
     results = await scanner.scan()
     
     # Show ML predictions
@@ -54,7 +54,7 @@ async def advanced_scanner_demo():
     print("\n=== ADVANCED SCANNER WITH ML & FUZZING ===")
     
     # Use insane profile for maximum coverage
-    scanner = HugginVulnScanner('https://demo.testfire.net', profile='insane')
+    scanner = HuginnVulnScanner('https://demo.testfire.net', profile='insane')
     results = await scanner.scan()
     
     print(f"Total vulnerabilities found: {len(results['vulnerabilities'])}")

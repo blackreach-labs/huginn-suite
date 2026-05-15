@@ -1,4 +1,4 @@
-import networkx as nx
+﻿import networkx as nx
 import json
 import os
 from typing import Dict, List, Optional, Any
@@ -8,9 +8,9 @@ from app.core.logger import logger
 class QuestionnaireGraph:
     def __init__(self):
         self.graph = nx.DiGraph()
-        self.questionnaire_path = "c:\\Users\\allie\\Coding Projects\\huggin\\resources\\mindmap"
+        self.questionnaire_path = "c:\\Users\\allie\\Coding Projects\\huginn\\resources\\mindmap"
         self.sessions = {}
-        self.db_file = "c:\\Users\\allie\\Coding Projects\\huggin\\resources\\questionnaire_graph.pkl"
+        self.db_file = "c:\\Users\\allie\\Coding Projects\\huginn\\resources\\questionnaire_graph.pkl"
         self.load_graph()
         
     def load_questionnaires(self):

@@ -1,4 +1,4 @@
-# app/components/guided_workflow/workflow_step_component.py
+﻿# app/components/guided_workflow/workflow_step_component.py
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
                              QPushButton, QTextEdit, QCheckBox, QFrame)
 from PyQt6.QtCore import pyqtSignal
@@ -91,7 +91,7 @@ class WorkflowStepComponent(QWidget):
             "OSINT Collection": "osint",
             "DNS Records": "recon_enumeration",
             "Port Scanning": "recon_enumeration",
-            "Huggin Advanced Scanner": "huggin_scanner",
+            "Huginn Advanced Scanner": "huginn_scanner",
             "Shell Management": "shell_management",
         }
         

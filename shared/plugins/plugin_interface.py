@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+﻿from abc import ABC, abstractmethod
 from typing import Dict, Any, Optional
 from dataclasses import dataclass
 
@@ -16,7 +16,7 @@ class PluginMetadata:
             self.dependencies = []
 
 class PluginInterface(ABC):
-    """Base interface for all Huggin plugins"""
+    """Base interface for all Huginn plugins"""
     
     @abstractmethod
     def get_metadata(self) -> PluginMetadata:

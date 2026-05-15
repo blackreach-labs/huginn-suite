@@ -1,4 +1,4 @@
-# Huggin Advanced Security Scanner - Detector Classes Summary
+﻿# Huginn Advanced Security Scanner - Detector Classes Summary
 
 ## 🎯 **Status: 100% Complete & Unit Tested**
 
@@ -195,7 +195,7 @@ All 15 detector classes have been fully implemented with comprehensive logic and
 
 ## 🎯 **Integration with Main Scanner**
 
-All detector classes are fully integrated into the main `HugginVulnScanner` class:
+All detector classes are fully integrated into the main `HuginnVulnScanner` class:
 
 ```python
 # High-Impact Passive Detection Phase
@@ -226,4 +226,4 @@ logic_tester = BusinessLogicTester()
 ✅ **Production Ready** - Robust error handling and performance optimization
 ✅ **Comprehensive Coverage** - From passive detection to active exploitation testing
 
-The Huggin Advanced Security Scanner now has **complete detector class implementation** with all 15 specialized detectors working correctly and validated through comprehensive testing.
+The Huginn Advanced Security Scanner now has **complete detector class implementation** with all 15 specialized detectors working correctly and validated through comprehensive testing.

@@ -1,4 +1,4 @@
-"""Demonstration of the new layered architecture."""
+﻿"""Demonstration of the new layered architecture."""
 import asyncio
 import sys
 import os
@@ -149,7 +149,7 @@ async def demonstrate_multiple_scanners():
 
 
 if __name__ == "__main__":
-    print("Huggin New Architecture Demo")
+    print("Huginn New Architecture Demo")
     print("=" * 40)
     
     asyncio.run(demonstrate_port_scan())

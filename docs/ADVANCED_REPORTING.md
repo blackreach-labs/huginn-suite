@@ -1,6 +1,6 @@
-# Advanced Reporting Engine
+﻿# Advanced Reporting Engine
 
-The Advanced Reporting Engine provides comprehensive report generation capabilities for Huggin scan results, offering multiple formats, templates, and analysis features.
+The Advanced Reporting Engine provides comprehensive report generation capabilities for Huginn scan results, offering multiple formats, templates, and analysis features.
 
 ## Features
 
@@ -136,7 +136,7 @@ test_advanced_reporting.py          # Test script
 
 ## Installation
 
-The Advanced Reporting Engine is included with Huggin. For PDF support:
+The Advanced Reporting Engine is included with Huginn. For PDF support:
 
 ```bash
 pip install reportlab>=4.0.0
@@ -201,7 +201,7 @@ The Advanced Reporting Engine integrates seamlessly with:
 - DNS Enumeration results
 - Port Scan results
 - HTTP Fingerprinting results
-- All other Huggin tools
+- All other Huginn tools
 
 ### With External Systems
 - JSON output for SIEM integration
@@ -305,8 +305,8 @@ For issues, questions, or feature requests related to Advanced Reporting:
 1. Check this documentation
 2. Run the test script to validate setup
 3. Review the example outputs
-4. Check the main Huggin documentation
+4. Check the main Huginn documentation
 
 ## License
 
-The Advanced Reporting Engine is part of Huggin and follows the same licensing terms.
+The Advanced Reporting Engine is part of Huginn and follows the same licensing terms.

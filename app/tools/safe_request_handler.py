@@ -1,4 +1,4 @@
-"""
+﻿"""
 Safe request handler to prevent target system crashes
 """
 import asyncio
@@ -30,7 +30,7 @@ class SafeRequestHandler:
         self.session = aiohttp.ClientSession(
             connector=connector,
             timeout=timeout,
-            headers={'User-Agent': 'Huggin-Scanner/1.0'}
+            headers={'User-Agent': 'Huginn-Scanner/1.0'}
         )
         return self
         

@@ -1,16 +1,16 @@
-# tools/credential_manager.py
+﻿# tools/credential_manager.py
 """
 Standalone credential manager for tools/ scripts.
 
 Storage
 -------
-Credentials are stored in ``~/.huggin/credentials.enc`` as a
+Credentials are stored in ``~/.huginn/credentials.enc`` as a
 Fernet-encrypted JSON blob.  The Fernet key is stored in
-``~/.huggin/.key`` (owner-read-only).
+``~/.huginn/.key`` (owner-read-only).
 
 Migration
 ---------
-If a legacy ``~/.huggin/credentials.json`` (plaintext) is found on first
+If a legacy ``~/.huginn/credentials.json`` (plaintext) is found on first
 load it is automatically encrypted and the plaintext file is deleted.
 """
 
@@ -24,7 +24,7 @@ import logging
 
 class CredentialManager:
     def __init__(self, config_dir=None):
-        self.config_dir = Path(config_dir) if config_dir else Path.home() / '.huggin'
+        self.config_dir = Path(config_dir) if config_dir else Path.home() / '.huginn'
         self.config_dir.mkdir(exist_ok=True)
         self.enc_file = self.config_dir / 'credentials.enc'
         self.key_file = self.config_dir / '.key'

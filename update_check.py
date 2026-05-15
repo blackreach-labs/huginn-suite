@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-"""Standalone update checker for Huggin"""
+﻿#!/usr/bin/env python3
+"""Standalone update checker for Huginn"""
 
 from app.core.auto_updater import SecureUpdater
 from app.ui.update_dialog import UpdateDialog

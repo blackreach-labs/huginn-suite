@@ -162,13 +162,17 @@ class InventoryPage(QWidget):
         self.status_filter = QComboBox()
         self.status_filter.addItems(["All", "DISCOVERED", "IDENTIFIED", "KNOWN"])
         self.status_filter.currentTextChanged.connect(self.apply_filters)
-        self.status_filter.setFixedWidth(120)
+        self.status_filter.setSizeAdjustPolicy(
+            QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
+        self.status_filter.setMinimumContentsLength(12)
         layout.addWidget(self.status_filter)
 
         self.os_filter = QComboBox()
         self.os_filter.addItem("All OS")
         self.os_filter.currentTextChanged.connect(self.apply_filters)
-        self.os_filter.setFixedWidth(120)
+        self.os_filter.setSizeAdjustPolicy(
+            QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
+        self.os_filter.setMinimumContentsLength(16)
         layout.addWidget(self.os_filter)
 
         layout.addStretch()
@@ -349,6 +353,9 @@ class InventoryPage(QWidget):
         idx = self.os_filter.findText(sel)
         if idx >= 0:
             self.os_filter.setCurrentIndex(idx)
+        # Resize to fit the longest item
+        max_len = max((len(t) for t in os_types), default=0)
+        self.os_filter.setMinimumContentsLength(max(16, max_len))
 
     # ------------------------------------------------------------------ #
     #  Table population                                                    #

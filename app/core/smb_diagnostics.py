@@ -1,4 +1,4 @@
-# app/core/smb_diagnostics.py
+﻿# app/core/smb_diagnostics.py
 import socket
 import struct
 import time
@@ -160,8 +160,8 @@ class SMBDiagnostics:
         
         # Different NetBIOS session methods to try
         methods = [
-            ('Standard', '*SMBSERVER', 'HUGGIN'),
-            ('Target Name', self.target.upper(), 'HUGGIN'),
+            ('Standard', '*SMBSERVER', 'HUGINN'),
+            ('Target Name', self.target.upper(), 'HUGINN'),
             ('Generic', 'WINDOWS', 'CLIENT'),
             ('Minimal', '*', 'H')
         ]

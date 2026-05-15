@@ -1,4 +1,4 @@
-# Unified HTTP Request Handling System
+﻿# Unified HTTP Request Handling System
 
 ## Overview
 
@@ -161,7 +161,7 @@ response = handler.send_request(http_request)
 ```python
 # Configure default headers
 handler.http_client.session.headers.update({
-    'User-Agent': 'Huggin Security Scanner/1.0',
+    'User-Agent': 'Huginn Security Scanner/1.0',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
 })
 

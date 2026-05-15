@@ -1,4 +1,4 @@
-"""System tray management for main window."""
+﻿"""System tray management for main window."""
 from PyQt6.QtWidgets import QSystemTrayIcon, QMessageBox
 from app.core.system_tray import SystemTrayManager
 
@@ -33,7 +33,7 @@ class MainWindowTrayManager:
         if self.tray_manager and self.tray_manager.is_available():
             self.main_window.hide()
             self.tray_manager.show_message(
-                "Huggin", 
+                "Huginn", 
                 "Application minimized to tray. Double-click to restore.",
                 QSystemTrayIcon.MessageIcon.Information
             )
@@ -57,7 +57,7 @@ class MainWindowTrayManager:
         if self.tray_manager and self.tray_manager.is_available():
             # Ask user if they want to minimize to tray instead of closing
             reply = QMessageBox.question(
-                self.main_window, 'Huggin', 
+                self.main_window, 'Huginn', 
                 "Close to system tray instead of exiting?\\n\\n"
                 "Click 'Yes' to minimize to tray\\n"
                 "Click 'No' to exit completely",
@@ -68,7 +68,7 @@ class MainWindowTrayManager:
             if reply == QMessageBox.StandardButton.Yes:
                 self.main_window.hide()
                 self.tray_manager.show_message(
-                    "Huggin", 
+                    "Huginn", 
                     "Application closed to tray. Right-click tray icon to quit.",
                     QSystemTrayIcon.MessageIcon.Information
                 )

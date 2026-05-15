@@ -1,4 +1,4 @@
-# app/pages/recon_enumeration/service_ui_components.py
+﻿# app/pages/recon_enumeration/service_ui_components.py
 import os
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, 
                              QStackedWidget, QTextEdit, QTableWidget, QTreeWidget, 
@@ -238,7 +238,7 @@ class ServiceUIComponentsMixin:
             # Create terminals for each scan type
             terminals = {}
             tables = {}
-            scan_types = ["Fingerprinting", "Directory Enum", "Source Code", "Crawler", "Enterprise Scripts", "Huggin Scan", "Full Scan"]
+            scan_types = ["Fingerprinting", "Directory Enum", "Source Code", "Crawler", "Enterprise Scripts", "Huginn Scan", "Full Scan"]
             
             for scan_type in scan_types:
                 # Text view (terminal) for this scan type

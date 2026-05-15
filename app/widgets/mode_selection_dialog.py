@@ -1,4 +1,4 @@
-# app/widgets/mode_selection_dialog.py
+﻿# app/widgets/mode_selection_dialog.py
 from PyQt6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QPushButton, 
                              QLabel, QFrame, QApplication)
 from PyQt6.QtCore import Qt, pyqtSignal
@@ -11,7 +11,7 @@ class ModeSelectionDialog(QDialog):
     
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Huggin - Select Mode")
+        self.setWindowTitle("Huginn - Select Mode")
         self.setModal(True)
         self.setFixedSize(1000, 500)
         self.setup_ui()
@@ -23,7 +23,7 @@ class ModeSelectionDialog(QDialog):
         layout.setSpacing(20)
         
         # Title
-        title = QLabel("Welcome to Huggin")
+        title = QLabel("Welcome to Huginn")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title.setStyleSheet("""
             font-size: 24pt;

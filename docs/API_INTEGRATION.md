@@ -1,8 +1,8 @@
-# API Integration Guide
+﻿# API Integration Guide
 
 ## Overview
 
-Huggin's API integration system enables connectivity with external services for enhanced intelligence gathering and data enrichment.
+Huginn's API integration system enables connectivity with external services for enhanced intelligence gathering and data enrichment.
 
 ## Supported APIs
 

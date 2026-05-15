@@ -1,4 +1,4 @@
-# app/core/connection_pool.py
+﻿# app/core/connection_pool.py
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
@@ -81,7 +81,7 @@ class ConnectionPool:
                 session.mount("http://", adapter)
                 session.mount("https://", adapter)
                 session.headers.update({
-                    'User-Agent': 'Huggin/2.0 (Security Scanner)',
+                    'User-Agent': 'Huginn/2.0 (Security Scanner)',
                     'Accept': '*/*',
                     'Connection': 'keep-alive',
                 })

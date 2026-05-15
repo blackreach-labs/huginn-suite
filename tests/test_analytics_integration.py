@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
-Test script to verify Advanced Analytics integration in Huggin UI
+Test script to verify Advanced Analytics integration in Huginn UI
 
 This script tests that the advanced analytics components are properly
 integrated into the main application UI.
@@ -97,7 +97,7 @@ def test_demo_files():
 
 def main():
     """Run all integration tests"""
-    print("Testing Huggin Advanced Analytics Integration")
+    print("Testing Huginn Advanced Analytics Integration")
     print("=" * 50)
     
     tests = [
@@ -123,7 +123,7 @@ def main():
     if passed == total:
         print("All integration tests passed!")
         print("\nAdvanced Analytics is ready to use:")
-        print("   1. Launch Huggin application")
+        print("   1. Launch Huginn application")
         print("   2. Go to Attack Chain Home")
         print("   3. Click the 'Analytics' tab")
         print("   4. Or use View -> Professional Features -> Advanced Analytics")

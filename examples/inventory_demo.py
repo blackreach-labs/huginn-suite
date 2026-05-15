@@ -1,4 +1,4 @@
-# examples/inventory_demo.py
+﻿# examples/inventory_demo.py
 """
 Demonstration of the Asset Inventory system
 """
@@ -181,4 +181,4 @@ if __name__ == "__main__":
     
     print("\n" + "=" * 40)
     print("Demo completed! The inventory now contains discovered assets.")
-    print("You can view them in the Huggin application under View -> Inventory")
+    print("You can view them in the Huginn application under View -> Inventory")

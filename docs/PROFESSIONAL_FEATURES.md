@@ -1,6 +1,6 @@
-# 🚀 Huggin Professional Features
+﻿# 🚀 Huginn Professional Features
 
-This document outlines the professional features available in Huggin's paid tiers, designed for advanced penetration testing and red team operations.
+This document outlines the professional features available in Huginn's paid tiers, designed for advanced penetration testing and red team operations.
 
 ## 🎯 Feature Overview
 
@@ -250,7 +250,7 @@ This document outlines the professional features available in Huggin's paid tier
 ## 🚀 Getting Started
 
 ### Upgrading to Professional
-1. **Purchase License**: Visit https://huggin.com/upgrade
+1. **Purchase License**: Visit https://huginn.com/upgrade
 2. **Receive License Key**: Check email for activation key
 3. **Activate Features**: Use License Manager in application
 4. **Verify Activation**: Confirm professional features are enabled
@@ -271,9 +271,9 @@ This document outlines the professional features available in Huggin's paid tier
 
 ## 📞 Contact Information
 
-- **Sales**: sales@huggin.com
-- **Support**: support@huggin.com
-- **Website**: https://huggin.com
-- **Documentation**: https://docs.huggin.com
+- **Sales**: sales@huginn.com
+- **Support**: support@huginn.com
+- **Website**: https://huginn.com
+- **Documentation**: https://docs.huginn.com
 
-Transform your penetration testing capabilities with Huggin Professional - where advanced security testing meets professional-grade tooling.
+Transform your penetration testing capabilities with Huginn Professional - where advanced security testing meets professional-grade tooling.

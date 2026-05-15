@@ -1,74 +1,13 @@
-2026-05-14 22:41:05 - huggin - ERROR - Unhandled exception:
+2026-05-15 01:20:02 - huginn - ERROR - Failed to read profile file 'C:\Users\allie\Coding Projects\huggin_suite\huginn\profiles\LAB.json': Expecting value: line 1 column 1 (char 0)
 Traceback (most recent call last):
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\main_window\components\menu_manager.py", line 98, in <lambda>
-    self._add_action(view_menu, '&Inventory', 'Ctrl+Shift+I', 'View and manage discovered assets', lambda: self.main_window.navigate_to('inventory'))
-                                                                                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\main_window\main_window_refactored.py", line 393, in navigate_to
-    page = self.page_manager.get_page(page_name)
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\lazy_initialization.py", line 22, in get_page
-    self.initialized_pages[name] = self.page_factories[name]()
-                                   ~~~~~~~~~~~~~~~~~~~~~~~~~^^
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\main_window\main_window_refactored.py", line 179, in <lambda>
-    self.page_manager.register_page('inventory', lambda: self._create_inventory())
-                                                         ~~~~~~~~~~~~~~~~~~~~~~^^
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\main_window\main_window_refactored.py", line 229, in _create_inventory
-    page = InventoryPage(self)
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\inventory_page.py", line 25, in __init__
-    self._setup_ui()
-    ~~~~~~~~~~~~~~^^
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\inventory_page.py", line 79, in _setup_ui
-    self.asset_table = self._build_table()
-                       ~~~~~~~~~~~~~~~~~^^
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\inventory_page.py", line 224, in _build_table
-    table.setMinimumSectionSize(50)
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-AttributeError: 'QTableWidget' object has no attribute 'setMinimumSectionSize'
-
-2026-05-14 22:41:30 - huggin - ERROR - Unhandled exception:
-Traceback (most recent call last):
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\main_window\components\menu_manager.py", line 98, in <lambda>
-    self._add_action(view_menu, '&Inventory', 'Ctrl+Shift+I', 'View and manage discovered assets', lambda: self.main_window.navigate_to('inventory'))
-                                                                                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\main_window\main_window_refactored.py", line 393, in navigate_to
-    page = self.page_manager.get_page(page_name)
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\core\lazy_initialization.py", line 22, in get_page
-    self.initialized_pages[name] = self.page_factories[name]()
-                                   ~~~~~~~~~~~~~~~~~~~~~~~~~^^
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\main_window\main_window_refactored.py", line 179, in <lambda>
-    self.page_manager.register_page('inventory', lambda: self._create_inventory())
-                                                         ~~~~~~~~~~~~~~~~~~~~~~^^
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\main_window\main_window_refactored.py", line 229, in _create_inventory
-    page = InventoryPage(self)
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\inventory_page.py", line 25, in __init__
-    self._setup_ui()
-    ~~~~~~~~~~~~~~^^
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\inventory_page.py", line 79, in _setup_ui
-    self.asset_table = self._build_table()
-                       ~~~~~~~~~~~~~~~~~^^
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\inventory_page.py", line 224, in _build_table
-    table.setMinimumSectionSize(50)
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-AttributeError: 'QTableWidget' object has no attribute 'setMinimumSectionSize'
-
-2026-05-14 22:46:51 - huggin - ERROR - Unhandled exception:
-Traceback (most recent call last):
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\attack_chain_home.py", line 778, in on_profile_selected
-    self.refresh_credential_display()
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\attack_chain_home.py", line 1452, in refresh_credential_display
-    self.cred_table.setRowCount(len(credential_manager.credentials))
-    ^^^^^^^^^^^^^^^
-AttributeError: 'AttackChainHomePage' object has no attribute 'cred_table'. Did you mean: 'target_table'?
-
-2026-05-14 22:48:05 - huggin - ERROR - Unhandled exception:
-Traceback (most recent call last):
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\attack_chain_home.py", line 778, in on_profile_selected
-    self.refresh_credential_display()
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
-  File "C:\Users\allie\Coding Projects\huggin_suite\huggin\app\pages\attack_chain_home.py", line 1452, in refresh_credential_display
-    self.cred_table.setRowCount(len(credential_manager.credentials))
-    ^^^^^^^^^^^^^^^
-AttributeError: 'AttackChainHomePage' object has no attribute 'cred_table'. Did you mean: 'target_table'?
-
-2026-05-14 23:25:39 - huggin - ERROR - Failed to load SecureCredentialWidget: name 'QHeaderView' is not defined
-2026-05-14 23:32:11 - huggin - ERROR - Failed to load SecureCredentialWidget: name 'QHeaderView' is not defined
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\attack_chain_home.py", line 949, in load_profile
+    profile_data = json.loads(content)
+  File "C:\Users\allie\anaconda3\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "C:\Users\allie\anaconda3\Lib\json\decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\json\decoder.py", line 363, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)

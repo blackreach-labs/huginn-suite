@@ -1,4 +1,4 @@
-# examples/phase3_ui_refactoring_demo.py
+﻿# examples/phase3_ui_refactoring_demo.py
 """
 Phase 3 UI Refactoring Demonstration
 
@@ -35,7 +35,7 @@ class Phase3Demo(QMainWindow):
     
     def setup_ui(self):
         """Setup the demo UI."""
-        self.setWindowTitle("Phase 3 UI Refactoring Demo - Huggin Framework")
+        self.setWindowTitle("Phase 3 UI Refactoring Demo - Huginn Framework")
         self.setGeometry(100, 100, 1200, 800)
         
         # Apply dark theme

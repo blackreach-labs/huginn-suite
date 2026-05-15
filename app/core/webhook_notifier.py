@@ -1,4 +1,4 @@
-import json
+﻿import json
 import time
 from typing import Dict, Any, Optional, List
 from urllib.parse import urlparse
@@ -35,7 +35,7 @@ class WebhookNotifier:
             "data": {
                 "target": target,
                 "profile": profile,
-                "message": f"🚀 Huggin scan started for {target} with {profile} profile"
+                "message": f"🚀 Huginn scan started for {target} with {profile} profile"
             }
         }
         await self._send_notification(payload)
@@ -104,7 +104,7 @@ class WebhookNotifier:
         return {
             "attachments": [{
                 "color": color_map.get(notification["event"], "#cccccc"),
-                "title": f"Huggin Scanner - {notification['event'].replace('_', ' ').title()}",
+                "title": f"Huginn Scanner - {notification['event'].replace('_', ' ').title()}",
                 "text": notification["data"]["message"],
                 "timestamp": int(notification["timestamp"]),
                 "fields": [

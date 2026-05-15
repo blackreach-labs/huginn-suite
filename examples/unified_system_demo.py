@@ -1,4 +1,4 @@
-# examples/unified_system_demo.py
+﻿# examples/unified_system_demo.py
 """
 Demonstration of the unified HTTP request handling system.
 This shows how all components work together seamlessly.
@@ -29,7 +29,7 @@ def demo_unified_system():
     request = HttpRequest(
         method="GET",
         url="https://httpbin.org/get",
-        headers={"User-Agent": "Huggin-Demo/1.0"}
+        headers={"User-Agent": "Huginn-Demo/1.0"}
     )
     
     response = handler.send_request(request)

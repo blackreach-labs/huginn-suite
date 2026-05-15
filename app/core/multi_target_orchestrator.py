@@ -1,4 +1,4 @@
-import asyncio
+﻿import asyncio
 import time
 from typing import Dict, List
 from concurrent.futures import ThreadPoolExecutor
@@ -69,9 +69,9 @@ class MultiTargetOrchestrator:
     async def _scan_target_with_semaphore(self, semaphore: asyncio.Semaphore, target: str, profile: str):
         """Scan individual target with semaphore control"""
         async with semaphore:
-            from ..tools.huggin_vuln_scanner import HugginVulnScanner
+            from ..tools.huginn_vuln_scanner import HuginnVulnScanner
             
-            scanner = HugginVulnScanner(target, profile=profile)
+            scanner = HuginnVulnScanner(target, profile=profile)
             return await scanner.scan()
     
     def get_campaign_status(self, campaign_name: str) -> Dict:

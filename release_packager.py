@@ -1,4 +1,4 @@
-import os
+﻿import os
 import json
 import hashlib
 import zipfile
@@ -18,7 +18,7 @@ class ReleasePackager:
         print(f"Creating release {self.version}...")
         
         # Create zip file
-        zip_filename = f"huggin_{self.version}.zip"
+        zip_filename = f"huginn_{self.version}.zip"
         zip_path = self.app_root / zip_filename
         
         self._create_zip(zip_path)
@@ -145,9 +145,9 @@ def main():
     
     print("\nNext steps:")
     print("1. Upload files to S3:")
-    print(f"   aws s3 cp huggin_{version}.zip s3://arn:aws:s3:ap-southeast-2:917026075470:accesspoint/huggin-secure-updater/releases/")
-    print("   aws s3 cp manifest.json s3://arn:aws:s3:ap-southeast-2:917026075470:accesspoint/huggin-secure-updater/manifest/")
-    print("   aws s3 cp public.key s3://arn:aws:s3:ap-southeast-2:917026075470:accesspoint/huggin-secure-updater/")
+    print(f"   aws s3 cp huginn_{version}.zip s3://arn:aws:s3:ap-southeast-2:917026075470:accesspoint/huginn-secure-updater/releases/")
+    print("   aws s3 cp manifest.json s3://arn:aws:s3:ap-southeast-2:917026075470:accesspoint/huginn-secure-updater/manifest/")
+    print("   aws s3 cp public.key s3://arn:aws:s3:ap-southeast-2:917026075470:accesspoint/huginn-secure-updater/")
 
 if __name__ == "__main__":
     main()

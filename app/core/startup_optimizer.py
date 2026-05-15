@@ -1,4 +1,4 @@
-# app/core/startup_optimizer.py
+﻿# app/core/startup_optimizer.py
 import os
 from PyQt6.QtCore import QSettings
 
@@ -6,7 +6,7 @@ class StartupOptimizer:
     """Optimizes application startup based on user preferences"""
     
     def __init__(self):
-        self.settings = QSettings('Huggin', 'StartupPrefs')
+        self.settings = QSettings('Huginn', 'StartupPrefs')
         
     def get_preferred_mode(self) -> str:
         """Get user's preferred mode to skip dialog"""

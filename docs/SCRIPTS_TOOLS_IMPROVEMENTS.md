@@ -1,4 +1,4 @@
-# Scripts & Tools Page - Professional Enhancement
+﻿# Scripts & Tools Page - Professional Enhancement
 
 ## Overview
 The Scripts & Tools page has been upgraded with professional-grade penetration testing capabilities, transforming it from basic shell generation to a comprehensive exploitation toolkit.
@@ -140,7 +140,7 @@ Improved shell generation with advanced features:
 3. **Response Planning**: Develop incident response procedures
 4. **Security Hardening**: Implement preventive controls
 
-## Integration with Huggin Ecosystem
+## Integration with Huginn Ecosystem
 
 ### Tool Correlation
 - **Vulnerability Scanner**: Identifies targets for exploitation
@@ -171,4 +171,4 @@ Improved shell generation with advanced features:
 
 ## Conclusion
 
-The enhanced Scripts & Tools page transforms Huggin into a professional-grade penetration testing platform, providing comprehensive exploitation capabilities while maintaining educational value and ethical usage guidelines.
+The enhanced Scripts & Tools page transforms Huginn into a professional-grade penetration testing platform, providing comprehensive exploitation capabilities while maintaining educational value and ethical usage guidelines.

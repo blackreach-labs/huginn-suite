@@ -1,4 +1,4 @@
-# app/core/mssql_client.py
+﻿# app/core/mssql_client.py
 import socket
 import ssl
 import struct
@@ -272,7 +272,7 @@ class MSSQLClient:
             offset += len(password_scrambled)
             
             # App name
-            app_name = "Huggin MSSQL Client"
+            app_name = "Huginn MSSQL Client"
             app_name_utf16 = app_name.encode('utf-16le')
             login_data.extend(struct.pack('<H', offset))
             login_data.extend(struct.pack('<H', len(app_name)))
@@ -289,7 +289,7 @@ class MSSQLClient:
             login_data.extend(struct.pack('<H', 0))
             
             # Library name
-            lib_name = "Huggin"
+            lib_name = "Huginn"
             lib_name_utf16 = lib_name.encode('utf-16le')
             login_data.extend(struct.pack('<H', offset))
             login_data.extend(struct.pack('<H', len(lib_name)))

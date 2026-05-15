@@ -1,4 +1,4 @@
-# app/core/notification_manager.py
+﻿# app/core/notification_manager.py
 import os
 import sys
 from typing import Dict, List, Callable
@@ -49,7 +49,7 @@ class NotificationManager(QObject):
         # Create context menu
         tray_menu = QMenu()
         
-        show_action = tray_menu.addAction("Show Huggin")
+        show_action = tray_menu.addAction("Show Huginn")
         show_action.triggered.connect(self._show_main_window)
         
         tray_menu.addSeparator()
@@ -66,7 +66,7 @@ class NotificationManager(QObject):
         quit_action.triggered.connect(QApplication.quit)
         
         self.tray_icon.setContextMenu(tray_menu)
-        self.tray_icon.setToolTip("Huggin - Security Assessment Tool")
+        self.tray_icon.setToolTip("Huginn - Security Assessment Tool")
         
         # Connect signals
         self.tray_icon.activated.connect(self._tray_icon_activated)
@@ -190,7 +190,7 @@ class NotificationManager(QObject):
         # Try different icon locations
         possible_paths = [
             "resources/icons/app_icon.png",
-            "resources/icons/huggin.png",
+            "resources/icons/huginn.png",
             "app_icon.png"
         ]
         

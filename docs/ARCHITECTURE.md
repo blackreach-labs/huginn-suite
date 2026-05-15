@@ -1,12 +1,12 @@
-# Huggin Architecture
+﻿# Huginn Architecture
 
 ## Overview
-Huggin follows a modular architecture with clear separation of concerns.
+Huginn follows a modular architecture with clear separation of concerns.
 
 ## Core Architecture
 
 ```
-huggin/
+huginn/
 ├── app/                    # Main application
 │   ├── core/              # Core functionality
 │   ├── pages/             # UI pages

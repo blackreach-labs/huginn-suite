@@ -1,11 +1,11 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Neural Network and Quantum Fuzzing Demo
 Demonstrates Phase 8 advanced AI capabilities
 """
 
 import asyncio
-from app.tools.huggin_vuln_scanner import HugginVulnScanner
+from app.tools.huginn_vuln_scanner import HuginnVulnScanner
 from app.core.neural_vulnerability_engine import NeuralVulnerabilityEngine
 from app.core.quantum_fuzzer import QuantumFuzzer
 from app.core.autonomous_agent import AutonomousSecurityAgent, AgentState
@@ -155,7 +155,7 @@ async def integrated_neural_quantum_scan():
     print("\n=== INTEGRATED NEURAL-QUANTUM SCAN ===")
     
     # Use maximum profile for all advanced features
-    scanner = HugginVulnScanner('https://demo.testfire.net', profile='insane')
+    scanner = HuginnVulnScanner('https://demo.testfire.net', profile='insane')
     results = await scanner.scan()
     
     print(f"Advanced scan completed with {len(results['vulnerabilities'])} total findings")

@@ -1,6 +1,6 @@
-# Huggin: Advanced Security Assessment and Reconnaissance Framework
+﻿# Huginn: Advanced Security Assessment and Reconnaissance Framework
 
-Huggin is a comprehensive security assessment and reconnaissance framework that provides automated scanning, vulnerability detection, and intelligence gathering capabilities. It combines multiple security tools and techniques into a unified, user-friendly interface with advanced result filtering, memory management, and distributed scanning capabilities.
+Huginn is a comprehensive security assessment and reconnaissance framework that provides automated scanning, vulnerability detection, and intelligence gathering capabilities. It combines multiple security tools and techniques into a unified, user-friendly interface with advanced result filtering, memory management, and distributed scanning capabilities.
 
 ## 🔒 Security
 
@@ -28,9 +28,9 @@ directly. See [`docs/SECURITY.md`](docs/SECURITY.md) for the full policy.
 
 ---
 
-## 🚀 Huggin Advanced Security Scanner
+## 🚀 Huginn Advanced Security Scanner
 
-The flagship component of the Huggin framework is the **Huggin Advanced Security Scanner** - a revolutionary AI-powered vulnerability assessment tool that combines traditional security testing with cutting-edge artificial intelligence and quantum-inspired algorithms.
+The flagship component of the Huginn framework is the **Huginn Advanced Security Scanner** - a revolutionary AI-powered vulnerability assessment tool that combines traditional security testing with cutting-edge artificial intelligence and quantum-inspired algorithms.
 
 ### Key Features:
 - **🧠 Neural Network Vulnerability Analysis** - Deep learning-based pattern recognition
@@ -50,11 +50,11 @@ The flagship component of the Huggin framework is the **Huggin Advanced Security
 - **Insane**: All AI features enabled (200 concurrent, 20s timeout)
 
 ### Integration:
-The Huggin Scanner is seamlessly integrated into the main application under **Reconnaissance & Enumeration → Service Enumeration → HTTP Service Enumeration**. It operates within the same application window, providing a cohesive user experience with advanced reporting capabilities.
+The Huginn Scanner is seamlessly integrated into the main application under **Reconnaissance & Enumeration → Service Enumeration → HTTP Service Enumeration**. It operates within the same application window, providing a cohesive user experience with advanced reporting capabilities.
 
 ## 🗄️ Centralized Data Collection System
 
-Huggin now features a revolutionary **Centralized Data Collection System** that transforms how scan results are captured, stored, and analyzed:
+Huginn now features a revolutionary **Centralized Data Collection System** that transforms how scan results are captured, stored, and analyzed:
 
 ### Key Features:
 - **🏢 Tenant Isolation** - Multi-tenant data separation for enterprise deployments
@@ -108,7 +108,7 @@ app/
 │   ├── av_worker.py                      # AV/Firewall detection worker implementation
 │   ├── port_scanner.py                   # Port scanning with OS/service detection
 │   ├── dns_scanner.py                    # DNS enumeration and subdomain discovery
-│   └── huggin_vuln_scanner.py            # Advanced vulnerability scanner
+│   └── huginn_vuln_scanner.py            # Advanced vulnerability scanner
 ├── pages/
 │   ├── recon_enumeration_page.py         # Main reconnaissance page (modular)
 │   └── recon_enumeration/
@@ -659,11 +659,11 @@ request = HttpRequest(
 - **⚡ Concurrent Execution** - Multi-threaded scanning with rate limiting
 - **📋 Comprehensive Reporting** - Detailed results with evidence collection
 
-## 🔧 Huggin Scanner Usage
+## 🔧 Huginn Scanner Usage
 
 ### Quick Start
 1. Navigate to **Reconnaissance & Enumeration** → **Service Enumeration**
-2. Click the **🚀 Huggin Advanced Scanner** button
+2. Click the **🚀 Huginn Advanced Scanner** button
 3. Enter target URL and select scan profile
 4. Configure advanced options (headers, webhooks, AI features)
 5. Click **Start Scan** and monitor progress
@@ -672,22 +672,22 @@ request = HttpRequest(
 ### Command Line Usage
 ```bash
 # Basic scan
-python -m app.tools.huggin_vuln_scanner --target https://example.com
+python -m app.tools.huginn_vuln_scanner --target https://example.com
 
 # Advanced scan with specific profile
-python -m app.tools.huggin_vuln_scanner --target https://example.com --profile aggressive --format html --output report.html
+python -m app.tools.huginn_vuln_scanner --target https://example.com --profile aggressive --format html --output report.html
 
 # With webhook notifications
-python -m app.tools.huggin_vuln_scanner --target https://example.com --webhook https://hooks.slack.com/services/...
+python -m app.tools.huginn_vuln_scanner --target https://example.com --webhook https://hooks.slack.com/services/...
 ```
 
 ### Python API Usage
 ```python
 import asyncio
-from app.tools.huggin_vuln_scanner import HugginVulnScanner
+from app.tools.huginn_vuln_scanner import HuginnVulnScanner
 
 async def advanced_scan():
-    scanner = HugginVulnScanner('https://example.com', profile='insane')
+    scanner = HuginnVulnScanner('https://example.com', profile='insane')
     
     # Configure authentication
     scanner.config_manager.set_auth('login', username='admin', password='password')
@@ -728,7 +728,7 @@ summary = orchestrator.generate_campaign_summary('Q4_Security_Assessment')
 # GitHub Actions Example
 - name: Security Scan
   run: |
-    python -m app.tools.huggin_vuln_scanner \
+    python -m app.tools.huginn_vuln_scanner \
       --target ${{ env.STAGING_URL }} \
       --profile normal \
       --format json \
@@ -751,7 +751,7 @@ summary = orchestrator.generate_campaign_summary('Q4_Security_Assessment')
 
 ## 🏗️ Architecture Overview
 
-The Huggin Scanner employs an 8-phase evolution architecture:
+The Huginn Scanner employs an 8-phase evolution architecture:
 
 1. **Phase 1**: Configuration & Profile Management
 2. **Phase 2**: State Management & CSRF Handling

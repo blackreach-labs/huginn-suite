@@ -1,4 +1,4 @@
-# app/core/credential_migration.py
+﻿# app/core/credential_migration.py
 import os
 import json
 from typing import Dict, List, Tuple
@@ -116,7 +116,7 @@ class CredentialMigration:
         """Create backup of old credentials before migration"""
         try:
             if not backup_path:
-                backup_dir = Path.home() / ".huggin" / "backups"
+                backup_dir = Path.home() / ".huginn" / "backups"
                 backup_dir.mkdir(parents=True, exist_ok=True)
                 backup_path = backup_dir / f"credentials_backup_{int(time.time())}.json"
             

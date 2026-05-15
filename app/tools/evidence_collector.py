@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Post-Exploitation Evidence & Forensics Collector
 Standardized POC capture modules with encryption and chain-of-custody
@@ -49,7 +49,7 @@ class EvidenceCollector:
         
         # Collector information
         self.collector_info = {
-            'tool': 'Huggin Evidence Collector',
+            'tool': 'Huginn Evidence Collector',
             'version': '1.0',
             'operator': os.getenv('USERNAME', 'unknown'),
             'hostname': os.getenv('COMPUTERNAME', 'unknown')

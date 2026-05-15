@@ -1,4 +1,4 @@
-# Native RPC Scanner Architecture
+﻿# Native RPC Scanner Architecture
 
 ## Overview
 
@@ -172,9 +172,9 @@ print(f"Services: {len(results['services'])}")
 print(f"Registry keys: {len(results['registry'])}")
 ```
 
-## Integration with Huggin Framework
+## Integration with Huginn Framework
 
-The RPC scanner integrates seamlessly with the existing Huggin framework:
+The RPC scanner integrates seamlessly with the existing Huginn framework:
 
 1. **Worker Integration**: Uses PyQt6 signals for progress updates
 2. **Result Storage**: Compatible with existing result structures

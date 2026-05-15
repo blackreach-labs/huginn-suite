@@ -1,4 +1,4 @@
-# app/pages/recon_enumeration/port_scanning.py
+﻿# app/pages/recon_enumeration/port_scanning.py
 import os
 from PyQt6.QtWidgets import (QHBoxLayout, QLabel, QLineEdit, QComboBox, QPushButton, 
                              QSpacerItem, QSizePolicy, QToolButton, QTableWidget)
@@ -29,7 +29,7 @@ class PortScanningMixin:
         scan_type_label = QLabel("Type:")
         row2_layout.addWidget(scan_type_label)
         self.port_scan_type = QComboBox()
-        self.port_scan_type.addItems(["Ping Sweep", "Huggin Sweep", "Layer2 Sweep", "TCP Scan", "UDP Scan"])
+        self.port_scan_type.addItems(["Ping Sweep", "Huginn Sweep", "Layer2 Sweep", "TCP Scan", "UDP Scan"])
         self.port_scan_type.currentTextChanged.connect(self.on_port_scan_type_changed)
         row2_layout.addWidget(self.port_scan_type)
         
@@ -139,7 +139,7 @@ class PortScanningMixin:
     
     def on_port_scan_type_changed(self, scan_type):
         """Handle port scan type change"""
-        # Hide port row for Ping Sweep, Huggin Sweep, and Layer2 Sweep
+        # Hide port row for Ping Sweep, Huginn Sweep, and Layer2 Sweep
         show_ports = (scan_type in ["TCP Scan", "UDP Scan"])
         if hasattr(self, 'port_label'):
             self.port_label.setVisible(show_ports)
@@ -229,8 +229,8 @@ class PortScanningMixin:
                     progress_start_callback=self.start_port_progress,
                     tenant_id=tenant_id
                 )
-            elif scan_type == "Huggin Sweep":
-                self.current_worker = port_utils.huggin_sweep(
+            elif scan_type == "Huginn Sweep":
+                self.current_worker = port_utils.huginn_sweep(
                     target,
                     self.append_port_output,
                     self.status_updated.emit,
@@ -320,10 +320,10 @@ class PortScanningMixin:
                 'scan_type': 'ping_sweep',
                 'target': target
             }
-        elif scan_type == "Huggin Sweep":
+        elif scan_type == "Huginn Sweep":
             results = {
                 'alive_hosts': [target],
-                'scan_type': 'huggin_sweep',
+                'scan_type': 'huginn_sweep',
                 'target': target
             }
         elif scan_type == "Layer2 Sweep":
@@ -455,7 +455,7 @@ class PortScanningMixin:
             if scan_type == "Ping Sweep":
                 current_table.setColumnCount(2)
                 current_table.setHorizontalHeaderLabels(["IP Address", "Status"])
-            elif scan_type == "Huggin Sweep":
+            elif scan_type == "Huginn Sweep":
                 current_table.setColumnCount(3)
                 current_table.setHorizontalHeaderLabels(["IP Address", "Open Ports", "Services"])
             elif scan_type == "Layer2 Sweep":
@@ -499,11 +499,11 @@ class PortScanningMixin:
                 table.setItem(row, 0, QTableWidgetItem(host))
                 table.setItem(row, 1, QTableWidgetItem("Up"))
         
-        # Handle huggin sweep results
-        elif scan_type == 'Huggin Sweep':
+        # Handle huginn sweep results
+        elif scan_type == 'Huginn Sweep':
             table.setColumnCount(3)
             table.setHorizontalHeaderLabels(["IP Address", "Open Ports", "Services"])
-            # For now, show as alive hosts until proper huggin sweep is implemented
+            # For now, show as alive hosts until proper huginn sweep is implemented
             alive_hosts = results.get('alive_hosts', [])
             for host in alive_hosts:
                 row = table.rowCount()
@@ -631,7 +631,7 @@ class PortScanningMixin:
                 status_item = QTreeWidgetItem(host_item, ["Status", "Up"])
                 host_item.setExpanded(True)
         
-        elif scan_type == 'Huggin Sweep':
+        elif scan_type == 'Huginn Sweep':
             alive_hosts = results.get('alive_hosts', [])
             for host in alive_hosts:
                 host_item = QTreeWidgetItem(tree, [host, "Host Information"])

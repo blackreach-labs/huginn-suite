@@ -1,13 +1,13 @@
-# Hash Cracking Tool
+﻿# Hash Cracking Tool
 
-A comprehensive hash lookup and cracking tool integrated into the Huggin framework's POST-EXPLOITATION section.
+A comprehensive hash lookup and cracking tool integrated into the Huginn framework's POST-EXPLOITATION section.
 
 ## Architecture
 
 The hash cracking tool follows the 5-layer architecture:
 
 ```
-huggin/
+huginn/
 ├── application/services/hash_lookup_service.py    # Orchestrates lookups, updates
 ├── domain/
 │   ├── models/hash_record.py                      # Entity: hash, plaintext, source

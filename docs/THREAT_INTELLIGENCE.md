@@ -1,8 +1,8 @@
-# Threat Intelligence Guide
+﻿# Threat Intelligence Guide
 
 ## Overview
 
-Huggin's threat intelligence system provides IOC (Indicator of Compromise) checking against multiple threat feeds to identify malicious IPs and domains.
+Huginn's threat intelligence system provides IOC (Indicator of Compromise) checking against multiple threat feeds to identify malicious IPs and domains.
 
 ## Supported Threat Feeds
 

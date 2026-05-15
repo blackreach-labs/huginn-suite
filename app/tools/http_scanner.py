@@ -1,4 +1,4 @@
-# app/tools/http_scanner.py
+﻿# app/tools/http_scanner.py
 import requests
 import os
 import subprocess
@@ -194,9 +194,9 @@ class HTTPEnumWorker(QRunnable):
                 self._enterprise_scripts(results)
                 if results.get('enterprise_results'):
                     self._build_enterprise_tree(results)
-            elif self.scan_type == "Huggin Scan":
+            elif self.scan_type == "Huginn Scan":
                 self._nikto_scan(results)
-                if results.get('huggin_scan'):
+                if results.get('huginn_scan'):
                     self._build_nikto_tree(results)
             elif self.scan_type == "Full Scan":
                 self._full_scan(results)
@@ -1112,7 +1112,7 @@ class HTTPEnumWorker(QRunnable):
             
             # Create temporary file for source code
             temp_dir = tempfile.gettempdir()
-            source_file = os.path.join(temp_dir, f"huggin_source_{domain}.html")
+            source_file = os.path.join(temp_dir, f"huginn_source_{domain}.html")
             
             with open(source_file, 'w', encoding='utf-8') as f:
                 f.write(content)
@@ -1741,14 +1741,14 @@ class HTTPEnumWorker(QRunnable):
             logger.debug("Suppressed exception", exc_info=True)
     
     def _nikto_scan(self, results):
-        """Perform Huggin vulnerability scan"""
+        """Perform Huginn vulnerability scan"""
         try:
-            self.signals.output.emit("<p style='color: #FFD700;'>Starting Huggin vulnerability scan...</p><br>")
+            self.signals.output.emit("<p style='color: #FFD700;'>Starting Huginn vulnerability scan...</p><br>")
             
-            from app.tools.huggin_vuln_scanner import HugginVulnScanner
+            from app.tools.huginn_vuln_scanner import HuginnVulnScanner
             import asyncio
             
-            scanner = HugginVulnScanner(self.target)
+            scanner = HuginnVulnScanner(self.target)
             scan_results = asyncio.run(scanner.scan())
             
             # Display server info
@@ -1778,26 +1778,26 @@ class HTTPEnumWorker(QRunnable):
                 for info in info_items:
                     self.signals.output.emit(f"<p style='margin-left: 20px;'>{h(info)}</p><br>")
             
-            results['huggin_scan'] = scan_results
+            results['huginn_scan'] = scan_results
             
             # Collect vulnerability data
             if vulnerabilities:
                 self.data_collector.collect_vulnerabilities(self.target, vulnerabilities)
-                self.signals.output.emit(f"<p style='color: #00FF41;'>Huggin scan completed: {len(vulnerabilities)} vulnerabilities found</p><br>")
+                self.signals.output.emit(f"<p style='color: #00FF41;'>Huginn scan completed: {len(vulnerabilities)} vulnerabilities found</p><br>")
             else:
-                self.signals.output.emit("<p style='color: #00FF41;'>Huggin scan completed: No vulnerabilities found</p><br>")
+                self.signals.output.emit("<p style='color: #00FF41;'>Huginn scan completed: No vulnerabilities found</p><br>")
                 
         except Exception as e:
-            self.signals.output.emit(f"<p style='color: #FFAA00;'>Huggin scan failed: {h(str(e))}</p><br>")
+            self.signals.output.emit(f"<p style='color: #FFAA00;'>Huginn scan failed: {h(str(e))}</p><br>")
     
     def _build_nikto_tree(self, results):
-        """Build tree structure for Huggin scan results"""
+        """Build tree structure for Huginn scan results"""
         try:
-            if 'huggin_scan' in results:
-                scan_data = results['huggin_scan']
-                huggin_key = "Huggin Vulnerability Scan"
-                self.crawl_tree_data[huggin_key] = {
-                    'name': 'Huggin Vulnerability Scan',
+            if 'huginn_scan' in results:
+                scan_data = results['huginn_scan']
+                huginn_key = "Huginn Vulnerability Scan"
+                self.crawl_tree_data[huginn_key] = {
+                    'name': 'Huginn Vulnerability Scan',
                     'type': 'category',
                     'children': []
                 }
@@ -1805,7 +1805,7 @@ class HTTPEnumWorker(QRunnable):
                 # Add server info
                 server_info = scan_data.get('server_info', {})
                 if server_info.get('server'):
-                    self.crawl_tree_data[huggin_key]['children'].append({
+                    self.crawl_tree_data[huginn_key]['children'].append({
                         'field': 'Server:',
                         'value': server_info['server'],
                         'type': 'detail'
@@ -1813,7 +1813,7 @@ class HTTPEnumWorker(QRunnable):
                 
                 # Add vulnerabilities
                 for vuln in scan_data.get('vulnerabilities', []):
-                    self.crawl_tree_data[huggin_key]['children'].append({
+                    self.crawl_tree_data[huginn_key]['children'].append({
                         'field': f"{vuln.get('type', 'Unknown')}:",
                         'value': vuln.get('severity', 'Unknown'),
                         'type': 'vulnerability'

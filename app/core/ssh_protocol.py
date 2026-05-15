@@ -1,4 +1,4 @@
-# app/core/ssh_protocol.py
+﻿# app/core/ssh_protocol.py
 import socket
 import struct
 import hashlib
@@ -49,7 +49,7 @@ class SSHProtocol:
         except Exception:
             return None
     
-    def send_client_version(self, version: str = "SSH-2.0-HugginSSH_1.0") -> bool:
+    def send_client_version(self, version: str = "SSH-2.0-HuginnSSH_1.0") -> bool:
         """Send client version string"""
         try:
             if not self.sock:

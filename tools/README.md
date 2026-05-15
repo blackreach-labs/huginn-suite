@@ -1,4 +1,4 @@
-# Huggin Enumeration Tools
+﻿# Huginn Enumeration Tools
 
 Python-based enumeration and vulnerability scanning tools for penetration testing.
 

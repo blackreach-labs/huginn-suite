@@ -1,4 +1,4 @@
-stages:
+﻿stages:
   - deploy
   - destroy
 
@@ -16,9 +16,9 @@ deploy:
   script:
     - |
       if [ "$DEPLOYMENT_TYPE" = "proxy" ]; then
-        sam deploy --template-file proxy-template.yaml --stack-name huggin-proxy-stack --capabilities CAPABILITY_IAM --no-confirm-changeset --parameter-overrides InstanceCount=$PROXY_COUNT InstanceType=$PROXY_INSTANCE_TYPE
+        sam deploy --template-file proxy-template.yaml --stack-name huginn-proxy-stack --capabilities CAPABILITY_IAM --no-confirm-changeset --parameter-overrides InstanceCount=$PROXY_COUNT InstanceType=$PROXY_INSTANCE_TYPE
       elif [ "$DEPLOYMENT_TYPE" = "vpn" ]; then
-        sam deploy --template-file vpn-template.yaml --stack-name huggin-vpn-stack --capabilities CAPABILITY_IAM --no-confirm-changeset --parameter-overrides InstanceCount=$VPN_COUNT InstanceType=$VPN_INSTANCE_TYPE
+        sam deploy --template-file vpn-template.yaml --stack-name huginn-vpn-stack --capabilities CAPABILITY_IAM --no-confirm-changeset --parameter-overrides InstanceCount=$VPN_COUNT InstanceType=$VPN_INSTANCE_TYPE
       fi
   only:
     variables:
@@ -29,9 +29,9 @@ destroy:
   script:
     - |
       if [ "$DEPLOYMENT_TYPE" = "proxy" ]; then
-        aws cloudformation delete-stack --stack-name huggin-proxy-stack
+        aws cloudformation delete-stack --stack-name huginn-proxy-stack
       elif [ "$DEPLOYMENT_TYPE" = "vpn" ]; then
-        aws cloudformation delete-stack --stack-name huggin-vpn-stack
+        aws cloudformation delete-stack --stack-name huginn-vpn-stack
       fi
   when: manual
   only:

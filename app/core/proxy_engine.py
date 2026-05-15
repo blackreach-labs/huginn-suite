@@ -1,4 +1,4 @@
-# app/core/proxy_engine.py
+﻿# app/core/proxy_engine.py
 import asyncio
 from PyQt6.QtCore import QObject, pyqtSignal, QThread
 import json
@@ -45,7 +45,7 @@ class ProxyAddon:
         if self.intercept_enabled:
             flow_id = self.flow_counter
             self.flow_counter += 1
-            flow.metadata['huggin_id'] = flow_id
+            flow.metadata['huginn_id'] = flow_id
             
             # Actually pause the flow
             flow.intercept()

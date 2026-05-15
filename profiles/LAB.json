@@ -21,7 +21,7 @@
         "credential_type": "Username/Password"
       },
       {
-        "username": "huggin",
+        "username": "huginn",
         "password": "P@$$word!",
         "domain": "LAB",
         "service": "RDP",

@@ -1,4 +1,4 @@
-# app/tools/port_scanner.py
+﻿# app/tools/port_scanner.py
 import socket
 import threading
 import concurrent.futures
@@ -188,7 +188,7 @@ class NetworkSweepWorker(QRunnable):
                         asset_data = {
                             'ip_address': host,
                             'status': 'DISCOVERED',
-                            'confidence': 60 if scan_type == 'huggin_sweep' else 50,
+                            'confidence': 60 if scan_type == 'huginn_sweep' else 50,
                             'metadata': {
                                 'discovery_method': 'network_sweep',
                                 'scan_type': scan_type

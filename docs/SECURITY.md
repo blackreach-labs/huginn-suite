@@ -1,8 +1,8 @@
-# Security Policy
+﻿# Security Policy
 
 ## Reporting a Vulnerability
 
-If you discover a security issue in Huggin, please open a private issue or contact the
+If you discover a security issue in Huginn, please open a private issue or contact the
 maintainers directly. Do not disclose vulnerabilities publicly until a fix has been released.
 
 ---

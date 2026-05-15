@@ -1,4 +1,4 @@
-﻿python : 2026-05-10 19:47:32 - huggin - WARNING - Migrating plaintext credential file 
+﻿python : 2026-05-10 19:47:32 - huginn - WARNING - Migrating plaintext credential file 
 'default_credentials.json' to encrypted format. The plaintext file will be deleted.
 At line:1 char:1
 + python test_crash.py 2>&1 | Out-File -FilePath test_crash_out.txt -En ...

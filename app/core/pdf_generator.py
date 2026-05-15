@@ -1,4 +1,4 @@
-# app/core/pdf_generator.py
+﻿# app/core/pdf_generator.py
 from reportlab.lib.pagesizes import letter, A4
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -43,7 +43,7 @@ class PDFGenerator:
             story = []
             
             # Title
-            title = Paragraph(f"Huggin Scan Report", self.styles['CustomTitle'])
+            title = Paragraph(f"Huginn Scan Report", self.styles['CustomTitle'])
             story.append(title)
             story.append(Spacer(1, 20))
             

@@ -1,7 +1,7 @@
-# SSH Advanced Features Implementation
+﻿# SSH Advanced Features Implementation
 
 ## Overview
-This document outlines the advanced SSH features implemented in the Huggin security framework, organized by application phase (reconnaissance, exploitation, post-exploitation).
+This document outlines the advanced SSH features implemented in the Huginn security framework, organized by application phase (reconnaissance, exploitation, post-exploitation).
 
 ## 🔍 Reconnaissance Phase Features
 

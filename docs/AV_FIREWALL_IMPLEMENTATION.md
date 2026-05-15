@@ -1,7 +1,7 @@
-# AV/Firewall Detection Tool Implementation
+﻿# AV/Firewall Detection Tool Implementation
 
 ## Overview
-Successfully implemented the AV/Firewall Detection tool as the 12th enumeration tool in Huggin, following the specifications from `10 - AV Detection Methods.md` and `12 - Firewall Detection.md`.
+Successfully implemented the AV/Firewall Detection tool as the 12th enumeration tool in Huginn, following the specifications from `10 - AV Detection Methods.md` and `12 - Firewall Detection.md`.
 
 ## Files Created/Modified
 
@@ -176,7 +176,7 @@ The implementation includes comprehensive testing:
 - **Payload Generation**: Test AV payload creation instructions
 - **Evasion Techniques**: Test firewall bypass method availability
 
-## Integration with Huggin
+## Integration with Huginn
 
 The AV/Firewall Detection tool is fully integrated with:
 - **Main Enumeration Interface**: Appears as 12th tool in the enumeration list
@@ -197,7 +197,7 @@ Potential improvements for future versions:
 
 ## Summary
 
-The AV/Firewall Detection tool has been successfully implemented as a comprehensive security control detection solution. It provides both web application firewall detection and network firewall identification capabilities, along with evasion testing and AV payload generation. The tool integrates seamlessly with the existing Huggin framework and provides security professionals with essential capabilities for assessing defensive security controls.
+The AV/Firewall Detection tool has been successfully implemented as a comprehensive security control detection solution. It provides both web application firewall detection and network firewall identification capabilities, along with evasion testing and AV payload generation. The tool integrates seamlessly with the existing Huginn framework and provides security professionals with essential capabilities for assessing defensive security controls.
 
 ### Key Achievements:
 - ✅ Complete WAF detection with multi-vendor support

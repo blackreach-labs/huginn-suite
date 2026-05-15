@@ -1,4 +1,4 @@
-from sys import argv, exit
+﻿from sys import argv, exit
 from os.path import dirname, abspath, join, exists
 import atexit
 from signal import signal, SIGINT, SIGTERM
@@ -72,7 +72,7 @@ def signal_handler(signum, frame):
 
 def main():
     """
-    The main entry point for the Huggin application.
+    The main entry point for the Huginn application.
     """
     # Register cleanup function
     atexit.register(cleanup_on_exit)

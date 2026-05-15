@@ -1,4 +1,4 @@
-import json
+﻿import json
 import os
 from typing import Dict, List, Optional
 
@@ -23,7 +23,7 @@ pipeline {{
             steps {{
                 script {{
                     sh '''
-                    python -m app.tools.huggin_vuln_scanner \\
+                    python -m app.tools.huginn_vuln_scanner \\
                         --target {target_url} \\
                         --profile {profile} \\
                         --output scan_results.json
@@ -83,9 +83,9 @@ jobs:
       run: |
         pip install -r requirements.txt
     
-    - name: Run Huggin Security Scan
+    - name: Run Huginn Security Scan
       run: |
-        python -m app.tools.huggin_vuln_scanner \\
+        python -m app.tools.huginn_vuln_scanner \\
           --target {target_url} \\
           --profile {profile} \\
           --output scan_results.json

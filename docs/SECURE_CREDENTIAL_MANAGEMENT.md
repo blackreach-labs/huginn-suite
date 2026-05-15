@@ -1,8 +1,8 @@
-# Secure Credential and API Key Management System
+﻿# Secure Credential and API Key Management System
 
 ## Overview
 
-The Huggin framework now includes a comprehensive secure credential and API key management system that provides centralized, encrypted storage with enterprise secrets management integration. This system replaces manual credential input across all tools and ensures consistent security practices.
+The Huginn framework now includes a comprehensive secure credential and API key management system that provides centralized, encrypted storage with enterprise secrets management integration. This system replaces manual credential input across all tools and ensures consistent security practices.
 
 ## Key Features
 
@@ -78,7 +78,7 @@ export WEB_LOGIN_USERNAME="admin"
 export WEB_LOGIN_PASSWORD="password"
 
 # Master Password (optional)
-export HUGGIN_MASTER_PASSWORD="your_secure_master_password"
+export HUGINN_MASTER_PASSWORD="your_secure_master_password"
 ```
 
 ### 3. Enterprise Secrets Manager Setup
@@ -90,19 +90,19 @@ export VAULT_ADDR="https://vault.company.com:8200"
 export VAULT_TOKEN="hvs.XXXXXXXXXXXXXXXX"
 
 # Store secrets in Vault
-vault kv put huggin/shodan api_key="your_key"
-vault kv put huggin/aws username="AKIA..." password="secret_key" token="session_token"
+vault kv put huginn/shodan api_key="your_key"
+vault kv put huginn/aws username="AKIA..." password="secret_key" token="session_token"
 ```
 
 #### AWS Secrets Manager
 ```bash
 # Create secrets in AWS
 aws secretsmanager create-secret \
-  --name "huggin/shodan" \
+  --name "huginn/shodan" \
   --secret-string '{"api_key":"your_key"}'
 
 aws secretsmanager create-secret \
-  --name "huggin/aws-prod" \
+  --name "huginn/aws-prod" \
   --secret-string '{"username":"AKIA...","password":"secret_key"}'
 ```
 
@@ -111,7 +111,7 @@ aws secretsmanager create-secret \
 # Create secrets in Azure Key Vault
 az keyvault secret set \
   --vault-name "company-keyvault" \
-  --name "huggin-shodan" \
+  --name "huginn-shodan" \
   --value '{"api_key":"your_key"}'
 ```
 
@@ -349,21 +349,21 @@ results = enumerator.enumerate_mysql("192.168.1.100")
 
 ```yaml
 # vault-policy.hcl
-path "huggin/*" {
+path "huginn/*" {
   capabilities = ["read", "list"]
 }
 
-path "huggin/aws/*" {
+path "huginn/aws/*" {
   capabilities = ["read"]
 }
 ```
 
 ```bash
 # Deploy policy
-vault policy write huggin-policy vault-policy.hcl
+vault policy write huginn-policy vault-policy.hcl
 
 # Create token
-vault token create -policy=huggin-policy -ttl=24h
+vault token create -policy=huginn-policy -ttl=24h
 ```
 
 ### 2. AWS Secrets Manager Integration
@@ -378,7 +378,7 @@ vault token create -policy=huggin-policy -ttl=24h
         "secretsmanager:GetSecretValue",
         "secretsmanager:ListSecrets"
       ],
-      "Resource": "arn:aws:secretsmanager:*:*:secret:huggin/*"
+      "Resource": "arn:aws:secretsmanager:*:*:secret:huginn/*"
     }
   ]
 }
@@ -413,7 +413,7 @@ az keyvault set-policy \
    Error: Failed to decrypt credentials
    
    Solution:
-   - Check HUGGIN_MASTER_PASSWORD environment variable
+   - Check HUGINN_MASTER_PASSWORD environment variable
    - Verify file permissions on credential files
    - Re-initialize credential manager if needed
    ```
@@ -502,7 +502,7 @@ Examples:
 
 ## Conclusion
 
-The secure credential management system provides enterprise-grade security while maintaining ease of use. By centralizing credential storage and mandating its use across all tools, Huggin ensures consistent security practices and reduces the risk of credential exposure.
+The secure credential management system provides enterprise-grade security while maintaining ease of use. By centralizing credential storage and mandating its use across all tools, Huginn ensures consistent security practices and reduces the risk of credential exposure.
 
 Key benefits:
 - ✅ Centralized credential management

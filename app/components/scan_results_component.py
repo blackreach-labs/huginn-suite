@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
+﻿from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
                             QPushButton, QTextEdit, QComboBox, QTableWidget, QTableWidgetItem, QHeaderView)
 from PyQt6.QtCore import pyqtSignal, Qt
 
@@ -56,7 +56,7 @@ class ScanResultsComponent(QWidget):
         # Results display
         self.results_text = QTextEdit()
         self.results_text.setReadOnly(True)
-        self.results_text.setPlaceholderText("Huggin scan results will appear here...")
+        self.results_text.setPlaceholderText("Huginn scan results will appear here...")
         layout.addWidget(self.results_text)
         
         # Vulnerabilities table (initially hidden)
@@ -399,7 +399,7 @@ class ScanResultsComponent(QWidget):
         filename, _ = QFileDialog.getSaveFileName(
             self, 
             "Generate Comprehensive Report", 
-            "huggin_comprehensive_report.html", 
+            "huginn_comprehensive_report.html", 
             "HTML Files (*.html);;PDF Files (*.pdf);;All Files (*)"
         )
         
@@ -420,8 +420,8 @@ class ScanResultsComponent(QWidget):
         
         filename, _ = QFileDialog.getSaveFileName(
             self, 
-            "Export Huggin Results", 
-            "huggin_results.json", 
+            "Export Huginn Results", 
+            "huginn_results.json", 
             "JSON Files (*.json);;HTML Files (*.html);;All Files (*)"
         )
         
@@ -443,7 +443,7 @@ class ScanResultsComponent(QWidget):
         <!DOCTYPE html>
         <html>
         <head>
-            <title>Huggin Security Scan Report</title>
+            <title>Huginn Security Scan Report</title>
             <style>
                 body {{ font-family: Arial, sans-serif; margin: 20px; background-color: #1E1E1E; color: #DCDCDC; }}
                 .header {{ color: #64C8FF; text-align: center; }}
@@ -459,7 +459,7 @@ class ScanResultsComponent(QWidget):
             </style>
         </head>
         <body>
-            <h1 class="header">🚀 Huggin Advanced Security Scanner Report</h1>
+            <h1 class="header">🚀 Huginn Advanced Security Scanner Report</h1>
             <div class="section">
                 <h2>Executive Summary</h2>
                 <p>Total Vulnerabilities Found: <strong>{len(self.scan_results.get('vulnerabilities', []))}</strong></p>
@@ -512,7 +512,7 @@ class ScanResultsComponent(QWidget):
         <!DOCTYPE html>
         <html>
         <head>
-            <title>Huggin Comprehensive Security Assessment</title>
+            <title>Huginn Comprehensive Security Assessment</title>
             <meta charset="UTF-8">
             <style>
                 body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background: linear-gradient(135deg, #1E1E1E 0%, #2D2D2D 100%); color: #DCDCDC; }}
@@ -545,7 +545,7 @@ class ScanResultsComponent(QWidget):
         <body>
             <div class="container">
                 <div class="header">
-                    <h1>🚀 HUGGIN ADVANCED SECURITY ASSESSMENT</h1>
+                    <h1>🚀 HUGINN ADVANCED SECURITY ASSESSMENT</h1>
                     <p>Comprehensive AI-Powered Vulnerability Analysis</p>
                 </div>
         """

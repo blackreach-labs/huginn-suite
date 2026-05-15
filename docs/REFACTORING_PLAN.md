@@ -1,5 +1,5 @@
-Application Overview
-Huggin is a comprehensive security assessment and reconnaissance framework built with PyQt6. It's designed as a penetration testing toolkit with multiple scanning capabilities, centralized data collection, and advanced reporting features.
+﻿Application Overview
+Huginn is a comprehensive security assessment and reconnaissance framework built with PyQt6. It's designed as a penetration testing toolkit with multiple scanning capabilities, centralized data collection, and advanced reporting features.
 
 Current Architecture Issues
 1. Monolithic File Structure
@@ -34,7 +34,7 @@ Suggested Architectural Improvements
 1. Implement Layered Architecture
 
 ```
-huggin/
+huginn/
 ├── presentation/           # UI Layer
 │   ├── main_window/
 │   │   ├── main_window.py
@@ -304,7 +304,7 @@ class ScannerConfig:
     timeout: int = 30
     max_concurrent: int = 50
     retry_count: int = 3
-    user_agent: str = "Huggin-Scanner/1.0"
+    user_agent: str = "Huginn-Scanner/1.0"
 ```
 7. Event-Driven Architecture
 ```python

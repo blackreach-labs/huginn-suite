@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Test script to debug update connection issues"""
 
 import json
@@ -6,7 +6,7 @@ from urllib.request import urlopen
 from urllib.error import URLError, HTTPError
 
 def test_s3_connection():
-    base_url = "https://huggin-secure-update-fkhespeu5aa4yuc3pmfqwuabd7334aps2b-s3alias.s3-accesspoint.ap-southeast-2.amazonaws.com"
+    base_url = "https://huginn-secure-update-fkhespeu5aa4yuc3pmfqwuabd7334aps2b-s3alias.s3-accesspoint.ap-southeast-2.amazonaws.com"
     
     # Test manifest URL
     manifest_url = f"{base_url}/manifest/manifest.json"

@@ -10,6 +10,11 @@ from app.widgets.attack_chain_mindmap import AttackChainMindmap
 import os
 from app.core.logger import logger
 
+# Resolve the profiles directory relative to this file so it works regardless
+# of the working directory the app is launched from.
+_PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+_PROFILES_DIR = os.path.join(_PROJECT_ROOT, 'profiles')
+
 class AttackChainHomePage(BasePage):
     """Attack chain home page with Setup, Mindmap, and Correlations tabs"""
     
@@ -662,7 +667,7 @@ class AttackChainHomePage(BasePage):
             QMessageBox.warning(self, "No Profile Name", "Please enter a Target Name before saving.")
             return
 
-        profiles_dir = os.path.join(os.getcwd(), 'profiles')
+        profiles_dir = _PROFILES_DIR
         os.makedirs(profiles_dir, exist_ok=True)
 
         profile_data = {
@@ -681,8 +686,10 @@ class AttackChainHomePage(BasePage):
 
         profile_file = os.path.join(profiles_dir, f"{name}.json")
         try:
-            with open(profile_file, 'w') as f:
+            tmp_file = profile_file + ".tmp"
+            with open(tmp_file, 'w') as f:
                 json.dump(profile_data, f, indent=2)
+            os.replace(tmp_file, profile_file)
         except Exception as e:
             from PyQt6.QtWidgets import QMessageBox
             QMessageBox.warning(self, 'Error', f'Failed to save profile: {str(e)}')
@@ -737,12 +744,12 @@ class AttackChainHomePage(BasePage):
                     # Load profile data from disk if exists
                     import os
                     import json
-                    profiles_dir = os.path.join(os.getcwd(), 'profiles')
+                    profiles_dir = _PROFILES_DIR
                     profile_file = os.path.join(profiles_dir, f"{profile_name}.json")
                     
                     if os.path.exists(profile_file):
                         try:
-                            with open(profile_file, 'r') as f:
+                            with open(profile_file, 'r', encoding='utf-8-sig') as f:
                                 profile_data = json.load(f)
                             
                             # Load target information fields
@@ -806,13 +813,15 @@ class AttackChainHomePage(BasePage):
             'credentials': self.get_credentials_for_save()
         }
         
-        profiles_dir = os.path.join(os.getcwd(), 'profiles')
+        profiles_dir = _PROFILES_DIR
         os.makedirs(profiles_dir, exist_ok=True)
         
         profile_file = os.path.join(profiles_dir, f"{profile_name}.json")
         try:
-            with open(profile_file, 'w') as f:
+            tmp_file = profile_file + ".tmp"
+            with open(tmp_file, 'w') as f:
                 json.dump(profile_data, f, indent=2)
+            os.replace(tmp_file, profile_file)
             
             QMessageBox.information(self, 'Success', f'Profile "{profile_name}" saved successfully!')
             self.load_existing_profiles()
@@ -890,7 +899,7 @@ class AttackChainHomePage(BasePage):
         import json
         import os
 
-        profiles_dir = os.path.join(os.getcwd(), 'profiles')
+        profiles_dir = _PROFILES_DIR
         if not os.path.exists(profiles_dir):
             QMessageBox.information(self, 'No Profiles', 'No saved profiles found.')
             return
@@ -933,22 +942,74 @@ class AttackChainHomePage(BasePage):
         profile_file = os.path.join(profiles_dir, f"{profile_name}.json")
 
         try:
-            with open(profile_file, 'r') as f:
-                profile_data = json.load(f)
+            with open(profile_file, 'r', encoding='utf-8-sig') as f:
+                content = f.read()
+            if not content.strip():
+                raise ValueError(f"Profile file '{profile_name}.json' is empty.")
+            profile_data = json.loads(content)
+        except Exception as e:
+            logger.error(f"Failed to read profile file '{profile_file}': {e}", exc_info=True)
+            QMessageBox.warning(self, 'Error', f'Failed to load profile: {str(e)}')
+            return
 
-            # Select the row in the table (or add it if missing), which triggers on_profile_selected
-            self.add_profile_to_table(profile_name, profile_data)
+        # Guard autosave while we rebuild the table and populate the form
+        self._loading_profile = True
+        try:
+            # Populate form fields directly from the loaded data (avoids
+            # triggering on_profile_selected via selectRow, which can raise
+            # unrelated exceptions that mask the real error).
+            self.target_name.setText(profile_data.get('target_name', profile_name))
+            target_text = profile_data.get('primary_target', '') or profile_data.get('scope', '')
+            self.primary_target.setText(target_text)
+            self.subdomains.setText(profile_data.get('subdomains', ''))
+            self.cloud_assets.setText(profile_data.get('cloud_assets', ''))
+            self.out_scope.setText(profile_data.get('out_scope', ''))
+            self.restrictions.setText(profile_data.get('restrictions', ''))
+            self.dos_allowed.setChecked(profile_data.get('dos_allowed', False))
+            self.social_eng_allowed.setChecked(profile_data.get('social_eng_allowed', False))
+            self.physical_allowed.setChecked(profile_data.get('physical_allowed', False))
+
+            # Switch credential manager to this profile
+            try:
+                from app.core.credential_manager import credential_manager
+                credential_manager.set_profile(profile_name)
+                self.load_credentials_from_profile(profile_data.get('credentials', {}))
+            except Exception as cred_err:
+                logger.warning(f"Could not load credentials for profile '{profile_name}': {cred_err}")
+
+            # Rebuild the table and select the matching row (without
+            # re-triggering on_profile_selected via selectRow).
             self.load_existing_profiles()
-
-            # Find and select the row
             for row in range(self.target_table.rowCount()):
                 item = self.target_table.item(row, 0)
                 if item and item.text() == profile_name:
+                    # Block signals so selectRow doesn't fire on_profile_selected
+                    self.target_table.blockSignals(True)
                     self.target_table.selectRow(row)
+                    self.target_table.blockSignals(False)
                     break
 
+            # Update tenant and UI
+            try:
+                from app.core.tenant_aware_updater import tenant_aware_updater
+                tenant_aware_updater.set_tenant(profile_name)
+            except Exception:
+                pass
+
+            if hasattr(self.main_window, 'current_profile_name'):
+                self.main_window.current_profile_name = profile_name
+            else:
+                setattr(self.main_window, 'current_profile_name', profile_name)
+
+            self.refresh_credential_display()
+            self.update_scope_validation()
+            self.update_inventory_with_profile_data(profile_data)
+
         except Exception as e:
+            logger.error(f"Unexpected error while applying profile '{profile_name}': {e}", exc_info=True)
             QMessageBox.warning(self, 'Error', f'Failed to load profile: {str(e)}')
+        finally:
+            self._loading_profile = False
 
     def _autosave_current_profile(self):
         """Silently save the currently selected profile whenever a form field changes."""
@@ -969,7 +1030,7 @@ class AttackChainHomePage(BasePage):
         if not profile_name:
             return
 
-        profiles_dir = os.path.join(os.getcwd(), 'profiles')
+        profiles_dir = _PROFILES_DIR
         os.makedirs(profiles_dir, exist_ok=True)
 
         profile_data = {
@@ -988,8 +1049,12 @@ class AttackChainHomePage(BasePage):
 
         profile_file = os.path.join(profiles_dir, f"{profile_name}.json")
         try:
-            with open(profile_file, 'w') as f:
+            # Write to a temp file first, then atomically replace to avoid
+            # leaving an empty/corrupt file if something goes wrong mid-write.
+            tmp_file = profile_file + ".tmp"
+            with open(tmp_file, 'w') as f:
                 json.dump(profile_data, f, indent=2)
+            os.replace(tmp_file, profile_file)
         except Exception as e:
             logger.debug(f"Autosave failed for profile '{profile_name}': {e}")
     
@@ -1011,7 +1076,7 @@ class AttackChainHomePage(BasePage):
                     self.target_table.removeRow(current_row)
                     
                     # Delete the actual profile file from disk
-                    profiles_dir = os.path.join(os.getcwd(), 'profiles')
+                    profiles_dir = _PROFILES_DIR
                     profile_file = os.path.join(profiles_dir, f"{profile_name}.json")
                     
                     try:
@@ -1028,7 +1093,7 @@ class AttackChainHomePage(BasePage):
                                      QDialogButtonBox, QLabel, QMessageBox)
         import os
 
-        profiles_dir = os.path.join(os.getcwd(), 'profiles')
+        profiles_dir = _PROFILES_DIR
         if not os.path.exists(profiles_dir):
             QMessageBox.information(self, 'No Profiles', 'No saved profiles found.')
             return
@@ -1116,7 +1181,7 @@ class AttackChainHomePage(BasePage):
         import json
         import os
         
-        profiles_dir = os.path.join(os.getcwd(), 'profiles')
+        profiles_dir = _PROFILES_DIR
         if not os.path.exists(profiles_dir):
             return
         
@@ -1128,7 +1193,7 @@ class AttackChainHomePage(BasePage):
             if filename.endswith('.json'):
                 try:
                     profile_path = os.path.join(profiles_dir, filename)
-                    with open(profile_path, 'r') as f:
+                    with open(profile_path, 'r', encoding='utf-8-sig') as f:
                         profile_data = json.load(f)
                     
                     profile_name = filename.replace('.json', '')
