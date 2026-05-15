@@ -80,6 +80,9 @@ pefile>=2022.5.30
 # Advanced networking for C2
 scapy>=2.4.5
 
+# Bluetooth scanning (BLE + Windows WinRT backend)
+bleak>=0.22.0
+
 # MAC vendor lookup for Layer 2 discovery
 mac-vendor-lookup>=0.1.15
 
@@ -97,3 +100,8 @@ PyJWT>=2.4.0
 
 # Graph Database
 networkx>=2.8.0
+
+# Database Connectors
+mysql-connector-python>=9.0.0
+psycopg2-binary>=2.9.0
+oracledb>=2.0.0

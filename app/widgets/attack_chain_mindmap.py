@@ -75,8 +75,8 @@ class AttackChainMindmap(QWidget):
             "REPORT": {
                 "pos": (850, 60),
                 "color": QColor(100, 255, 200),
-                "description": "Documentation & tool management",
-                "tools": ["Report Generation", "Evidence Management", "Playbook Export"],
+                "description": "Reporting, remediation & analytics",
+                "tools": ["Advanced Reporting", "Remediation", "Dashboard", "Analytics", "Evidence Management", "Playbook Export"],
                 "connections": []
             }
         }

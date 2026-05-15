@@ -3,11 +3,12 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
                             QLineEdit, QPushButton, QTableWidget, QTableWidgetItem,
                             QComboBox, QTextEdit, QGroupBox, QTabWidget,
                             QMessageBox, QProgressBar, QCheckBox, QFormLayout,
-                            QDialog, QDialogButtonBox, QHeaderView, QFrame,
-                            QSizePolicy, QGridLayout, QScrollArea)
+                            QHeaderView, QFrame, QSizePolicy, QGridLayout,
+                            QScrollArea, QStackedWidget)
 from PyQt6.QtCore import Qt, QThread, pyqtSignal
 from PyQt6.QtGui import QFont, QIcon
 from ..core.secure_credential_manager import secure_credential_manager
+from ..core.logger import logger
 
 class CredentialTestWorker(QThread):
     """Worker thread for testing credentials"""
@@ -21,116 +22,6 @@ class CredentialTestWorker(QThread):
         result = secure_credential_manager.test_credential(self.service)
         self.test_completed.emit(self.service, result)
 
-class SecretsManagerDialog(QDialog):
-    """Dialog for configuring enterprise secrets management"""
-    
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setWindowTitle("Configure Secrets Manager")
-        self.setModal(True)
-        self.resize(500, 400)
-        
-        layout = QVBoxLayout(self)
-        
-        # Provider selection
-        provider_group = QGroupBox("Secrets Manager Provider")
-        provider_layout = QFormLayout(provider_group)
-        
-        self.provider_combo = QComboBox()
-        self.provider_combo.addItems(["HashiCorp Vault", "AWS Secrets Manager", "Azure Key Vault"])
-        self.provider_combo.currentTextChanged.connect(self.on_provider_changed)
-        provider_layout.addRow("Provider:", self.provider_combo)
-        
-        layout.addWidget(provider_group)
-        
-        # Configuration fields
-        self.config_group = QGroupBox("Configuration")
-        self.config_layout = QFormLayout(self.config_group)
-        
-        self.vault_url_edit = QLineEdit()
-        self.vault_url_edit.setPlaceholderText("https://vault.example.com:8200")
-        
-        self.vault_token_edit = QLineEdit()
-        self.vault_token_edit.setEchoMode(QLineEdit.EchoMode.Password)
-        self.vault_token_edit.setPlaceholderText("hvs.XXXXXXXXXXXXXXXX")
-        
-        self.aws_region_edit = QLineEdit()
-        self.aws_region_edit.setText("us-east-1")
-        self.aws_region_edit.setPlaceholderText("us-east-1")
-        
-        layout.addWidget(self.config_group)
-        
-        # Test connection button
-        self.test_btn = QPushButton("Test Connection")
-        self.test_btn.clicked.connect(self.test_connection)
-        layout.addWidget(self.test_btn)
-        
-        # Status
-        self.status_label = QLabel("")
-        layout.addWidget(self.status_label)
-        
-        # Dialog buttons
-        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | 
-                                 QDialogButtonBox.StandardButton.Cancel)
-        buttons.accepted.connect(self.accept)
-        buttons.rejected.connect(self.reject)
-        layout.addWidget(buttons)
-        
-        self.on_provider_changed("HashiCorp Vault")
-    
-    def on_provider_changed(self, provider):
-        """Update configuration fields based on provider"""
-        # Clear existing fields
-        for i in reversed(range(self.config_layout.count())):
-            self.config_layout.itemAt(i).widget().setParent(None)
-        
-        if provider == "HashiCorp Vault":
-            self.config_layout.addRow("Vault URL:", self.vault_url_edit)
-            self.config_layout.addRow("Vault Token:", self.vault_token_edit)
-        elif provider == "AWS Secrets Manager":
-            self.config_layout.addRow("AWS Region:", self.aws_region_edit)
-            info_label = QLabel("Uses AWS credentials from environment/profile")
-            info_label.setStyleSheet("color: #666; font-style: italic;")
-            self.config_layout.addRow("", info_label)
-        elif provider == "Azure Key Vault":
-            self.config_layout.addRow("Key Vault URL:", self.vault_url_edit)
-            info_label = QLabel("Uses DefaultAzureCredential for authentication")
-            info_label.setStyleSheet("color: #666; font-style: italic;")
-            self.config_layout.addRow("", info_label)
-    
-    def test_connection(self):
-        """Test connection to secrets manager"""
-        provider = self.provider_combo.currentText()
-        
-        try:
-            if provider == "HashiCorp Vault":
-                success = secure_credential_manager.configure_secrets_manager(
-                    "vault",
-                    vault_url=self.vault_url_edit.text(),
-                    vault_token=self.vault_token_edit.text()
-                )
-            elif provider == "AWS Secrets Manager":
-                success = secure_credential_manager.configure_secrets_manager(
-                    "aws",
-                    region=self.aws_region_edit.text()
-                )
-            elif provider == "Azure Key Vault":
-                success = secure_credential_manager.configure_secrets_manager(
-                    "azure",
-                    vault_url=self.vault_url_edit.text()
-                )
-            
-            if success:
-                self.status_label.setText("✓ Connection successful")
-                self.status_label.setStyleSheet("color: green;")
-            else:
-                self.status_label.setText("✗ Connection failed")
-                self.status_label.setStyleSheet("color: red;")
-                
-        except Exception as e:
-            self.status_label.setText(f"✗ Error: {str(e)}")
-            self.status_label.setStyleSheet("color: red;")
-
 class SecureCredentialWidget(QWidget):
     """Widget for managing secure credentials and API keys"""
     
@@ -140,6 +31,7 @@ class SecureCredentialWidget(QWidget):
         self.init_ui()
         self.connect_signals()
         self.refresh_credentials()
+        self._load_sm_config()
     
     def init_ui(self):
         """Initialize the user interface"""
@@ -331,7 +223,7 @@ class SecureCredentialWidget(QWidget):
         self.credentials_table.setColumnCount(7)
         self.credentials_table.setHorizontalHeaderLabels(
             ["Source", "Type", "Username", "Password", "Domain", "Service", "Notes"])
-        self.credentials_table.setMaximumHeight(200)
+        self.credentials_table.setMinimumHeight(120)
         self.credentials_table.setSelectionBehavior(
             QTableWidget.SelectionBehavior.SelectRows)
         self.credentials_table.setStyleSheet("""
@@ -347,9 +239,131 @@ class SecureCredentialWidget(QWidget):
             }
         """)
         hdr_view = self.credentials_table.horizontalHeader()
-        hdr_view.setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
+        # Set all columns to Interactive (user-resizable) with a sensible
+        # initial size, then force the Notes column to fill remaining space.
+        hdr_view.setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
         hdr_view.setSectionResizeMode(6, QHeaderView.ResizeMode.Stretch)
-        widget_layout.addWidget(self.credentials_table)
+        hdr_view.setStretchLastSection(True)
+        # Give non-stretch columns a reasonable default width
+        for col, width in enumerate([90, 120, 110, 110, 90, 90]):
+            self.credentials_table.setColumnWidth(col, width)
+        self.credentials_table.verticalHeader().setVisible(False)
+        widget_layout.addWidget(self.credentials_table, stretch=1)
+
+        # ── AWS Secrets Manager section (shown only when connected) ───────
+        self.aws_sm_frame = QFrame()
+        self.aws_sm_frame.setStyleSheet("""
+            QFrame {
+                background-color: rgba(0, 0, 0, 150);
+                border-radius: 10px;
+                border: 1px solid rgba(100, 200, 255, 50);
+            }
+        """)
+        aws_sm_layout = QVBoxLayout(self.aws_sm_frame)
+        aws_sm_layout.setContentsMargins(12, 10, 12, 10)
+        aws_sm_layout.setSpacing(8)
+
+        aws_sm_hdr_row = QHBoxLayout()
+        aws_sm_hdr = QLabel("☁  AWS Secrets Manager")
+        aws_sm_hdr.setStyleSheet(
+            "font-size: 10pt; font-weight: bold; color: #64C8FF;"
+        )
+        aws_sm_hdr_row.addWidget(aws_sm_hdr)
+        aws_sm_hdr_row.addStretch()
+        self.aws_sm_connected_lbl = QLabel("● Connected")
+        self.aws_sm_connected_lbl.setStyleSheet(
+            "font-size: 9pt; color: #50C878;"
+        )
+        aws_sm_hdr_row.addWidget(self.aws_sm_connected_lbl)
+        aws_sm_layout.addLayout(aws_sm_hdr_row)
+
+        # Divider
+        div = QFrame()
+        div.setFrameShape(QFrame.Shape.HLine)
+        div.setStyleSheet("color: rgba(100, 200, 255, 40);")
+        aws_sm_layout.addWidget(div)
+
+        # — Push / Pull grid (label | field | buttons) ───────────────────
+        BTN_STYLE_BLUE = """
+            QPushButton {
+                background-color: rgba(50, 150, 50, 150);
+                border: 1px solid #64C8FF; border-radius: 4px;
+                color: #000000; font-weight: bold; font-size: 9pt;
+                padding: 0px 12px; min-width: 90px;
+            }
+            QPushButton:hover { background-color: rgba(70, 170, 70, 200); }
+            QPushButton:disabled { background-color: rgba(60,60,60,120); color: #666; border-color: #444; }
+        """
+        BTN_STYLE_STEEL = """
+            QPushButton {
+                background-color: rgba(50, 100, 150, 150);
+                border: 1px solid #64C8FF; border-radius: 4px;
+                color: #FFFFFF; font-weight: bold; font-size: 9pt;
+                padding: 0px 12px; min-width: 70px;
+            }
+            QPushButton:hover { background-color: rgba(70, 130, 180, 200); }
+            QPushButton:disabled { background-color: rgba(60,60,60,120); color: #666; border-color: #444; }
+        """
+        LBL_STYLE = "font-size: 9pt; font-weight: bold; color: #DCDCDC;"
+        FIELD_STYLE = "font-size: 9pt; color: #DCDCDC;"
+
+        pp_grid = QGridLayout()
+        pp_grid.setHorizontalSpacing(8)
+        pp_grid.setVerticalSpacing(6)
+        pp_grid.setColumnStretch(1, 1)   # field column expands
+
+        # Push row
+        push_lbl = QLabel("Push:")
+        push_lbl.setStyleSheet(LBL_STYLE)
+        pp_grid.addWidget(push_lbl, 0, 0)
+
+        self.aws_push_name_edit = QLineEdit()
+        self.aws_push_name_edit.setPlaceholderText("Secret name  (e.g. huginn/target-db)")
+        self.aws_push_name_edit.setFixedHeight(28)
+        self.aws_push_name_edit.setStyleSheet(FIELD_STYLE)
+        pp_grid.addWidget(self.aws_push_name_edit, 0, 1)
+
+        push_btn_row = QHBoxLayout()
+        push_btn_row.setSpacing(6)
+        push_sel_btn = QPushButton("Push Selected")
+        push_sel_btn.setFixedHeight(28)
+        push_sel_btn.setStyleSheet(BTN_STYLE_BLUE)
+        push_sel_btn.clicked.connect(self._aws_push_selected)
+        push_btn_row.addWidget(push_sel_btn)
+
+        push_all_btn = QPushButton("Push All")
+        push_all_btn.setFixedHeight(28)
+        push_all_btn.setStyleSheet(BTN_STYLE_STEEL)
+        push_all_btn.clicked.connect(self._aws_push_all)
+        push_btn_row.addWidget(push_all_btn)
+        pp_grid.addLayout(push_btn_row, 0, 2)
+
+        # Pull row
+        pull_lbl = QLabel("Pull:")
+        pull_lbl.setStyleSheet(LBL_STYLE)
+        pp_grid.addWidget(pull_lbl, 1, 0)
+
+        self.aws_pull_name_edit = QLineEdit()
+        self.aws_pull_name_edit.setPlaceholderText("Secret name  (e.g. huginn/target-db)")
+        self.aws_pull_name_edit.setFixedHeight(28)
+        self.aws_pull_name_edit.setStyleSheet(FIELD_STYLE)
+        pp_grid.addWidget(self.aws_pull_name_edit, 1, 1)
+
+        pull_btn = QPushButton("Fetch & Import")
+        pull_btn.setFixedHeight(28)
+        pull_btn.setStyleSheet(BTN_STYLE_BLUE)
+        pull_btn.clicked.connect(self._aws_pull)
+        pp_grid.addWidget(pull_btn, 1, 2)
+
+        aws_sm_layout.addLayout(pp_grid)
+
+        # Status line
+        self.aws_sm_status_lbl = QLabel("")
+        self.aws_sm_status_lbl.setStyleSheet("font-size: 9pt; color: #AAAAAA;")
+        aws_sm_layout.addWidget(self.aws_sm_status_lbl)
+
+        self.aws_sm_frame.setVisible(False)   # hidden until connected
+        widget_layout.addWidget(self.aws_sm_frame)
 
         # Initialise field visibility
         self.on_type_changed("Username/Password")
@@ -413,47 +427,256 @@ Examples:
         layout.addStretch()
     
     def init_enterprise_tab(self):
-        """Initialize enterprise secrets management tab"""
+        """Initialize enterprise secrets management tab with inline configuration."""
         layout = QVBoxLayout(self.enterprise_tab)
-        
-        # Configuration
-        config_group = QGroupBox("Secrets Manager Configuration")
-        config_layout = QVBoxLayout(config_group)
-        
-        config_info = QLabel("""
-Enterprise secrets management provides centralized, secure credential storage
-with features like access logging, rotation, and fine-grained permissions.
+        layout.setContentsMargins(10, 10, 10, 10)
+        layout.setSpacing(10)
+
+        FIELD_HEIGHT = 30
+        LABEL_STYLE  = "font-size: 10pt; font-weight: bold; color: #DCDCDC;"
+        HDR_STYLE    = "font-size: 10pt; font-weight: bold; color: #64C8FF; padding: 4px 0px;"
+        INPUT_STYLE  = "font-size: 10pt; color: #DCDCDC;"
+        HINT_STYLE   = "font-size: 9pt; color: #888888; font-style: italic;"
+
+        # ── Connection status banner ──────────────────────────────────────
+        self.secrets_status_banner = QFrame()
+        self.secrets_status_banner.setStyleSheet("""
+            QFrame {
+                background-color: rgba(60, 60, 60, 180);
+                border-radius: 6px;
+                border: 1px solid rgba(100, 200, 255, 40);
+            }
         """)
-        config_layout.addWidget(config_info)
-        
-        self.configure_secrets_btn = QPushButton("Configure Secrets Manager")
-        self.configure_secrets_btn.clicked.connect(self.configure_secrets_manager)
-        config_layout.addWidget(self.configure_secrets_btn)
-        
-        self.secrets_status = QLabel("Not configured")
-        config_layout.addWidget(self.secrets_status)
-        
-        layout.addWidget(config_group)
-        
-        # Best practices
-        practices_group = QGroupBox("Security Best Practices")
-        practices_layout = QVBoxLayout(practices_group)
-        
-        practices_text = QLabel("""
-• Use environment variables for development/testing
-• Use enterprise secrets managers for production
-• Rotate credentials regularly
-• Use least-privilege access principles
-• Monitor credential usage and access logs
-• Never commit credentials to version control
-• Use separate credentials for different environments
+        banner_row = QHBoxLayout(self.secrets_status_banner)
+        banner_row.setContentsMargins(12, 6, 12, 6)
+        self._status_dot = QLabel("●")
+        self._status_dot.setStyleSheet("color: #888888; font-size: 14pt;")
+        self._status_text = QLabel("Not connected")
+        self._status_text.setStyleSheet("color: #AAAAAA; font-size: 10pt;")
+        banner_row.addWidget(self._status_dot)
+        banner_row.addWidget(self._status_text)
+        banner_row.addStretch()
+        layout.addWidget(self.secrets_status_banner)
+
+        # ── Provider selector ─────────────────────────────────────────────
+        provider_frame = QFrame()
+        provider_frame.setStyleSheet("""
+            QFrame {
+                background-color: rgba(0, 0, 0, 150);
+                border-radius: 10px;
+                border: 1px solid rgba(100, 200, 255, 50);
+            }
         """)
-        practices_text.setStyleSheet("color: #333;")
-        practices_layout.addWidget(practices_text)
-        
-        layout.addWidget(practices_group)
-        
+        provider_layout = QVBoxLayout(provider_frame)
+        provider_layout.setContentsMargins(15, 12, 15, 12)
+        provider_layout.setSpacing(8)
+
+        provider_hdr = QLabel("Provider")
+        provider_hdr.setStyleSheet(HDR_STYLE)
+        provider_layout.addWidget(provider_hdr)
+
+        provider_row = QHBoxLayout()
+        self.sm_provider_combo = QComboBox()
+        self.sm_provider_combo.addItems([
+            "HashiCorp Vault",
+            "AWS Secrets Manager",
+            "Azure Key Vault",
+        ])
+        self.sm_provider_combo.setFixedHeight(FIELD_HEIGHT)
+        self.sm_provider_combo.setStyleSheet("font-size: 10pt;")
+        self.sm_provider_combo.currentTextChanged.connect(self._on_sm_provider_changed)
+        provider_row.addWidget(self.sm_provider_combo)
+        provider_layout.addLayout(provider_row)
+        layout.addWidget(provider_frame)
+
+        # ── Dynamic config fields (stacked) ──────────────────────────────
+        self.sm_config_stack = QStackedWidget()
+
+        # — HashiCorp Vault page —
+        vault_page = QFrame()
+        vault_page.setStyleSheet("""
+            QFrame {
+                background-color: rgba(0, 0, 0, 150);
+                border-radius: 10px;
+                border: 1px solid rgba(100, 200, 255, 50);
+            }
+        """)
+        vault_grid = QGridLayout(vault_page)
+        vault_grid.setContentsMargins(15, 12, 15, 12)
+        vault_grid.setHorizontalSpacing(10)
+        vault_grid.setVerticalSpacing(8)
+        vault_grid.setColumnStretch(1, 1)
+
+        vault_hdr = QLabel("HashiCorp Vault")
+        vault_hdr.setStyleSheet(HDR_STYLE)
+        vault_grid.addWidget(vault_hdr, 0, 0, 1, 2)
+
+        vault_grid.addWidget(QLabel("Vault URL:"), 1, 0)
+        vault_grid.itemAtPosition(1, 0).widget().setStyleSheet(LABEL_STYLE)
+        self.sm_vault_url = QLineEdit()
+        self.sm_vault_url.setPlaceholderText("https://vault.example.com:8200")
+        self.sm_vault_url.setFixedHeight(FIELD_HEIGHT)
+        self.sm_vault_url.setStyleSheet(INPUT_STYLE)
+        vault_grid.addWidget(self.sm_vault_url, 1, 1)
+
+        vault_grid.addWidget(QLabel("Vault Token:"), 2, 0)
+        vault_grid.itemAtPosition(2, 0).widget().setStyleSheet(LABEL_STYLE)
+        self.sm_vault_token = QLineEdit()
+        self.sm_vault_token.setEchoMode(QLineEdit.EchoMode.Password)
+        self.sm_vault_token.setPlaceholderText("hvs.XXXXXXXXXXXXXXXX")
+        self.sm_vault_token.setFixedHeight(FIELD_HEIGHT)
+        self.sm_vault_token.setStyleSheet(INPUT_STYLE)
+        vault_grid.addWidget(self.sm_vault_token, 2, 1)
+
+        vault_hint = QLabel("Secrets are read from the path  huginn/<service>  (KV v2)")
+        vault_hint.setStyleSheet(HINT_STYLE)
+        vault_grid.addWidget(vault_hint, 3, 0, 1, 2)
+        self.sm_config_stack.addWidget(vault_page)   # index 0
+
+        # — AWS Secrets Manager page —
+        aws_page = QFrame()
+        aws_page.setStyleSheet("""
+            QFrame {
+                background-color: rgba(0, 0, 0, 150);
+                border-radius: 10px;
+                border: 1px solid rgba(100, 200, 255, 50);
+            }
+        """)
+        aws_grid = QGridLayout(aws_page)
+        aws_grid.setContentsMargins(15, 12, 15, 12)
+        aws_grid.setHorizontalSpacing(10)
+        aws_grid.setVerticalSpacing(8)
+        aws_grid.setColumnStretch(1, 1)
+
+        aws_hdr = QLabel("AWS Secrets Manager")
+        aws_hdr.setStyleSheet(HDR_STYLE)
+        aws_grid.addWidget(aws_hdr, 0, 0, 1, 2)
+
+        def _aws_lbl(text):
+            l = QLabel(text)
+            l.setStyleSheet(LABEL_STYLE)
+            return l
+
+        def _aws_field(placeholder, echo=False):
+            w = QLineEdit()
+            w.setPlaceholderText(placeholder)
+            w.setFixedHeight(FIELD_HEIGHT)
+            w.setStyleSheet(INPUT_STYLE)
+            if echo:
+                w.setEchoMode(QLineEdit.EchoMode.Password)
+            return w
+
+        aws_grid.addWidget(_aws_lbl("Access Key ID:"), 1, 0)
+        self.sm_aws_access_key = _aws_field("AKIAIOSFODNN7EXAMPLE")
+        aws_grid.addWidget(self.sm_aws_access_key, 1, 1)
+
+        aws_grid.addWidget(_aws_lbl("Secret Access Key:"), 2, 0)
+        self.sm_aws_secret_key = _aws_field("wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY", echo=True)
+        aws_grid.addWidget(self.sm_aws_secret_key, 2, 1)
+
+        aws_grid.addWidget(_aws_lbl("Session Token:"), 3, 0)
+        self.sm_aws_session_token = _aws_field("Optional — required for temporary/STS credentials", echo=True)
+        aws_grid.addWidget(self.sm_aws_session_token, 3, 1)
+
+        aws_grid.addWidget(_aws_lbl("Region:"), 4, 0)
+        self.sm_aws_region = _aws_field("e.g. us-east-1, ap-southeast-2")
+        self.sm_aws_region.setText("us-east-1")
+        aws_grid.addWidget(self.sm_aws_region, 4, 1)
+
+        aws_hint = QLabel(
+            "Leave Access Key ID blank to fall back to the standard AWS credential chain\n"
+            "(env vars → ~/.aws/credentials → IAM instance role)."
+        )
+        aws_hint.setStyleSheet(HINT_STYLE)
+        aws_grid.addWidget(aws_hint, 5, 0, 1, 2)
+        self.sm_config_stack.addWidget(aws_page)     # index 1
+
+        # — Azure Key Vault page —
+        az_page = QFrame()
+        az_page.setStyleSheet("""
+            QFrame {
+                background-color: rgba(0, 0, 0, 150);
+                border-radius: 10px;
+                border: 1px solid rgba(100, 200, 255, 50);
+            }
+        """)
+        az_grid = QGridLayout(az_page)
+        az_grid.setContentsMargins(15, 12, 15, 12)
+        az_grid.setHorizontalSpacing(10)
+        az_grid.setVerticalSpacing(8)
+        az_grid.setColumnStretch(1, 1)
+
+        az_hdr = QLabel("Azure Key Vault")
+        az_hdr.setStyleSheet(HDR_STYLE)
+        az_grid.addWidget(az_hdr, 0, 0, 1, 2)
+
+        az_grid.addWidget(QLabel("Key Vault URL:"), 1, 0)
+        az_grid.itemAtPosition(1, 0).widget().setStyleSheet(LABEL_STYLE)
+        self.sm_az_vault_url = QLineEdit()
+        self.sm_az_vault_url.setPlaceholderText("https://myvault.vault.azure.net")
+        self.sm_az_vault_url.setFixedHeight(FIELD_HEIGHT)
+        self.sm_az_vault_url.setStyleSheet(INPUT_STYLE)
+        az_grid.addWidget(self.sm_az_vault_url, 1, 1)
+
+        az_hint = QLabel(
+            "Authentication uses DefaultAzureCredential\n"
+            "(env vars → managed identity → Azure CLI)."
+        )
+        az_hint.setStyleSheet(HINT_STYLE)
+        az_grid.addWidget(az_hint, 2, 0, 1, 2)
+        self.sm_config_stack.addWidget(az_page)      # index 2
+
+        layout.addWidget(self.sm_config_stack)
+
+        # ── Action buttons ────────────────────────────────────────────────
+        btn_frame = QFrame()
+        btn_frame.setStyleSheet("""
+            QFrame {
+                background-color: rgba(0, 0, 0, 150);
+                border-radius: 10px;
+                border: 1px solid rgba(100, 200, 255, 50);
+            }
+        """)
+        btn_layout = QHBoxLayout(btn_frame)
+        btn_layout.setContentsMargins(15, 10, 15, 10)
+        btn_layout.setSpacing(10)
+
+        BTN_BASE = """
+            QPushButton {{
+                background-color: rgba(50, 150, 50, 150);
+                border: 2px solid {border};
+                border-radius: 5px;
+                color: {color};
+                font-weight: bold;
+                padding: 6px 18px;
+                font-size: 10pt;
+            }}
+            QPushButton:hover {{ background-color: rgba(70, 170, 70, 200); }}
+            QPushButton:disabled {{ background-color: rgba(60, 60, 60, 120); color: #666; border-color: #444; }}
+        """
+
+        self.sm_connect_btn = QPushButton("Connect")
+        self.sm_connect_btn.setStyleSheet(BTN_BASE.format(border="#64C8FF", color="#000000"))
+        self.sm_connect_btn.clicked.connect(self.configure_secrets_manager)
+        btn_layout.addWidget(self.sm_connect_btn)
+
+        self.sm_test_btn = QPushButton("Test Connection")
+        self.sm_test_btn.setStyleSheet(BTN_BASE.format(border="#64C8FF", color="#000000"))
+        self.sm_test_btn.clicked.connect(self._test_sm_connection)
+        btn_layout.addWidget(self.sm_test_btn)
+
+        self.sm_disconnect_btn = QPushButton("Disconnect")
+        self.sm_disconnect_btn.setStyleSheet(BTN_BASE.format(border="#FF6347", color="#FFFFFF"))
+        self.sm_disconnect_btn.clicked.connect(self._disconnect_sm)
+        btn_layout.addWidget(self.sm_disconnect_btn)
+
+        btn_layout.addStretch()
+        layout.addWidget(btn_frame)
+
         layout.addStretch()
+
+        # Initialise stack to match default provider
+        self._on_sm_provider_changed(self.sm_provider_combo.currentText())
     
     def connect_signals(self):
         """Connect signals from credential manager"""
@@ -654,6 +877,7 @@ with features like access logging, rotation, and fine-grained permissions.
                 'enumeration': '🔍 Enum',
                 'exploitation':'💥 Exploit',
                 'scanned':     '🔍 Scanned',
+                'aws_secrets': '☁ AWS',
             }.get(cred.source, '❓ Unknown')
 
             cred_type = getattr(cred, 'credential_type', 'Username/Password')
@@ -667,7 +891,6 @@ with features like access logging, rotation, and fine-grained permissions.
                 item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
                 self.credentials_table.setItem(row, col, item)
 
-        self.credentials_table.resizeColumnsToContents()
         self.update_security_summary()
 
     def _toggle_password_display(self):
@@ -730,11 +953,335 @@ with features like access logging, rotation, and fine-grained permissions.
                     else:
                         QMessageBox.warning(self, "Error", "Failed to delete credential")
     
+    def _on_sm_provider_changed(self, provider: str):
+        """Switch the config stack to match the selected provider."""
+        index = {"HashiCorp Vault": 0, "AWS Secrets Manager": 1, "Azure Key Vault": 2}.get(provider, 0)
+        self.sm_config_stack.setCurrentIndex(index)
+
     def configure_secrets_manager(self):
-        """Open secrets manager configuration dialog"""
-        dialog = SecretsManagerDialog(self)
-        if dialog.exec() == QDialog.DialogCode.Accepted:
+        """Apply the inline secrets manager configuration."""
+        provider = self.sm_provider_combo.currentText()
+        try:
+            if provider == "HashiCorp Vault":
+                success = secure_credential_manager.configure_secrets_manager(
+                    "vault",
+                    vault_url=self.sm_vault_url.text().strip(),
+                    vault_token=self.sm_vault_token.text().strip(),
+                )
+                if success:
+                    self._save_sm_config({
+                        "provider": provider,
+                        "vault_url": self.sm_vault_url.text().strip(),
+                        "vault_token": self.sm_vault_token.text().strip(),
+                    })
+            elif provider == "AWS Secrets Manager":
+                success = secure_credential_manager.configure_secrets_manager(
+                    "aws",
+                    region=self.sm_aws_region.text().strip() or "us-east-1",
+                    access_key=self.sm_aws_access_key.text().strip() or None,
+                    secret_key=self.sm_aws_secret_key.text().strip() or None,
+                    session_token=self.sm_aws_session_token.text().strip() or None,
+                )
+                if success:
+                    self._save_sm_config({
+                        "provider": provider,
+                        "region": self.sm_aws_region.text().strip() or "us-east-1",
+                        "access_key": self.sm_aws_access_key.text().strip(),
+                        "secret_key": self.sm_aws_secret_key.text().strip(),
+                        "session_token": self.sm_aws_session_token.text().strip(),
+                    })
+            elif provider == "Azure Key Vault":
+                success = secure_credential_manager.configure_secrets_manager(
+                    "azure",
+                    vault_url=self.sm_az_vault_url.text().strip(),
+                )
+                if success:
+                    self._save_sm_config({
+                        "provider": provider,
+                        "vault_url": self.sm_az_vault_url.text().strip(),
+                    })
+            else:
+                success = False
+
+            self._set_sm_status(success, provider if success else None)
             self.update_security_summary()
+        except Exception as e:
+            self._set_sm_status(False, None, error=str(e))
+
+    def _save_sm_config(self, config: dict):
+        """Persist secrets manager config to the encrypted credential store."""
+        import json
+        secure_credential_manager.store_credential(
+            service="huginn-sm-config",
+            notes=json.dumps(config),
+            source="internal",
+        )
+
+    def _load_sm_config(self):
+        """Load saved secrets manager config and auto-connect if present."""
+        import json
+        cred = secure_credential_manager.get_credential(
+            "huginn-sm-config",
+            use_env=False,
+            use_secrets_manager=False,
+        )
+        if not cred or not cred.notes:
+            return
+        try:
+            config = json.loads(cred.notes)
+        except json.JSONDecodeError:
+            return
+
+        provider = config.get("provider", "")
+        if not provider:
+            return
+
+        # Populate the UI fields silently before connecting
+        self.sm_provider_combo.blockSignals(True)
+        self.sm_provider_combo.setCurrentText(provider)
+        self.sm_provider_combo.blockSignals(False)
+        self._on_sm_provider_changed(provider)
+
+        if provider == "HashiCorp Vault":
+            self.sm_vault_url.setText(config.get("vault_url", ""))
+            self.sm_vault_token.setText(config.get("vault_token", ""))
+        elif provider == "AWS Secrets Manager":
+            self.sm_aws_region.setText(config.get("region", "us-east-1"))
+            self.sm_aws_access_key.setText(config.get("access_key", ""))
+            self.sm_aws_secret_key.setText(config.get("secret_key", ""))
+            self.sm_aws_session_token.setText(config.get("session_token", ""))
+        elif provider == "Azure Key Vault":
+            self.sm_az_vault_url.setText(config.get("vault_url", ""))
+
+        # Attempt silent reconnect
+        try:
+            self.configure_secrets_manager()
+        except Exception:
+            pass  # Silently ignore on startup — user can reconnect manually
+
+    def _test_sm_connection(self):
+        """Test the current secrets manager connection without saving."""
+        self.configure_secrets_manager()
+
+    def _disconnect_sm(self):
+        """Clear the active secrets manager connection and remove saved config."""
+        sm = secure_credential_manager._secrets_manager
+        sm.vault_client = None
+        sm.aws_client   = None
+        sm.azure_client = None
+        secure_credential_manager.remove_credential("huginn-sm-config")
+        self._set_sm_status(False, None)
+        self.update_security_summary()
+
+    def _set_sm_status(self, connected: bool, provider: str | None, error: str = ""):
+        """Update the status banner in the Enterprise tab and show/hide the
+        AWS section in the Credentials tab."""
+        if connected:
+            self._status_dot.setStyleSheet("color: #50C878; font-size: 14pt;")
+            self._status_text.setText(f"Connected  ·  {provider}")
+            self._status_text.setStyleSheet("color: #50C878; font-size: 10pt;")
+            self.secrets_status_banner.setStyleSheet("""
+                QFrame {
+                    background-color: rgba(0, 80, 0, 180);
+                    border-radius: 6px;
+                    border: 1px solid rgba(80, 200, 120, 80);
+                }
+            """)
+        elif error:
+            self._status_dot.setStyleSheet("color: #FF6347; font-size: 14pt;")
+            self._status_text.setText(f"Error  ·  {error}")
+            self._status_text.setStyleSheet("color: #FF6347; font-size: 10pt;")
+            self.secrets_status_banner.setStyleSheet("""
+                QFrame {
+                    background-color: rgba(80, 0, 0, 180);
+                    border-radius: 6px;
+                    border: 1px solid rgba(200, 80, 80, 80);
+                }
+            """)
+        else:
+            self._status_dot.setStyleSheet("color: #888888; font-size: 14pt;")
+            self._status_text.setText("Not connected")
+            self._status_text.setStyleSheet("color: #AAAAAA; font-size: 10pt;")
+            self.secrets_status_banner.setStyleSheet("""
+                QFrame {
+                    background-color: rgba(60, 60, 60, 180);
+                    border-radius: 6px;
+                    border: 1px solid rgba(100, 200, 255, 40);
+                }
+            """)
+
+        # Show the AWS section in the Credentials tab only when AWS is active
+        aws_active = connected and provider == "AWS Secrets Manager"
+        self.aws_sm_frame.setVisible(aws_active)
+        if aws_active:
+            self.aws_sm_status_lbl.setText("")
+
+    # ------------------------------------------------------------------
+    # AWS Secrets Manager — push / pull helpers
+    # ------------------------------------------------------------------
+
+    def _aws_sm_client(self):
+        """Return the active AWS Secrets Manager boto3 client, or None."""
+        return secure_credential_manager._secrets_manager.aws_client
+
+    def _aws_set_status(self, msg: str, ok: bool = True):
+        colour = "#50C878" if ok else "#FF6347"
+        self.aws_sm_status_lbl.setStyleSheet(f"font-size: 9pt; color: {colour};")
+        self.aws_sm_status_lbl.setText(msg)
+
+    def _aws_push_selected(self):
+        """Push the currently selected credential row to AWS Secrets Manager."""
+        import json
+        client = self._aws_sm_client()
+        if not client:
+            self._aws_set_status("✗ Not connected to AWS Secrets Manager", ok=False)
+            return
+
+        row = self.credentials_table.currentRow()
+        if row < 0:
+            self._aws_set_status("✗ Select a credential row first", ok=False)
+            return
+
+        from app.core.credential_manager import credential_manager
+        creds = credential_manager.get_credentials()
+        if row >= len(creds):
+            return
+        cred = creds[row]
+
+        secret_name = self.aws_push_name_edit.text().strip()
+        if not secret_name:
+            # Default to huginn/<service> or huginn/credential-<row>
+            secret_name = f"huginn/{cred.service}" if cred.service else f"huginn/credential-{row}"
+
+        payload = {
+            "username": cred.username,
+            "password": cred.password,
+            "domain": cred.domain,
+            "credential_type": cred.credential_type,
+            "notes": cred.notes,
+        }
+
+        try:
+            # Try update first, fall back to create
+            try:
+                client.put_secret_value(
+                    SecretId=secret_name,
+                    SecretString=json.dumps(payload),
+                )
+                self._aws_set_status(f"✓ Updated  {secret_name}")
+            except client.exceptions.ResourceNotFoundException:
+                client.create_secret(
+                    Name=secret_name,
+                    SecretString=json.dumps(payload),
+                )
+                self._aws_set_status(f"✓ Created  {secret_name}")
+        except Exception as exc:
+            self._aws_set_status(f"✗ {exc}", ok=False)
+
+    def _aws_push_all(self):
+        """Push every credential in the table to AWS Secrets Manager."""
+        import json
+        client = self._aws_sm_client()
+        if not client:
+            self._aws_set_status("✗ Not connected to AWS Secrets Manager", ok=False)
+            return
+
+        from app.core.credential_manager import credential_manager
+        creds = credential_manager.get_credentials()
+        if not creds:
+            self._aws_set_status("No credentials to push", ok=True)
+            return
+
+        ok_count = 0
+        errors = []
+        for i, cred in enumerate(creds):
+            svc = cred.service or f"credential-{i}"
+            secret_name = f"huginn/{svc}"
+            payload = {
+                "username": cred.username,
+                "password": cred.password,
+                "domain": cred.domain,
+                "credential_type": cred.credential_type,
+                "notes": cred.notes,
+            }
+            try:
+                try:
+                    client.put_secret_value(
+                        SecretId=secret_name,
+                        SecretString=json.dumps(payload),
+                    )
+                except client.exceptions.ResourceNotFoundException:
+                    client.create_secret(
+                        Name=secret_name,
+                        SecretString=json.dumps(payload),
+                    )
+                ok_count += 1
+            except Exception as exc:
+                errors.append(f"{secret_name}: {exc}")
+
+        if errors:
+            self._aws_set_status(
+                f"✓ {ok_count} pushed  ✗ {len(errors)} failed — see logs",
+                ok=False,
+            )
+            for e in errors:
+                logger.error(f"AWS push error: {e}")
+        else:
+            self._aws_set_status(f"✓ {ok_count} credential(s) pushed")
+
+    def _aws_pull(self):
+        """Fetch a secret from AWS and import it into the active tenant's
+        persistent credential store."""
+        import json
+        client = self._aws_sm_client()
+        if not client:
+            self._aws_set_status("✗ Not connected to AWS Secrets Manager", ok=False)
+            return
+
+        secret_name = self.aws_pull_name_edit.text().strip()
+        if not secret_name:
+            self._aws_set_status("✗ Enter a secret name to fetch", ok=False)
+            return
+
+        try:
+            response = client.get_secret_value(SecretId=secret_name)
+            raw = response.get("SecretString", "")
+            try:
+                data = json.loads(raw)
+            except json.JSONDecodeError:
+                # Plain string — treat as password
+                data = {"password": raw}
+
+            from app.core.credential_manager import (
+                credential_manager, sync_credential_profile_with_session
+            )
+
+            # Ensure the credential manager is bound to the active session
+            # before writing, so the save goes to the correct tenant file.
+            sync_credential_profile_with_session()
+
+            # Derive service name from the secret path (last segment)
+            service = secret_name.split("/")[-1]
+            credential_manager.add_credential(
+                username=data.get("username", ""),
+                password=data.get("password", ""),
+                domain=data.get("domain", ""),
+                service=data.get("service", service),
+                notes=data.get("notes", f"Imported from AWS: {secret_name}"),
+                source="aws_secrets",
+                credential_type=data.get("credential_type", "Username/Password"),
+            )
+            # Explicit save as belt-and-suspenders in case profile was
+            # not set when add_credential ran its internal auto-save.
+            credential_manager.save_to_profile_json()
+
+            self.refresh_credentials()
+            self._aws_set_status(
+                f"✓ Imported  {secret_name}  →  profile '{credential_manager.get_current_profile()}'"
+            )
+            self.aws_pull_name_edit.clear()
+        except Exception as exc:
+            self._aws_set_status(f"✗ {exc}", ok=False)
     
     def clear_secure_memory(self):
         """Clear all secure memory"""
@@ -764,11 +1311,18 @@ with features like access logging, rotation, and fine-grained permissions.
             summary_text += f"• {cred_type}: {count}<br>"
         
         self.security_summary.setText(summary_text)
-        
-        # Update secrets manager status
-        if hasattr(self, 'secrets_status'):
-            self.secrets_status.setText("✗ Not configured")
-            self.secrets_status.setStyleSheet("color: red;")
+
+        # Reflect secrets manager connection state in the Enterprise tab banner
+        sm = secure_credential_manager._secrets_manager
+        if any([sm.vault_client, sm.aws_client, sm.azure_client]):
+            provider = (
+                "HashiCorp Vault" if sm.vault_client else
+                "AWS Secrets Manager" if sm.aws_client else
+                "Azure Key Vault"
+            )
+            self._set_sm_status(True, provider)
+        else:
+            self._set_sm_status(False, None)
     
     def update_profile_label(self):
         """No-op — profile label removed from UI."""

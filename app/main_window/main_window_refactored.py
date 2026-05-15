@@ -679,34 +679,31 @@ class MainWindow(QMainWindow):
             self.status_bar.showMessage("Failed to open Stealth Mode")
     
     def open_ad_enumeration(self):
-        """Open Active Directory enumeration"""
+        """Navigate to RECON > Active Directory tab."""
         try:
             from app.core.license_manager import license_manager
             from PyQt6.QtWidgets import QMessageBox
-            
-            # Server-side license validation
+
             if not license_manager.validate_feature_access('ad_enumeration', server_side=True):
-                QMessageBox.warning(self, "Enterprise Feature", 
-                                  "AD Enumeration requires Enterprise license.\n\n"
-                                  "Visit License Manager to upgrade.")
+                QMessageBox.warning(self, "Enterprise Feature",
+                                    "AD Enumeration requires Enterprise license.\n\n"
+                                    "Visit License Manager to upgrade.")
                 return
-            
-            from app.widgets.ad_enumeration_widget import ADEnumerationWidget
-            from PyQt6.QtWidgets import QDialog, QVBoxLayout
-            
-            dialog = QDialog(self)
-            dialog.setWindowTitle("Active Directory Enumeration & Attacks")
-            dialog.setModal(True)
-            dialog.resize(1100, 800)
-            
-            layout = QVBoxLayout(dialog)
-            ad_enum_widget = ADEnumerationWidget(dialog)
-            layout.addWidget(ad_enum_widget)
-            
-            self.status_bar.showMessage("AD Enumeration opened")
-            dialog.exec()
+
+            self.navigate_to('recon_enumeration')
+            page = self.page_manager.get_page('recon_enumeration')
+            if page and hasattr(page, 'tab_widget'):
+                # Find the Active Directory tab by its label (robust against
+                # optional tabs that may shift the index at runtime).
+                tab_widget = page.tab_widget
+                for i in range(tab_widget.count()):
+                    if 'Active Directory' in tab_widget.tabText(i):
+                        tab_widget.setCurrentIndex(i)
+                        break
+
+            self.status_bar.showMessage("RECON — Active Directory")
         except Exception as e:
-            logger.error(f"Error opening AD enumeration: {e}")
+            logger.error(f"Error navigating to AD enumeration: {e}")
             self.status_bar.showMessage("Failed to open AD Enumeration")
     
     def open_enhanced_reporting(self):
@@ -744,43 +741,44 @@ class MainWindow(QMainWindow):
             self.status_bar.showMessage("Failed to open Enhanced Reporting")
     
     def open_advanced_analytics(self):
-        """Open advanced analytics dashboard"""
+        """Navigate to Findings > Analytics tab."""
         try:
-            from app.widgets.advanced_analytics_widget import create_advanced_analytics_widget
-            
-            tenant_id = getattr(self, 'current_profile_name', 'default')
-            analytics_widget = create_advanced_analytics_widget(tenant_id)
-            
-            dialog = self._create_dialog("Advanced Analytics Dashboard", 
-                                       lambda parent: analytics_widget, (1400, 900))
-            self.status_bar.showMessage("Advanced Analytics Dashboard opened")
-            dialog.exec()
-        except ImportError as e:
-            logger.error(f"Analytics widget import failed in open_advanced_analytics: {e}")
-            self.status_bar.showMessage("Advanced Analytics not available")
+            self.navigate_to('findings')
+            page = self.page_manager.get_page('findings')
+            if page and hasattr(page, 'tab_widget'):
+                tab_widget = page.tab_widget
+                for i in range(tab_widget.count()):
+                    if 'Analytics' in tab_widget.tabText(i):
+                        tab_widget.setCurrentIndex(i)
+                        break
+
+            self.status_bar.showMessage("Findings — Advanced Analytics")
         except Exception as e:
             logger.error(f"Unexpected error in open_advanced_analytics: {e}")
             self.status_bar.showMessage("Failed to open Advanced Analytics")
     
     def open_wireless_security(self):
-        """Open wireless security testing"""
+        """Navigate to RECON > Wireless tab."""
         try:
             from app.core.license_manager import license_manager
             from PyQt6.QtWidgets import QMessageBox
-            
+
             if not license_manager.validate_feature_access('wireless_security', server_side=True):
-                QMessageBox.warning(self, "Enterprise Feature", 
-                                  "Wireless Security requires Enterprise license.\n\n"
-                                  "Visit License Manager to upgrade.")
+                QMessageBox.warning(self, "Enterprise Feature",
+                                    "Wireless Security requires Enterprise license.\n\n"
+                                    "Visit License Manager to upgrade.")
                 return
-                
-            from app.widgets.wireless_security_widget import WirelessSecurityWidget
-            dialog = self._create_dialog("Wireless Security Testing Framework", WirelessSecurityWidget, (1100, 700))
-            self.status_bar.showMessage("Wireless Security opened")
-            dialog.exec()
-        except ImportError as e:
-            logger.error(f"Wireless security widget import failed in open_wireless_security: {e}")
-            self.status_bar.showMessage("Wireless Security not available")
+
+            self.navigate_to('recon_enumeration')
+            page = self.page_manager.get_page('recon_enumeration')
+            if page and hasattr(page, 'tab_widget'):
+                tab_widget = page.tab_widget
+                for i in range(tab_widget.count()):
+                    if 'Wireless' in tab_widget.tabText(i):
+                        tab_widget.setCurrentIndex(i)
+                        break
+
+            self.status_bar.showMessage("RECON — Wireless Security")
         except Exception as e:
             logger.error(f"Unexpected error in open_wireless_security: {e}")
             self.status_bar.showMessage("Failed to open Wireless Security")

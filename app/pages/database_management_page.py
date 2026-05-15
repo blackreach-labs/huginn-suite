@@ -2,7 +2,8 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QSplitter,
                              QTreeWidget, QTreeWidgetItem, QTextEdit, QPushButton, 
                              QLabel, QComboBox, QTableWidget, QTableWidgetItem,
                              QGroupBox, QMessageBox, QProgressBar, QTabWidget,
-                             QHeaderView, QFrame, QScrollArea, QLineEdit, QSpinBox)
+                             QHeaderView, QFrame, QScrollArea, QLineEdit, QSpinBox,
+                             QCheckBox, QFormLayout, QListWidget)
 from PyQt6.QtCore import Qt, QThread, pyqtSignal, QTimer
 from PyQt6.QtGui import QFont, QIcon
 import sqlite3
@@ -228,9 +229,9 @@ class DatabaseManagementPage(QWidget):
         self.cleanup_btn.clicked.connect(self.cleanup_old_data)
         
         self.connect_remote_btn = QPushButton("🌐 Connect Remote DB")
-        self.connect_remote_btn.clicked.connect(self.connect_remote_database)
+        self.connect_remote_btn.clicked.connect(self.toggle_remote_panel)
         self.manage_connections_btn = QPushButton("🔗 Manage Connections")
-        self.manage_connections_btn.clicked.connect(self.manage_remote_connections)
+        self.manage_connections_btn.clicked.connect(self.toggle_connections_panel)
         
         for btn in [self.refresh_btn, self.compact_btn, self.analyze_btn, self.backup_btn, self.integrity_btn, self.export_btn, self.cleanup_btn, self.connect_remote_btn, self.manage_connections_btn]:
             btn.setStyleSheet("""
@@ -256,7 +257,155 @@ class DatabaseManagementPage(QWidget):
             actions_layout.addWidget(btn)
         
         layout.addWidget(actions_group)
-        
+
+        # ── Inline: Connect Remote DB panel (hidden by default) ──────────
+        self.remote_panel = QFrame()
+        self.remote_panel.setVisible(False)
+        self.remote_panel.setStyleSheet("""
+            QFrame {
+                background-color: rgba(0, 20, 40, 180);
+                border: 1px solid rgba(100, 200, 255, 150);
+                border-radius: 5px;
+            }
+            QLabel { color: #DCDCDC; }
+            QLineEdit, QSpinBox, QComboBox {
+                background-color: rgba(20, 30, 40, 200);
+                color: #DCDCDC;
+                border: 1px solid rgba(100, 200, 255, 100);
+                border-radius: 3px;
+                padding: 4px;
+            }
+            QCheckBox { color: #DCDCDC; }
+        """)
+        rp_layout = QVBoxLayout(self.remote_panel)
+        rp_layout.setContentsMargins(10, 8, 10, 8)
+        rp_layout.setSpacing(4)
+
+        rp_title = QLabel("🌐 Remote Database Connection")
+        rp_title.setStyleSheet("font-weight: bold; color: #64C8FF; font-size: 11pt;")
+        rp_layout.addWidget(rp_title)
+
+        form = QFormLayout()
+        form.setSpacing(4)
+
+        self.rp_name = QLineEdit()
+        self.rp_name.setPlaceholderText("My Connection")
+        form.addRow("Name:", self.rp_name)
+
+        self.rp_type = QComboBox()
+        self.rp_type.addItems(["MySQL", "PostgreSQL", "MSSQL", "Oracle"])
+        self.rp_type.currentTextChanged.connect(self._rp_update_port)
+        form.addRow("Type:", self.rp_type)
+
+        self.rp_host = QLineEdit()
+        self.rp_host.setPlaceholderText("host or IP")
+        form.addRow("Host:", self.rp_host)
+
+        self.rp_port = QSpinBox()
+        self.rp_port.setRange(1, 65535)
+        self.rp_port.setValue(3306)
+        form.addRow("Port:", self.rp_port)
+
+        self.rp_database = QLineEdit()
+        self.rp_database.setPlaceholderText("database name")
+        form.addRow("Database:", self.rp_database)
+
+        self.rp_username = QLineEdit()
+        self.rp_username.setPlaceholderText("username")
+        form.addRow("Username:", self.rp_username)
+
+        self.rp_password = QLineEdit()
+        self.rp_password.setEchoMode(QLineEdit.EchoMode.Password)
+        self.rp_password.setPlaceholderText("password")
+        form.addRow("Password:", self.rp_password)
+
+        self.rp_ssl = QCheckBox("Enable SSL/TLS")
+        form.addRow("", self.rp_ssl)
+
+        rp_layout.addLayout(form)
+
+        self.rp_status = QLabel("")
+        self.rp_status.setWordWrap(True)
+        self.rp_status.setStyleSheet("color: #87CEEB; font-size: 9pt; padding: 2px;")
+        rp_layout.addWidget(self.rp_status)
+
+        rp_btn_row = QHBoxLayout()
+        _btn_style = """
+            QPushButton {
+                background-color: rgba(100, 200, 255, 150);
+                color: #000000; border: none; border-radius: 4px;
+                padding: 6px 10px; font-weight: bold;
+            }
+            QPushButton:hover { background-color: rgba(100, 200, 255, 220); }
+        """
+        rp_test_btn = QPushButton("🔍 Test")
+        rp_test_btn.setStyleSheet(_btn_style)
+        rp_test_btn.clicked.connect(self._rp_test_connection)
+
+        rp_connect_btn = QPushButton("🔗 Connect")
+        rp_connect_btn.setStyleSheet(_btn_style)
+        rp_connect_btn.clicked.connect(self._rp_connect)
+
+        rp_cancel_btn = QPushButton("✕ Cancel")
+        rp_cancel_btn.setStyleSheet(_btn_style)
+        rp_cancel_btn.clicked.connect(lambda: self.remote_panel.setVisible(False))
+
+        rp_btn_row.addWidget(rp_test_btn)
+        rp_btn_row.addWidget(rp_connect_btn)
+        rp_btn_row.addWidget(rp_cancel_btn)
+        rp_layout.addLayout(rp_btn_row)
+
+        layout.addWidget(self.remote_panel)
+
+        # ── Inline: Manage Connections panel (hidden by default) ─────────
+        self.connections_panel = QFrame()
+        self.connections_panel.setVisible(False)
+        self.connections_panel.setStyleSheet("""
+            QFrame {
+                background-color: rgba(0, 20, 40, 180);
+                border: 1px solid rgba(100, 200, 255, 150);
+                border-radius: 5px;
+            }
+            QLabel { color: #DCDCDC; }
+            QListWidget {
+                background-color: rgba(20, 30, 40, 200);
+                color: #DCDCDC;
+                border: 1px solid rgba(100, 200, 255, 100);
+                border-radius: 3px;
+            }
+        """)
+        cp_layout = QVBoxLayout(self.connections_panel)
+        cp_layout.setContentsMargins(10, 8, 10, 8)
+        cp_layout.setSpacing(4)
+
+        cp_title = QLabel("🔗 Active Remote Connections")
+        cp_title.setStyleSheet("font-weight: bold; color: #64C8FF; font-size: 11pt;")
+        cp_layout.addWidget(cp_title)
+
+        self.cp_list = QListWidget()
+        self.cp_list.setMaximumHeight(120)
+        cp_layout.addWidget(self.cp_list)
+
+        cp_btn_row = QHBoxLayout()
+        cp_disconnect_btn = QPushButton("❌ Disconnect")
+        cp_disconnect_btn.setStyleSheet(_btn_style)
+        cp_disconnect_btn.clicked.connect(self._cp_disconnect_selected)
+
+        cp_disconnect_all_btn = QPushButton("❌ Disconnect All")
+        cp_disconnect_all_btn.setStyleSheet(_btn_style)
+        cp_disconnect_all_btn.clicked.connect(self._cp_disconnect_all)
+
+        cp_close_btn = QPushButton("✕ Close")
+        cp_close_btn.setStyleSheet(_btn_style)
+        cp_close_btn.clicked.connect(lambda: self.connections_panel.setVisible(False))
+
+        cp_btn_row.addWidget(cp_disconnect_btn)
+        cp_btn_row.addWidget(cp_disconnect_all_btn)
+        cp_btn_row.addWidget(cp_close_btn)
+        cp_layout.addLayout(cp_btn_row)
+
+        layout.addWidget(self.connections_panel)
+
         return panel
     
     def create_query_panel(self) -> QWidget:
@@ -963,181 +1112,120 @@ class DatabaseManagementPage(QWidget):
             self.export_btn.setEnabled(True)
             QMessageBox.critical(self, "Error", f"Failed to export table data:\n{e}")
     
-    def connect_remote_database(self):
-        """Connect to a remote database"""
-        from PyQt6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QFormLayout, QLineEdit, QComboBox, QCheckBox, QPushButton, QSpinBox
-        
-        dialog = QDialog(self)
-        dialog.setWindowTitle("Connect to Remote Database")
-        dialog.setModal(True)
-        dialog.resize(400, 350)
-        
-        layout = QVBoxLayout(dialog)
-        form_layout = QFormLayout()
-        
-        # Connection fields
-        name_input = QLineEdit()
-        name_input.setPlaceholderText("My Database Connection")
-        form_layout.addRow("Connection Name:", name_input)
-        
-        type_combo = QComboBox()
-        type_combo.addItems(["MySQL", "PostgreSQL", "MSSQL", "Oracle"])
-        form_layout.addRow("Database Type:", type_combo)
-        
-        host_input = QLineEdit()
-        host_input.setPlaceholderText("localhost or IP address")
-        form_layout.addRow("Host:", host_input)
-        
-        port_input = QSpinBox()
-        port_input.setRange(1, 65535)
-        port_input.setValue(3306)
-        form_layout.addRow("Port:", port_input)
-        
-        def update_port():
-            ports = {"MySQL": 3306, "PostgreSQL": 5432, "MSSQL": 1433, "Oracle": 1521}
-            port_input.setValue(ports.get(type_combo.currentText(), 3306))
-        
-        type_combo.currentTextChanged.connect(update_port)
-        
-        database_input = QLineEdit()
-        database_input.setPlaceholderText("Database name")
-        form_layout.addRow("Database:", database_input)
-        
-        username_input = QLineEdit()
-        username_input.setPlaceholderText("Username")
-        form_layout.addRow("Username:", username_input)
-        
-        password_input = QLineEdit()
-        password_input.setEchoMode(QLineEdit.EchoMode.Password)
-        password_input.setPlaceholderText("Password")
-        form_layout.addRow("Password:", password_input)
-        
-        ssl_checkbox = QCheckBox("Enable SSL/TLS")
-        form_layout.addRow("Security:", ssl_checkbox)
-        
-        layout.addLayout(form_layout)
-        
-        # Buttons
-        button_layout = QHBoxLayout()
-        test_btn = QPushButton("Test Connection")
-        connect_btn = QPushButton("Connect")
-        cancel_btn = QPushButton("Cancel")
-        
-        def test_connection():
-            from app.core.remote_database_connector import DatabaseConnection, remote_db_manager
-            
-            config = DatabaseConnection(
-                name=name_input.text() or "Test Connection",
-                db_type=type_combo.currentText().lower(),
-                host=host_input.text(),
-                port=port_input.value(),
-                database=database_input.text(),
-                username=username_input.text(),
-                password=password_input.text(),
-                ssl_enabled=ssl_checkbox.isChecked()
-            )
-            
-            success, message = remote_db_manager.test_connection(config)
-            if success:
-                QMessageBox.information(dialog, "Connection Test", "Connection successful!")
-            else:
-                QMessageBox.warning(dialog, "Connection Test", f"Connection failed:\n{message}")
-        
-        def connect_database():
-            if not all([name_input.text(), host_input.text(), database_input.text(), username_input.text()]):
-                QMessageBox.warning(dialog, "Missing Information", "Please fill in all required fields.")
-                return
-            
-            from app.core.remote_database_connector import DatabaseConnection, remote_db_manager
-            
-            config = DatabaseConnection(
-                name=name_input.text(),
-                db_type=type_combo.currentText().lower(),
-                host=host_input.text(),
-                port=port_input.value(),
-                database=database_input.text(),
-                username=username_input.text(),
-                password=password_input.text(),
-                ssl_enabled=ssl_checkbox.isChecked()
-            )
-            
-            success, message = remote_db_manager.connect(config)
-            if success:
-                self.remote_connections[config.name] = config
-                self.load_databases()
-                QMessageBox.information(dialog, "Connection Successful", message)
-                dialog.accept()
-            else:
-                QMessageBox.critical(dialog, "Connection Failed", message)
-        
-        test_btn.clicked.connect(test_connection)
-        connect_btn.clicked.connect(connect_database)
-        cancel_btn.clicked.connect(dialog.reject)
-        
-        button_layout.addWidget(test_btn)
-        button_layout.addWidget(connect_btn)
-        button_layout.addWidget(cancel_btn)
-        layout.addLayout(button_layout)
-        
-        dialog.exec()
-    
-    def manage_remote_connections(self):
-        """Manage active remote database connections"""
-        from PyQt6.QtWidgets import QDialog, QVBoxLayout, QListWidget, QHBoxLayout, QPushButton
+    def toggle_remote_panel(self):
+        """Toggle the inline remote connection panel."""
+        visible = not self.remote_panel.isVisible()
+        self.remote_panel.setVisible(visible)
+        # Close the other panel if open
+        if visible:
+            self.connections_panel.setVisible(False)
+            self.rp_status.setText("")
+
+    def toggle_connections_panel(self):
+        """Toggle the inline manage-connections panel."""
+        visible = not self.connections_panel.isVisible()
+        self.connections_panel.setVisible(visible)
+        if visible:
+            self.remote_panel.setVisible(False)
+            self._cp_refresh_list()
+
+    def _rp_update_port(self, db_type: str):
+        """Auto-update port when DB type changes."""
+        ports = {"MySQL": 3306, "PostgreSQL": 5432, "MSSQL": 1433, "Oracle": 1521}
+        self.rp_port.setValue(ports.get(db_type, 3306))
+
+    def _rp_build_config(self):
+        from app.core.remote_database_connector import DatabaseConnection
+        return DatabaseConnection(
+            name=self.rp_name.text().strip() or "Remote Connection",
+            db_type=self.rp_type.currentText().lower(),
+            host=self.rp_host.text().strip(),
+            port=self.rp_port.value(),
+            database=self.rp_database.text().strip(),
+            username=self.rp_username.text().strip(),
+            password=self.rp_password.text(),
+            ssl_enabled=self.rp_ssl.isChecked(),
+        )
+
+    def _rp_test_connection(self):
+        """Test the remote connection inline."""
         from app.core.remote_database_connector import remote_db_manager
-        
-        dialog = QDialog(self)
-        dialog.setWindowTitle("Manage Remote Connections")
-        dialog.setModal(True)
-        dialog.resize(500, 400)
-        
-        layout = QVBoxLayout(dialog)
-        
-        connections_list = QListWidget()
-        active_connections = remote_db_manager.get_active_connections()
-        
-        for conn_name in active_connections:
-            if conn_name in self.remote_connections:
-                config = self.remote_connections[conn_name]
-                item_text = f"{conn_name} ({config.db_type.upper()}) - {config.host}:{config.port}/{config.database}"
-                connections_list.addItem(item_text)
-        
-        layout.addWidget(connections_list)
-        
-        button_layout = QHBoxLayout()
-        disconnect_btn = QPushButton("Disconnect Selected")
-        disconnect_all_btn = QPushButton("Disconnect All")
-        close_btn = QPushButton("Close")
-        
-        def disconnect_selected():
-            current_item = connections_list.currentItem()
-            if current_item:
-                conn_name = current_item.text().split(" (")[0]
-                if remote_db_manager.disconnect(conn_name):
-                    if conn_name in self.remote_connections:
-                        del self.remote_connections[conn_name]
-                    connections_list.takeItem(connections_list.currentRow())
-                    self.load_databases()
-                    self.status_label.setText(f"Disconnected from {conn_name}")
-        
-        def disconnect_all():
-            remote_db_manager.disconnect_all()
-            self.remote_connections.clear()
-            connections_list.clear()
+        self.rp_status.setText("Testing connection…")
+        self.rp_status.setStyleSheet("color: #87CEEB; font-size: 9pt;")
+        config = self._rp_build_config()
+        success, message = remote_db_manager.test_connection(config)
+        if success:
+            self.rp_status.setText("✅ Connection successful")
+            self.rp_status.setStyleSheet("color: #90EE90; font-size: 9pt;")
+        else:
+            self.rp_status.setText(f"❌ {message}")
+            self.rp_status.setStyleSheet("color: #FF6B6B; font-size: 9pt;")
+
+    def _rp_connect(self):
+        """Establish the remote connection inline."""
+        from app.core.remote_database_connector import remote_db_manager
+        if not all([self.rp_name.text().strip(), self.rp_host.text().strip(),
+                    self.rp_database.text().strip(), self.rp_username.text().strip()]):
+            self.rp_status.setText("❌ Please fill in all required fields.")
+            self.rp_status.setStyleSheet("color: #FF6B6B; font-size: 9pt;")
+            return
+
+        self.rp_status.setText("Connecting…")
+        self.rp_status.setStyleSheet("color: #87CEEB; font-size: 9pt;")
+        config = self._rp_build_config()
+        success, message = remote_db_manager.connect(config)
+        if success:
+            self.remote_connections[config.name] = config
             self.load_databases()
-            self.status_label.setText("All remote connections disconnected")
-        
-        disconnect_btn.clicked.connect(disconnect_selected)
-        disconnect_all_btn.clicked.connect(disconnect_all)
-        close_btn.clicked.connect(dialog.accept)
-        
-        button_layout.addWidget(disconnect_btn)
-        button_layout.addWidget(disconnect_all_btn)
-        button_layout.addStretch()
-        button_layout.addWidget(close_btn)
-        layout.addLayout(button_layout)
-        
-        dialog.exec()
+            self.rp_status.setText(f"✅ Connected: {config.name}")
+            self.rp_status.setStyleSheet("color: #90EE90; font-size: 9pt;")
+            self.status_label.setText(f"Connected to remote {config.db_type.upper()}: {config.host}")
+            # Clear the form and collapse after a short delay
+            QTimer.singleShot(1500, lambda: self.remote_panel.setVisible(False))
+        else:
+            self.rp_status.setText(f"❌ {message}")
+            self.rp_status.setStyleSheet("color: #FF6B6B; font-size: 9pt;")
+
+    def _cp_refresh_list(self):
+        """Refresh the active connections list."""
+        from app.core.remote_database_connector import remote_db_manager
+        self.cp_list.clear()
+        for conn_name in remote_db_manager.get_active_connections():
+            if conn_name in self.remote_connections:
+                cfg = self.remote_connections[conn_name]
+                self.cp_list.addItem(
+                    f"{conn_name}  ({cfg.db_type.upper()})  {cfg.host}:{cfg.port}/{cfg.database}"
+                )
+
+    def _cp_disconnect_selected(self):
+        """Disconnect the selected connection."""
+        from app.core.remote_database_connector import remote_db_manager
+        item = self.cp_list.currentItem()
+        if not item:
+            return
+        conn_name = item.text().split("  ")[0]
+        if remote_db_manager.disconnect(conn_name):
+            self.remote_connections.pop(conn_name, None)
+            self.load_databases()
+            self.status_label.setText(f"Disconnected from {conn_name}")
+        self._cp_refresh_list()
+
+    def _cp_disconnect_all(self):
+        """Disconnect all remote connections."""
+        from app.core.remote_database_connector import remote_db_manager
+        remote_db_manager.disconnect_all()
+        self.remote_connections.clear()
+        self.load_databases()
+        self.status_label.setText("All remote connections disconnected")
+        self._cp_refresh_list()
+
+    def connect_remote_database(self):
+        """Legacy entry point — now opens the inline panel instead."""
+        self.toggle_remote_panel()
+
+    def manage_remote_connections(self):
+        """Legacy entry point — now opens the inline panel instead."""
+        self.toggle_connections_panel()
     
     def detect_database_type(self) -> str:
         """Detect database type based on current selection"""

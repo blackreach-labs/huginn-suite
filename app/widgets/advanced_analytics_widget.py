@@ -69,23 +69,33 @@ class AdvancedAnalyticsWidget(QWidget):
         """Create trend analysis tab"""
         widget = QWidget()
         layout = QVBoxLayout(widget)
-        
-        # Trend analysis table
+
         self.trend_table = QTableWidget()
         self.trend_table.setColumnCount(6)
         self.trend_table.setHorizontalHeaderLabels([
             "Metric", "Current", "Previous", "Change %", "Trend", "Confidence"
         ])
-        self.trend_table.horizontalHeader().setStretchLastSection(True)
         self.trend_table.setAlternatingRowColors(True)
+        self.trend_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+        self.trend_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        self.trend_table.verticalHeader().setVisible(False)
         self.trend_table.setStyleSheet("""
             QTableWidget { gridline-color: #ecf0f1; }
-            QTableWidget::item { padding: 8px; }
+            QTableWidget::item { padding: 6px 10px; }
         """)
-        
+
+        # Column sizing: Metric stretches; numeric columns fixed-width
+        hdr = self.trend_table.horizontalHeader()
+        hdr.setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)          # Metric
+        hdr.setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)  # Current
+        hdr.setSectionResizeMode(2, QHeaderView.ResizeMode.ResizeToContents)  # Previous
+        hdr.setSectionResizeMode(3, QHeaderView.ResizeMode.ResizeToContents)  # Change %
+        hdr.setSectionResizeMode(4, QHeaderView.ResizeMode.ResizeToContents)  # Trend
+        hdr.setSectionResizeMode(5, QHeaderView.ResizeMode.ResizeToContents)  # Confidence
+
         layout.addWidget(QLabel("📊 Security Trend Analysis"))
         layout.addWidget(self.trend_table)
-        
+
         return widget
     
     def create_anomaly_detection_tab(self) -> QWidget:
@@ -150,37 +160,45 @@ class AdvancedAnalyticsWidget(QWidget):
         """Create security maturity tab"""
         widget = QWidget()
         layout = QVBoxLayout(widget)
-        
+
         # Maturity score display
         score_layout = QHBoxLayout()
-        
         self.maturity_score_label = QLabel("Security Maturity Score")
         self.maturity_score_label.setStyleSheet("font-size: 16px; font-weight: bold;")
         score_layout.addWidget(self.maturity_score_label)
-        
         self.maturity_score_value = QLabel("--")
         self.maturity_score_value.setStyleSheet("font-size: 24px; font-weight: bold; color: #3498db;")
         score_layout.addWidget(self.maturity_score_value)
         score_layout.addStretch()
-        
         layout.addLayout(score_layout)
-        
-        # Maturity breakdown
+
+        # Maturity breakdown table
         self.maturity_breakdown = QTableWidget()
         self.maturity_breakdown.setColumnCount(2)
         self.maturity_breakdown.setHorizontalHeaderLabels(["Scan Type", "Maturity Score"])
-        self.maturity_breakdown.horizontalHeader().setStretchLastSection(True)
-        
+        self.maturity_breakdown.setAlternatingRowColors(True)
+        self.maturity_breakdown.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+        self.maturity_breakdown.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        self.maturity_breakdown.verticalHeader().setVisible(False)
+        self.maturity_breakdown.setStyleSheet("""
+            QTableWidget { gridline-color: #ecf0f1; }
+            QTableWidget::item { padding: 6px 10px; }
+        """)
+
+        # Scan Type stretches; Score column sized to content
+        mb_hdr = self.maturity_breakdown.horizontalHeader()
+        mb_hdr.setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
+        mb_hdr.setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)
+
         layout.addWidget(QLabel("📋 Maturity Breakdown"))
         layout.addWidget(self.maturity_breakdown)
-        
+
         # Recommendations
         self.recommendations_list = QListWidget()
         self.recommendations_list.setMaximumHeight(150)
-        
         layout.addWidget(QLabel("💡 Recommendations"))
         layout.addWidget(self.recommendations_list)
-        
+
         return widget
     
     def create_prediction_card(self, title: str, icon: str) -> QGroupBox:
@@ -268,6 +286,11 @@ class AdvancedAnalyticsWidget(QWidget):
             # Confidence
             confidence_item = QTableWidgetItem(f"{trend.confidence:.1%}")
             self.trend_table.setItem(i, 5, confidence_item)
+
+        self.trend_table.resizeColumnsToContents()
+        # Keep Metric column stretching after resize
+        self.trend_table.horizontalHeader().setSectionResizeMode(
+            0, QHeaderView.ResizeMode.Stretch)
     
     def update_anomaly_detection(self):
         """Update anomaly detection data"""
@@ -390,6 +413,11 @@ class AdvancedAnalyticsWidget(QWidget):
                 score_item.setForeground(QColor("#e74c3c"))
             
             self.maturity_breakdown.setItem(i, 1, score_item)
+
+        self.maturity_breakdown.resizeColumnsToContents()
+        # Keep Scan Type column stretching after resize
+        self.maturity_breakdown.horizontalHeader().setSectionResizeMode(
+            0, QHeaderView.ResizeMode.Stretch)
         
         # Update recommendations
         recommendations = maturity.get('recommendations', [])

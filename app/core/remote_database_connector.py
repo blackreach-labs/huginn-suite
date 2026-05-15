@@ -205,11 +205,18 @@ class OracleConnector(DatabaseConnector):
     
     def connect(self, config: DatabaseConnection) -> Any:
         try:
-            import cx_Oracle
-            dsn = cx_Oracle.makedsn(config.host, config.port, service_name=config.database)
-            return cx_Oracle.connect(config.username, config.password, dsn)
+            import oracledb
+            # Use explicit host/port/service_name params — compatible with
+            # oracledb thin mode (no Oracle Client libraries required).
+            return oracledb.connect(
+                user=config.username,
+                password=config.password,
+                host=config.host,
+                port=config.port,
+                service_name=config.database
+            )
         except ImportError:
-            raise Exception("cx_Oracle not installed. Install with: pip install cx_Oracle")
+            raise Exception("oracledb not installed. Install with: pip install oracledb")
     
     def execute_query(self, connection: Any, query: str) -> Tuple[bool, List[Tuple], List[str], str]:
         try:

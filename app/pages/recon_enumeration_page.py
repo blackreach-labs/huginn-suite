@@ -92,7 +92,15 @@ class ReconEnumerationPage(QWidget, ServiceScannersMixin, ServiceUIComponentsMix
         # Active Directory tab
         ad_tab = self.create_ad_tab()
         self.tab_widget.addTab(ad_tab, "🏢 Active Directory")
-        
+
+        # Wireless Security tab
+        try:
+            from app.widgets.wireless_security_widget import WirelessSecurityWidget
+            wireless_tab = WirelessSecurityWidget(self)
+            self.tab_widget.addTab(wireless_tab, "📡 Wireless")
+        except Exception as _exc:
+            logger.debug("Wireless security tab unavailable", exc_info=True)
+
         main_layout.addWidget(self.tab_widget)
     
     def on_tenant_changed(self, old_tenant, new_tenant):

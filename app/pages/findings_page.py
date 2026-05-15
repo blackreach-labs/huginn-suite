@@ -7,7 +7,6 @@ from app.pages.components.base_page import BasePage
 from app.components.findings.findings_list_component import FindingsListComponent
 from app.components.findings.findings_details_component import FindingsDetailsComponent
 from app.components.findings.advanced_reporting_component import AdvancedReportingComponent
-
 class FindingsPage(BasePage):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -31,6 +30,18 @@ class FindingsPage(BasePage):
         # Advanced Reporting tab
         reporting_tab = self.create_reporting_tab()
         self.tab_widget.addTab(reporting_tab, "📈 Advanced Reporting")
+
+        # Remediation tab (moved from Attack Chain home → Report tab)
+        remediation_tab = self.create_remediation_tab()
+        self.tab_widget.addTab(remediation_tab, "🛠️ Remediation")
+
+        # Dashboard tab (moved from Attack Chain home → Report tab)
+        dashboard_tab = self.create_dashboard_tab()
+        self.tab_widget.addTab(dashboard_tab, "🛡️ Dashboard")
+
+        # Advanced Analytics tab (merged — was also a subtab of the Report tab)
+        analytics_tab = self.create_analytics_tab()
+        self.tab_widget.addTab(analytics_tab, "📊 Analytics")
         
         self.main_layout.addWidget(self.tab_widget)
 
@@ -52,6 +63,51 @@ class FindingsPage(BasePage):
     def create_reporting_tab(self):
         self.reporting_component = AdvancedReportingComponent()
         return self.reporting_component
+
+    def create_remediation_tab(self):
+        try:
+            from app.widgets.remediation_widget import RemediationWidget
+            from PyQt6.QtWidgets import QApplication
+            main_window = self.window()
+            tenant_id = getattr(main_window, 'current_profile_name', 'default')
+            self.remediation_widget = RemediationWidget(tenant_id)
+            return self.remediation_widget
+        except Exception:
+            from PyQt6.QtWidgets import QLabel
+            placeholder = QLabel("🛠️ Automated Remediation Engine\n(Remediation planning and execution)")
+            placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            placeholder.setStyleSheet("color: #87CEEB; font-size: 14pt;")
+            return placeholder
+
+    def create_dashboard_tab(self):
+        try:
+            from app.pages.centralized_dashboard_page import create_centralized_dashboard
+            main_window = self.window()
+            tenant_id = getattr(main_window, 'current_profile_name', 'default')
+            self.dashboard_widget = create_centralized_dashboard(tenant_id)
+            return self.dashboard_widget
+        except Exception:
+            from PyQt6.QtWidgets import QLabel
+            placeholder = QLabel("🛡️ Centralized Security Dashboard\n(Real-time metrics and monitoring)")
+            placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            placeholder.setStyleSheet("color: #87CEEB; font-size: 14pt;")
+            return placeholder
+
+    def create_analytics_tab(self):
+        try:
+            from app.widgets.advanced_analytics_widget import create_advanced_analytics_widget
+            from PyQt6.QtWidgets import QApplication
+            # Pick up the active profile/tenant if available
+            main_window = self.window()
+            tenant_id = getattr(main_window, 'current_profile_name', 'default')
+            self.analytics_widget = create_advanced_analytics_widget(tenant_id)
+            return self.analytics_widget
+        except Exception:
+            from PyQt6.QtWidgets import QLabel
+            placeholder = QLabel("📊 Advanced Analytics not available")
+            placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            placeholder.setStyleSheet("color: #87CEEB; font-size: 14pt;")
+            return placeholder
 
     def connect_signals(self):
         # Connect findings list to details

@@ -89,14 +89,45 @@ class SecretsManagerIntegration:
         except ImportError:
             raise ImportError("hvac library required for HashiCorp Vault integration")
 
-    def init_aws_secrets(self, region: str = "us-east-1"):
-        """Initialize AWS Secrets Manager client"""
+    def init_aws_secrets(self, region: str = "us-east-1",
+                         access_key: str = None, secret_key: str = None,
+                         session_token: str = None):
+        """Initialize AWS Secrets Manager client.
+
+        If ``access_key`` and ``secret_key`` are provided they are used
+        directly (useful for temporary STS credentials).  When omitted,
+        boto3 falls back to the standard credential chain (env vars,
+        ~/.aws/credentials, IAM instance role).
+
+        Performs a live STS ``get_caller_identity`` call to verify the
+        credentials are valid before returning.  Raises on failure so the
+        caller can surface a meaningful error message.
+        """
         try:
             import boto3
-            self.aws_client = boto3.client('secretsmanager', region_name=region)
+            import botocore.exceptions
+
+            creds = {"region_name": region}
+            if access_key and secret_key:
+                creds["aws_access_key_id"] = access_key
+                creds["aws_secret_access_key"] = secret_key
+                if session_token:
+                    creds["aws_session_token"] = session_token
+
+            # Validate credentials with a lightweight STS call before
+            # storing the client.  This raises ClientError / NoCredentials
+            # on bad or missing credentials.
+            sts = boto3.client("sts", **creds)
+            sts.get_caller_identity()
+
+            self.aws_client = boto3.client("secretsmanager", **creds)
             return True
+
         except ImportError:
             raise ImportError("boto3 library required for AWS Secrets Manager integration")
+        except Exception as exc:
+            self.aws_client = None
+            raise exc
 
     def init_azure_keyvault(self, vault_url: str):
         """Initialize Azure Key Vault client"""
@@ -373,23 +404,22 @@ class SecureCredentialManager(QObject):
 
     def configure_secrets_manager(self, provider: str, **kwargs) -> bool:
         """Configure enterprise secrets management integration."""
-        try:
-            if provider == "vault":
-                return self._secrets_manager.init_hashicorp_vault(
-                    kwargs.get('vault_url'), kwargs.get('vault_token')
-                )
-            elif provider == "aws":
-                return self._secrets_manager.init_aws_secrets(
-                    kwargs.get('region', 'us-east-1')
-                )
-            elif provider == "azure":
-                return self._secrets_manager.init_azure_keyvault(
-                    kwargs.get('vault_url')
-                )
-            return False
-        except Exception as e:
-            self.security_event.emit("secrets_manager_error", str(e))
-            return False
+        if provider == "vault":
+            return self._secrets_manager.init_hashicorp_vault(
+                kwargs.get('vault_url'), kwargs.get('vault_token')
+            )
+        elif provider == "aws":
+            return self._secrets_manager.init_aws_secrets(
+                kwargs.get('region', 'us-east-1'),
+                access_key=kwargs.get('access_key'),
+                secret_key=kwargs.get('secret_key'),
+                session_token=kwargs.get('session_token'),
+            )
+        elif provider == "azure":
+            return self._secrets_manager.init_azure_keyvault(
+                kwargs.get('vault_url')
+            )
+        return False
 
     def store_credential(self, service: str, username: str = "",
                          password: str = "", api_key: str = "",

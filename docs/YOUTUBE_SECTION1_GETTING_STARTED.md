@@ -114,6 +114,13 @@ git --version
 > "If you don't have Git, grab it from git-scm.com. On Linux you can install it with your package manager — `sudo apt install git` on Debian/Ubuntu."
 https://github.com/git-for-windows/git/releases/download/v2.54.0.windows.1/Git-2.54.0-64-bit.exe
 
+> "The third prerequisite is **Npcap**. This is a Windows packet capture library that Huginn relies on for low-level network operations — things like Layer 2 discovery, ARP scanning, MAC address lookups, and any feature that needs to send or capture raw packets directly on the wire. Without it, those features will either fail silently or throw errors at runtime."
+
+> "Download the installer from the link below and run it. The default installation options are fine — just click through and finish. You don't need to enable WinPcap compatibility mode unless another tool on your system specifically requires it."
+https://npcap.com/dist/npcap-1.88.exe
+
+> "Once Npcap is installed you don't need to do anything else — Huginn picks it up automatically through the Scapy library."
+
 > "I'd also strongly recommend using a virtual environment to keep Huginn's dependencies isolated from your system Python. We'll set that up in a moment."
 
 ---

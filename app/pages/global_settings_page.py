@@ -2,9 +2,10 @@
 
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QTabWidget, 
                             QFormLayout, QLineEdit, QPushButton, QLabel, 
-                            QSpinBox, QCheckBox, QGroupBox, QMessageBox)
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QFont
+                            QSpinBox, QCheckBox, QGroupBox, QMessageBox,
+                            QScrollArea, QSizePolicy)
+from PyQt6.QtCore import Qt, QUrl
+from PyQt6.QtGui import QFont, QDesktopServices
 from shared.configuration.global_settings import global_settings
 from app.core.logger import logger
 
@@ -20,7 +21,7 @@ class GlobalSettingsPage(QWidget):
         
         # Title
         title = QLabel("Global Settings")
-        title.setFont(QFont("Arial", 16, QFont.Weight.Bold))
+        title.setFont(QFont("Neuropol X", 16, QFont.Weight.Bold))
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title)
         
@@ -57,160 +58,274 @@ class GlobalSettingsPage(QWidget):
         layout.addLayout(button_layout)
         self.setLayout(layout)
     
+    def _make_api_field(self, placeholder, password=False, link=None):
+        """Return a (QLineEdit, status_dot, row_widget) for a single API key field.
+
+        The row widget contains the input, a coloured status dot, and an
+        optional clickable registration link icon.
+        """
+        row = QWidget()
+        row_layout = QHBoxLayout(row)
+        row_layout.setContentsMargins(0, 0, 0, 0)
+        row_layout.setSpacing(6)
+
+        field = QLineEdit()
+        field.setPlaceholderText(placeholder)
+        if password:
+            field.setEchoMode(QLineEdit.EchoMode.Password)
+
+        # Status dot — grey when empty, green when filled
+        dot = QLabel("●")
+        dot.setFixedWidth(16)
+        dot.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        dot.setStyleSheet("color: #555555; font-size: 14px;")
+
+        def _update_dot(text, _dot=dot):
+            _dot.setStyleSheet(
+                "color: #00CC66; font-size: 14px;" if text.strip()
+                else "color: #555555; font-size: 14px;"
+            )
+
+        field.textChanged.connect(_update_dot)
+
+        row_layout.addWidget(field)
+        row_layout.addWidget(dot)
+
+        if link:
+            link_btn = QPushButton("🔗")
+            link_btn.setFixedWidth(28)
+            link_btn.setToolTip(f"Register / get API key: {link}")
+            link_btn.setStyleSheet(
+                "QPushButton { background: transparent; border: none; color: #64C8FF; font-size: 13px; }"
+                "QPushButton:hover { color: #FFFFFF; }"
+            )
+            link_btn.clicked.connect(lambda _, url=link: QDesktopServices.openUrl(QUrl(url)))
+            row_layout.addWidget(link_btn)
+
+        return field, dot, row
+
+    def _section_label(self, text):
+        """Return a styled section header label for use inside a QFormLayout."""
+        lbl = QLabel(text)
+        lbl.setStyleSheet("font-weight: bold; color: #64C8FF; margin-top: 6px;")
+        return lbl
+
+    def _make_scrollable(self, inner_widget):
+        """Wrap a widget in a QScrollArea and return the scroll area."""
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QScrollArea.Shape.NoFrame)
+        scroll.setWidget(inner_widget)
+        return scroll
+
     def create_api_keys_tab(self):
-        """Create API Keys tab"""
-        tab = QWidget()
-        layout = QVBoxLayout()
-        
-        # Hash Cracking APIs
+        """Create API Keys tab with nested sub-tabs and scroll areas."""
+
+        # ── outer container ──────────────────────────────────────────────────
+        outer = QWidget()
+        outer_layout = QVBoxLayout(outer)
+        outer_layout.setContentsMargins(8, 8, 8, 8)
+        outer_layout.setSpacing(6)
+
+        # ── configured-key summary bar ───────────────────────────────────────
+        self._api_summary_label = QLabel("0 of 0 API keys configured")
+        self._api_summary_label.setStyleSheet(
+            "color: #FFD93D; font-style: italic; padding: 4px 0;"
+        )
+        outer_layout.addWidget(self._api_summary_label)
+
+        # ── nested tab widget ────────────────────────────────────────────────
+        api_tabs = QTabWidget()
+        api_tabs.setDocumentMode(True)
+        outer_layout.addWidget(api_tabs)
+
+        # ── Tab 1: Hash Cracking ─────────────────────────────────────────────
+        hash_inner = QWidget()
+        hash_layout = QVBoxLayout(hash_inner)
+        hash_layout.setContentsMargins(12, 12, 12, 12)
+
         hash_group = QGroupBox("Hash Cracking APIs")
-        hash_layout = QFormLayout()
-        
-        self.hashes_com_key = QLineEdit()
-        self.hashes_com_key.setPlaceholderText("Enter your hashes.com API key")
-        hash_layout.addRow("Hashes.com API Key:", self.hashes_com_key)
-        
-        self.md5decrypt_email = QLineEdit()
-        self.md5decrypt_email.setPlaceholderText("Enter your email for MD5Decrypt")
-        hash_layout.addRow("MD5Decrypt Email:", self.md5decrypt_email)
-        
-        self.md5decrypt_key = QLineEdit()
-        self.md5decrypt_key.setPlaceholderText("Enter your MD5Decrypt API key")
-        hash_layout.addRow("MD5Decrypt API Key:", self.md5decrypt_key)
-        
-        hash_group.setLayout(hash_layout)
-        layout.addWidget(hash_group)
-        
-        # OSINT & Intelligence APIs
+        hash_form = QFormLayout()
+        hash_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+        hash_form.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
+
+        self.hashes_com_key, _, _row = self._make_api_field(
+            "hashes.com API key",
+            link="https://hashes.com/en/api/info"
+        )
+        hash_form.addRow("Hashes.com:", _row)
+
+        self.md5decrypt_email, _, _row = self._make_api_field("Email address for MD5Decrypt")
+        hash_form.addRow("MD5Decrypt Email:", _row)
+
+        self.md5decrypt_key, _, _row = self._make_api_field(
+            "MD5Decrypt API key",
+            link="https://md5decrypt.net/en/Api/"
+        )
+        hash_form.addRow("MD5Decrypt Key:", _row)
+
+        hash_group.setLayout(hash_form)
+        hash_layout.addWidget(hash_group)
+        hash_layout.addStretch()
+
+        api_tabs.addTab(self._make_scrollable(hash_inner), "🔓 Hash Cracking")
+
+        # ── Tab 2: OSINT & Intelligence ──────────────────────────────────────
+        osint_inner = QWidget()
+        osint_layout = QVBoxLayout(osint_inner)
+        osint_layout.setContentsMargins(12, 12, 12, 12)
+
         osint_group = QGroupBox("OSINT & Intelligence APIs")
-        osint_layout = QFormLayout()
-        
-        self.shodan_key = QLineEdit()
-        self.shodan_key.setPlaceholderText("Enter your Shodan API key")
-        osint_layout.addRow("Shodan API Key:", self.shodan_key)
-        
-        self.virustotal_key = QLineEdit()
-        self.virustotal_key.setPlaceholderText("Enter your VirusTotal API key")
-        osint_layout.addRow("VirusTotal API Key:", self.virustotal_key)
-        
-        self.urlvoid_key = QLineEdit()
-        self.urlvoid_key.setPlaceholderText("Enter your URLVoid API key")
-        osint_layout.addRow("URLVoid API Key:", self.urlvoid_key)
-        
-        osint_group.setLayout(osint_layout)
-        layout.addWidget(osint_group)
-        
-        # Professional Subdomain Enumeration APIs
-        subdomain_group = QGroupBox("🔍 Professional Subdomain Enumeration APIs")
-        subdomain_layout = QFormLayout()
-        
+        osint_form = QFormLayout()
+        osint_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+        osint_form.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
+
+        self.shodan_key, _, _row = self._make_api_field(
+            "Shodan API key",
+            link="https://account.shodan.io/"
+        )
+        osint_form.addRow("Shodan:", _row)
+
+        self.virustotal_key, _, _row = self._make_api_field(
+            "VirusTotal API key — also used for subdomain enumeration",
+            link="https://www.virustotal.com/gui/join-us"
+        )
+        osint_form.addRow("VirusTotal:", _row)
+
+        self.urlvoid_key, _, _row = self._make_api_field(
+            "URLVoid API key",
+            link="https://www.urlvoid.com/api/"
+        )
+        osint_form.addRow("URLVoid:", _row)
+
+        osint_group.setLayout(osint_form)
+        osint_layout.addWidget(osint_group)
+        osint_layout.addStretch()
+
+        api_tabs.addTab(self._make_scrollable(osint_inner), "🕵️ OSINT")
+
+        # ── Tab 3: Subdomain Enumeration ─────────────────────────────────────
+        sub_inner = QWidget()
+        sub_layout = QVBoxLayout(sub_inner)
+        sub_layout.setContentsMargins(12, 12, 12, 12)
+        sub_layout.setSpacing(10)
+
+        free_note = QLabel(
+            "📝  Free sources active by default (no key needed): "
+            "crt.sh · Wayback Machine · URLScan.io"
+        )
+        free_note.setStyleSheet("color: #00CC66; font-style: italic;")
+        free_note.setWordWrap(True)
+        sub_layout.addWidget(free_note)
+
         # Certificate Transparency
-        cert_label = QLabel("Certificate Transparency:")
-        cert_label.setStyleSheet("font-weight: bold; color: #64C8FF;")
-        subdomain_layout.addRow(cert_label)
-        
-        self.certspotter_key = QLineEdit()
-        self.certspotter_key.setPlaceholderText("CertSpotter API key (100/hour free, 1000/hour paid)")
-        subdomain_layout.addRow("  CertSpotter:", self.certspotter_key)
-        
+        ct_group = QGroupBox("Certificate Transparency")
+        ct_form = QFormLayout()
+        ct_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+        ct_form.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
+
+        self.certspotter_key, _, _row = self._make_api_field(
+            "CertSpotter key  (100 req/hr free · 1 000 req/hr paid)",
+            link="https://sslmate.com/certspotter/api/"
+        )
+        ct_form.addRow("CertSpotter:", _row)
+        ct_group.setLayout(ct_form)
+        sub_layout.addWidget(ct_group)
+
         # Search & Intelligence
-        search_label = QLabel("Search & Intelligence:")
-        search_label.setStyleSheet("font-weight: bold; color: #64C8FF;")
-        subdomain_layout.addRow(search_label)
-        
-        # Note: VirusTotal already exists above, so we'll reference it
-        vt_note = QLabel("  VirusTotal: (configured above)")
-        vt_note.setStyleSheet("color: #FFD93D; font-style: italic;")
-        subdomain_layout.addRow(vt_note)
-        
-        self.censys_id = QLineEdit()
-        self.censys_id.setPlaceholderText("Censys API ID (120/min free, 480/min paid)")
-        subdomain_layout.addRow("  Censys API ID:", self.censys_id)
-        
-        self.censys_secret = QLineEdit()
-        self.censys_secret.setPlaceholderText("Censys API Secret")
-        self.censys_secret.setEchoMode(QLineEdit.EchoMode.Password)
-        subdomain_layout.addRow("  Censys Secret:", self.censys_secret)
-        
-        self.securitytrails_key = QLineEdit()
-        self.securitytrails_key.setPlaceholderText("SecurityTrails API key (50/month free, 2000/month paid)")
-        subdomain_layout.addRow("  SecurityTrails:", self.securitytrails_key)
-        
+        si_group = QGroupBox("Search & Intelligence")
+        si_form = QFormLayout()
+        si_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+        si_form.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
+
+        si_form.addRow(self._section_label("VirusTotal key is shared with the OSINT tab above"))
+
+        self.censys_id, _, _row = self._make_api_field(
+            "Censys API ID  (120 req/min free · 480 req/min paid)",
+            link="https://search.censys.io/register"
+        )
+        si_form.addRow("Censys ID:", _row)
+
+        self.censys_secret, _, _row = self._make_api_field(
+            "Censys API Secret", password=True
+        )
+        si_form.addRow("Censys Secret:", _row)
+
+        self.securitytrails_key, _, _row = self._make_api_field(
+            "SecurityTrails key  (50 req/month free · 2 000 req/month paid)",
+            link="https://securitytrails.com/corp/api"
+        )
+        si_form.addRow("SecurityTrails:", _row)
+
+        si_group.setLayout(si_form)
+        sub_layout.addWidget(si_group)
+
         # Threat Intelligence
-        threat_label = QLabel("Threat Intelligence:")
-        threat_label.setStyleSheet("font-weight: bold; color: #64C8FF;")
-        subdomain_layout.addRow(threat_label)
-        
-        self.binaryedge_key = QLineEdit()
-        self.binaryedge_key.setPlaceholderText("BinaryEdge API key (250/month free, 10000/month paid)")
-        subdomain_layout.addRow("  BinaryEdge:", self.binaryedge_key)
-        
-        self.passivetotal_user = QLineEdit()
-        self.passivetotal_user.setPlaceholderText("PassiveTotal username")
-        subdomain_layout.addRow("  PassiveTotal User:", self.passivetotal_user)
-        
-        self.passivetotal_key = QLineEdit()
-        self.passivetotal_key.setPlaceholderText("PassiveTotal API key (2000/month free, 10000/month paid)")
-        self.passivetotal_key.setEchoMode(QLineEdit.EchoMode.Password)
-        subdomain_layout.addRow("  PassiveTotal Key:", self.passivetotal_key)
-        
+        ti_group = QGroupBox("Threat Intelligence")
+        ti_form = QFormLayout()
+        ti_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+        ti_form.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
+
+        self.binaryedge_key, _, _row = self._make_api_field(
+            "BinaryEdge key  (250 req/month free · 10 000 req/month paid)",
+            link="https://app.binaryedge.io/sign-up"
+        )
+        ti_form.addRow("BinaryEdge:", _row)
+
+        self.passivetotal_user, _, _row = self._make_api_field("PassiveTotal username")
+        ti_form.addRow("PassiveTotal User:", _row)
+
+        self.passivetotal_key, _, _row = self._make_api_field(
+            "PassiveTotal API key  (2 000 req/month free · 10 000 req/month paid)",
+            password=True,
+            link="https://community.riskiq.com/registration"
+        )
+        ti_form.addRow("PassiveTotal Key:", _row)
+
+        ti_group.setLayout(ti_form)
+        sub_layout.addWidget(ti_group)
+
         # DNS Intelligence
-        dns_label = QLabel("DNS Intelligence:")
-        dns_label.setStyleSheet("font-weight: bold; color: #64C8FF;")
-        subdomain_layout.addRow(dns_label)
-        
-        self.dnsdb_key = QLineEdit()
-        self.dnsdb_key.setPlaceholderText("Farsight DNSDB API key (paid service)")
-        self.dnsdb_key.setEchoMode(QLineEdit.EchoMode.Password)
-        subdomain_layout.addRow("  DNSDB (Farsight):", self.dnsdb_key)
-        
-        # Free sources note
-        free_note = QLabel("📝 Free Sources (No API Key Required): crt.sh, Wayback Machine, URLScan.io")
-        free_note.setStyleSheet("color: #00FF41; font-style: italic; margin-top: 10px;")
-        subdomain_layout.addRow(free_note)
-        
-        # API registration links
-        links_label = QLabel("🔗 API Registration Links:")
-        links_label.setStyleSheet("font-weight: bold; color: #FFD93D; margin-top: 15px;")
-        subdomain_layout.addRow(links_label)
-        
-        links_text = QLabel("""
-        • CertSpotter: https://sslmate.com/certspotter/api/
-        • VirusTotal: https://www.virustotal.com/gui/join-us
-        • Censys: https://search.censys.io/register
-        • SecurityTrails: https://securitytrails.com/corp/api
-        • BinaryEdge: https://app.binaryedge.io/sign-up
-        • PassiveTotal: https://community.riskiq.com/registration
-        • DNSDB: https://www.farsightsecurity.com/dnsdb-community-edition/
-        """)
-        links_text.setStyleSheet("color: #DCDCDC; font-size: 9px; margin-left: 10px;")
-        links_text.setWordWrap(True)
-        subdomain_layout.addRow(links_text)
-        
-        subdomain_group.setLayout(subdomain_layout)
-        layout.addWidget(subdomain_group)
-        
-        # Test API Keys button
-        test_btn = QPushButton("🧪 Test API Keys")
-        test_btn.clicked.connect(self.test_api_keys)
-        test_btn.setStyleSheet("""
-            QPushButton {
-                background-color: rgba(0, 100, 200, 150);
-                border: 2px solid rgba(0, 150, 255, 100);
-                border-radius: 5px;
-                color: white;
-                font-weight: bold;
-                padding: 8px;
-            }
-            QPushButton:hover {
-                background-color: rgba(0, 150, 255, 200);
-            }
-        """)
-        layout.addWidget(test_btn)
-        
-        layout.addStretch()
-        tab.setLayout(layout)
-        self.tabs.addTab(tab, "🔑 API Keys")
+        dns_group = QGroupBox("DNS Intelligence")
+        dns_form = QFormLayout()
+        dns_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+        dns_form.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
+
+        self.dnsdb_key, _, _row = self._make_api_field(
+            "Farsight DNSDB key  (paid service)",
+            password=True,
+            link="https://www.farsightsecurity.com/dnsdb-community-edition/"
+        )
+        dns_form.addRow("DNSDB (Farsight):", _row)
+
+        dns_group.setLayout(dns_form)
+        sub_layout.addWidget(dns_group)
+        sub_layout.addStretch()
+
+        api_tabs.addTab(self._make_scrollable(sub_inner), "🔍 Subdomain Enum")
+
+        # ── status summary update hook ────────────────────────────────────────
+        all_key_fields = [
+            self.hashes_com_key, self.md5decrypt_key,
+            self.shodan_key, self.virustotal_key, self.urlvoid_key,
+            self.certspotter_key, self.censys_id, self.securitytrails_key,
+            self.binaryedge_key, self.passivetotal_key, self.dnsdb_key,
+        ]
+        total = len(all_key_fields)
+
+        def _refresh_summary(_text=None):
+            configured = sum(1 for f in all_key_fields if f.text().strip())
+            self._api_summary_label.setText(
+                f"{configured} of {total} API keys configured"
+            )
+
+        for _f in all_key_fields:
+            _f.textChanged.connect(_refresh_summary)
+
+        _refresh_summary()
+
+        self.tabs.addTab(outer, "🔑 API Keys")
+
     
     def create_general_tab(self):
         """Create General Settings tab"""
@@ -406,47 +521,35 @@ class GlobalSettingsPage(QWidget):
             QMessageBox.information(self, "Settings Reset", "All settings have been reset to defaults.")
     
     def test_api_keys(self):
-        """Test API keys functionality"""
-        from PyQt6.QtWidgets import QProgressDialog
-        from PyQt6.QtCore import QTimer
-        
-        # Create progress dialog
-        progress = QProgressDialog("Testing API keys...", "Cancel", 0, 0, self)
-        progress.setWindowTitle("API Key Testing")
-        progress.setModal(True)
-        progress.show()
-        
-        # Simulate testing (in a real implementation, you'd test each API)
-        QTimer.singleShot(2000, lambda: self._show_api_test_results(progress))
-    
-    def _show_api_test_results(self, progress_dialog):
-        """Show API key test results"""
-        progress_dialog.close()
-        
-        # Get configured keys
+        """Show a summary of which API keys are currently configured."""
         configured_keys = []
-        if self.certspotter_key.text().strip():
-            configured_keys.append("CertSpotter")
-        if self.virustotal_key.text().strip():
-            configured_keys.append("VirusTotal")
-        if self.censys_id.text().strip() and self.censys_secret.text().strip():
-            configured_keys.append("Censys")
-        if self.securitytrails_key.text().strip():
-            configured_keys.append("SecurityTrails")
-        if self.binaryedge_key.text().strip():
-            configured_keys.append("BinaryEdge")
-        if self.passivetotal_user.text().strip() and self.passivetotal_key.text().strip():
-            configured_keys.append("PassiveTotal")
-        if self.dnsdb_key.text().strip():
-            configured_keys.append("DNSDB")
-        
+        checks = [
+            ("Hashes.com",     self.hashes_com_key),
+            ("MD5Decrypt",     self.md5decrypt_key),
+            ("Shodan",         self.shodan_key),
+            ("VirusTotal",     self.virustotal_key),
+            ("URLVoid",        self.urlvoid_key),
+            ("CertSpotter",    self.certspotter_key),
+            ("Censys",         self.censys_id),
+            ("SecurityTrails", self.securitytrails_key),
+            ("BinaryEdge",     self.binaryedge_key),
+            ("PassiveTotal",   self.passivetotal_key),
+            ("DNSDB",          self.dnsdb_key),
+        ]
+        for name, field in checks:
+            if field.text().strip():
+                configured_keys.append(name)
+
         if configured_keys:
-            message = f"Configured API Keys ({len(configured_keys)}):\n\n" + "\n".join([f"✅ {key}" for key in configured_keys])
-            message += "\n\nNote: Actual API validation requires network testing."
+            message = (
+                f"Configured API Keys ({len(configured_keys)} of {len(checks)}):\n\n"
+                + "\n".join(f"✅ {k}" for k in configured_keys)
+                + "\n\nNote: Actual API validation requires a live network test."
+            )
         else:
             message = "No API keys configured.\n\nFree sources (crt.sh, Wayback Machine) will still work."
-        
-        QMessageBox.information(self, "API Key Test Results", message)
+
+        QMessageBox.information(self, "API Key Status", message)
     
     def _update_subdomain_engine_keys(self):
         """Update the subdomain engine with new API keys"""

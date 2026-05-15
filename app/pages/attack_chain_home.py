@@ -46,18 +46,6 @@ class AttackChainHomePage(BasePage):
         self.correlations_tab = self.create_correlations_tab()
         self.main_tabs.addTab(self.correlations_tab, "🔗 Correlations")
         
-        # Remediation tab
-        self.remediation_tab = self.create_remediation_tab()
-        self.main_tabs.addTab(self.remediation_tab, "🛠️ Remediation")
-        
-        # Dashboard tab
-        self.dashboard_tab = self.create_dashboard_tab()
-        self.main_tabs.addTab(self.dashboard_tab, "🛡️ Dashboard")
-        
-        # Analytics tab
-        self.analytics_tab = self.create_analytics_tab()
-        self.main_tabs.addTab(self.analytics_tab, "🔬 Analytics")
-        
         main_layout.addWidget(self.main_tabs)
     
     def create_setup_tab(self):
@@ -391,14 +379,35 @@ class AttackChainHomePage(BasePage):
         phase_mapping = {
             "ENGAGEMENT SETUP": "attack_chain_home",
             "RECON & ENUMERATION": "recon_enumeration",
-            "VULNERABILITY ANALYSIS": "vuln_scanning", 
+            "VULNERABILITY ANALYSIS": "vuln_scanning",
             "EXPLOITATION": "web_exploits",
             "Interactive Shell": "web_exploits",
             "POST-EXPLOITATION": "post_exploitation",
-            "REPORTING & TOOLS": "scripts"
+            "REPORTING & TOOLS": "attack_chain_home",
+            "REPORT": "attack_chain_home"
         }
         return phase_mapping.get(phase_name, "attack_chain_home")
     
+    def create_report_tab(self):
+        """Create the Report tab containing Remediation, Dashboard, and Analytics subtabs."""
+        widget = QWidget()
+        layout = QVBoxLayout(widget)
+        layout.setContentsMargins(0, 0, 0, 0)
+
+        report_subtabs = QTabWidget()
+
+        self.remediation_tab = self.create_remediation_tab()
+        report_subtabs.addTab(self.remediation_tab, "🛠️ Remediation")
+
+        self.dashboard_tab = self.create_dashboard_tab()
+        report_subtabs.addTab(self.dashboard_tab, "🛡️ Dashboard")
+
+        self.analytics_tab = self.create_analytics_tab()
+        report_subtabs.addTab(self.analytics_tab, "🔬 Analytics")
+
+        layout.addWidget(report_subtabs)
+        return widget
+
     def create_correlations_tab(self):
         """Create the Correlations tab"""
         try:
@@ -1699,9 +1708,22 @@ class AttackChainHomePage(BasePage):
             "VULN": "vuln_scanning", 
             "EXPLOIT": "os_exploits",
             "POST-EX": "post_exploitation",
-            "REPORT": "scripts"
+            "REPORT": "attack_chain_home"
         }
         
         target = phase_mapping.get(phase_name)
         if target:
             self.navigate_signal.emit(target)
+
+        # When REPORT is clicked, also switch to the Report tab on the home page
+        if phase_name == "REPORT":
+            try:
+                from app.core.page_manager import page_manager
+                page = page_manager.get_page("attack_chain_home")
+                if page and hasattr(page, 'main_tabs'):
+                    for i in range(page.main_tabs.count()):
+                        if "Report" in page.main_tabs.tabText(i):
+                            page.main_tabs.setCurrentIndex(i)
+                            break
+            except Exception:
+                pass
