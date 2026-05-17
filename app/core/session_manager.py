@@ -133,6 +133,7 @@ class SessionManager:
         
         if session_id in self.sessions:
             self.current_session = session_id
+            self._persist_last_session(session_id)
             
             # Sync credential manager profile (avoid circular import)
             self._sync_credential_profile(session_id)
@@ -276,7 +277,31 @@ class SessionManager:
         return {}
     
     def auto_start_session(self):
-        """Automatically start a new session on application launch"""
+        """Restore the last active session on launch, or create a new one."""
+        last_id = self._load_last_session()
+        last_data = {}
+        try:
+            if os.path.exists(self._last_session_file()):
+                with open(self._last_session_file(), 'r') as f:
+                    last_data = json.load(f)
+        except Exception:
+            pass
+
+        if last_id and last_id in self.sessions:
+            self.set_current_session(last_id)
+            # Restore explicit named profile (e.g. "LAB") if one was active
+            explicit = last_data.get("explicit_profile")
+            if explicit:
+                try:
+                    import sys
+                    if 'app.core.credential_manager' in sys.modules:
+                        cm = getattr(sys.modules['app.core.credential_manager'], 'credential_manager', None)
+                        if cm:
+                            cm.set_profile(explicit)
+                except Exception:
+                    pass
+            return self.sessions[last_id]
+
         session_name = f"Session {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
         session = self.create_session(
             name=session_name,
@@ -285,6 +310,37 @@ class SessionManager:
         )
         self.set_current_session(session['id'])
         return session
+
+    def _last_session_file(self) -> str:
+        return os.path.join("resources", "config", "last_session.json")
+
+    def _persist_last_session(self, session_id: str):
+        """Write the active session ID (and explicit profile if set) to disk."""
+        try:
+            import sys
+            explicit_profile = None
+            if 'app.core.credential_manager' in sys.modules:
+                cm = getattr(sys.modules['app.core.credential_manager'], 'credential_manager', None)
+                if cm:
+                    explicit_profile = cm._explicit_profile
+            os.makedirs(os.path.dirname(self._last_session_file()), exist_ok=True)
+            with open(self._last_session_file(), 'w') as f:
+                json.dump({
+                    "last_session": session_id,
+                    "explicit_profile": explicit_profile,
+                }, f)
+        except Exception as exc:
+            logger.debug(f"Could not persist last session: {exc}")
+
+    def _load_last_session(self) -> Optional[str]:
+        """Return the last active session ID, or None if not found."""
+        try:
+            if os.path.exists(self._last_session_file()):
+                with open(self._last_session_file(), 'r') as f:
+                    return json.load(f).get("last_session")
+        except Exception as exc:
+            logger.debug(f"Could not load last session: {exc}")
+        return None
     
     def add_export_to_session(self, session_id: str, export_info: Dict) -> bool:
         """Add export information to session"""
@@ -331,14 +387,19 @@ class SessionManager:
         return str(uuid.uuid4())[:8]
     
     def _sync_credential_profile(self, session_id: str):
-        """Sync credential manager profile with session"""
+        """Sync credential manager profile with session.
+
+        Does NOT override an explicit named profile chosen by the user
+        (e.g. "LAB") — session sync only applies when no named profile
+        has been selected.
+        """
         try:
-            # Use globals() to access the credential manager after it's fully loaded
             import sys
             if 'app.core.credential_manager' in sys.modules:
                 credential_module = sys.modules['app.core.credential_manager']
-                if hasattr(credential_module, 'credential_manager'):
-                    credential_module.credential_manager.set_profile(session_id)
+                cm = getattr(credential_module, 'credential_manager', None)
+                if cm and not cm._explicit_profile:
+                    cm.set_profile(session_id)
         except Exception as _exc:
             pass  # Silently ignore sync errors
             logger.debug("Suppressed exception", exc_info=True)

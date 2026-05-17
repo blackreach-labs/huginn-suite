@@ -854,16 +854,21 @@ class AttackChainHomePage(BasePage):
                 QMessageBox.warning(self, "Profile Exists", f"Profile '{profile_name}' already exists.")
                 return
         
-        # Clear all form fields
-        self.target_name.clear()
-        self.primary_target.clear()
-        self.subdomains.clear()
-        self.cloud_assets.clear()
-        self.out_scope.clear()
-        self.restrictions.clear()
-        self.dos_allowed.setChecked(False)
-        self.social_eng_allowed.setChecked(False)
-        self.physical_allowed.setChecked(False)
+        # Suppress autosave while clearing the form — otherwise textChanged
+        # fires and overwrites the previously active profile with empty data.
+        self._loading_profile = True
+        try:
+            self.target_name.clear()
+            self.primary_target.clear()
+            self.subdomains.clear()
+            self.cloud_assets.clear()
+            self.out_scope.clear()
+            self.restrictions.clear()
+            self.dos_allowed.setChecked(False)
+            self.social_eng_allowed.setChecked(False)
+            self.physical_allowed.setChecked(False)
+        finally:
+            self._loading_profile = False
         
         # Set new profile in credential manager and clear credentials
         try:
@@ -1067,6 +1072,41 @@ class AttackChainHomePage(BasePage):
         except Exception as e:
             logger.debug(f"Autosave failed for profile '{profile_name}': {e}")
     
+    def _delete_profile_files(self, profile_name: str):
+        """Delete the profile JSON and its associated credentials file."""
+        import os
+        from pathlib import Path
+
+        profiles_dir = _PROFILES_DIR
+        project_root = Path(__file__).parent.parent.parent
+
+        # Delete profile JSON
+        profile_file = os.path.join(profiles_dir, f"{profile_name}.json")
+        try:
+            if os.path.exists(profile_file):
+                os.remove(profile_file)
+        except Exception as e:
+            logger.warning(f"Failed to delete profile JSON for '{profile_name}': {e}")
+
+        # Delete encrypted credentials file
+        enc_file = project_root / "profiles" / f"{profile_name}_credentials.enc"
+        try:
+            if enc_file.exists():
+                enc_file.unlink()
+                logger.info(f"Deleted credentials file for profile '{profile_name}'")
+        except Exception as e:
+            logger.warning(f"Failed to delete credentials file for '{profile_name}': {e}")
+
+        # Clear from credential manager if this was the active profile
+        try:
+            from app.core.credential_manager import credential_manager
+            if credential_manager.current_profile == profile_name:
+                credential_manager.credentials.clear()
+                credential_manager.current_profile = "default"
+                credential_manager._explicit_profile = None
+        except Exception:
+            pass
+
     def delete_selected_profile(self):
         """Delete the selected profile from table and disk"""
         from PyQt6.QtWidgets import QMessageBox
@@ -1083,16 +1123,8 @@ class AttackChainHomePage(BasePage):
                 if reply == QMessageBox.StandardButton.Yes:
                     # Remove from table
                     self.target_table.removeRow(current_row)
-                    
-                    # Delete the actual profile file from disk
-                    profiles_dir = _PROFILES_DIR
-                    profile_file = os.path.join(profiles_dir, f"{profile_name}.json")
-                    
-                    try:
-                        if os.path.exists(profile_file):
-                            os.remove(profile_file)
-                    except Exception as e:
-                        QMessageBox.warning(self, "Error", f"Failed to delete profile file: {str(e)}")
+                    # Delete JSON and credentials files
+                    self._delete_profile_files(profile_name)
         else:
             QMessageBox.information(self, "No Selection", "Please select a profile to delete")
 
@@ -1152,12 +1184,10 @@ class AttackChainHomePage(BasePage):
             return
 
         # Remove from disk
-        profile_file = os.path.join(profiles_dir, f"{profile_name}.json")
         try:
-            if os.path.exists(profile_file):
-                os.remove(profile_file)
+            self._delete_profile_files(profile_name)
         except Exception as e:
-            QMessageBox.warning(self, 'Error', f'Failed to delete profile file: {str(e)}')
+            QMessageBox.warning(self, 'Error', f'Failed to delete profile: {str(e)}')
             return
 
         # Remove from the table if present
@@ -1194,51 +1224,74 @@ class AttackChainHomePage(BasePage):
         if not os.path.exists(profiles_dir):
             return
         
-        # Clear existing table
-        self.target_table.setRowCount(0)
-        
-        # Load all JSON files from profiles directory
-        for filename in sorted(os.listdir(profiles_dir)):
-            if filename.endswith('.json'):
-                try:
-                    profile_path = os.path.join(profiles_dir, filename)
-                    with open(profile_path, 'r', encoding='utf-8-sig') as f:
-                        profile_data = json.load(f)
-                    
-                    profile_name = filename.replace('.json', '')
+        # Block signals so inserting rows doesn't fire on_profile_selected
+        # (which would call credential_manager.set_profile and overwrite the
+        # profile that was already restored from last_profile.json at startup).
+        self.target_table.blockSignals(True)
+        try:
+            # Clear existing table
+            self.target_table.setRowCount(0)
+            
+            # Load all JSON files from profiles directory
+            for filename in sorted(os.listdir(profiles_dir)):
+                if filename.endswith('.json'):
+                    try:
+                        profile_path = os.path.join(profiles_dir, filename)
+                        with open(profile_path, 'r', encoding='utf-8-sig') as f:
+                            profile_data = json.load(f)
+                        
+                        profile_name = filename.replace('.json', '')
 
-                    # In-Scope Targets — first line only, truncated
-                    target = profile_data.get('primary_target', '') or profile_data.get('scope', '')
-                    first_line = target.strip().splitlines()[0] if target.strip() else '—'
-                    if len(first_line) > 40:
-                        first_line = first_line[:38] + '…'
+                        # In-Scope Targets — first line only, truncated
+                        target = profile_data.get('primary_target', '') or profile_data.get('scope', '')
+                        first_line = target.strip().splitlines()[0] if target.strip() else '—'
+                        if len(first_line) > 40:
+                            first_line = first_line[:38] + '…'
 
-                    # Credentials count
-                    creds = profile_data.get('credentials', {})
-                    cred_list = creds.get('credentials', []) if isinstance(creds, dict) else []
-                    cred_count = f"{len(cred_list)} saved" if cred_list else "None"
+                        # Credentials count
+                        creds = profile_data.get('credentials', {})
+                        cred_list = creds.get('credentials', []) if isinstance(creds, dict) else []
+                        cred_count = f"{len(cred_list)} saved" if cred_list else "None"
 
-                    # Permissions
-                    perms = []
-                    if profile_data.get('dos_allowed'):
-                        perms.append('DoS')
-                    if profile_data.get('social_eng_allowed'):
-                        perms.append('Social')
-                    if profile_data.get('physical_allowed'):
-                        perms.append('Physical')
-                    permissions = ', '.join(perms) if perms else '—'
+                        # Permissions
+                        perms = []
+                        if profile_data.get('dos_allowed'):
+                            perms.append('DoS')
+                        if profile_data.get('social_eng_allowed'):
+                            perms.append('Social')
+                        if profile_data.get('physical_allowed'):
+                            perms.append('Physical')
+                        permissions = ', '.join(perms) if perms else '—'
 
-                    # Add to table
-                    row = self.target_table.rowCount()
-                    self.target_table.insertRow(row)
-                    self.target_table.setItem(row, 0, QTableWidgetItem(profile_name))
-                    self.target_table.setItem(row, 1, QTableWidgetItem(first_line))
-                    self.target_table.setItem(row, 2, QTableWidgetItem(cred_count))
-                    self.target_table.setItem(row, 3, QTableWidgetItem(permissions))
-                    self.target_table.setItem(row, 4, QTableWidgetItem("Active"))
-                    
-                except Exception:
-                    continue
+                        # Add to table
+                        row = self.target_table.rowCount()
+                        self.target_table.insertRow(row)
+                        self.target_table.setItem(row, 0, QTableWidgetItem(profile_name))
+                        self.target_table.setItem(row, 1, QTableWidgetItem(first_line))
+                        self.target_table.setItem(row, 2, QTableWidgetItem(cred_count))
+                        self.target_table.setItem(row, 3, QTableWidgetItem(permissions))
+                        self.target_table.setItem(row, 4, QTableWidgetItem("Active"))
+                        
+                    except Exception:
+                        continue
+        finally:
+            self.target_table.blockSignals(False)
+
+        # Restore the last selected profile row without firing on_profile_selected
+        # (the credential manager already has the right profile loaded at startup).
+        try:
+            from app.core.credential_manager import credential_manager
+            active_profile = credential_manager.current_profile
+            if active_profile:
+                for row in range(self.target_table.rowCount()):
+                    item = self.target_table.item(row, 0)
+                    if item and item.text() == active_profile:
+                        self.target_table.blockSignals(True)
+                        self.target_table.selectRow(row)
+                        self.target_table.blockSignals(False)
+                        break
+        except Exception:
+            pass
     
     def add_profile_to_table(self, profile_name, profile_data):
         """Add loaded profile to target table if not already present."""
@@ -1437,27 +1490,34 @@ class AttackChainHomePage(BasePage):
             logger.debug("Suppressed exception", exc_info=True)
     
     def load_credentials_from_profile(self, cred_data):
-        """Load credentials from profile data"""
+        """Load credentials from profile data.
+
+        This only populates the in-memory list from the profile JSON's
+        credential section — it does NOT save to disk.  The authoritative
+        on-disk store is the encrypted .enc file, which set_profile() already
+        loaded.  We only fall back to the JSON data when the .enc file has
+        no credentials (e.g. first time a legacy profile is opened).
+        """
         try:
             from app.core.credential_manager import credential_manager
-            
-            # Clear existing credentials for current profile
-            credential_manager.clear_credentials()
-            
+
+            # If the .enc file already has credentials, trust it — don't
+            # overwrite with potentially stale data from the profile JSON.
+            if credential_manager.credentials:
+                return
+
             if isinstance(cred_data, dict):
-                # Handle nested structure: {"credentials": [{...}, {...}]}
                 if 'credentials' in cred_data and isinstance(cred_data['credentials'], list):
                     for cred in cred_data['credentials']:
                         if isinstance(cred, dict):
-                            credential_manager.add_credential(
-                                username=cred.get('username', ''),
-                                password=cred.get('password', ''),
-                                domain=cred.get('domain', ''),
-                                service=cred.get('service', ''),
-                                notes=cred.get('notes', ''),
-                                source=cred.get('source', 'manual'),
-                                credential_type=cred.get('credential_type', 'Username/Password')
+                            # Use from_dict directly to avoid triggering auto-save
+                            from app.core.credential_manager import Credential
+                            credential_manager.credentials.append(
+                                Credential.from_dict(cred)
                             )
+                    # Save once if we imported anything from the JSON
+                    if credential_manager.credentials:
+                        credential_manager.save_to_profile_json()
         except ImportError as _exc:
             pass
             logger.debug("Suppressed exception", exc_info=True)

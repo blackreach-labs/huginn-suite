@@ -107,8 +107,12 @@ class CredentialManager:
         self.credentials: List[Credential] = []
         self.profile_credentials: Dict[str, List[Credential]] = {}
         self.current_profile: Optional[str] = None
-        self._auto_set_profile()
-        self._load_profile_credentials()
+        self._explicit_profile: Optional[str] = None   # set when user picks a named profile
+
+        # Don't auto-load any profile at startup. Credentials are loaded
+        # when the user explicitly selects a profile in the UI (which calls
+        # set_profile). This prevents stale data from appearing before a
+        # profile is selected.
 
     # ------------------------------------------------------------------
     # Public API
@@ -179,12 +183,47 @@ class CredentialManager:
             self.credentials.append(Credential.from_dict(cred_data))
 
     def set_profile(self, profile_name: str):
-        """Switch to a different profile, saving current and loading new."""
-        if self.current_profile:
-            self._save_profile_credentials()
+        """Switch to a different profile — load only, never saves.
+
+        Saving happens exclusively via add_credential(), remove_credential(),
+        and save_to_profile_json(). Profile switching must never overwrite
+        the target profile's file with stale in-memory data.
+        """
         self.current_profile = profile_name
+        self._explicit_profile = profile_name
+        self._persist_explicit_profile(profile_name)
         self.credentials.clear()
         self._load_profile_credentials()
+
+    def _persist_explicit_profile(self, profile_name: str):
+        """Write the explicit profile name to disk so it survives restarts."""
+        try:
+            import os as _os
+            path = _os.path.join(
+                _os.path.dirname(_os.path.dirname(_os.path.dirname(__file__))),
+                "resources", "config", "last_profile.json"
+            )
+            _os.makedirs(_os.path.dirname(path), exist_ok=True)
+            with open(path, 'w') as f:
+                import json as _json
+                _json.dump({"explicit_profile": profile_name}, f)
+        except Exception as exc:
+            logger.debug(f"Could not persist explicit profile: {exc}")
+
+    @staticmethod
+    def _load_explicit_profile() -> Optional[str]:
+        """Return the last explicitly selected profile name, or None."""
+        try:
+            import os as _os, json as _json
+            path = _os.path.join(
+                _os.path.dirname(_os.path.dirname(_os.path.dirname(__file__))),
+                "resources", "config", "last_profile.json"
+            )
+            if _os.path.exists(path):
+                return _json.load(open(path)).get("explicit_profile")
+        except Exception:
+            pass
+        return None
 
     def get_profile_credentials(self, profile_name: str) -> List[Credential]:
         return self.profile_credentials.get(profile_name, [])
@@ -264,9 +303,17 @@ class CredentialManager:
         return secure_credential_manager
 
     def _save_profile_credentials(self):
-        """Encrypt and persist credentials for the current profile."""
-        if not self.current_profile:
+        """Encrypt and persist credentials for the current profile.
+
+        Uses ``_resolve_current_profile()`` so the save always targets the
+        active session's file, even if the singleton was created before the
+        session was established.
+        """
+        profile = self._resolve_current_profile()
+        if not profile:
             return
+        # Keep current_profile in sync so subsequent reads use the same file.
+        self.current_profile = profile
         try:
             scm = self._get_fernet()
             json_bytes = json.dumps(self.to_dict()).encode('utf-8')
@@ -274,11 +321,11 @@ class CredentialManager:
             enc_path = self._get_enc_file_path()
             enc_path.write_bytes(encrypted)
             logger.debug(
-                f"Credentials saved (encrypted) for profile '{self.current_profile}'"
+                f"Credentials saved (encrypted) for profile '{profile}'"
             )
         except Exception as e:
             logger.error(
-                f"Error saving credentials for profile '{self.current_profile}': {e}",
+                f"Error saving credentials for profile '{profile}': {e}",
                 exc_info=True,
             )
 
@@ -361,6 +408,33 @@ class CredentialManager:
     # ------------------------------------------------------------------
     # Profile auto-detection
     # ------------------------------------------------------------------
+
+    def _resolve_current_profile(self) -> str:
+        """Return the profile name that should be active right now.
+
+        Priority:
+        1. Explicit named profile set by the user via set_profile() from the UI
+           (e.g. "LAB", "HTB-Code") — this always wins.
+        2. Active session ID from the session manager (for session-scoped saves).
+        3. self.current_profile as set at init time.
+        4. "default" fallback.
+        """
+        if self._explicit_profile:
+            return self._explicit_profile
+
+        try:
+            import sys
+            if 'app.core.session_manager' in sys.modules:
+                session_module = sys.modules['app.core.session_manager']
+                if hasattr(session_module, 'session_manager'):
+                    current_session = (
+                        session_module.session_manager.get_current_session()
+                    )
+                    if current_session:
+                        return current_session['id']
+        except Exception:
+            pass
+        return self.current_profile or "default"
 
     def _auto_set_profile(self):
         """Automatically set profile from session manager if available."""

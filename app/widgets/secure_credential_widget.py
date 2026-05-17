@@ -862,8 +862,12 @@ Examples:
         self.on_type_changed("Username/Password")
     
     def refresh_credentials(self):
-        """Refresh the credentials table — original 7-column format."""
+        """Refresh the credentials table — always reloads from disk first."""
         from app.core.credential_manager import credential_manager
+
+        # Always reload from the current profile's file so the table reflects
+        # what is actually persisted, regardless of in-memory state.
+        credential_manager._load_profile_credentials()
 
         credentials = credential_manager.get_credentials()
         show_pw = (hasattr(self, 'show_passwords_cb')
@@ -1249,16 +1253,9 @@ Examples:
             try:
                 data = json.loads(raw)
             except json.JSONDecodeError:
-                # Plain string — treat as password
                 data = {"password": raw}
 
-            from app.core.credential_manager import (
-                credential_manager, sync_credential_profile_with_session
-            )
-
-            # Ensure the credential manager is bound to the active session
-            # before writing, so the save goes to the correct tenant file.
-            sync_credential_profile_with_session()
+            from app.core.credential_manager import credential_manager
 
             # Derive service name from the secret path (last segment)
             service = secret_name.split("/")[-1]
@@ -1271,8 +1268,7 @@ Examples:
                 source="aws_secrets",
                 credential_type=data.get("credential_type", "Username/Password"),
             )
-            # Explicit save as belt-and-suspenders in case profile was
-            # not set when add_credential ran its internal auto-save.
+            # add_credential auto-saves, but call explicitly as a guarantee
             credential_manager.save_to_profile_json()
 
             self.refresh_credentials()
