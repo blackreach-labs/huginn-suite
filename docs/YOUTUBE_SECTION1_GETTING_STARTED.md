@@ -306,7 +306,7 @@ python -m huginn
 
 > "**EXPLOIT** — Web exploits, OS exploits, database attacks. The offensive tooling."
 
-> "**ELEVATE** — Post-exploitation & privileged escallation. Session management, lateral movement, persistence, credential harvesting."
+> "**ELEVATE** — Post-exploitation & Privileged escallation. Session management, lateral movement, persistence, credential harvesting."
 
 > "**REPORT** — Findings management and report generation."
 
