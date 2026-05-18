@@ -45,7 +45,16 @@ class GlobalSettings:
                 "md5decrypt_key": "",
                 "shodan": "",
                 "virustotal": "",
-                "urlvoid": ""
+                "urlvoid": "",
+                "hibp": "",
+                "dehashed": "",
+                "dehashed_email": "",
+                "dark_web_monitor": "",
+                "google_cse": "",
+                "google_cse_cx": "",
+                "hunter": "",
+                "numverify": "",
+                "abstractapi_phone": ""
             },
             "general": {
                 "default_timeout": 30,

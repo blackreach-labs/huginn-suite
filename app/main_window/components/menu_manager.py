@@ -96,9 +96,6 @@ class MenuManager:
         tools_menu = self.menubar.addMenu('&Tools')
         
         self._add_action(tools_menu, '&Stealth Mode', None, 'Configure stealth and evasion settings', self.main_window.open_stealth_config)
-        self._add_action(tools_menu, '&AD Enumeration', None, 'Active Directory enumeration and attacks', self.main_window.open_ad_enumeration)
-        self._add_action(tools_menu, 'Advanced &Reporting', None, 'Advanced reporting and compliance', self.main_window.open_reports_dialog)
-        self._add_action(tools_menu, 'Advanced &Analytics', None, 'Trend analysis, anomaly detection, and predictive insights', self.main_window.open_advanced_analytics)
         
         tools_menu.addSeparator()
         

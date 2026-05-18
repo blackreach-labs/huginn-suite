@@ -46,7 +46,7 @@ class OSINTPage(BasePage):
         
         # People search tab
         self.people_component = PeopleSearchComponent(self)
-        self.tab_widget.addTab(self.people_component, "👥 People & Entities")
+        self.tab_widget.addTab(self.people_component, "👥 People Entities")
         
         # Social media tab
         self.social_component = SocialMediaComponent(self)

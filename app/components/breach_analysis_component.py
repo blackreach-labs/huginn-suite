@@ -1,6 +1,10 @@
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
-                            QLineEdit, QPushButton, QTextEdit, QFrame, QGroupBox)
-from PyQt6.QtCore import pyqtSignal
+                            QLineEdit, QPushButton, QTextEdit, QFrame, QGroupBox,
+                            QProgressBar, QCheckBox)
+from PyQt6.QtCore import pyqtSignal, QThreadPool
+
+from app.core.breach_intel_engine import BreachIntelWorker
+
 
 class BreachAnalysisComponent(QWidget):
     analysis_started = pyqtSignal(str, str)
@@ -8,6 +12,7 @@ class BreachAnalysisComponent(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.current_worker = None
         self.setup_ui()
         self.apply_theme()
 
@@ -39,6 +44,26 @@ class BreachAnalysisComponent(QWidget):
         target_layout.addWidget(self.target_input)
         
         layout.addWidget(target_group)
+
+        # Phase selection
+        phases_group = QGroupBox("Analysis Phases")
+        phases_layout = QVBoxLayout(phases_group)
+
+        self.phase_checks = {}
+        phase_options = [
+            ("hibp", "Have I Been Pwned"),
+            ("dehashed", "DeHashed Search"),
+            ("local_db", "Local Breach DB"),
+            ("dark_web", "Dark Web Monitor"),
+            ("doc_exposure", "Document Exposure"),
+        ]
+        for key, label in phase_options:
+            cb = QCheckBox(label)
+            cb.setChecked(True)
+            self.phase_checks[key] = cb
+            phases_layout.addWidget(cb)
+
+        layout.addWidget(phases_group)
         
         # Breach intelligence modules
         modules_group = QGroupBox("Breach Intelligence")
@@ -50,8 +75,7 @@ class BreachAnalysisComponent(QWidget):
             ("Local Breach DB", self.run_local_breach_db),
             ("Dark Web Monitor", self.run_dark_web_monitor),
             ("Leaked Documents", self.run_leaked_docs),
-            ("Credential Verify", self.run_credential_verify),
-            ("Full Breach Intel", self.run_full_breach_intel)
+            ("Full Breach Intel", self.run_full_breach_intel),
         ]
         
         for text, method in buttons:
@@ -59,6 +83,13 @@ class BreachAnalysisComponent(QWidget):
             btn.clicked.connect(method)
             btn.setMinimumHeight(35)
             modules_layout.addWidget(btn)
+
+        # Stop button
+        self.stop_btn = QPushButton("⬛ Stop Analysis")
+        self.stop_btn.setMinimumHeight(35)
+        self.stop_btn.clicked.connect(self.stop_analysis)
+        self.stop_btn.setEnabled(False)
+        modules_layout.addWidget(self.stop_btn)
         
         layout.addWidget(modules_group)
         layout.addStretch()
@@ -69,6 +100,14 @@ class BreachAnalysisComponent(QWidget):
         """Create output panel"""
         panel = QFrame()
         layout = QVBoxLayout(panel)
+
+        # Progress bar
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setMaximum(100)
+        self.progress_bar.setValue(0)
+        self.progress_bar.setTextVisible(True)
+        self.progress_bar.setFormat("Ready")
+        layout.addWidget(self.progress_bar)
         
         self.output_text = QTextEdit()
         self.output_text.setReadOnly(True)
@@ -77,111 +116,95 @@ class BreachAnalysisComponent(QWidget):
         
         return panel
 
-    def run_hibp_check(self):
-        """Run Have I Been Pwned check"""
+    # ------------------------------------------------------------------
+    # Worker management
+    # ------------------------------------------------------------------
+    def _start_worker(self, phases: list):
+        """Start a breach intel worker with the given phases"""
         target = self.target_input.text().strip()
         if not target:
+            self.output_text.setHtml(
+                "<p style='color: #FFA500;'>⚠ Please enter a target email or domain</p>"
+            )
             return
-        
-        self.analysis_started.emit(target, "Have I Been Pwned")
+
+        # Stop any running worker
+        if self.current_worker:
+            self.current_worker.stop()
+
         self.output_text.clear()
-        self.output_text.setHtml("""
-        <p style='color: #64C8FF;'>[HAVE I BEEN PWNED] Comprehensive breach analysis...</p>
-        <p style='color: #FF6B6B;'>CRITICAL: 3 breaches found - LinkedIn, Adobe, Dropbox</p>
-        <p style='color: #FFA500;'>Recommendation: Immediate password reset required</p>
-        """)
-        self.analysis_completed.emit({"breaches_found": 3})
+        self.progress_bar.setValue(0)
+        self.progress_bar.setFormat("Analyzing...")
+        self.stop_btn.setEnabled(True)
+
+        self.analysis_started.emit(target, ", ".join(phases))
+
+        worker = BreachIntelWorker(target, phases)
+        worker.signals.output.connect(self.append_output)
+        worker.signals.error.connect(self.append_output)
+        worker.signals.progress.connect(self._on_progress)
+        worker.signals.finished.connect(self._on_finished)
+        self.current_worker = worker
+
+        QThreadPool.globalInstance().start(worker)
+
+    def _on_progress(self, value: int):
+        self.progress_bar.setValue(value)
+        self.progress_bar.setFormat(f"Phase progress: {value}%")
+
+    def _on_finished(self):
+        self.progress_bar.setValue(100)
+        self.progress_bar.setFormat("Complete")
+        self.stop_btn.setEnabled(False)
+
+        if self.current_worker:
+            self.analysis_completed.emit(self.current_worker.results)
+        self.current_worker = None
+
+    def stop_analysis(self):
+        """Stop the running analysis"""
+        if self.current_worker:
+            self.current_worker.stop()
+            self.append_output(
+                "<p style='color: #FFA500;'>⚠ Analysis stopped by user</p>"
+            )
+        self.stop_btn.setEnabled(False)
+
+    def append_output(self, html: str):
+        """Append HTML output to the text widget"""
+        self.output_text.append(html)
+        # Auto-scroll to bottom
+        scrollbar = self.output_text.verticalScrollBar()
+        scrollbar.setValue(scrollbar.maximum())
+
+    # ------------------------------------------------------------------
+    # Individual phase launchers
+    # ------------------------------------------------------------------
+    def run_hibp_check(self):
+        self._start_worker(["hibp"])
 
     def run_dehashed(self):
-        """Run DeHashed search"""
-        target = self.target_input.text().strip()
-        if not target:
-            return
-        
-        self.analysis_started.emit(target, "DeHashed")
-        self.output_text.append("""
-        <p style='color: #64C8FF;'>[DEHASHED] Commercial breach database search...</p>
-        <p style='color: #FFA500;'>Note: Requires DeHashed API key for full functionality</p>
-        """)
-        self.analysis_completed.emit({"dehashed_results": True})
+        self._start_worker(["dehashed"])
 
     def run_local_breach_db(self):
-        """Run local breach database search"""
-        target = self.target_input.text().strip()
-        if not target:
-            return
-        
-        self.analysis_started.emit(target, "Local Breach DB")
-        self.output_text.append("""
-        <p style='color: #64C8FF;'>[LOCAL BREACH DB] Searching local breach database...</p>
-        <p style='color: #00FF41;'>Local database search complete</p>
-        """)
-        self.analysis_completed.emit({"local_db_results": True})
+        self._start_worker(["local_db"])
 
     def run_dark_web_monitor(self):
-        """Run dark web monitoring"""
-        target = self.target_input.text().strip()
-        if not target:
-            return
-        
-        self.analysis_started.emit(target, "Dark Web Monitor")
-        self.output_text.append("""
-        <p style='color: #64C8FF;'>[DARK WEB MONITOR] Scanning dark web sources...</p>
-        <p style='color: #FFA500;'>Dark web monitoring requires specialized tools</p>
-        """)
-        self.analysis_completed.emit({"dark_web_results": True})
+        self._start_worker(["dark_web"])
 
     def run_leaked_docs(self):
-        """Run leaked documents search"""
-        target = self.target_input.text().strip()
-        if not target:
-            return
-        
-        self.analysis_started.emit(target, "Leaked Documents")
-        self.output_text.append("""
-        <p style='color: #64C8FF;'>[LEAKED DOCUMENTS] Document exposure analysis...</p>
-        <p style='color: #00FF41;'>Google dorking and document search complete</p>
-        """)
-        self.analysis_completed.emit({"leaked_docs": True})
-
-    def run_credential_verify(self):
-        """Run credential verification"""
-        target = self.target_input.text().strip()
-        if not target:
-            return
-        
-        self.analysis_started.emit(target, "Credential Verify")
-        self.output_text.append("""
-        <p style='color: #64C8FF;'>[CREDENTIAL VERIFY] Email deliverability check...</p>
-        <p style='color: #00FF41;'>Email validation and verification complete</p>
-        """)
-        self.analysis_completed.emit({"credential_verify": True})
+        self._start_worker(["doc_exposure"])
 
     def run_full_breach_intel(self):
-        """Run comprehensive breach intelligence"""
-        target = self.target_input.text().strip()
-        if not target:
-            return
-        
-        self.analysis_started.emit(target, "Full Breach Intel")
-        self.output_text.clear()
-        self.output_text.setHtml("""
-        <p style='color: #64C8FF;'>[COMPREHENSIVE BREACH INTEL] Multi-source analysis...</p>
-        <p style='color: #FFD93D;'>Phase 1: Have I Been Pwned check</p>
-        <p style='color: #FFD93D;'>Phase 2: DeHashed database search</p>
-        <p style='color: #FFD93D;'>Phase 3: Local breach database query</p>
-        <p style='color: #FFD93D;'>Phase 4: Dark web monitoring</p>
-        <p style='color: #FFD93D;'>Phase 5: Document exposure analysis</p>
-        <p style='color: #00FF41;'>Comprehensive breach intelligence complete</p>
-        """)
-        self.analysis_completed.emit({
-            "hibp_breaches": 3,
-            "dehashed_results": True,
-            "local_db_results": True,
-            "dark_web_results": True,
-            "leaked_docs": True
-        })
+        """Run all selected phases"""
+        selected = [key for key, cb in self.phase_checks.items() if cb.isChecked()]
+        if not selected:
+            selected = ["hibp", "dehashed", "local_db", "dark_web", "doc_exposure"]
+        self._start_worker(selected)
 
+    # ------------------------------------------------------------------
+    # Theme
+    # ------------------------------------------------------------------
     def apply_theme(self):
         """Apply component theme"""
         self.setStyleSheet("""
@@ -201,6 +224,11 @@ class BreachAnalysisComponent(QWidget):
             QPushButton:hover {
                 background-color: rgba(50, 70, 90, 200);
                 border: 2px solid #64C8FF;
+            }
+            QPushButton:disabled {
+                background-color: rgba(20, 20, 20, 100);
+                border: 1px solid rgba(80, 80, 80, 100);
+                color: #666;
             }
             QLineEdit {
                 background-color: rgba(20, 30, 40, 150);
@@ -231,5 +259,33 @@ class BreachAnalysisComponent(QWidget):
                 subcontrol-origin: margin;
                 left: 10px;
                 padding: 0 5px 0 5px;
+            }
+            QCheckBox {
+                color: #DCDCDC;
+                spacing: 8px;
+            }
+            QCheckBox::indicator {
+                width: 14px;
+                height: 14px;
+                border: 1px solid rgba(100, 200, 255, 100);
+                border-radius: 3px;
+                background-color: rgba(20, 30, 40, 150);
+            }
+            QCheckBox::indicator:checked {
+                background-color: #64C8FF;
+            }
+            QProgressBar {
+                border: 1px solid rgba(100, 200, 255, 100);
+                border-radius: 5px;
+                text-align: center;
+                color: #DCDCDC;
+                background-color: rgba(0, 0, 0, 150);
+            }
+            QProgressBar::chunk {
+                background-color: qlineargradient(
+                    x1:0, y1:0, x2:1, y2:0,
+                    stop:0 #64C8FF, stop:1 #00FF41
+                );
+                border-radius: 4px;
             }
         """)

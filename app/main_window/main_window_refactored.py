@@ -551,11 +551,13 @@ class MainWindow(QMainWindow):
     
     def show_enhanced_help(self):
         """Show enhanced help panel."""
-        if hasattr(self, 'enhanced_help_panel'):
-            self.enhanced_help_panel.show()
-            self.status_bar.showMessage("Enhanced help panel opened - F1 to close")
-        else:
-            self.status_bar.showMessage("Enhanced help panel not available")
+        if not hasattr(self, 'enhanced_help_panel') or self.enhanced_help_panel is None:
+            from app.widgets.enhanced_help_panel import EnhancedHelpPanel
+            self.enhanced_help_panel = EnhancedHelpPanel(self)
+        self.enhanced_help_panel.show()
+        self.enhanced_help_panel.raise_()
+        self.enhanced_help_panel.activateWindow()
+        self.status_bar.showMessage("Enhanced help panel opened - F1 to close")
     
     def show_mode_selection(self):
         """Show mode selection dialog on startup"""

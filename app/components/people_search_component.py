@@ -1,6 +1,19 @@
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
-                            QLineEdit, QPushButton, QTextEdit, QFrame, QGroupBox, QGridLayout)
-from PyQt6.QtCore import pyqtSignal
+                            QLineEdit, QPushButton, QTextBrowser, QFrame, QGroupBox,
+                            QProgressBar)
+from PyQt6.QtCore import pyqtSignal, QThreadPool
+
+from app.core.people_intel_engine import (
+    SocialProfilesWorker,
+    ProfessionalNetworksWorker,
+    PublicRecordsWorker,
+    ContactDiscoveryWorker,
+    UsernameSearchWorker,
+    EmailEnumerationWorker,
+    PhoneLookupWorker,
+    FullPersonIntelWorker,
+)
+
 
 class PeopleSearchComponent(QWidget):
     search_started = pyqtSignal(str, str)
@@ -8,6 +21,7 @@ class PeopleSearchComponent(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.current_worker = None
         self.setup_ui()
         self.apply_theme()
 
@@ -33,16 +47,21 @@ class PeopleSearchComponent(QWidget):
         target_group = QGroupBox("Target Configuration")
         target_layout = QVBoxLayout(target_group)
         
-        target_layout.addWidget(QLabel("Person/Entity Name:"))
+        target_layout.addWidget(QLabel("Person/Username:"))
         self.target_input = QLineEdit()
-        self.target_input.setPlaceholderText("John Doe or Company Name")
+        self.target_input.setPlaceholderText("johndoe or John Doe")
         target_layout.addWidget(self.target_input)
+
+        target_layout.addWidget(QLabel("Domain (optional):"))
+        self.domain_input = QLineEdit()
+        self.domain_input.setPlaceholderText("company.com")
+        target_layout.addWidget(self.domain_input)
         
         layout.addWidget(target_group)
         
         # Search modules
         modules_group = QGroupBox("People Search Tools")
-        modules_layout = QGridLayout(modules_group)
+        modules_layout = QVBoxLayout(modules_group)
         
         buttons = [
             ("Social Profiles", self.run_social_profiles),
@@ -52,14 +71,21 @@ class PeopleSearchComponent(QWidget):
             ("Username Search", self.run_username_search),
             ("Email Enumeration", self.run_email_enumeration),
             ("Phone Lookup", self.run_phone_lookup),
-            ("Full Person Intel", self.run_full_person_intel)
+            ("Full Person Intel", self.run_full_person_intel),
         ]
         
-        for i, (text, method) in enumerate(buttons):
+        for text, method in buttons:
             btn = QPushButton(text)
             btn.clicked.connect(method)
             btn.setMinimumHeight(35)
-            modules_layout.addWidget(btn, i // 2, i % 2)
+            modules_layout.addWidget(btn)
+
+        # Stop button
+        self.stop_btn = QPushButton("\u25a0 Stop")
+        self.stop_btn.setMinimumHeight(35)
+        self.stop_btn.clicked.connect(self.stop_search)
+        self.stop_btn.setEnabled(False)
+        modules_layout.addWidget(self.stop_btn)
         
         layout.addWidget(modules_group)
         layout.addStretch()
@@ -70,133 +96,151 @@ class PeopleSearchComponent(QWidget):
         """Create output panel"""
         panel = QFrame()
         layout = QVBoxLayout(panel)
+
+        # Progress bar
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setMaximum(100)
+        self.progress_bar.setValue(0)
+        self.progress_bar.setTextVisible(True)
+        self.progress_bar.setFormat("Ready")
+        layout.addWidget(self.progress_bar)
         
-        self.output_text = QTextEdit()
+        self.output_text = QTextBrowser()
         self.output_text.setReadOnly(True)
+        self.output_text.setOpenExternalLinks(True)
         self.output_text.setPlaceholderText("People search results will appear here...")
         layout.addWidget(self.output_text)
         
         return panel
 
+    # ------------------------------------------------------------------
+    # Worker management
+    # ------------------------------------------------------------------
+    def _start_worker(self, worker):
+        """Start a worker on the thread pool"""
+        target = self.target_input.text().strip()
+        if not target:
+            self.output_text.setHtml(
+                "<p style='color: #FFA500;'>\u26a0 Please enter a target</p>"
+            )
+            return
+
+        if self.current_worker:
+            self.current_worker.stop()
+
+        self.output_text.clear()
+        self.progress_bar.setValue(0)
+        self.progress_bar.setFormat("Searching...")
+        self.stop_btn.setEnabled(True)
+
+        worker.signals.output.connect(self.append_output)
+        worker.signals.error.connect(self.append_output)
+        worker.signals.progress.connect(self._on_progress)
+        worker.signals.finished.connect(self._on_finished)
+        self.current_worker = worker
+
+        QThreadPool.globalInstance().start(worker)
+
+    def _on_progress(self, value: int):
+        self.progress_bar.setValue(value)
+        self.progress_bar.setFormat(f"Progress: {value}%")
+
+    def _on_finished(self):
+        self.progress_bar.setValue(100)
+        self.progress_bar.setFormat("Complete")
+        self.stop_btn.setEnabled(False)
+
+        if self.current_worker and hasattr(self.current_worker, 'results'):
+            self.search_completed.emit(self.current_worker.results)
+        self.current_worker = None
+
+    def stop_search(self):
+        """Stop the running search"""
+        if self.current_worker:
+            self.current_worker.stop()
+            self.append_output(
+                "<p style='color: #FFA500;'>\u26a0 Search stopped by user</p>"
+            )
+        self.stop_btn.setEnabled(False)
+
+    def append_output(self, html: str):
+        """Append HTML output to the text widget"""
+        self.output_text.append(html)
+        scrollbar = self.output_text.verticalScrollBar()
+        scrollbar.setValue(scrollbar.maximum())
+
+    # ------------------------------------------------------------------
+    # Tool launchers
+    # ------------------------------------------------------------------
     def run_social_profiles(self):
-        """Run social media profile search"""
         target = self.target_input.text().strip()
         if not target:
             return
-        
         self.search_started.emit(target, "Social Profiles")
-        self.output_text.clear()
-        self.output_text.setHtml("""
-        <p style='color: #64C8FF;'>[SOCIAL PROFILES] Discovering social media presence...</p>
-        <p style='color: #FFD93D;'>Tools: Sherlock, Social-Analyzer, WhatsMyName</p>
-        <p style='color: #00FF41;'>Found profiles on: Twitter, LinkedIn, Facebook, Instagram</p>
-        """)
-        self.search_completed.emit({"social_profiles": 4})
+        worker = SocialProfilesWorker(target)
+        self._start_worker(worker)
 
     def run_professional_networks(self):
-        """Run professional network analysis"""
         target = self.target_input.text().strip()
         if not target:
             return
-        
         self.search_started.emit(target, "Professional Networks")
-        self.output_text.append("""
-        <p style='color: #64C8FF;'>[PROFESSIONAL NETWORKS] Analyzing career information...</p>
-        <p style='color: #00FF41;'>LinkedIn, GitHub, professional associations identified</p>
-        """)
-        self.search_completed.emit({"professional_networks": True})
+        worker = ProfessionalNetworksWorker(target)
+        self._start_worker(worker)
 
     def run_public_records(self):
-        """Run public records search"""
         target = self.target_input.text().strip()
         if not target:
             return
-        
         self.search_started.emit(target, "Public Records")
-        self.output_text.append("""
-        <p style='color: #64C8FF;'>[PUBLIC RECORDS] Searching public databases...</p>
-        <p style='color: #FFA500;'>Note: Requires appropriate legal authorization</p>
-        """)
-        self.search_completed.emit({"public_records": True})
+        worker = PublicRecordsWorker(target)
+        self._start_worker(worker)
 
     def run_contact_discovery(self):
-        """Run contact information discovery"""
         target = self.target_input.text().strip()
+        domain = self.domain_input.text().strip()
         if not target:
             return
-        
         self.search_started.emit(target, "Contact Discovery")
-        self.output_text.append("""
-        <p style='color: #64C8FF;'>[CONTACT DISCOVERY] Finding contact information...</p>
-        <p style='color: #00FF41;'>Email patterns, phone numbers, addresses discovered</p>
-        """)
-        self.search_completed.emit({"contact_info": True})
+        worker = ContactDiscoveryWorker(target, domain=domain)
+        self._start_worker(worker)
 
     def run_username_search(self):
-        """Run username search across platforms"""
         target = self.target_input.text().strip()
         if not target:
             return
-        
         self.search_started.emit(target, "Username Search")
-        self.output_text.append("""
-        <p style='color: #64C8FF;'>[USERNAME SEARCH] Searching username across platforms...</p>
-        <p style='color: #00FF41;'>Username availability and usage patterns analyzed</p>
-        """)
-        self.search_completed.emit({"username_search": True})
+        worker = UsernameSearchWorker(target)
+        self._start_worker(worker)
 
     def run_email_enumeration(self):
-        """Run email enumeration"""
         target = self.target_input.text().strip()
         if not target:
             return
-        
         self.search_started.emit(target, "Email Enumeration")
-        self.output_text.append("""
-        <p style='color: #64C8FF;'>[EMAIL ENUMERATION] Discovering email addresses...</p>
-        <p style='color: #00FF41;'>Email patterns and variations identified</p>
-        """)
-        self.search_completed.emit({"email_enumeration": True})
+        worker = EmailEnumerationWorker(target)
+        self._start_worker(worker)
 
     def run_phone_lookup(self):
-        """Run phone number lookup"""
         target = self.target_input.text().strip()
         if not target:
             return
-        
         self.search_started.emit(target, "Phone Lookup")
-        self.output_text.append("""
-        <p style='color: #64C8FF;'>[PHONE LOOKUP] Analyzing phone number information...</p>
-        <p style='color: #00FF41;'>Carrier, location, and registration details found</p>
-        """)
-        self.search_completed.emit({"phone_lookup": True})
+        worker = PhoneLookupWorker(target)
+        self._start_worker(worker)
 
     def run_full_person_intel(self):
-        """Run comprehensive person intelligence"""
         target = self.target_input.text().strip()
+        domain = self.domain_input.text().strip()
         if not target:
             return
-        
         self.search_started.emit(target, "Full Person Intel")
-        self.output_text.clear()
-        self.output_text.setHtml("""
-        <p style='color: #64C8FF;'>[COMPREHENSIVE PERSON INTEL] Multi-source analysis...</p>
-        <p style='color: #FFD93D;'>Phase 1: Social media profile discovery</p>
-        <p style='color: #FFD93D;'>Phase 2: Professional network analysis</p>
-        <p style='color: #FFD93D;'>Phase 3: Contact information gathering</p>
-        <p style='color: #FFD93D;'>Phase 4: Username and email enumeration</p>
-        <p style='color: #FFD93D;'>Phase 5: Phone number analysis</p>
-        <p style='color: #00FF41;'>Comprehensive person intelligence complete</p>
-        """)
-        self.search_completed.emit({
-            "social_profiles": 4,
-            "professional_networks": True,
-            "contact_info": True,
-            "username_search": True,
-            "email_enumeration": True,
-            "phone_lookup": True
-        })
+        worker = FullPersonIntelWorker(target, domain=domain)
+        self._start_worker(worker)
 
+    # ------------------------------------------------------------------
+    # Theme
+    # ------------------------------------------------------------------
     def apply_theme(self):
         """Apply component theme"""
         self.setStyleSheet("""
@@ -217,6 +261,11 @@ class PeopleSearchComponent(QWidget):
                 background-color: rgba(50, 70, 90, 200);
                 border: 2px solid #64C8FF;
             }
+            QPushButton:disabled {
+                background-color: rgba(20, 20, 20, 100);
+                border: 1px solid rgba(80, 80, 80, 100);
+                color: #666;
+            }
             QLineEdit {
                 background-color: rgba(20, 30, 40, 150);
                 border: 2px solid rgba(100, 200, 255, 100);
@@ -224,7 +273,7 @@ class PeopleSearchComponent(QWidget):
                 color: #DCDCDC;
                 padding: 5px;
             }
-            QTextEdit {
+            QTextBrowser {
                 background-color: rgba(0, 0, 0, 200);
                 border: 1px solid rgba(100, 200, 255, 100);
                 border-radius: 5px;
@@ -246,5 +295,19 @@ class PeopleSearchComponent(QWidget):
                 subcontrol-origin: margin;
                 left: 10px;
                 padding: 0 5px 0 5px;
+            }
+            QProgressBar {
+                border: 1px solid rgba(100, 200, 255, 100);
+                border-radius: 5px;
+                text-align: center;
+                color: #DCDCDC;
+                background-color: rgba(0, 0, 0, 150);
+            }
+            QProgressBar::chunk {
+                background-color: qlineargradient(
+                    x1:0, y1:0, x2:1, y2:0,
+                    stop:0 #64C8FF, stop:1 #00FF41
+                );
+                border-radius: 4px;
             }
         """)

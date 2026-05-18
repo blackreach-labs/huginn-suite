@@ -233,7 +233,7 @@ python -m huginn
 
 **[Screen: Main window opens in fullscreen]**
 
-> "And there it is — Huginn is running. It opens in fullscreen by default. You can press F11 or go to View → Navigation Style to adjust that."
+> "And there it is — Huginn is running. It opens in fullscreen by default. You can go to View → Navigation Style to switch between Advanced and Guided modes."
 
 > "You'll notice the Attack Chain mindmap at the top of the screen and the main content area below it. We'll cover all of this in the next video."
 
@@ -249,7 +249,7 @@ python -m huginn
 
 > "**Font loading warning** — You might see a warning about `neuropol.otf` not being found. This is cosmetic — the app will fall back to a system font and everything will work fine."
 
-> "**Permission errors on Linux** — Some network scanning features require elevated privileges. You may need to run with `sudo` for certain tools, or configure capabilities on the Python binary."
+> "**Permission errors on Linux** — Some network scanning features require elevated privileges. You may need to run a termina or command prompt as Administrator to launch "python main.py"
 
 > "**Missing resources directory** — If you see errors about missing config files, make sure you cloned the full repository and didn't just download a zip of the source."
 
@@ -286,7 +286,7 @@ python -m huginn
 
 > "**Advanced Mode** skips the questionnaire and takes you straight to the full interface. This is what we'll be using throughout this series."
 
-> "Your choice is remembered for next time, but you can always switch between modes from the View menu."
+> "you can always switch between modes from the menu under View → Navigation Style."
 
 ---
 
@@ -302,11 +302,11 @@ python -m huginn
 
 > "**RECON** — Reconnaissance and enumeration. All 12 of the enumeration tools live here — DNS, port scanning, SMB, HTTP fingerprinting, and so on."
 
-> "**VULN** — Vulnerability scanning. This is where you run the Huginn scanner against your targets."
+> "**SCAN** — Vulnerability scanning. This is where you run the Huginn scanner against your targets."
 
 > "**EXPLOIT** — Web exploits, OS exploits, database attacks. The offensive tooling."
 
-> "**POST-EX** — Post-exploitation. Session management, lateral movement, persistence, credential harvesting."
+> "**ELEVATE** — Post-exploitation & privileged escallation. Session management, lateral movement, persistence, credential harvesting."
 
 > "**REPORT** — Findings management and report generation."
 
@@ -320,47 +320,67 @@ python -m huginn
 
 **[Screen: Click through each menu]**
 
-> "Let's go through the menu bar. There are three menus: File, View, and Help."
+> "Let's go through the menu bar. There are five menus: File, Navigate, Tools, View, and Help. The menus have been organised so that each one has a clear purpose — file operations, page navigation, utility tools, visual preferences, and help."
 
 ### File Menu
 
 **[Open File menu]**
 
-> "The **File menu** has a few important items."
+> "The **File menu** is focused purely on file operations."
 
-> "**Profiles** — This is where you manage engagement profiles. You can create a new profile for each client or target, save it, and load it back later. Profiles store your target information and settings."
+> "**Profiles** — This is a submenu where you manage engagement profiles. You can create a new profile with `Ctrl+N`, load an existing one with `Ctrl+O`, or delete profiles you no longer need. Profiles store your target information and settings for each engagement."
 
 > "**Export Results** — Shortcut `Ctrl+E`. Exports the results from whatever page you're currently on."
 
-> "**Databases** — Opens the database management page where you can query and manage the SQLite scan history database directly."
+> "**Exit** — `Ctrl+Q`."
+
+### Navigate Menu
+
+**[Open Navigate menu]**
+
+> "The **Navigate menu** is where all page navigation lives. This mirrors the Attack Chain mindmap phases."
+
+> "At the top you have the six phases: **Engagement Setup**, **Recon & Enumeration**, **Vulnerability Analysis**, **Exploitation**, **Post-Exploitation**, and **Reporting**. Clicking any of these takes you directly to that section — same as clicking the mindmap nodes."
+
+> "Below the separator you'll find standalone pages:"
+
+> "**Inventory** — `Ctrl+Shift+I`. Shows all discovered assets across your scans."
+
+> "**VPN Connection** — Manage VPN connections for your engagements."
+
+> "**Running Scans** — `Ctrl+Shift+R`. Opens a dedicated page showing all currently active scans, their progress, and the ability to cancel them."
+
+> "**Sessions** — `Ctrl+Shift+S`. Opens the Session Management and information panel. This is how you organise your work into projects. We'll cover this in detail shortly."
+
+### Tools Menu
+
+**[Open Tools menu]**
+
+> "The **Tools menu** contains configuration and utility tools — things you use to set up and manage your environment."
+
+> "**Stealth Mode** — Configure stealth and evasion settings. Four evasion levels from Normal through to Paranoid."
+
+> "Below the separator:"
+
+> "**Databases** — `Ctrl+D`. Opens the database management page where you can query and manage the SQLite scan history database directly."
 
 > "**Global Settings** — `Ctrl+,`. This is where you configure API keys for integrations like Shodan and VirusTotal, and set global application preferences."
 
 > "**License Manager** — This is where you activate a Professional or Enterprise license, or generate a trial. We'll cover this in the next video."
 
-> "**Exit** — `Ctrl+Q`."
-
 ### View Menu
 
 **[Open View menu]**
 
-> "The **View menu** is where most of the navigation lives."
+> "The **View menu** is now focused purely on visual and UI preferences."
 
-> "**Navigation Style** — Switch between Advanced Mode and Guided Mode without restarting."
+> "**Navigation Style** — A submenu to switch between Advanced Mode and Guided Mode without restarting."
 
-> "**Themes** — `Ctrl+T` opens the theme selector. There are free themes — Dark, Light, Ocean Blue — and Professional/Enterprise themes like Matrix and Cyberpunk that unlock with a license."
+> "**Themes** — `Ctrl+T` opens the theme selector. There are free themes — Dark, Light, Ocean Blue — and Professional/Enterprise themes like Matrix and Cyberpunk that unlock with a license. You can also pick individual themes directly from the submenu."
 
-> "**Running Scans** — `Ctrl+Shift+R`. Opens a dedicated page showing all currently active scans, their progress, and the ability to cancel them."
+> "**Minimize to Tray** — `Ctrl+M`. Minimizes the application to the system tray."
 
-> "**Sessions** — `Ctrl+Shift+S`. Opens the Session Management dialog. This is how you organise your work into projects. We'll cover this in detail shortly."
-
-> "**Session Info** — `Ctrl+I`. Opens a live session information panel showing your current session's exports, scan history, and statistics."
-
-> "**Reports** — `Ctrl+R`. Opens the Advanced Reporting Engine for generating professional reports."
-
-> "**Inventory** — `Ctrl+Shift+I`. Shows all discovered assets across your scans."
-
-> "**Professional Features** — This submenu contains the Pro and Enterprise features: Stealth Mode, AD Enumeration, Enhanced Reporting, Advanced Analytics, Wireless Security, Social Engineering, Anti-Forensics, and VPN Connection. These are covered in Section 6 of the series."
+> "**Clear Output** — `Ctrl+L`. Clears the terminal output on the current page."
 
 ### Help Menu
 
@@ -392,19 +412,19 @@ python -m huginn
 
 **[Navigate back to home via SETUP]**
 
-> "You can always get back to the home screen by clicking SETUP in the mindmap, or by navigating via the View menu."
+> "You can always get back to the home screen by clicking SETUP in the mindmap, or by navigating via the Navigate menu."
 
 ---
 
 ## SECTION 5: Session Management (12:00 – 16:00)
 
-**[Screen: Open Sessions dialog via View → Sessions]**
+**[Screen: Open Sessions dialog via Navigate → Sessions]**
 
 > "Let's talk about sessions, because this is how you keep your work organised."
 
 > "Every time you launch Huginn, a new session is automatically created with a timestamp name. All scans you run and all exports you generate are automatically tracked in that session."
 
-> "The Session Management dialog — open it with `Ctrl+Shift+S` or View → Sessions — shows you all your sessions."
+> "The Session Management dialog — open it with `Ctrl+Shift+S` or Navigate → Sessions — shows you all your sessions."
 
 **[Walk through the dialog]**
 
@@ -414,9 +434,9 @@ python -m huginn
 
 > "You can edit a session by double-clicking it, and delete sessions you no longer need."
 
-**[Open Session Info via View → Session Info or Ctrl+I]**
+**[Open Session Info via Navigate → Sessions or Ctrl+Shift+S]**
 
-> "The Session Info page — `Ctrl+I` — gives you a live view of your current session. It has four tabs:"
+> "The Session Info page — `Ctrl+Shift+S` — gives you a live view of your current session. It has four tabs:"
 
 > "**Current Session** — Overview and quick stats. How many scans you've run, how many targets."
 
@@ -457,7 +477,7 @@ python -m huginn
 
 ## INTRO (0:00 – 0:45)
 
-**[Screen: Huginn open, navigate to File → License Manager]**
+**[Screen: Huginn open, navigate to Tools → License Manager]**
 
 > "Welcome back. In this video we're going to cover Huginn's licensing system — what features are available for free, what's in the Professional and Enterprise tiers, and how to activate a trial license so you can follow along with the advanced features in this series."
 
@@ -513,7 +533,7 @@ python -m huginn
 
 **[Screen: License Manager dialog]**
 
-> "To open the License Manager, go to **File → License Manager**."
+> "To open the License Manager, go to **Tools → License Manager**."
 
 > "The dialog shows your current license status — what tier you're on, when it expires, and which features are active."
 
@@ -541,15 +561,15 @@ python -m huginn
 
 > "A couple of places in the UI where you'll notice the licensing system in action."
 
-> "In the Theme Selector, Professional and Enterprise themes show a lock icon if you're on the Free tier. Activate a trial and those themes unlock."
+> "In the Theme Selector — open it with `Ctrl+T` or View → Themes → Theme Selector — Professional and Enterprise themes show a lock icon if you're on the Free tier. Activate a trial and those themes unlock."
 
-**[Screen: View → Professional Features submenu]**
+**[Screen: Tools menu, show Stealth Mode]**
 
-> "In the View menu, the Professional Features submenu items will show a warning dialog if you try to access them without the right license tier. With a trial or paid license active, they open normally."
+> "In the Tools menu, Stealth Mode will show a warning dialog if you try to access it without the right license tier. With a trial or paid license active, it opens normally. The other professional features like AD Enumeration and Advanced Analytics are accessible through the mindmap navigation."
 
 **[Screen: Show Stealth Mode opening with trial active]**
 
-> "With the trial active, let's open Stealth Mode as an example — View → Professional Features → Stealth Mode. You can see the four evasion levels and all the configuration options. We'll cover this in detail in Section 6."
+> "With the trial active, let's open Stealth Mode as an example — Tools → Stealth Mode. You can see the four evasion levels and all the configuration options. We'll cover this in detail in Section 6."
 
 ---
 
@@ -566,18 +586,21 @@ python -m huginn
 ## APPENDIX: Quick Reference for Section 1
 
 ### Key Keyboard Shortcuts
+
 | Shortcut | Action |
-|---|---|
+| --- | --- |
+| `Ctrl+N` | New Profile |
+| `Ctrl+O` | Load Profile |
 | `Ctrl+E` | Export current results |
+| `Ctrl+D` | Databases |
 | `Ctrl+,` | Global Settings |
 | `Ctrl+T` | Theme Selector |
 | `Ctrl+Shift+R` | Running Scans |
-| `Ctrl+Shift+S` | Session Management |
-| `Ctrl+I` | Session Info |
-| `Ctrl+R` | Reports |
+| `Ctrl+Shift+S` | Sessions |
 | `Ctrl+Shift+I` | Inventory |
+| `Ctrl+M` | Minimize to Tray |
+| `Ctrl+L` | Clear Output |
 | `F1` | Tool Help |
-| `F11` | Toggle Fullscreen |
 | `Ctrl+Q` | Exit |
 
 ### Installation Commands (Quick Reference)
@@ -599,9 +622,10 @@ python main.py
 ```
 
 ### Session Management Quick Reference
-- New session: `View → Sessions → New Session`
+
+- New session: `Navigate → Sessions → New Session`
 - Set active session: Select session → "Set Current"
-- View session live: `Ctrl+I`
+- View session live: `Ctrl+Shift+S`
 - Save session: Session Info → "Save Session"
 - Restore session: Session Info → "Restore Session"
 

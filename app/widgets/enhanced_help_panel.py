@@ -148,11 +148,11 @@ class EnhancedHelpPanel(QWidget):
                     "Custom DNS server support"
                 ],
                 "usage": [
-                    "1. Enter target domain (e.g., example.com)",
-                    "2. Select record types to query",
-                    "3. Choose enumeration method (Wordlist or Bruteforce)",
-                    "4. Configure DNS server (optional)",
-                    "5. Click Run to start enumeration"
+                    "Enter target domain (e.g., example.com)",
+                    "Select record types to query",
+                    "Choose enumeration method (Wordlist or Bruteforce)",
+                    "Configure DNS server (optional)",
+                    "Click Run to start enumeration"
                 ],
                 "tips": [
                     "Use different wordlists for different target types",
@@ -173,11 +173,11 @@ class EnhancedHelpPanel(QWidget):
                     "Custom port ranges"
                 ],
                 "usage": [
-                    "1. Enter target IP or range",
-                    "2. Select scan type",
-                    "3. Configure port range",
-                    "4. Enable additional options (OS/Service detection)",
-                    "5. Start scan"
+                    "Enter target IP or range",
+                    "Select scan type",
+                    "Configure port range",
+                    "Enable additional options (OS/Service detection)",
+                    "Start scan"
                 ],
                 "tips": [
                     "SYN scans are stealthier but require privileges",
@@ -198,10 +198,10 @@ class EnhancedHelpPanel(QWidget):
                     "Domain information extraction"
                 ],
                 "usage": [
-                    "1. Enter target IP or hostname",
-                    "2. Select scan type",
-                    "3. Configure authentication (if needed)",
-                    "4. Run enumeration"
+                    "Enter target IP or hostname",
+                    "Select scan type",
+                    "Configure authentication (if needed)",
+                    "Run enumeration"
                 ],
                 "tips": [
                     "Try anonymous access first",
@@ -289,6 +289,222 @@ class EnhancedHelpPanel(QWidget):
                     "<b>Compliance Mapping:</b> Generate OWASP Top 10 2021 and PCI DSS compliance reports for audits",
                     "<b>Session Management:</b> Save scan configurations and results for consistent testing workflows",
                     "<b>Memory Optimization:</b> Monitor memory usage during large scans and adjust settings accordingly"
+                ]
+            },
+            "smtp": {
+                "title": "SMTP Enumeration",
+                "description": "Email server user enumeration and mail service reconnaissance",
+                "features": [
+                    "Multi-method user enumeration (VRFY, EXPN, RCPT TO)",
+                    "Wordlist-based username testing",
+                    "Custom port configuration (default 25)",
+                    "Target domain specification for RCPT TO method",
+                    "Configurable HELO/EHLO identifier",
+                    "Mail server banner analysis",
+                    "Automatic method fallback on failure"
+                ],
+                "usage": [
+                    "Enter target mail server IP or hostname",
+                    "Set the SMTP port (default: 25, or 587/465 for submission)",
+                    "Enter target domain for RCPT TO testing (optional)",
+                    "Configure HELO name (default: test.local)",
+                    "Select a wordlist for username enumeration",
+                    "Click Run to start enumeration"
+                ],
+                "tips": [
+                    "VRFY is the fastest method but often disabled on modern servers",
+                    "RCPT TO is the most reliable method and works on most servers",
+                    "EXPN can reveal mailing list members if enabled",
+                    "Use a targeted wordlist with common usernames for the organisation",
+                    "Change the HELO name to something plausible to avoid detection",
+                    "Try port 587 if port 25 is filtered"
+                ]
+            },
+            "snmp": {
+                "title": "SNMP Enumeration",
+                "description": "Network device information gathering via Simple Network Management Protocol",
+                "features": [
+                    "SNMP version support (v1, v2c, v3)",
+                    "Multiple scan types (Basic Info, Users, Processes, Software, Network, Full Enumeration)",
+                    "Community string configuration and brute-forcing",
+                    "Quick presets (Default and Extended community lists)",
+                    "System information gathering (hostname, OS, uptime)",
+                    "User and process enumeration",
+                    "Network interface and routing table discovery",
+                    "Installed software enumeration"
+                ],
+                "usage": [
+                    "Enter target IP address",
+                    "Select SNMP version (2c recommended for most devices)",
+                    "Choose scan type (Basic Info for quick recon, Full Enumeration for comprehensive)",
+                    "Configure community strings (default: public,private,community)",
+                    "Use Quick presets to load Default or Extended community lists",
+                    "Click Run to start enumeration"
+                ],
+                "tips": [
+                    "Start with 'public' and 'private' community strings — they're still common",
+                    "Full Enumeration takes longer but reveals users, processes, and installed software",
+                    "Use the Extended preset for a broader community string brute-force",
+                    "SNMP v3 requires credentials but provides encrypted communication",
+                    "Network scan type reveals interfaces, routes, and ARP tables",
+                    "Many IoT devices still use default SNMP communities"
+                ]
+            },
+            "http": {
+                "title": "HTTP Enumeration",
+                "description": "Web server fingerprinting, directory enumeration, and content discovery",
+                "features": [
+                    "Multiple scan types (Fingerprinting, Source Code, Crawler, Directory Enum, Enterprise Scripts, Full Scan)",
+                    "File extension selection by category (PHP, ASP, JSP, HTML, JS, Config, Backup)",
+                    "Preset configurations (Manual, PHP Apps, API-focused, Login Pages, Backup Files, CMS Common)",
+                    "Wordlist-based directory and file discovery with size options (Small, Medium, Large)",
+                    "Listener integration for capturing callbacks",
+                    "Authentication support (None, Basic Auth) with credential manager",
+                    "Web server identification and technology stack detection",
+                    "Security header analysis"
+                ],
+                "usage": [
+                    "Enter target URL (e.g., http://target.com or https://target.com)",
+                    "Select scan type from the dropdown",
+                    "For Directory Enum: choose a preset or manually select file extensions",
+                    "Select wordlist and size (Small/Medium/Large)",
+                    "Configure authentication if the target requires login",
+                    "Enable Listener if you need to capture out-of-band callbacks",
+                    "Click Run to start the scan"
+                ],
+                "tips": [
+                    "Start with Fingerprinting to identify the web server and technology stack",
+                    "Use presets to quickly configure extension sets for common platforms",
+                    "Backup Files preset finds .bak, .old, .tmp files that may contain sensitive data",
+                    "Enable Config extensions (.env, .config, .conf) to find exposed configuration files",
+                    "Crawler mode follows links to map the full site structure",
+                    "Enterprise Scripts runs advanced checks including Nikto-style vulnerability tests",
+                    "Use Basic Auth when testing authenticated areas of the application"
+                ]
+            },
+            "api": {
+                "title": "API Enumeration",
+                "description": "REST API endpoint discovery, method testing, and vulnerability assessment",
+                "features": [
+                    "Multiple scan types (Basic Discovery, Gobuster Enum, HTTP Methods, Auth Bypass, Vulnerability Test, Full Scan)",
+                    "Preset configurations (None, API-focused, Login Pages, Backup Files)",
+                    "Wordlist size options (Small, Medium, Large)",
+                    "Common API endpoint pattern detection (/api, /api/v1, /rest, /graphql, /swagger)",
+                    "HTTP method testing (GET, POST, PUT, DELETE, PATCH, OPTIONS)",
+                    "Authentication bypass testing",
+                    "SQL injection and NoSQL injection testing",
+                    "API versioning detection"
+                ],
+                "usage": [
+                    "Enter target base URL (e.g., https://api.target.com)",
+                    "Select scan type from the dropdown",
+                    "Choose a preset for targeted endpoint patterns",
+                    "Select wordlist size (Medium recommended for balanced coverage)",
+                    "Select specific wordlist if needed",
+                    "Click Run to start API enumeration"
+                ],
+                "tips": [
+                    "Start with Basic Discovery to find API endpoints before deeper testing",
+                    "Gobuster Enum uses wordlists for brute-force endpoint discovery",
+                    "HTTP Methods testing reveals which verbs are accepted on each endpoint",
+                    "Auth Bypass tests for common authentication weaknesses (missing auth, IDOR)",
+                    "Check /swagger, /api-docs, and /graphql for self-documenting APIs",
+                    "Vulnerability Test includes SQLi and NoSQLi checks on discovered parameters",
+                    "Use the API-focused preset for comprehensive REST API wordlists"
+                ]
+            },
+            "rpc": {
+                "title": "RPC Enumeration",
+                "description": "Windows RPC service enumeration for domain reconnaissance and user discovery",
+                "features": [
+                    "Multiple scan types (Basic Info, Full Enumeration, Vulnerability Scan, Complete Assessment)",
+                    "Multiple authentication methods (Anonymous, Credentials, Pass-the-Hash, Kerberos Ticket, Kerberos Password)",
+                    "Domain user and group enumeration",
+                    "Server information gathering",
+                    "NTLM hash authentication support",
+                    "Kerberos ticket (.ccache) authentication",
+                    "Credential Manager integration",
+                    "Vulnerability scanning for RPC-related CVEs"
+                ],
+                "usage": [
+                    "Enter target IP or hostname (typically a domain controller)",
+                    "Select scan type (Basic Info for quick recon, Complete Assessment for full audit)",
+                    "Choose authentication method from the Auth dropdown",
+                    "For Credentials: enter domain, username, and password",
+                    "For Pass-the-Hash: enter domain, username, and NTLM hash",
+                    "For Kerberos Ticket: browse to your .ccache ticket file",
+                    "Click Run to start enumeration"
+                ],
+                "tips": [
+                    "Try Anonymous access first — many domain controllers allow null sessions",
+                    "Pass-the-Hash is useful when you have NTLM hashes but not plaintext passwords",
+                    "Full Enumeration reveals domain users, groups, and password policies",
+                    "Use Kerberos authentication when you have a valid TGT from a compromised account",
+                    "Vulnerability Scan checks for known RPC exploits (MS03-026, PrintNightmare, etc.)",
+                    "Load credentials from the Credential Manager to avoid retyping across tools",
+                    "Complete Assessment combines all scan types for a thorough audit"
+                ]
+            },
+            "ldap": {
+                "title": "LDAP Enumeration",
+                "description": "LDAP directory service enumeration for Active Directory and other directory servers",
+                "features": [
+                    "Multiple scan types (Basic Info, Anonymous Enum, Authenticated Enum, Full Scan)",
+                    "Configurable port (default 389, SSL/TLS on 636)",
+                    "SSL/TLS toggle for encrypted connections",
+                    "Base DN auto-detection when left empty",
+                    "Anonymous bind enumeration",
+                    "Authenticated enumeration with domain credentials",
+                    "User, group, and computer object discovery",
+                    "Domain policy and configuration extraction"
+                ],
+                "usage": [
+                    "Enter target LDAP server IP or hostname",
+                    "Set port (389 for standard, or check 'Use SSL/TLS' for port 636)",
+                    "Select scan type from the dropdown",
+                    "Enter Base DN (e.g., DC=domain,DC=com) or leave empty for auto-detection",
+                    "For Authenticated Enum: enter username (DOMAIN\\user or user@domain.com) and password",
+                    "Click Run to start enumeration"
+                ],
+                "tips": [
+                    "Try Anonymous Enum first — many LDAP servers allow unauthenticated queries",
+                    "Leave Base DN empty to let Huginn auto-detect it from the server's rootDSE",
+                    "Authenticated Enum reveals far more objects (users, groups, GPOs, trusts)",
+                    "Use SSL/TLS (port 636) when testing production environments to avoid credential interception",
+                    "Full Scan combines anonymous and authenticated techniques for maximum coverage",
+                    "Look for service accounts with weak passwords or no expiry in the results"
+                ]
+            },
+            "db": {
+                "title": "Database Enumeration",
+                "description": "Multi-database service enumeration supporting MSSQL, MySQL, MariaDB, Oracle, and PostgreSQL",
+                "features": [
+                    "Support for 5 database types (MSSQL, MySQL, MariaDB, Oracle, PostgreSQL)",
+                    "Multiple scan types (Basic Info, Scripts, Full Scan)",
+                    "Automatic port detection per database type (1433, 3306, 1521, 5432)",
+                    "Oracle SID configuration for targeted enumeration",
+                    "Authentication support with username/password",
+                    "Credential Manager integration",
+                    "NSE script execution for vulnerability detection",
+                    "Database version and configuration fingerprinting"
+                ],
+                "usage": [
+                    "Enter target database server IP or hostname",
+                    "Select database type from the dropdown (MSSQL, MySQL, MariaDB, Oracle, PostgreSQL)",
+                    "Verify the port (auto-populated based on DB type, adjust if non-standard)",
+                    "Select scan type (Basic Info for fingerprinting, Scripts for NSE checks, Full Scan for both)",
+                    "Configure authentication if you have credentials (select auth method, enter username/password)",
+                    "For Oracle: enter the SID (default: DB11g)",
+                    "Click Run to start enumeration"
+                ],
+                "tips": [
+                    "Basic Info reveals version, configuration, and available databases without credentials",
+                    "Scripts mode runs NSE scripts that check for known vulnerabilities and misconfigurations",
+                    "Default ports: MSSQL=1433, MySQL/MariaDB=3306, Oracle=1521, PostgreSQL=5432",
+                    "Try common default credentials (sa/blank for MSSQL, root/blank for MySQL)",
+                    "Oracle SID brute-forcing can reveal hidden database instances",
+                    "Use the Credential Manager to load saved credentials across multiple database targets",
+                    "Full Scan combines fingerprinting and vulnerability checks for comprehensive assessment"
                 ]
             }
         }
