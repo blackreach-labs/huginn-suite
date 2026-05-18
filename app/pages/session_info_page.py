@@ -27,7 +27,7 @@ class SessionInfoPage(BasePage):
         header_layout = QHBoxLayout()
         
         title_label = QLabel("📊 Session Information")
-        title_label.setFont(QFont("Arial", 16, QFont.Weight.Bold))
+        title_label.setFont(QFont("Neuropol X", 16, QFont.Weight.Bold))
         title_label.setStyleSheet("color: #64C8FF; margin-bottom: 10px;")
         
         header_layout.addWidget(title_label)
@@ -62,6 +62,10 @@ class SessionInfoPage(BasePage):
         # Current Session Overview Tab
         self.overview_component = SessionOverviewComponent()
         self.tabs.addTab(self.overview_component, "📋 Current Session")
+
+        # Session Management Tab (merged from Session Management dialog)
+        session_mgmt_tab = self.create_session_management_tab()
+        self.tabs.addTab(session_mgmt_tab, "📁 Session Management")
         
         # Data Tables Tab
         self.data_tables_component = SessionDataTablesComponent()
@@ -73,6 +77,147 @@ class SessionInfoPage(BasePage):
         self.tabs.addTab(self.stats_widget, "📊 Statistics")
         
         self.main_layout.addWidget(self.tabs)
+
+    def create_session_management_tab(self):
+        """Create session management tab — CRUD operations on sessions."""
+        from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout,
+                                     QPushButton, QTableWidget, QTableWidgetItem,
+                                     QHeaderView, QInputDialog, QMessageBox)
+        from PyQt6.QtCore import Qt
+
+        widget = QWidget()
+        layout = QVBoxLayout(widget)
+
+        # Controls row
+        controls = QHBoxLayout()
+
+        btn_style = """
+            QPushButton {
+                background-color: rgba(100, 200, 255, 150);
+                color: white; border: none; border-radius: 4px;
+                padding: 6px 12px; font-size: 10pt;
+            }
+            QPushButton:hover { background-color: rgba(100, 200, 255, 200); }
+        """
+
+        new_btn = QPushButton("📁 New Session")
+        new_btn.setStyleSheet(btn_style.replace("100, 200, 255", "100, 255, 100"))
+        new_btn.clicked.connect(self._sm_new_session)
+        controls.addWidget(new_btn)
+
+        set_btn = QPushButton("✔ Set Current")
+        set_btn.setStyleSheet(btn_style)
+        set_btn.clicked.connect(self._sm_set_current)
+        controls.addWidget(set_btn)
+
+        del_btn = QPushButton("🗑️ Delete")
+        del_btn.setStyleSheet(btn_style.replace("100, 200, 255", "255, 100, 100"))
+        del_btn.clicked.connect(self._sm_delete_session)
+        controls.addWidget(del_btn)
+
+        refresh_btn = QPushButton("🔄 Refresh")
+        refresh_btn.setStyleSheet(btn_style)
+        refresh_btn.clicked.connect(self._sm_refresh)
+        controls.addWidget(refresh_btn)
+
+        controls.addStretch()
+        layout.addLayout(controls)
+
+        # Sessions table
+        self.sm_table = QTableWidget()
+        self.sm_table.setColumnCount(5)
+        self.sm_table.setHorizontalHeaderLabels(
+            ["ID", "Name", "Created", "Scans", "Status"]
+        )
+        self.sm_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+        self.sm_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
+        self.sm_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
+        self.sm_table.setStyleSheet("""
+            QTableWidget {
+                background-color: rgba(0, 0, 0, 150);
+                border: 1px solid #555; border-radius: 4px;
+                color: #DCDCDC; gridline-color: #555;
+            }
+            QHeaderView::section {
+                background-color: rgba(100, 200, 255, 150);
+                color: white; padding: 4px; border: none; font-weight: bold;
+            }
+        """)
+        layout.addWidget(self.sm_table)
+
+        # Populate on first show
+        self._sm_refresh()
+        return widget
+
+    def _sm_refresh(self):
+        """Refresh the sessions table."""
+        from app.core.session_manager import session_manager
+        from PyQt6.QtWidgets import QTableWidgetItem
+        from PyQt6.QtCore import Qt
+
+        sessions = session_manager.get_all_sessions()
+        current_id = session_manager.current_session
+
+        self.sm_table.setRowCount(len(sessions))
+        for row, session in enumerate(sessions):
+            sid = session.get('id', '')
+            name = session.get('name', '')
+            created = session.get('created_date', '')[:19]
+            scans = str(len(session.get('scan_ids', [])))
+            status = "● Current" if sid == current_id else session.get('status', 'active')
+
+            for col, text in enumerate([sid, name, created, scans, status]):
+                item = QTableWidgetItem(text)
+                item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+                self.sm_table.setItem(row, col, item)
+
+    def _sm_new_session(self):
+        """Create a new session."""
+        from PyQt6.QtWidgets import QInputDialog
+        from app.core.session_manager import session_manager
+
+        name, ok = QInputDialog.getText(self, "New Session", "Session name:")
+        if ok and name.strip():
+            session = session_manager.create_session(name.strip())
+            session_manager.set_current_session(session['id'])
+            self._sm_refresh()
+            self.update_status(f"Created session: {name.strip()}")
+
+    def _sm_set_current(self):
+        """Set the selected session as current."""
+        from app.core.session_manager import session_manager
+
+        row = self.sm_table.currentRow()
+        if row < 0:
+            return
+        sid_item = self.sm_table.item(row, 0)
+        if sid_item:
+            session_manager.set_current_session(sid_item.text())
+            self._sm_refresh()
+            self.update_status(f"Switched to session: {self.sm_table.item(row, 1).text()}")
+
+    def _sm_delete_session(self):
+        """Delete the selected session."""
+        from PyQt6.QtWidgets import QMessageBox
+        from app.core.session_manager import session_manager
+
+        row = self.sm_table.currentRow()
+        if row < 0:
+            return
+        sid_item = self.sm_table.item(row, 0)
+        name_item = self.sm_table.item(row, 1)
+        if not sid_item:
+            return
+
+        reply = QMessageBox.question(
+            self, "Delete Session",
+            f"Delete session '{name_item.text()}'?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+        )
+        if reply == QMessageBox.StandardButton.Yes:
+            session_manager.delete_session(sid_item.text())
+            self._sm_refresh()
+            self.update_status(f"Deleted session: {name_item.text()}")
 
     def create_stats_tab(self):
         """Create statistics tab"""

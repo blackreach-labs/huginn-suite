@@ -17,6 +17,8 @@ class MenuManager:
         
         # Create menus
         self._create_file_menu()
+        self._create_navigate_menu()
+        self._create_tools_menu()
         self._create_view_menu()
         self._create_help_menu()
         
@@ -54,7 +56,7 @@ class MenuManager:
         """)
     
     def _create_file_menu(self):
-        """Create the File menu."""
+        """Create the File menu — file operations only."""
         file_menu = self.menubar.addMenu('&File')
         
         # Profiles submenu
@@ -67,15 +69,45 @@ class MenuManager:
         self._add_action(file_menu, '&Export Results', 'Ctrl+E', 'Export scan results', self.main_window.export_current_results)
         
         file_menu.addSeparator()
-        self._add_action(file_menu, '&Databases', 'Ctrl+D', 'Database management and SQL queries', self.main_window.open_database_management)
-        self._add_action(file_menu, '&Global Settings', 'Ctrl+,', 'Configure API keys and global settings', self.main_window.open_global_settings)
-        self._add_action(file_menu, '&License Manager', None, 'Manage professional license', self.main_window.open_license_manager)
-        
-        file_menu.addSeparator()
         self._add_action(file_menu, 'E&xit', 'Ctrl+Q', 'Exit application', self.main_window.close)
+
+    def _create_navigate_menu(self):
+        """Create the Navigate menu — all page navigation."""
+        nav_menu = self.menubar.addMenu('&Navigate')
+        
+        # Mindmap phases
+        self._add_action(nav_menu, '&Engagement Setup', None, 'Target profiling and scope definition', lambda: self.main_window.navigate_to('attack_chain_home'))
+        self._add_action(nav_menu, '&Recon && Enumeration', None, 'Information gathering and enumeration', lambda: self.main_window.navigate_to('recon_enumeration'))
+        self._add_action(nav_menu, '&Vulnerability Analysis', None, 'Vulnerability identification and correlation', lambda: self.main_window.navigate_to('vuln_scanning'))
+        self._add_action(nav_menu, 'E&xploitation', None, 'Active exploitation and initial access', lambda: self.main_window.navigate_to('web_exploits'))
+        self._add_action(nav_menu, '&Post-Exploitation', None, 'Privilege escalation and lateral movement', lambda: self.main_window.navigate_to('post_exploitation'))
+        self._add_action(nav_menu, 'Re&porting', None, 'Reporting, remediation and analytics', lambda: self.main_window.navigate_to('findings'))
+        
+        nav_menu.addSeparator()
+        
+        # Standalone pages
+        self._add_action(nav_menu, '&Inventory', 'Ctrl+Shift+I', 'View and manage discovered assets', lambda: self.main_window.navigate_to('inventory'))
+        self._add_action(nav_menu, 'V&PN Connection', None, 'Manage VPN connections', self.main_window.navigate_to_vpn)
+        self._add_action(nav_menu, '&Running Scans', 'Ctrl+Shift+R', 'Monitor and control active scans', self.main_window.show_running_scans)
+        self._add_action(nav_menu, '&Sessions', 'Ctrl+Shift+S', 'Session management and information', self.main_window.show_session_info)
+
+    def _create_tools_menu(self):
+        """Create the Tools menu — configuration and utility tools."""
+        tools_menu = self.menubar.addMenu('&Tools')
+        
+        self._add_action(tools_menu, '&Stealth Mode', None, 'Configure stealth and evasion settings', self.main_window.open_stealth_config)
+        self._add_action(tools_menu, '&AD Enumeration', None, 'Active Directory enumeration and attacks', self.main_window.open_ad_enumeration)
+        self._add_action(tools_menu, 'Advanced &Reporting', None, 'Advanced reporting and compliance', self.main_window.open_reports_dialog)
+        self._add_action(tools_menu, 'Advanced &Analytics', None, 'Trend analysis, anomaly detection, and predictive insights', self.main_window.open_advanced_analytics)
+        
+        tools_menu.addSeparator()
+        
+        self._add_action(tools_menu, '&Databases', 'Ctrl+D', 'Database management and SQL queries', self.main_window.open_database_management)
+        self._add_action(tools_menu, '&Global Settings', 'Ctrl+,', 'Configure API keys and global settings', self.main_window.open_global_settings)
+        self._add_action(tools_menu, '&License Manager', None, 'Manage professional license', self.main_window.open_license_manager)
     
     def _create_view_menu(self):
-        """Create the View menu."""
+        """Create the View menu — visual/UI preferences only."""
         view_menu = self.menubar.addMenu('&View')
         
         # Navigation Style submenu
@@ -83,30 +115,13 @@ class MenuManager:
         self._add_action(nav_menu, '&Advanced Mode', None, 'Switch to advanced methodology navigation', lambda: self.main_window.set_home_style('attack_chain'))
         self._add_action(nav_menu, '&Guided Mode', None, 'Step-by-step penetration testing methodology', lambda: self.main_window.navigate_to('guided_workflow'))
         
-
-        
         # Theme submenu
         self._create_theme_menu(view_menu)
         
         view_menu.addSeparator()
         
-        # Navigation actions
-        self._add_action(view_menu, '&Running Scans...', 'Ctrl+Shift+R', 'Monitor and control active scans', self.main_window.show_running_scans)
-        self._add_action(view_menu, '&Sessions', 'Ctrl+Shift+S', 'Manage scanning sessions', self.main_window.open_sessions_dialog)
-        self._add_action(view_menu, 'Session &Info', 'Ctrl+I', 'View current session information and exports', self.main_window.show_session_info)
-        self._add_action(view_menu, '&Reports', 'Ctrl+R', 'Advanced reporting and compliance', self.main_window.open_reports_dialog)
-        self._add_action(view_menu, '&Inventory', 'Ctrl+Shift+I', 'View and manage discovered assets', lambda: self.main_window.navigate_to('inventory'))
-        
-        view_menu.addSeparator()
-        
-        # Utility actions
         self._add_action(view_menu, '&Minimize to Tray', 'Ctrl+M', 'Minimize application to system tray', self.main_window.minimize_to_tray)
         self._add_action(view_menu, '&Clear Output', 'Ctrl+L', 'Clear terminal output', self.main_window.clear_current_output)
-        
-        view_menu.addSeparator()
-        
-        # Professional Features submenu
-        self._create_professional_menu(view_menu)
     
     def _create_theme_menu(self, parent_menu):
         """Create the Theme submenu."""
@@ -120,26 +135,6 @@ class MenuManager:
             action = QAction(f'&{theme_name}', self.main_window)
             action.triggered.connect(lambda checked, key=theme_key: self.main_window.theme_manager.set_theme(key))
             theme_menu.addAction(action)
-    
-    def _create_professional_menu(self, parent_menu):
-        """Create the Professional Features submenu."""
-        pro_menu = parent_menu.addMenu('&Professional Features')
-        
-        self._add_action(pro_menu, '&Stealth Mode', None, 'Configure stealth and evasion settings', self.main_window.open_stealth_config)
-        pro_menu.addSeparator()
-        
-        self._add_action(pro_menu, '&AD Enumeration', None, 'Active Directory enumeration and attacks', self.main_window.open_ad_enumeration)
-        pro_menu.addSeparator()
-        
-        self._add_action(pro_menu, '&Enhanced Reporting', None, 'Executive dashboards and compliance reports', self.main_window.open_enhanced_reporting)
-        self._add_action(pro_menu, '&Advanced Analytics', None, 'Trend analysis, anomaly detection, and predictive insights', self.main_window.open_advanced_analytics)
-        self._add_action(pro_menu, '&Wireless Security', None, 'WiFi and Bluetooth security testing', self.main_window.open_wireless_security)
-        
-        pro_menu.addSeparator()
-        
-        self._add_action(pro_menu, '&Social Engineering', None, 'Phishing campaigns and credential harvesting', self.main_window.open_social_engineering)
-        self._add_action(pro_menu, '&Anti-Forensics', None, 'Log clearing and evasion techniques', self.main_window.open_anti_forensics)
-        self._add_action(pro_menu, '&VPN Connection', None, 'Manage VPN connections', self.main_window.open_vpn_manager)
     
     def _create_help_menu(self):
         """Create the Help menu."""

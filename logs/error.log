@@ -11,3 +11,29 @@ Traceback (most recent call last):
   File "C:\Users\allie\anaconda3\Lib\json\decoder.py", line 363, in raw_decode
     raise JSONDecodeError("Expecting value", s, err.value) from None
 json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+2026-05-18 08:02:20 - huginn - ERROR - Unhandled exception:
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\main_window\main_window_refactored.py", line 811, in navigate_to_social_engineering
+    self.navigation_manager.navigate_to("recon_enumeration")
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\main_window\components\navigation_manager.py", line 67, in navigate_to
+    self.page_registry[page_name]()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\main_window\components\navigation_manager.py", line 220, in _navigate_recon_enumeration
+    self.main_window.stack.animate_to_widget(self.main_window.recon_enumeration_page)
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'MainWindow' object has no attribute 'recon_enumeration_page'
+
+2026-05-18 12:20:17 - huginn - ERROR - Unhandled exception:
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\main_window\main_window_refactored.py", line 860, in navigate_to_anti_forensics
+    self.navigation_manager.navigate_to("post_exploitation")
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\main_window\components\navigation_manager.py", line 67, in navigate_to
+    self.page_registry[page_name]()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\main_window\components\navigation_manager.py", line 249, in _navigate_post_exploitation
+    self.main_window.stack.animate_to_widget(self.main_window.post_exploitation_page)
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'MainWindow' object has no attribute 'post_exploitation_page'
+

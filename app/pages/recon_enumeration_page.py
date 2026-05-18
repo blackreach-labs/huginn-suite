@@ -101,6 +101,14 @@ class ReconEnumerationPage(QWidget, ServiceScannersMixin, ServiceUIComponentsMix
         except Exception as _exc:
             logger.debug("Wireless security tab unavailable", exc_info=True)
 
+        # Social Engineering tab
+        try:
+            from app.widgets.social_engineering_widget import SocialEngineeringWidget
+            social_tab = SocialEngineeringWidget(self)
+            self.tab_widget.addTab(social_tab, "🎭 Social Engineering")
+        except Exception as _exc:
+            logger.debug("Social engineering tab unavailable", exc_info=True)
+
         main_layout.addWidget(self.tab_widget)
     
     def on_tenant_changed(self, old_tenant, new_tenant):

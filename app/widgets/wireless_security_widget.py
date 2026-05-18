@@ -76,10 +76,6 @@ class WirelessSecurityWidget(QWidget):
         self.bluetooth_tab = self.create_bluetooth_tab()
         self.wireless_tabs.addTab(self.bluetooth_tab, "Bluetooth Security")
         
-        # Reports Tab
-        self.reports_tab = self.create_reports_tab()
-        self.wireless_tabs.addTab(self.reports_tab, "Reports")
-        
         layout.addWidget(self.wireless_tabs)
         
         # Status
@@ -139,7 +135,7 @@ class WirelessSecurityWidget(QWidget):
         target_row.addWidget(QLabel("BSSID (optional):"))
         self.bssid_input = QLineEdit()
         self.bssid_input.setPlaceholderText("AA:BB:CC:DD:EE:FF")
-        self.bssid_input.setMaximumWidth(160)
+        self.bssid_input.setMinimumWidth(200)
         target_row.addWidget(self.bssid_input, 1)
         attacks_layout.addLayout(target_row)
 
@@ -168,17 +164,18 @@ class WirelessSecurityWidget(QWidget):
         self.wordlist_input.setPlaceholderText("Path to wordlist (e.g. rockyou.txt) — leave blank for built-in")
         self.wordlist_row.addWidget(self.wordlist_input, 3)
         self.wordlist_browse_btn = QPushButton("Browse…")
-        self.wordlist_browse_btn.setMaximumWidth(80)
+        self.wordlist_browse_btn.setMinimumWidth(100)
         self.wordlist_row.addWidget(self.wordlist_browse_btn)
         attacks_layout.addLayout(self.wordlist_row)
 
         # Evil twin mode note (shown for evil twin attacks)
         self.evil_twin_note = QLabel(
-            "ℹ️  Captive portal mode clones the SSID and presents a credential-harvesting login page.\n"
-            "   EAP mode uses a rogue RADIUS server to capture MSCHAP hashes (requires hostapd-mana / EAPHammer)."
+            "ℹ️  Captive portal clones the SSID with a credential-harvesting login page. "
+            "EAP mode uses a rogue RADIUS server to capture MSCHAP hashes (requires hostapd-mana / EAPHammer)."
         )
-        self.evil_twin_note.setStyleSheet("color: #AAA; font-size: 8pt; padding: 2px 0;")
+        self.evil_twin_note.setStyleSheet("color: #AAA; font-size: 8pt; padding: 2px 0; margin: 0;")
         self.evil_twin_note.setWordWrap(True)
+        self.evil_twin_note.setMaximumHeight(36)
         self.evil_twin_note.hide()
         attacks_layout.addWidget(self.evil_twin_note)
 
@@ -201,7 +198,7 @@ class WirelessSecurityWidget(QWidget):
         detection_layout = QVBoxLayout(detection_group)
         self.detection_text = QTextEdit()
         self.detection_text.setReadOnly(True)
-        self.detection_text.setStyleSheet("font-size: 8pt; background-color: #1a1a2e;")
+        self.detection_text.setStyleSheet("font-size: 10pt; background-color: #1a1a2e;")
         detection_layout.addWidget(self.detection_text)
         info_splitter.addWidget(detection_group)
 
@@ -209,11 +206,13 @@ class WirelessSecurityWidget(QWidget):
         mitigation_layout = QVBoxLayout(mitigation_group)
         self.mitigation_text = QTextEdit()
         self.mitigation_text.setReadOnly(True)
-        self.mitigation_text.setStyleSheet("font-size: 8pt; background-color: #1a1a2e;")
+        self.mitigation_text.setStyleSheet("font-size: 10pt; background-color: #1a1a2e;")
         mitigation_layout.addWidget(self.mitigation_text)
         info_splitter.addWidget(mitigation_group)
 
-        info_splitter.setSizes([1, 1])
+        info_splitter.setSizes([500, 500])
+        info_splitter.setStretchFactor(0, 1)
+        info_splitter.setStretchFactor(1, 1)
 
         info_container = QWidget()
         info_container.setMaximumHeight(180)

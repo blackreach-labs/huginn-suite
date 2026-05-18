@@ -186,6 +186,7 @@ class MainWindow(QMainWindow):
         self.page_manager.register_page('findings', lambda: self._create_findings())
         self.page_manager.register_page('global_settings', lambda: self._create_global_settings())
         self.page_manager.register_page('database_management', lambda: self._create_database_management())
+        self.page_manager.register_page('vpn', lambda: self._create_vpn())
         # Add other pages as needed
         
 
@@ -230,6 +231,11 @@ class MainWindow(QMainWindow):
         from app.pages.inventory_page import InventoryPage
         page = InventoryPage(self)
         self._connect_page_signals(page)
+        return page
+
+    def _create_vpn(self):
+        from app.widgets.vpn_widget import VPNWidget
+        page = VPNWidget(self)
         return page
     
     def _create_session_info(self):
@@ -805,6 +811,32 @@ class MainWindow(QMainWindow):
         except Exception as e:
             logger.error(f"Unexpected error in open_social_engineering: {e}")
             self.status_bar.showMessage("Failed to open Social Engineering")
+
+    def navigate_to_social_engineering(self):
+        """Navigate to the Social Engineering tab under RECON."""
+        # Use the factory to get/create the recon page
+        from app.pages.components.page_factory import PageFactory
+        try:
+            recon_page = PageFactory.get_page_instance("enumeration")
+            if not recon_page:
+                recon_page = PageFactory.create_page("enumeration", self)
+            if recon_page:
+                # Add to stack if needed
+                if recon_page not in [self.stack.widget(i) for i in range(self.stack.count())]:
+                    self.stack.addWidget(recon_page)
+                self.stack.animate_to_widget(recon_page)
+                # Select the Social Engineering tab
+                if hasattr(recon_page, 'tab_widget'):
+                    for i in range(recon_page.tab_widget.count()):
+                        if "Social Engineering" in recon_page.tab_widget.tabText(i):
+                            recon_page.tab_widget.setCurrentIndex(i)
+                            break
+                self.status_bar.showMessage("Social Engineering")
+            else:
+                self.status_bar.showMessage("Recon page not available")
+        except Exception as e:
+            logger.error(f"Failed to navigate to Social Engineering: {e}")
+            self.status_bar.showMessage("Social Engineering not available")
     
     def open_anti_forensics(self):
         """Open anti-forensics toolkit"""
@@ -828,6 +860,28 @@ class MainWindow(QMainWindow):
         except Exception as e:
             logger.error(f"Unexpected error in open_anti_forensics: {e}")
             self.status_bar.showMessage("Failed to open Anti-Forensics")
+
+    def navigate_to_anti_forensics(self):
+        """Navigate to the Anti-Forensics tab under ELEVATE (Post-Exploitation)."""
+        from app.pages.post_exploitation_page import PostExploitationPage
+        # Find or create the post-exploitation page in the stack
+        page = None
+        for i in range(self.stack.count()):
+            widget = self.stack.widget(i)
+            if isinstance(widget, PostExploitationPage):
+                page = widget
+                break
+        if not page:
+            page = PostExploitationPage(self)
+            self.stack.addWidget(page)
+        self.stack.animate_to_widget(page)
+        # Select the Anti-Forensics tab
+        if hasattr(page, 'tab_widget'):
+            for i in range(page.tab_widget.count()):
+                if "Anti-Forensics" in page.tab_widget.tabText(i):
+                    page.tab_widget.setCurrentIndex(i)
+                    break
+        self.status_bar.showMessage("Anti-Forensics")
     
     def open_vpn_manager(self):
         """Open VPN connection manager"""
@@ -853,6 +907,17 @@ class MainWindow(QMainWindow):
         except Exception as e:
             logger.error(f"Unexpected error in open_vpn_manager: {e}")
             self.status_bar.showMessage("Failed to open VPN Manager")
+
+    def navigate_to_vpn(self):
+        """Navigate to the VPN Connection Manager page."""
+        page = self.page_manager.get_page('vpn')
+        if page:
+            if page not in [self.stack.widget(i) for i in range(self.stack.count())]:
+                self.stack.addWidget(page)
+            self.stack.animate_to_widget(page)
+            self.status_bar.showMessage("VPN Connection Manager")
+        else:
+            self.status_bar.showMessage("VPN Manager not available")
     
 
     

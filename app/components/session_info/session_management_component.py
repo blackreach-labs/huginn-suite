@@ -19,7 +19,8 @@ class SessionManagementComponent(QWidget):
         layout.addWidget(QLabel("Session:"))
         
         self.session_combo = QComboBox()
-        self.session_combo.setMinimumWidth(200)
+        self.session_combo.setMinimumWidth(350)
+        self.session_combo.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
         self.session_combo.currentTextChanged.connect(self.on_session_changed)
         layout.addWidget(self.session_combo)
         

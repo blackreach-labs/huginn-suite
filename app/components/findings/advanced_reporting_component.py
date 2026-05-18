@@ -159,6 +159,7 @@ class AdvancedReportingComponent(QWidget):
 
         self.preview_text = QTextEdit()
         self.preview_text.setReadOnly(True)
+        self.preview_text.setStyleSheet("font-family: 'Neuropol X'; font-size: 10pt;")
         self._show_default_preview()
         layout.addWidget(self.preview_text, 1)
 

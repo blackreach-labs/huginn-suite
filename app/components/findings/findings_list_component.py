@@ -32,6 +32,7 @@ class FindingsListComponent(QWidget):
             {"id": "insufficient_auth", "title": "Insufficient Authentication", "desc": "Weak or missing authentication controls."},
             {"id": "sql_injection", "title": "SQL Injection", "desc": "Database query manipulation vulnerabilities."},
             {"id": "weak_passwords", "title": "Weak Password Policy", "desc": "Inadequate password requirements and default credentials."},
+            {"id": "wireless_security", "title": "Wireless Security", "desc": "WiFi and Bluetooth security findings from wireless scans."},
         ]
         self.setup_ui()
 
