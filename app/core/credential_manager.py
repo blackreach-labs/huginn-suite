@@ -43,7 +43,7 @@ class Credential:
     notes: str = ""
     source: str = "manual"   # manual | enumeration | exploitation
     credential_type: str = "Username/Password"
-    # Username/Password | NTLM Hash | Kerberos Ticket | SQL Server Auth | Windows Auth
+    # Username/Password | NTLM Hash | Kerberos Ticket | SQL Server Auth | Windows Auth | API Key
 
     def to_dict(self) -> Dict:
         return {
@@ -87,6 +87,8 @@ class Credential:
                 if self.domain
                 else f"{self.username} (Windows)"
             )
+        elif self.credential_type == "API Key":
+            parts.append(f"{self.username} (API Key)")
         if self.service:
             parts.append(f"({self.service})")
         if self.notes:
@@ -161,6 +163,7 @@ class CredentialManager:
             'Kerberos Password':'Username/Password',
             'SQL Server Auth':  'SQL Server Auth',
             'Windows Auth':     'Windows Auth',
+            'API Key':          'API Key',
         }
         target_type = mapping.get(auth_type)
         if target_type is None:

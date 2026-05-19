@@ -81,6 +81,9 @@ class ServiceUIComponentsMixin:
         # Initialize state
         self._initialize_service_state(tool_key)
         
+        # Activate layout immediately to ensure proper sizing
+        layout.activate()
+        
         return tab
     
     def _setup_initial_field_visibility(self, tool_key, controls):
@@ -98,13 +101,8 @@ class ServiceUIComponentsMixin:
             # Set initial scan type to Basic Info
             QTimer.singleShot(5, lambda: self.on_smb_scan_type_changed(tool_key, "Basic Info"))
         elif tool_key == 'http_enum':
-            from PyQt6.QtCore import QTimer
-            # Set initial scan type to Fingerprinting (which hides all optional fields)
-            QTimer.singleShot(0, lambda: self.on_http_scan_type_changed(tool_key, "Fingerprinting"))
-            # Set initial auth method to None (which hides auth fields)
-            QTimer.singleShot(5, lambda: self.toggle_http_auth_fields(tool_key, "None"))
-            # Show listener options for Fingerprinting by default
-            QTimer.singleShot(10, lambda: self.toggle_http_listener_options(tool_key, "Fingerprinting"))
+            # Immediately hide optional fields and set correct panel height
+            self.hide_http_optional_fields_by_default(tool_key, controls)
         elif tool_key == 'av_detect' and 'av_detection_type' in controls.controls:
             from PyQt6.QtCore import QTimer
             QTimer.singleShot(0, lambda: self.toggle_av_fields(tool_key, "WAF Detection"))
@@ -501,6 +499,12 @@ class ServiceUIComponentsMixin:
         
         # Set size policy to expand and use all available space
         results_stack.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        results_stack.setMinimumHeight(0)
+        # Ensure child widgets don't force a minimum size on the stack
+        for i in range(results_stack.count()):
+            child = results_stack.widget(i)
+            if child:
+                child.setMinimumHeight(0)
         
         # Store references
         setattr(self, f"{tool_key}_results_stack", results_stack)
@@ -626,7 +630,7 @@ class ServiceUIComponentsMixin:
         """Hide HTTP optional fields by default on page load"""
         if hasattr(controls, 'row_widgets'):
             # Hide all optional fields by default (Fingerprinting is default scan type)
-            optional_rows = ['Preset:', 'Extensions:', 'Wordlist:', 'Auth Method:', 'Username:', 'Password:', 'Credentials:']
+            optional_rows = ['Listener:', 'Preset:', 'Extensions:', 'Wordlist:', 'Auth Method:', 'Username:', 'Password:', 'Credentials:']
             for row_label in optional_rows:
                 if row_label in controls.row_widgets and controls.row_widgets[row_label] is not None:
                     try:
@@ -639,8 +643,7 @@ class ServiceUIComponentsMixin:
                         logger.debug("Suppressed exception", exc_info=True)
             
             # Set panel to minimal height (just Scan Type row)
-            controls.setMaximumHeight(34)
-            controls.setMinimumHeight(34)
+            controls.setFixedHeight(34)
     
     def toggle_service_scan(self, tool_key):
         """Toggle service scan - start if not running, stop if running"""

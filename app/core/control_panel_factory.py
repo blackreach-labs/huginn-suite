@@ -96,16 +96,17 @@ class ControlPanelFactory:
         for i, row_config in enumerate(config.get('rows', [])):
             # Create row widget even if initially hidden
             row_widget = QWidget(widget)  # Ensure proper parent
-            row_widget.setFixedHeight(26)
             row_layout = QHBoxLayout(row_widget)
             row_layout.setContentsMargins(0, 0, 0, 0)
             row_layout.setSpacing(5)
             
-            # Set initial visibility
+            # Set initial visibility and height
             if 'visible' in row_config and not row_config['visible']:
                 row_widget.setVisible(False)
                 row_widget.setMaximumHeight(0)
                 row_widget.setMinimumHeight(0)
+            else:
+                row_widget.setFixedHeight(26)
             
             # Add label
             if 'label' in row_config:
@@ -153,8 +154,7 @@ class ControlPanelFactory:
             if row_config.get('visible', True)
         )
         initial_height = visible_row_count * 30 + 4
-        widget.setMinimumHeight(initial_height)
-        widget.setMaximumHeight(initial_height)
+        widget.setFixedHeight(initial_height)
         
         return widget
     

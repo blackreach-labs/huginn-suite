@@ -1,18 +1,27 @@
 #!/usr/bin/env python3
 """
 Listener Manager & Transport Plugin System
-Manages listeners, sessions, transports, auto-expiry, and audit logs
+Manages listeners, sessions, transports, auto-expiry, and audit logs.
+
+Provides both the transport plugin architecture and the simplified API
+used by the Shell Management UI widgets.
 """
 
 import json
 import time
+import socket
 import threading
 import sqlite3
+import psutil
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict
 from datetime import datetime
+from pathlib import Path
 import uuid
+
+from PyQt6.QtCore import QObject, pyqtSignal
+
 
 @dataclass
 class ListenerConfig:
@@ -23,6 +32,7 @@ class ListenerConfig:
     scope_restrictions: List[str]
     ttl_hours: int
     engagement_id: str
+
 
 @dataclass
 class Session:
@@ -35,43 +45,102 @@ class Session:
     metadata: Dict[str, Any]
     status: str  # active, expired, killed
 
+
 class TransportPlugin(ABC):
     """Base class for transport plugins"""
-    
+
     @abstractmethod
     def start_listener(self, config: ListenerConfig) -> str:
         """Start listener and return listener ID"""
         pass
-    
+
     @abstractmethod
     def stop_listener(self, listener_id: str) -> bool:
         """Stop listener"""
         pass
-    
+
     @abstractmethod
     def generate_payload(self, config: ListenerConfig) -> str:
         """Generate payload for this transport"""
         pass
-    
+
     @abstractmethod
     def list_sessions(self, listener_id: str) -> List[Session]:
         """List active sessions for listener"""
         pass
 
-class ListenerManager:
-    def __init__(self, db_path: str = "resources/listeners.db"):
+
+def get_network_interfaces() -> List[Dict[str, str]]:
+    """Get available network interfaces with their IPv4 addresses.
+    
+    Only returns interfaces that are currently UP (active).
+    Returns a list of dicts with keys: 'name', 'ip'
+    """
+    interfaces = []
+    try:
+        # Get interface stats to check which are UP
+        stats = psutil.net_if_stats()
+        
+        for iface_name, addrs in psutil.net_if_addrs().items():
+            # Only include interfaces that are currently up
+            iface_stats = stats.get(iface_name)
+            if iface_stats and not iface_stats.isup:
+                continue
+                
+            for addr in addrs:
+                if addr.family == socket.AF_INET:
+                    interfaces.append({
+                        'name': iface_name,
+                        'ip': addr.address
+                    })
+    except Exception:
+        pass
+
+    # Always include 0.0.0.0 (all interfaces) at the top
+    interfaces.insert(0, {'name': 'All Interfaces', 'ip': '0.0.0.0'})
+    return interfaces
+
+
+class ListenerManager(QObject):
+    """Manages network listeners for reverse shells and OOB data capture.
+    
+    Provides Qt signals for UI integration and a simplified create/start/stop API
+    used by the Shell Management widgets.
+    """
+
+    # Qt signals for UI integration
+    listener_started = pyqtSignal(str, int, str)       # listener_id, port, listener_type
+    listener_stopped = pyqtSignal(str)                 # listener_id
+    connection_received = pyqtSignal(str, str, str)    # listener_id, client_ip, data
+    oob_data_received = pyqtSignal(str, str, str)      # listener_id, source_ip, data
+
+    def __init__(self, db_path: str = None):
+        super().__init__()
+
+        if db_path is None:
+            project_root = Path(__file__).parent.parent.parent
+            resources_dir = project_root / "resources"
+            resources_dir.mkdir(exist_ok=True)
+            db_path = str(resources_dir / "listeners.db")
+
         self.db_path = db_path
         self.plugins: Dict[str, TransportPlugin] = {}
-        self.active_listeners: Dict[str, Dict] = {}
+        self._listeners: Dict[str, Dict[str, Any]] = {}
+        self._server_sockets: Dict[str, socket.socket] = {}
+        self._listener_threads: Dict[str, threading.Thread] = {}
         self.sessions: Dict[str, Session] = {}
         self._init_database()
         self._start_cleanup_thread()
-    
+
+    # ------------------------------------------------------------------
+    # Database
+    # ------------------------------------------------------------------
+
     def _init_database(self):
         """Initialize SQLite database for listeners and sessions"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        
+
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS listeners (
                 listener_id TEXT PRIMARY KEY,
@@ -85,7 +154,7 @@ class ListenerManager:
                 engagement_id TEXT NOT NULL
             )
         ''')
-        
+
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS sessions (
                 session_id TEXT PRIMARY KEY,
@@ -99,7 +168,7 @@ class ListenerManager:
                 FOREIGN KEY (listener_id) REFERENCES listeners (listener_id)
             )
         ''')
-        
+
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS audit_logs (
                 log_id TEXT PRIMARY KEY,
@@ -110,63 +179,142 @@ class ListenerManager:
                 details TEXT NOT NULL
             )
         ''')
-        
+
         conn.commit()
         conn.close()
-    
+
+    # ------------------------------------------------------------------
+    # Plugin registration (advanced transport plugin API)
+    # ------------------------------------------------------------------
+
     def register_plugin(self, transport: str, plugin: TransportPlugin):
         """Register a transport plugin"""
         self.plugins[transport] = plugin
         self._audit_log("plugin_registered", None, None, f"Transport: {transport}")
-    
-    def start_listener(self, config: ListenerConfig) -> str:
-        """Start a new listener"""
-        if config.transport not in self.plugins:
-            raise ValueError(f"Transport {config.transport} not supported")
+
+    # ------------------------------------------------------------------
+    # Simplified Listener API (used by Shell Management widgets)
+    # ------------------------------------------------------------------
+
+    def create_listener(self, port: int, listener_type: str, bind_ip: str = "0.0.0.0") -> str:
+        """Create a new listener (does not start it yet).
         
-        plugin = self.plugins[config.transport]
-        listener_id = plugin.start_listener(config)
-        
-        # Store in database
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        
-        expires_at = datetime.fromtimestamp(time.time() + (config.ttl_hours * 3600))
-        
-        cursor.execute('''
-            INSERT INTO listeners 
-            (listener_id, transport, host, port, config, created_at, expires_at, status, engagement_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (
-            listener_id, config.transport, config.host, config.port,
-            json.dumps(asdict(config)), datetime.now().isoformat(),
-            expires_at.isoformat(), "active", config.engagement_id
-        ))
-        
-        conn.commit()
-        conn.close()
-        
-        self.active_listeners[listener_id] = {
-            'config': config,
-            'plugin': plugin,
-            'started_at': time.time()
+        Args:
+            port: Port number to listen on
+            listener_type: Type of listener (netcat, http, http_oob, dns_oob, powershell)
+            bind_ip: IP address to bind to (default 0.0.0.0)
+            
+        Returns:
+            listener_id: Unique identifier for the listener
+        """
+        listener_id = f"lsnr_{listener_type}_{port}_{uuid.uuid4().hex[:6]}"
+
+        self._listeners[listener_id] = {
+            'id': listener_id,
+            'port': port,
+            'type': listener_type,
+            'bind_ip': bind_ip,
+            'status': 'created',
+            'connections': [],
+            'created_at': datetime.now().isoformat(),
         }
-        
-        self._audit_log("listener_started", listener_id, None, 
-                       f"Transport: {config.transport}, Host: {config.host}:{config.port}")
-        
+
+        self._audit_log("listener_created", listener_id, None,
+                        f"Type: {listener_type}, Bind: {bind_ip}:{port}")
         return listener_id
-    
-    def stop_listener(self, listener_id: str) -> bool:
-        """Stop a listener"""
-        if listener_id not in self.active_listeners:
+
+    def start_listener(self, listener_id: str) -> bool:
+        """Start a previously created listener.
+        
+        Returns True on success, False on failure.
+        """
+        listener = self._listeners.get(listener_id)
+        if not listener:
             return False
-        
-        plugin = self.active_listeners[listener_id]['plugin']
-        success = plugin.stop_listener(listener_id)
-        
-        if success:
-            # Update database
+
+        if listener['status'] == 'running':
+            return True  # Already running
+
+        port = listener['port']
+        bind_ip = listener['bind_ip']
+        listener_type = listener['type']
+
+        try:
+            server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            server_sock.settimeout(1.0)  # Allow periodic checks for shutdown
+            server_sock.bind((bind_ip, port))
+            server_sock.listen(5)
+
+            self._server_sockets[listener_id] = server_sock
+            listener['status'] = 'running'
+
+            # Start accept thread
+            thread = threading.Thread(
+                target=self._accept_loop,
+                args=(listener_id,),
+                daemon=True
+            )
+            thread.start()
+            self._listener_threads[listener_id] = thread
+
+            # Persist to database
+            conn = sqlite3.connect(self.db_path)
+            cursor = conn.cursor()
+            expires_at = datetime.fromtimestamp(time.time() + 24 * 3600)  # 24h TTL
+            cursor.execute('''
+                INSERT OR REPLACE INTO listeners 
+                (listener_id, transport, host, port, config, created_at, expires_at, status, engagement_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (
+                listener_id, listener_type, bind_ip, port,
+                json.dumps({'type': listener_type, 'bind_ip': bind_ip}),
+                listener['created_at'], expires_at.isoformat(), "active", "default"
+            ))
+            conn.commit()
+            conn.close()
+
+            self._audit_log("listener_started", listener_id, None,
+                            f"Type: {listener_type}, Bind: {bind_ip}:{port}")
+
+            # Emit signal
+            self.listener_started.emit(listener_id, port, listener_type)
+            return True
+
+        except OSError as e:
+            listener['status'] = 'error'
+            listener['error'] = str(e)
+            self._audit_log("listener_start_failed", listener_id, None, str(e))
+            return False
+
+    def stop_listener(self, listener_id: str) -> bool:
+        """Stop a running listener."""
+        listener = self._listeners.get(listener_id)
+        if not listener:
+            return False
+
+        listener['status'] = 'stopped'
+
+        # Close server socket (will cause accept loop to exit)
+        server_sock = self._server_sockets.pop(listener_id, None)
+        if server_sock:
+            try:
+                server_sock.close()
+            except Exception:
+                pass
+
+        # Close all client connections
+        for conn_info in listener.get('connections', []):
+            client_sock = conn_info.get('socket')
+            if client_sock:
+                try:
+                    client_sock.close()
+                except Exception:
+                    pass
+        listener['connections'] = []
+
+        # Update database
+        try:
             conn = sqlite3.connect(self.db_path)
             cursor = conn.cursor()
             cursor.execute(
@@ -175,24 +323,79 @@ class ListenerManager:
             )
             conn.commit()
             conn.close()
-            
-            del self.active_listeners[listener_id]
-            self._audit_log("listener_stopped", listener_id, None, "Manual stop")
-        
-        return success
-    
-    def kill_listener(self, listener_id: str) -> bool:
-        """Emergency kill listener"""
-        success = self.stop_listener(listener_id)
-        if success:
-            self._audit_log("listener_killed", listener_id, None, "Emergency kill")
-        return success
-    
+        except Exception:
+            pass
+
+        self._audit_log("listener_stopped", listener_id, None, "Manual stop")
+        self.listener_stopped.emit(listener_id)
+        return True
+
+    def send_command_to_connection(self, listener_id: str, command: str) -> bool:
+        """Send a command to the first active connection on a listener."""
+        listener = self._listeners.get(listener_id)
+        if not listener or not listener['connections']:
+            return False
+
+        conn_info = listener['connections'][0]
+        client_sock = conn_info.get('socket')
+        if not client_sock:
+            return False
+
+        try:
+            client_sock.sendall((command + "\n").encode('utf-8'))
+            return True
+        except Exception:
+            return False
+
+    # ------------------------------------------------------------------
+    # Query methods
+    # ------------------------------------------------------------------
+
+    def get_all_listeners(self) -> List[Dict]:
+        """Get all listeners (active, stopped, etc.)"""
+        return [
+            {
+                'id': l['id'],
+                'port': l['port'],
+                'type': l['type'],
+                'bind_ip': l.get('bind_ip', '0.0.0.0'),
+                'status': l['status'],
+                'connections': l.get('connections', []),
+                'created_at': l.get('created_at', ''),
+            }
+            for l in self._listeners.values()
+        ]
+
+    def get_active_listeners(self) -> List[Dict]:
+        """Get only running listeners"""
+        return [l for l in self.get_all_listeners() if l['status'] == 'running']
+
+    def get_listener_info(self, listener_id: str) -> Optional[Dict]:
+        """Get detailed info about a specific listener."""
+        listener = self._listeners.get(listener_id)
+        if not listener:
+            return None
+        return {
+            'id': listener['id'],
+            'port': listener['port'],
+            'type': listener['type'],
+            'bind_ip': listener.get('bind_ip', '0.0.0.0'),
+            'status': listener['status'],
+            'connections': [
+                {'ip': c['ip'], 'connected_at': c.get('connected_at', '')}
+                for c in listener.get('connections', [])
+            ],
+            'created_at': listener.get('created_at', ''),
+        }
+
+    # ------------------------------------------------------------------
+    # Session management
+    # ------------------------------------------------------------------
+
     def register_session(self, session: Session):
         """Register a new session"""
         self.sessions[session.session_id] = session
-        
-        # Store in database
+
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         cursor.execute('''
@@ -206,10 +409,10 @@ class ListenerManager:
         ))
         conn.commit()
         conn.close()
-        
+
         self._audit_log("session_registered", session.listener_id, session.session_id,
-                       f"Remote IP: {session.remote_ip}")
-    
+                        f"Remote IP: {session.remote_ip}")
+
     def update_session(self, session_id: str, **updates):
         """Update session information"""
         if session_id in self.sessions:
@@ -217,8 +420,7 @@ class ListenerManager:
             for key, value in updates.items():
                 if hasattr(session, key):
                     setattr(session, key, value)
-            
-            # Update database
+
             conn = sqlite3.connect(self.db_path)
             cursor = conn.cursor()
             cursor.execute(
@@ -227,110 +429,144 @@ class ListenerManager:
             )
             conn.commit()
             conn.close()
-    
-    def get_active_listeners(self) -> List[Dict]:
-        """Get all active listeners"""
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM listeners WHERE status = 'active'")
-        rows = cursor.fetchall()
-        conn.close()
-        
-        listeners = []
-        for row in rows:
-            listeners.append({
-                'listener_id': row[0],
-                'transport': row[1],
-                'host': row[2],
-                'port': row[3],
-                'config': json.loads(row[4]),
-                'created_at': row[5],
-                'expires_at': row[6],
-                'status': row[7],
-                'engagement_id': row[8]
-            })
-        
-        return listeners
-    
+
     def get_active_sessions(self) -> List[Session]:
         """Get all active sessions"""
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM sessions WHERE status = 'active'")
-        rows = cursor.fetchall()
-        conn.close()
-        
-        sessions = []
-        for row in rows:
-            sessions.append(Session(
-                session_id=row[0],
-                listener_id=row[1],
-                remote_ip=row[2],
-                fingerprint=row[3],
-                first_seen=row[4],
-                last_seen=row[5],
-                metadata=json.loads(row[6]),
-                status=row[7]
-            ))
-        
-        return sessions
-    
+        return [s for s in self.sessions.values() if s.status == 'active']
+
+    # ------------------------------------------------------------------
+    # Internal: accept loop and connection handling
+    # ------------------------------------------------------------------
+
+    def _accept_loop(self, listener_id: str):
+        """Background thread that accepts incoming connections."""
+        listener = self._listeners.get(listener_id)
+        server_sock = self._server_sockets.get(listener_id)
+
+        if not listener or not server_sock:
+            return
+
+        while listener['status'] == 'running':
+            try:
+                client_sock, addr = server_sock.accept()
+                client_ip = f"{addr[0]}:{addr[1]}"
+
+                conn_info = {
+                    'ip': client_ip,
+                    'socket': client_sock,
+                    'connected_at': datetime.now().isoformat(),
+                }
+                listener['connections'].append(conn_info)
+
+                # Emit connection signal
+                self.connection_received.emit(listener_id, client_ip, "Connected")
+
+                # Start reader thread for this connection
+                reader_thread = threading.Thread(
+                    target=self._read_connection,
+                    args=(listener_id, conn_info),
+                    daemon=True
+                )
+                reader_thread.start()
+
+            except socket.timeout:
+                continue
+            except OSError:
+                # Socket closed, exit loop
+                break
+
+    def _read_connection(self, listener_id: str, conn_info: Dict):
+        """Read data from a client connection and emit signals."""
+        client_sock = conn_info['socket']
+        client_ip = conn_info['ip']
+
+        try:
+            while True:
+                client_sock.settimeout(1.0)
+                try:
+                    data = client_sock.recv(4096)
+                    if not data:
+                        break
+                    decoded = data.decode('utf-8', errors='replace')
+                    self.connection_received.emit(listener_id, client_ip, decoded)
+                except socket.timeout:
+                    # Check if listener is still running
+                    listener = self._listeners.get(listener_id)
+                    if not listener or listener['status'] != 'running':
+                        break
+                    continue
+        except Exception:
+            pass
+        finally:
+            # Remove from connections list
+            listener = self._listeners.get(listener_id)
+            if listener and conn_info in listener['connections']:
+                listener['connections'].remove(conn_info)
+            try:
+                client_sock.close()
+            except Exception:
+                pass
+
+    # ------------------------------------------------------------------
+    # Cleanup
+    # ------------------------------------------------------------------
+
     def _cleanup_expired(self):
-        """Clean up expired listeners and sessions"""
+        """Clean up expired listeners"""
         current_time = time.time()
-        
-        # Check expired listeners
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        cursor.execute(
-            "SELECT listener_id FROM listeners WHERE status = 'active' AND expires_at < ?",
-            (datetime.fromtimestamp(current_time).isoformat(),)
-        )
-        expired_listeners = cursor.fetchall()
-        
-        for (listener_id,) in expired_listeners:
-            if listener_id in self.active_listeners:
-                self.stop_listener(listener_id)
-                self._audit_log("listener_expired", listener_id, None, "TTL expired")
-        
-        # Mark expired sessions
-        cursor.execute(
-            "UPDATE sessions SET status = 'expired' WHERE status = 'active' AND last_seen < ?",
-            (datetime.fromtimestamp(current_time - 3600).isoformat(),)  # 1 hour timeout
-        )
-        
-        conn.commit()
-        conn.close()
-    
+
+        try:
+            conn = sqlite3.connect(self.db_path)
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT listener_id FROM listeners WHERE status = 'active' AND expires_at < ?",
+                (datetime.fromtimestamp(current_time).isoformat(),)
+            )
+            expired_listeners = cursor.fetchall()
+            conn.close()
+
+            for (lid,) in expired_listeners:
+                if lid in self._listeners:
+                    self.stop_listener(lid)
+                    self._audit_log("listener_expired", lid, None, "TTL expired")
+        except Exception:
+            pass
+
     def _start_cleanup_thread(self):
         """Start background cleanup thread"""
         def cleanup_worker():
             while True:
                 try:
                     self._cleanup_expired()
-                    time.sleep(300)  # Check every 5 minutes
-                except Exception as e:
-                    print(f"Cleanup error: {e}")
+                    time.sleep(300)
+                except Exception:
                     time.sleep(60)
-        
+
         cleanup_thread = threading.Thread(target=cleanup_worker, daemon=True)
         cleanup_thread.start()
-    
-    def _audit_log(self, action: str, listener_id: Optional[str], 
+
+    # ------------------------------------------------------------------
+    # Audit logging
+    # ------------------------------------------------------------------
+
+    def _audit_log(self, action: str, listener_id: Optional[str],
                    session_id: Optional[str], details: str):
         """Add audit log entry"""
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        cursor.execute('''
-            INSERT INTO audit_logs (log_id, timestamp, action, listener_id, session_id, details)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ''', (
-            str(uuid.uuid4()), datetime.now().isoformat(),
-            action, listener_id, session_id, details
-        ))
-        conn.commit()
-        conn.close()
-    
+        try:
+            conn = sqlite3.connect(self.db_path)
+            cursor = conn.cursor()
+            cursor.execute('''
+                INSERT INTO audit_logs (log_id, timestamp, action, listener_id, session_id, details)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ''', (
+                str(uuid.uuid4()), datetime.now().isoformat(),
+                action, listener_id, session_id, details
+            ))
+            conn.commit()
+            conn.close()
+        except Exception:
+            pass
+
     def get_audit_logs(self, limit: int = 100) -> List[Dict]:
         """Get recent audit logs"""
         conn = sqlite3.connect(self.db_path)
@@ -341,7 +577,7 @@ class ListenerManager:
         )
         rows = cursor.fetchall()
         conn.close()
-        
+
         logs = []
         for row in rows:
             logs.append({
@@ -352,8 +588,9 @@ class ListenerManager:
                 'session_id': row[4],
                 'details': row[5]
             })
-        
+
         return logs
+
 
 # Global listener manager instance
 listener_manager = ListenerManager()

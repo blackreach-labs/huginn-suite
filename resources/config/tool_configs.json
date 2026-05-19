@@ -175,7 +175,7 @@
       {
         "label": "Auth Method:",
         "controls": [
-          {"type": "combobox", "name": "http_auth_method", "items": ["None", "Basic Auth"], "width": 150, "default": "None"}
+          {"type": "combobox", "name": "http_auth_method", "items": ["None", "Basic Auth", "Captured Sessions"], "width": 180, "default": "None"}
         ],
         "visible": false
       },

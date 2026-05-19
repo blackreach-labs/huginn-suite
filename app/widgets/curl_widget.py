@@ -14,11 +14,13 @@ try:
     from app.core.http_client import HttpRequest, HttpResponse
     from app.core.obfuscation_engine import ObfuscationEngine
     from app.widgets.request_viewer import RequestViewerDialog
+    from app.core.session_harvester import SessionHarvester
 except ImportError:
     from ..core.unified_request_handler import UnifiedRequestHandler
     from ..core.http_client import HttpRequest, HttpResponse
     from ..core.obfuscation_engine import ObfuscationEngine
     from ..widgets.request_viewer import RequestViewerDialog
+    from ..core.session_harvester import SessionHarvester
 
 class CurlWidget(QWidget):
     def __init__(self, parent=None):
@@ -30,11 +32,13 @@ class CurlWidget(QWidget):
         self.request_handler.request_failed.connect(self.on_request_failed)
         self.request_handler.request_intercepted.connect(self.on_request_intercepted)
         self.request_handler.proxy_engine.history_updated.connect(self.refresh_history_table)
+        self.request_handler.proxy_engine.history_updated.connect(self._harvest_from_history)
         self.request_handler.finding_detected.connect(self.on_security_finding)
         self.request_handler.scan_completed.connect(self.on_scan_completed)
         
         self.paused_requests = {}
         self.proxy_running = False
+        self.session_harvester = SessionHarvester()
         self.curl_preview = QTextEdit()  # Hidden compatibility widget
         self.status_badge = QLabel()  # Hidden compatibility widget
         self.paused_requests_list = QListWidget()  # Hidden compatibility widget
@@ -106,6 +110,10 @@ class CurlWidget(QWidget):
         decoder_tab = self.create_decoder_tab()
         self.main_tabs.addTab(decoder_tab, "Decoder")
         
+        # Sessions tab
+        sessions_tab = self.create_sessions_tab()
+        self.main_tabs.addTab(sessions_tab, "Sessions")
+        
         layout.addWidget(self.main_tabs)
     
     def create_repeater_tab(self):
@@ -127,7 +135,7 @@ class CurlWidget(QWidget):
         
         self.method_combo = QComboBox()
         self.method_combo.addItems(["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"])
-        self.method_combo.setFixedWidth(110)
+        self.method_combo.setFixedWidth(140)
         self.method_combo.setStyleSheet(
             "QComboBox { font-weight: bold; padding: 4px; }"
         )
@@ -209,7 +217,7 @@ class CurlWidget(QWidget):
         self.headers_text = QTextEdit()
         self.headers_text.setPlaceholderText("Content-Type: application/json\nAuthorization: Bearer token123")
         self.headers_text.setStyleSheet(
-            "QTextEdit { font-family: 'Consolas', monospace; font-size: 9pt; }"
+            "QTextEdit { font-family: 'Neuropol X', monospace; font-size: 9pt; }"
         )
         headers_layout.addWidget(self.headers_text)
         
@@ -233,6 +241,12 @@ class CurlWidget(QWidget):
         url_encode_btn.setFixedHeight(24)
         url_encode_btn.clicked.connect(self.url_encode_body)
         body_btns.addWidget(url_encode_btn)
+
+        load_payload_btn = QPushButton("📂 Load Payload")
+        load_payload_btn.setFixedHeight(24)
+        load_payload_btn.setToolTip("Load a saved payload file into the request body")
+        load_payload_btn.clicked.connect(self._load_payload_file)
+        body_btns.addWidget(load_payload_btn)
         
         body_btns.addStretch()
         body_layout.addLayout(body_btns)
@@ -240,8 +254,9 @@ class CurlWidget(QWidget):
         self.body_text = QTextEdit()
         self.body_text.setPlaceholderText('{"email": "test@example.com"}')
         self.body_text.setStyleSheet(
-            "QTextEdit { font-family: 'Consolas', monospace; font-size: 9pt; }"
+            "QTextEdit { font-family: 'Neuropol X', monospace; font-size: 9pt; }"
         )
+        self.body_text.setAcceptRichText(False)
         body_layout.addWidget(self.body_text)
         
         request_tabs.addTab(body_widget, "Body")
@@ -322,7 +337,7 @@ class CurlWidget(QWidget):
         self.response_body = QTextEdit()
         self.response_body.setReadOnly(True)
         self.response_body.setStyleSheet(
-            "QTextEdit { font-family: 'Consolas', monospace; font-size: 9pt; "
+            "QTextEdit { font-family: 'Neuropol X', monospace; font-size: 9pt; "
             "background-color: #1a1a2e; color: #e0e0e0; }"
         )
         self.response_body.setPlaceholderText("Send a request to see the response...")
@@ -332,7 +347,7 @@ class CurlWidget(QWidget):
         self.response_headers = QTextEdit()
         self.response_headers.setReadOnly(True)
         self.response_headers.setStyleSheet(
-            "QTextEdit { font-family: 'Consolas', monospace; font-size: 9pt; "
+            "QTextEdit { font-family: 'Neuropol X', monospace; font-size: 9pt; "
             "background-color: #1a1a2e; color: #e0e0e0; }"
         )
         self.response_tabs.addTab(self.response_headers, "Headers")
@@ -341,7 +356,7 @@ class CurlWidget(QWidget):
         self.response_raw = QTextEdit()
         self.response_raw.setReadOnly(True)
         self.response_raw.setStyleSheet(
-            "QTextEdit { font-family: 'Consolas', monospace; font-size: 9pt; "
+            "QTextEdit { font-family: 'Neuropol X', monospace; font-size: 9pt; "
             "background-color: #1a1a2e; color: #e0e0e0; }"
         )
         self.response_tabs.addTab(self.response_raw, "Raw")
@@ -403,7 +418,7 @@ class CurlWidget(QWidget):
         req_line_layout = QHBoxLayout()
         self.intercept_method = QComboBox()
         self.intercept_method.addItems(["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"])
-        self.intercept_method.setFixedWidth(110)
+        self.intercept_method.setFixedWidth(140)
         req_line_layout.addWidget(self.intercept_method)
         
         self.intercept_url = QLineEdit()
@@ -419,7 +434,7 @@ class CurlWidget(QWidget):
         self.intercept_headers_edit = QTextEdit()
         self.intercept_headers_edit.setPlaceholderText("Request headers will appear here for editing...")
         self.intercept_headers_edit.setStyleSheet(
-            "QTextEdit { font-family: 'Consolas', monospace; font-size: 9pt; }"
+            "QTextEdit { font-family: 'Neuropol X', monospace; font-size: 9pt; }"
         )
         self.intercept_editor_tabs.addTab(self.intercept_headers_edit, "Headers")
         
@@ -427,7 +442,7 @@ class CurlWidget(QWidget):
         self.intercept_body_edit = QTextEdit()
         self.intercept_body_edit.setPlaceholderText("Request body will appear here for editing...")
         self.intercept_body_edit.setStyleSheet(
-            "QTextEdit { font-family: 'Consolas', monospace; font-size: 9pt; }"
+            "QTextEdit { font-family: 'Neuropol X', monospace; font-size: 9pt; }"
         )
         self.intercept_editor_tabs.addTab(self.intercept_body_edit, "Body")
         
@@ -637,7 +652,36 @@ class CurlWidget(QWidget):
         if text:
             encoded = urllib.parse.quote(text)
             self.body_text.setPlainText(encoded)
-    
+
+    def _load_payload_file(self):
+        """Load a payload file into the request body.
+        
+        Opens a file dialog starting in the exports/payloads/ directory
+        (where Shell Management saves payloads) so users can quickly
+        reference generated payloads.
+        """
+        from pathlib import Path
+        from PyQt6.QtWidgets import QFileDialog
+
+        # Start in the payload library directory if it exists
+        project_root = Path(__file__).parent.parent.parent
+        payloads_dir = project_root / "exports" / "payloads"
+        start_dir = str(payloads_dir) if payloads_dir.exists() else ""
+
+        filename, _ = QFileDialog.getOpenFileName(
+            self, "Load Payload File", start_dir,
+            "All Files (*);;Text Files (*.txt);;Shell Scripts (*.sh);;PowerShell (*.ps1)"
+        )
+
+        if filename:
+            try:
+                with open(filename, 'r', encoding='utf-8', errors='replace') as f:
+                    content = f.read()
+                self.body_text.setPlainText(content)
+            except Exception as e:
+                from PyQt6.QtWidgets import QMessageBox
+                QMessageBox.critical(self, "Error", f"Failed to load payload: {str(e)}")
+
     def update_curl_preview(self):
         request = self.build_http_request()
         # Generate curl command preview
@@ -896,6 +940,20 @@ class CurlWidget(QWidget):
         """Handle request sent and response received"""
         import json as json_mod
         
+        # Harvest session data from the response
+        try:
+            req_headers = request.headers if hasattr(request, 'headers') else {}
+            resp_headers = response.headers if hasattr(response, 'headers') else {}
+            resp_body = response.text if hasattr(response, 'text') else ""
+            self.session_harvester.process_response(
+                url=request.url,
+                request_headers=req_headers,
+                response_headers=resp_headers,
+                response_body=resp_body,
+            )
+        except Exception:
+            pass
+        
         # Update status badge
         status = response.status_code
         if 200 <= status < 300:
@@ -973,6 +1031,26 @@ class CurlWidget(QWidget):
         self.response_raw.setPlainText(f"Request failed:\n{error}")
         
         self.curl_response.append(f"[ERROR] {request.method} {request.url}: {error}")
+    
+    def _harvest_from_history(self, request_id):
+        """Harvest session data from proxy history when a new request is logged"""
+        try:
+            if request_id <= 0:
+                return
+            details = self.request_handler.proxy_engine.get_request_details(request_id)
+            if details:
+                req_headers = details.get('request_headers', {})
+                resp_headers = details.get('response_headers', {})
+                resp_body = details.get('response_body', '')
+                url = details.get('url', '')
+                self.session_harvester.process_response(
+                    url=url,
+                    request_headers=req_headers,
+                    response_headers=resp_headers,
+                    response_body=resp_body,
+                )
+        except Exception:
+            pass
     
     def forward_paused_request(self):
         current_row = self.paused_requests_list.currentRow()
@@ -1104,7 +1182,7 @@ class CurlWidget(QWidget):
         back_layout = QHBoxLayout()
         self.back_btn = QPushButton("← Back to History")
         self.back_btn.clicked.connect(self.show_history_table)
-        self.back_btn.setFixedWidth(180)
+        self.back_btn.setFixedWidth(190)
         back_layout.addWidget(self.back_btn)
         back_layout.addStretch()
         layout.addLayout(back_layout)
@@ -1200,7 +1278,7 @@ Size: {request_data.get('request_size', 0)} bytes"""
         
         body_text = QTextEdit()
         body_text.setReadOnly(True)
-        body_text.setFont(QFont("Consolas", 10))
+        body_text.setFont(QFont("Neuropol X", 10))
         
         request_body = request_data.get('request_body', '')
         if request_body:
@@ -1253,7 +1331,7 @@ Response Time: {request_data.get('response_time', 0)*1000:.2f}ms"""
         
         body_text = QTextEdit()
         body_text.setReadOnly(True)
-        body_text.setFont(QFont("Consolas", 10))
+        body_text.setFont(QFont("Neuropol X", 10))
         
         response_body = request_data.get('response_body', '')
         if response_body:
@@ -1404,6 +1482,360 @@ Response Time: {request_data.get('response_time', 0)*1000:.2f}ms"""
         
         return tab
     
+    def create_sessions_tab(self):
+        """Create the Sessions tab for viewing harvested cookies/tokens"""
+        tab = QWidget()
+        layout = QVBoxLayout(tab)
+        layout.setContentsMargins(6, 6, 6, 6)
+        layout.setSpacing(6)
+        
+        # Controls bar
+        controls = QHBoxLayout()
+        
+        refresh_btn = QPushButton("Refresh")
+        refresh_btn.clicked.connect(self.refresh_sessions_view)
+        controls.addWidget(refresh_btn)
+        
+        export_btn = QPushButton("Export for Replay")
+        export_btn.setToolTip("Copy session tokens formatted for request injection")
+        export_btn.clicked.connect(self.export_sessions_for_replay)
+        controls.addWidget(export_btn)
+        
+        findings_btn = QPushButton("Security Findings")
+        findings_btn.setToolTip("Analyze harvested tokens for security issues")
+        findings_btn.clicked.connect(self.show_session_findings)
+        controls.addWidget(findings_btn)
+        
+        controls.addStretch()
+        
+        self.session_count_label = QLabel("Tokens: 0")
+        self.session_count_label.setStyleSheet("color: #64C8FF; font-weight: bold;")
+        controls.addWidget(self.session_count_label)
+        
+        clear_sessions_btn = QPushButton("Clear")
+        clear_sessions_btn.clicked.connect(self.clear_sessions)
+        controls.addWidget(clear_sessions_btn)
+        
+        layout.addLayout(controls)
+        
+        # Category filter
+        filter_layout = QHBoxLayout()
+        filter_layout.addWidget(QLabel("Filter:"))
+        
+        self.session_filter_combo = QComboBox()
+        self.session_filter_combo.addItems([
+            "All", "Session Cookies", "JWT Tokens", "CSRF Tokens",
+            "Remember Me", "Analytics/Debug", "Feature/Role", "Unknown"
+        ])
+        self.session_filter_combo.currentIndexChanged.connect(self.refresh_sessions_view)
+        filter_layout.addWidget(self.session_filter_combo)
+        
+        filter_layout.addStretch()
+        layout.addLayout(filter_layout)
+        
+        # Sessions table
+        self.sessions_table = QTableWidget()
+        self.sessions_table.setColumnCount(7)
+        self.sessions_table.setHorizontalHeaderLabels([
+            "Category", "Name", "Value", "Domain", "Source", "Flags", "Last Seen"
+        ])
+        header = self.sessions_table.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)  # Category
+        header.setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)  # Name
+        header.setSectionResizeMode(2, QHeaderView.ResizeMode.Stretch)           # Value
+        header.setSectionResizeMode(3, QHeaderView.ResizeMode.ResizeToContents)  # Domain
+        header.setSectionResizeMode(4, QHeaderView.ResizeMode.ResizeToContents)  # Source
+        header.setSectionResizeMode(5, QHeaderView.ResizeMode.ResizeToContents)  # Flags
+        header.setSectionResizeMode(6, QHeaderView.ResizeMode.ResizeToContents)  # Last Seen
+        
+        self.sessions_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+        self.sessions_table.itemDoubleClicked.connect(self.view_token_details)
+        
+        # Context menu
+        self.sessions_table.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.sessions_table.customContextMenuRequested.connect(self.show_session_context_menu)
+        
+        layout.addWidget(self.sessions_table)
+        
+        # Token detail view at bottom
+        self.token_detail_text = QTextEdit()
+        self.token_detail_text.setReadOnly(True)
+        self.token_detail_text.setMaximumHeight(150)
+        self.token_detail_text.setStyleSheet(
+            "QTextEdit { font-family: 'Neuropol X', monospace; font-size: 9pt; "
+            "background-color: #1a1a2e; color: #e0e0e0; }"
+        )
+        self.token_detail_text.setPlaceholderText("Double-click a token to view details...")
+        layout.addWidget(self.token_detail_text)
+        
+        # Connect harvester signal
+        self.session_harvester.tokens_updated.connect(self.refresh_sessions_view)
+        
+        return tab
+    
+    def refresh_sessions_view(self):
+        """Refresh the sessions table with current harvested data"""
+        filter_map = {
+            0: None,  # All
+            1: 'session',
+            2: 'jwt',
+            3: 'csrf',
+            4: 'remember_me',
+            5: 'analytics',
+            6: 'feature_role',
+            7: 'unknown',
+        }
+        
+        selected_filter = filter_map.get(self.session_filter_combo.currentIndex())
+        
+        tokens = list(self.session_harvester.tokens.values())
+        if selected_filter:
+            tokens = [t for t in tokens if t.category == selected_filter]
+        
+        self.sessions_table.setRowCount(len(tokens))
+        self.session_count_label.setText(f"Tokens: {len(self.session_harvester.tokens)}")
+        
+        category_colors = {
+            'session': '#FF6633',
+            'jwt': '#FFD700',
+            'csrf': '#00BFFF',
+            'remember_me': '#9370DB',
+            'analytics': '#808080',
+            'feature_role': '#32CD32',
+            'unknown': '#AAAAAA',
+        }
+        
+        category_labels = {
+            'session': 'Session',
+            'jwt': 'JWT',
+            'csrf': 'CSRF',
+            'remember_me': 'Remember Me',
+            'analytics': 'Analytics',
+            'feature_role': 'Feature/Role',
+            'unknown': 'Unknown',
+        }
+        
+        import datetime
+        
+        for i, token in enumerate(tokens):
+            # Category
+            cat_item = QTableWidgetItem(category_labels.get(token.category, token.category))
+            color = category_colors.get(token.category, '#AAAAAA')
+            cat_item.setForeground(Qt.GlobalColor.white)
+            cat_item.setBackground(Qt.GlobalColor.darkGray)
+            from PyQt6.QtGui import QColor
+            cat_item.setForeground(QColor(color))
+            self.sessions_table.setItem(i, 0, cat_item)
+            
+            # Name
+            self.sessions_table.setItem(i, 1, QTableWidgetItem(token.name))
+            
+            # Value (truncated for display)
+            value_display = token.value[:50] + "..." if len(token.value) > 50 else token.value
+            value_item = QTableWidgetItem(value_display)
+            value_item.setToolTip(token.value)
+            self.sessions_table.setItem(i, 2, value_item)
+            
+            # Domain
+            self.sessions_table.setItem(i, 3, QTableWidgetItem(token.domain))
+            
+            # Source
+            self.sessions_table.setItem(i, 4, QTableWidgetItem(token.source))
+            
+            # Flags
+            flags = []
+            if token.secure:
+                flags.append("Secure")
+            if token.httponly:
+                flags.append("HttpOnly")
+            if token.samesite:
+                flags.append(f"SS={token.samesite}")
+            self.sessions_table.setItem(i, 5, QTableWidgetItem(" | ".join(flags) if flags else "-"))
+            
+            # Last seen
+            last_seen = datetime.datetime.fromtimestamp(token.last_seen).strftime("%H:%M:%S")
+            self.sessions_table.setItem(i, 6, QTableWidgetItem(last_seen))
+    
+    def view_token_details(self, item):
+        """Show detailed token information"""
+        row = item.row()
+        
+        filter_map = {
+            0: None, 1: 'session', 2: 'jwt', 3: 'csrf',
+            4: 'remember_me', 5: 'analytics', 6: 'feature_role', 7: 'unknown',
+        }
+        selected_filter = filter_map.get(self.session_filter_combo.currentIndex())
+        
+        tokens = list(self.session_harvester.tokens.values())
+        if selected_filter:
+            tokens = [t for t in tokens if t.category == selected_filter]
+        
+        if row >= len(tokens):
+            return
+        
+        token = tokens[row]
+        import datetime
+        
+        details = f"Name: {token.name}\n"
+        details += f"Category: {token.category}\n"
+        details += f"Domain: {token.domain}\n"
+        details += f"Path: {token.path}\n"
+        details += f"Source: {token.source}\n"
+        details += f"Secure: {token.secure}\n"
+        details += f"HttpOnly: {token.httponly}\n"
+        details += f"SameSite: {token.samesite or 'Not set'}\n"
+        details += f"First Seen: {datetime.datetime.fromtimestamp(token.first_seen).strftime('%Y-%m-%d %H:%M:%S')}\n"
+        details += f"Last Seen: {datetime.datetime.fromtimestamp(token.last_seen).strftime('%Y-%m-%d %H:%M:%S')}\n"
+        details += f"\nValue:\n{token.value}\n"
+        
+        # If JWT, decode it
+        if token.category == 'jwt' and self.session_harvester._is_jwt(token.value):
+            decoded = self.session_harvester.decode_jwt(token.value)
+            if decoded:
+                details += f"\n--- JWT Decoded ---\n"
+                details += f"Header: {json.dumps(decoded['header'], indent=2)}\n"
+                details += f"Payload: {json.dumps(decoded['payload'], indent=2)}\n"
+                details += f"Signature: {decoded['signature']}\n"
+        
+        if token.raw_header:
+            details += f"\nRaw Set-Cookie:\n{token.raw_header}\n"
+        
+        self.token_detail_text.setPlainText(details)
+    
+    def show_session_context_menu(self, position):
+        """Context menu for sessions table"""
+        from PyQt6.QtWidgets import QMenu
+        from PyQt6.QtGui import QAction
+        
+        item = self.sessions_table.itemAt(position)
+        if not item:
+            return
+        
+        menu = QMenu(self)
+        
+        copy_value_action = QAction("Copy Value", self)
+        copy_value_action.triggered.connect(lambda: self._copy_token_value(item.row()))
+        menu.addAction(copy_value_action)
+        
+        copy_cookie_action = QAction("Copy as Cookie Header", self)
+        copy_cookie_action.triggered.connect(lambda: self._copy_as_cookie_header(item.row()))
+        menu.addAction(copy_cookie_action)
+        
+        inject_action = QAction("Send to Repeater Headers", self)
+        inject_action.triggered.connect(lambda: self._inject_to_repeater(item.row()))
+        menu.addAction(inject_action)
+        
+        menu.exec(self.sessions_table.mapToGlobal(position))
+    
+    def _get_token_at_row(self, row):
+        """Get the token object at a given table row"""
+        filter_map = {
+            0: None, 1: 'session', 2: 'jwt', 3: 'csrf',
+            4: 'remember_me', 5: 'analytics', 6: 'feature_role', 7: 'unknown',
+        }
+        selected_filter = filter_map.get(self.session_filter_combo.currentIndex())
+        
+        tokens = list(self.session_harvester.tokens.values())
+        if selected_filter:
+            tokens = [t for t in tokens if t.category == selected_filter]
+        
+        if row < len(tokens):
+            return tokens[row]
+        return None
+    
+    def _copy_token_value(self, row):
+        """Copy token value to clipboard"""
+        token = self._get_token_at_row(row)
+        if token:
+            from PyQt6.QtWidgets import QApplication
+            clipboard = QApplication.clipboard()
+            clipboard.setText(token.value)
+    
+    def _copy_as_cookie_header(self, row):
+        """Copy token formatted as a Cookie header"""
+        token = self._get_token_at_row(row)
+        if token:
+            from PyQt6.QtWidgets import QApplication
+            clipboard = QApplication.clipboard()
+            if token.source == 'header' and 'bearer' in token.name.lower():
+                clipboard.setText(f"Authorization: Bearer {token.value}")
+            else:
+                clipboard.setText(f"Cookie: {token.name}={token.value}")
+    
+    def _inject_to_repeater(self, row):
+        """Inject the token into the Repeater's headers"""
+        token = self._get_token_at_row(row)
+        if not token:
+            return
+        
+        current_headers = self.headers_text.toPlainText()
+        
+        if token.source == 'header' and 'bearer' in token.name.lower():
+            new_header = f"Authorization: Bearer {token.value}"
+        elif token.source == 'header':
+            new_header = f"{token.name}: {token.value}"
+        else:
+            # Cookie - append to existing Cookie header or create new one
+            lines = current_headers.split('\n') if current_headers else []
+            cookie_line_idx = None
+            for idx, line in enumerate(lines):
+                if line.lower().startswith('cookie:'):
+                    cookie_line_idx = idx
+                    break
+            
+            if cookie_line_idx is not None:
+                # Append to existing Cookie header
+                lines[cookie_line_idx] = lines[cookie_line_idx].rstrip() + f"; {token.name}={token.value}"
+                self.headers_text.setPlainText('\n'.join(lines))
+                self.main_tabs.setCurrentIndex(0)  # Switch to Repeater
+                return
+            else:
+                new_header = f"Cookie: {token.name}={token.value}"
+        
+        if current_headers:
+            self.headers_text.setPlainText(current_headers + '\n' + new_header)
+        else:
+            self.headers_text.setPlainText(new_header)
+        
+        self.main_tabs.setCurrentIndex(0)  # Switch to Repeater
+    
+    def export_sessions_for_replay(self):
+        """Export session tokens to clipboard for replay"""
+        export_text = self.session_harvester.export_for_replay()
+        if export_text:
+            from PyQt6.QtWidgets import QApplication
+            clipboard = QApplication.clipboard()
+            clipboard.setText(export_text)
+            QMessageBox.information(self, "Exported", 
+                f"Session tokens copied to clipboard.\n\n{export_text[:200]}...")
+        else:
+            QMessageBox.information(self, "No Tokens", "No session/JWT/CSRF tokens harvested yet.")
+    
+    def show_session_findings(self):
+        """Show security findings from harvested tokens"""
+        findings = self.session_harvester.get_security_findings()
+        
+        if not findings:
+            QMessageBox.information(self, "Security Findings", 
+                "No security issues found in harvested tokens.\n\n"
+                "Harvest more traffic to detect cookie misconfigurations.")
+            return
+        
+        findings_text = f"Found {len(findings)} security issue(s):\n\n"
+        for f in findings:
+            findings_text += f"[{f['severity']}] {f['title']}\n"
+            findings_text += f"  Domain: {f['domain']}\n"
+            findings_text += f"  Detail: {f['detail']}\n\n"
+        
+        self.token_detail_text.setPlainText(findings_text)
+    
+    def clear_sessions(self):
+        """Clear all harvested sessions"""
+        self.session_harvester.clear()
+        self.sessions_table.setRowCount(0)
+        self.token_detail_text.clear()
+        self.session_count_label.setText("Tokens: 0")
+    
     def refresh_history_table(self, request_id=None):
         """Refresh the history table from database"""
         try:
@@ -1437,6 +1869,10 @@ Response Time: {request_data.get('response_time', 0)*1000:.2f}ms"""
                 
                 self.history_table.setItem(i, 4, QTableWidgetItem(f"{entry['response_time']*1000:.0f}ms"))
                 self.history_table.setItem(i, 5, QTableWidgetItem(f"{entry['response_size']} bytes"))
+            
+            # Scroll to the latest entry at the bottom
+            if history:
+                self.history_table.scrollToBottom()
         except Exception as e:
             print(f"Error refreshing history: {e}")
     

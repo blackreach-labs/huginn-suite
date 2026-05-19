@@ -83,7 +83,7 @@ class ProxyDatabase:
                        request_size, response_size, content_type,
                        datetime(timestamp, 'unixepoch', 'localtime') as formatted_time
                 FROM requests 
-                ORDER BY timestamp DESC 
+                ORDER BY timestamp ASC 
                 LIMIT ? OFFSET ?
             """, (limit, offset))
             

@@ -1,18 +1,17 @@
 # app/widgets/shell_management_widget.py
 import os
+from pathlib import Path
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QTabWidget, 
                             QTextEdit, QLineEdit, QPushButton, QLabel, QComboBox,
                             QSpinBox, QTableWidget, QTableWidgetItem, QSplitter,
                             QGroupBox, QFormLayout, QCheckBox, QProgressBar,
-                            QMessageBox, QFileDialog, QScrollArea)
+                            QMessageBox, QFileDialog, QScrollArea, QFrame)
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal
 from PyQt6.QtGui import QFont, QTextCursor, QColor, QPalette
 from app.core.shell_manager import shell_manager
-from app.core.listener_manager import listener_manager
+from app.core.listener_manager import listener_manager, get_network_interfaces
 from app.core.logger import logger
 from app.widgets.terminal_window import TerminalWindow, SystemTerminalWindow
-
-# ShellTerminalWidget removed - replaced with TerminalWindow
 
 class ShellListenerWidget(QWidget):
     """Widget for managing shell listeners"""
@@ -255,6 +254,14 @@ class ShellPayloadWidget(QWidget):
         save_btn = QPushButton("Save to File")
         save_btn.clicked.connect(self.save_payload)
         actions_layout.addWidget(save_btn)
+
+        save_library_btn = QPushButton("💾 Save to Payload Library")
+        save_library_btn.setToolTip(
+            "Save payload to the exports/payloads/ directory.\n"
+            "These files can be referenced in the HTTP Interceptor Repeater."
+        )
+        save_library_btn.clicked.connect(self.save_payload_to_library)
+        actions_layout.addWidget(save_library_btn)
         
         payload_layout.addLayout(actions_layout)
         layout.addWidget(payload_group)
@@ -349,6 +356,55 @@ $bytes = [System.Text.Encoding]::Unicode.GetBytes($cmd)
                 QMessageBox.information(self, "Success", "Payload saved successfully")
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Failed to save payload: {str(e)}")
+
+    def save_payload_to_library(self):
+        """Save payload to the exports/payloads/ library directory.
+        
+        Files saved here can be referenced by the HTTP Interceptor Repeater
+        when constructing requests with payload bodies.
+        """
+        payload = self.payload_output.toPlainText()
+        if not payload:
+            QMessageBox.warning(self, "Warning", "Generate a payload first")
+            return
+
+        # Determine library directory
+        project_root = Path(__file__).parent.parent.parent
+        payloads_dir = project_root / "exports" / "payloads"
+        payloads_dir.mkdir(parents=True, exist_ok=True)
+
+        # Build a default filename from payload type
+        payload_type = self.payload_type_combo.currentText()
+        lhost = self.lhost_input.text().strip() or "host"
+        lport = self.lport_spin.value()
+        default_name = f"{payload_type}_{lhost}_{lport}.txt"
+
+        # Let user confirm/change the filename within the library dir
+        filename, _ = QFileDialog.getSaveFileName(
+            self, "Save to Payload Library",
+            str(payloads_dir / default_name),
+            "Text Files (*.txt);;Shell Scripts (*.sh);;PowerShell (*.ps1);;All Files (*)"
+        )
+
+        if filename:
+            try:
+                with open(filename, 'w') as f:
+                    f.write(payload)
+
+                # Show path relative to project for easy reference
+                try:
+                    rel_path = Path(filename).relative_to(project_root)
+                except ValueError:
+                    rel_path = filename
+
+                QMessageBox.information(
+                    self, "Payload Saved",
+                    f"Payload saved to library:\n{rel_path}\n\n"
+                    f"You can reference this file in the HTTP Interceptor Repeater\n"
+                    f"by loading it into the request body."
+                )
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"Failed to save payload: {str(e)}")
                 
     def show_upgrade_commands(self):
         """Show shell upgrade commands"""
@@ -401,6 +457,474 @@ $bytes = [System.Text.Encoding]::Unicode.GetBytes($cmd)
                 "reset"
             ]
         }
+
+class EmbeddedTerminalWidget(QWidget):
+    """Embeddable terminal widget for use inside QTabWidget.
+    
+    Unlike TerminalWindow (QMainWindow), this is a plain QWidget that can be
+    properly embedded in tab containers. Supports both shell sessions and
+    listener interaction.
+    """
+
+    def __init__(self, session_id: str = None, listener_id: str = None, parent=None):
+        super().__init__(parent)
+        self.session_id = session_id
+        self.listener_id = listener_id
+        self.command_history: list = []
+        self.history_index = -1
+        self.is_listener_terminal = listener_id is not None
+
+        self._setup_ui()
+        self._connect_signals()
+
+        # Periodic check for listener connections
+        if self.is_listener_terminal:
+            self._update_timer = QTimer(self)
+            self._update_timer.timeout.connect(self._check_listener_connections)
+            self._update_timer.start(1000)
+
+    def _setup_ui(self):
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(4, 4, 4, 4)
+        layout.setSpacing(4)
+
+        # Status bar
+        status_layout = QHBoxLayout()
+        if self.is_listener_terminal:
+            self.status_label = QLabel(f"Listener: {self.listener_id}")
+            self.connection_label = QLabel("Waiting for connections...")
+        else:
+            self.status_label = QLabel(f"Session: {self.session_id}")
+            self.connection_label = QLabel("Connected")
+
+        self.status_label.setStyleSheet("color: #00FF00; font-weight: bold;")
+        self.connection_label.setStyleSheet("color: #FFFF00;")
+        status_layout.addWidget(self.status_label)
+        status_layout.addStretch()
+        status_layout.addWidget(self.connection_label)
+        layout.addLayout(status_layout)
+
+        # Terminal output
+        self.terminal_output = QTextEdit()
+        self.terminal_output.setReadOnly(True)
+        self.terminal_output.setFont(QFont("Consolas", 11))
+        self.terminal_output.setStyleSheet("""
+            QTextEdit {
+                background-color: #0C0C0C;
+                color: #CCCCCC;
+                border: 1px solid #333333;
+                font-family: 'Consolas', 'Courier New', monospace;
+                selection-background-color: #264F78;
+            }
+        """)
+        layout.addWidget(self.terminal_output)
+
+        # Command input area
+        input_layout = QHBoxLayout()
+
+        self.prompt_label = QLabel("$ ")
+        self.prompt_label.setStyleSheet(
+            "color: #00FF00; font-weight: bold; font-family: 'Consolas';"
+        )
+        input_layout.addWidget(self.prompt_label)
+
+        self.command_input = QLineEdit()
+        self.command_input.setFont(QFont("Consolas", 11))
+        self.command_input.setStyleSheet("""
+            QLineEdit {
+                background-color: #1E1E1E;
+                color: #CCCCCC;
+                border: 1px solid #333333;
+                padding: 5px;
+                font-family: 'Consolas', 'Courier New', monospace;
+            }
+            QLineEdit:focus {
+                border: 1px solid #007ACC;
+            }
+        """)
+        self.command_input.setPlaceholderText("Type command and press Enter...")
+        self.command_input.returnPressed.connect(self._execute_command)
+        input_layout.addWidget(self.command_input)
+
+        layout.addLayout(input_layout)
+
+        # Welcome message
+        if self.is_listener_terminal:
+            self._append_output(f"Listener Terminal - {self.listener_id}", "#00FFFF")
+            self._append_output("Waiting for connections...", "#FFFF00")
+            self._append_output("Type 'help' for listener management commands.", "#CCCCCC")
+        else:
+            self._append_output(f"Shell Session - {self.session_id}", "#00FFFF")
+            self._append_output("Terminal ready. Type commands below.", "#FFFF00")
+
+    def _connect_signals(self):
+        """Connect to shell_manager / listener_manager signals"""
+        if not self.is_listener_terminal:
+            shell_manager.shell_output.connect(self._on_shell_output)
+            shell_manager.session_terminated.connect(self._on_session_terminated)
+        else:
+            listener_manager.connection_received.connect(self._on_connection_received)
+            listener_manager.oob_data_received.connect(self._on_oob_data_received)
+            listener_manager.listener_stopped.connect(self._on_listener_stopped)
+
+    # ------------------------------------------------------------------
+    # Key handling for command history
+    # ------------------------------------------------------------------
+
+    def keyPressEvent(self, event):
+        """Handle Up/Down arrow for command history"""
+        if event.key() == Qt.Key.Key_Up:
+            if self.history_index < len(self.command_history) - 1:
+                self.history_index += 1
+                self.command_input.setText(
+                    self.command_history[-(self.history_index + 1)]
+                )
+            event.accept()
+        elif event.key() == Qt.Key.Key_Down:
+            if self.history_index > 0:
+                self.history_index -= 1
+                self.command_input.setText(
+                    self.command_history[-(self.history_index + 1)]
+                )
+            elif self.history_index == 0:
+                self.history_index = -1
+                self.command_input.clear()
+            event.accept()
+        else:
+            super().keyPressEvent(event)
+
+    # ------------------------------------------------------------------
+    # Command execution
+    # ------------------------------------------------------------------
+
+    def _execute_command(self):
+        """Execute the command typed in the input field"""
+        command = self.command_input.text().strip()
+        if not command:
+            return
+
+        # Add to history
+        if not self.command_history or self.command_history[-1] != command:
+            self.command_history.append(command)
+        self.history_index = -1
+
+        # Echo command
+        self._append_output(f"$ {command}", "#FFFF00")
+        self.command_input.clear()
+
+        if self.is_listener_terminal:
+            # Check for active connections to forward to
+            listener_info = listener_manager.get_listener_info(self.listener_id)
+            if listener_info and listener_info['connections']:
+                self._forward_command(command)
+            else:
+                self._handle_listener_command(command)
+        else:
+            # Execute in shell session
+            result = shell_manager.execute_command(self.session_id, command)
+            if result.get('success'):
+                output = result.get('output', '')
+                if output:
+                    self._append_output(output)
+            else:
+                error = result.get('error', 'Unknown error')
+                self._append_output(f"Error: {error}", "#FF0000")
+
+    def _forward_command(self, command: str):
+        """Forward command to active shell connection"""
+        try:
+            success = listener_manager.send_command_to_connection(
+                self.listener_id, command
+            )
+            if not success:
+                self._append_output("Failed to send command to connection", "#FF0000")
+        except Exception as e:
+            self._append_output(f"Error forwarding command: {e}", "#FF0000")
+
+    def _handle_listener_command(self, command: str):
+        """Handle local listener management commands"""
+        cmd = command.lower().strip()
+
+        if cmd == "status":
+            info = listener_manager.get_listener_info(self.listener_id)
+            if info:
+                self._append_output(f"Listener Status: {info['status']}")
+                self._append_output(f"Port: {info['port']}")
+                self._append_output(f"Type: {info['type']}")
+                self._append_output(f"Bind IP: {info['bind_ip']}")
+                self._append_output(f"Connections: {len(info['connections'])}")
+            else:
+                self._append_output("Listener not found", "#FF0000")
+
+        elif cmd == "connections":
+            info = listener_manager.get_listener_info(self.listener_id)
+            if info and info['connections']:
+                self._append_output("Active Connections:")
+                for i, conn in enumerate(info['connections']):
+                    self._append_output(
+                        f"  {i+1}. {conn['ip']} - Connected at: {conn.get('connected_at', 'Unknown')}"
+                    )
+            else:
+                self._append_output("No active connections")
+
+        elif cmd == "clear":
+            self.terminal_output.clear()
+
+        elif cmd == "help":
+            self._append_output("Available commands:")
+            self._append_output("  status      - Show listener status")
+            self._append_output("  connections - List active connections")
+            self._append_output("  clear       - Clear terminal")
+            self._append_output("  help        - Show this help")
+            self._append_output("")
+            self._append_output("When a shell connects, commands are forwarded directly.")
+
+        else:
+            self._append_output(f"Unknown command: {command}", "#FF0000")
+            self._append_output("Type 'help' for available commands")
+
+    # ------------------------------------------------------------------
+    # Output helpers
+    # ------------------------------------------------------------------
+
+    def _append_output(self, text: str, color: str = "#CCCCCC"):
+        """Append colored text to terminal output"""
+        cursor = self.terminal_output.textCursor()
+        cursor.movePosition(QTextCursor.MoveOperation.End)
+        fmt = cursor.charFormat()
+        fmt.setForeground(QColor(color))
+        cursor.setCharFormat(fmt)
+        cursor.insertText(text + "\n")
+        self.terminal_output.setTextCursor(cursor)
+        self.terminal_output.ensureCursorVisible()
+
+    # ------------------------------------------------------------------
+    # Signal handlers
+    # ------------------------------------------------------------------
+
+    def _on_shell_output(self, session_id: str, output: str):
+        if session_id == self.session_id:
+            self._append_output(output)
+
+    def _on_session_terminated(self, session_id: str, reason: str):
+        if session_id == self.session_id:
+            self._append_output(f"Session terminated: {reason}", "#FF0000")
+            self.connection_label.setText("Disconnected")
+            self.connection_label.setStyleSheet("color: #FF0000;")
+            self.command_input.setEnabled(False)
+
+    def _on_connection_received(self, listener_id: str, client_ip: str, data: str):
+        if listener_id == self.listener_id:
+            if data == "Connected":
+                self._append_output(f"[CONNECTION] {client_ip}: Connected", "#00FF00")
+                self._append_output(
+                    "🐚 Shell connection established! You can now type commands directly.",
+                    "#00FFFF"
+                )
+                self.prompt_label.setText(f"{client_ip}$ ")
+            else:
+                self._append_output(data)
+
+    def _on_oob_data_received(self, listener_id: str, source_ip: str, data: str):
+        if listener_id == self.listener_id:
+            self._append_output(f"[OOB] {source_ip}: {data}", "#00FFFF")
+
+    def _on_listener_stopped(self, listener_id: str):
+        if listener_id == self.listener_id:
+            self._append_output("Listener stopped", "#FF0000")
+            self.connection_label.setText("Stopped")
+            self.connection_label.setStyleSheet("color: #FF0000;")
+
+    def _check_listener_connections(self):
+        """Periodically update connection status display"""
+        info = listener_manager.get_listener_info(self.listener_id)
+        if info:
+            conn_count = len(info['connections'])
+            if conn_count == 0:
+                self.connection_label.setText("Waiting for connections...")
+                self.connection_label.setStyleSheet("color: #FFFF00;")
+                self.prompt_label.setText("$ ")
+            else:
+                self.connection_label.setText(f"Interactive Shell ({conn_count} connection(s))")
+                self.connection_label.setStyleSheet("color: #00FF00;")
+                first_ip = info['connections'][0]['ip']
+                self.prompt_label.setText(f"{first_ip}$ ")
+
+
+class EmbeddedLocalTerminal(QWidget):
+    """Embeddable local system terminal that executes commands via subprocess.
+    
+    This provides a working interactive-style terminal within the tab widget,
+    executing commands on the local system and displaying output.
+    """
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.command_history: list = []
+        self.history_index = -1
+        self.working_dir = os.getcwd()
+        self._setup_ui()
+
+    def _setup_ui(self):
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(4, 4, 4, 4)
+        layout.setSpacing(4)
+
+        # Status bar
+        status_layout = QHBoxLayout()
+        self.cwd_label = QLabel(f"📁 {self.working_dir}")
+        self.cwd_label.setStyleSheet("color: #64C8FF; font-size: 10px;")
+        status_layout.addWidget(self.cwd_label)
+        status_layout.addStretch()
+
+        clear_btn = QPushButton("Clear")
+        clear_btn.setFixedWidth(50)
+        clear_btn.setFixedHeight(20)
+        clear_btn.clicked.connect(lambda: self.terminal_output.clear())
+        status_layout.addWidget(clear_btn)
+        layout.addLayout(status_layout)
+
+        # Terminal output
+        self.terminal_output = QTextEdit()
+        self.terminal_output.setReadOnly(True)
+        self.terminal_output.setFont(QFont("Consolas", 11))
+        self.terminal_output.setStyleSheet("""
+            QTextEdit {
+                background-color: #0C0C0C;
+                color: #CCCCCC;
+                border: 1px solid #333333;
+                font-family: 'Consolas', 'Courier New', monospace;
+                selection-background-color: #264F78;
+            }
+        """)
+        layout.addWidget(self.terminal_output)
+
+        # Command input
+        input_layout = QHBoxLayout()
+
+        self.prompt_label = QLabel("❯ ")
+        self.prompt_label.setStyleSheet(
+            "color: #00FF00; font-weight: bold; font-family: 'Consolas';"
+        )
+        input_layout.addWidget(self.prompt_label)
+
+        self.command_input = QLineEdit()
+        self.command_input.setFont(QFont("Consolas", 11))
+        self.command_input.setStyleSheet("""
+            QLineEdit {
+                background-color: #1E1E1E;
+                color: #CCCCCC;
+                border: 1px solid #333333;
+                padding: 5px;
+                font-family: 'Consolas', 'Courier New', monospace;
+            }
+            QLineEdit:focus {
+                border: 1px solid #007ACC;
+            }
+        """)
+        self.command_input.setPlaceholderText("Type command and press Enter...")
+        self.command_input.returnPressed.connect(self._execute_command)
+        input_layout.addWidget(self.command_input)
+
+        layout.addLayout(input_layout)
+
+        # Welcome
+        self._append_output("Local System Terminal", "#00FFFF")
+        self._append_output(f"Working directory: {self.working_dir}", "#888888")
+        self._append_output("Type commands below. Use 'cd <path>' to change directory.\n", "#888888")
+
+    def keyPressEvent(self, event):
+        """Handle Up/Down arrow for command history"""
+        if event.key() == Qt.Key.Key_Up:
+            if self.history_index < len(self.command_history) - 1:
+                self.history_index += 1
+                self.command_input.setText(
+                    self.command_history[-(self.history_index + 1)]
+                )
+            event.accept()
+        elif event.key() == Qt.Key.Key_Down:
+            if self.history_index > 0:
+                self.history_index -= 1
+                self.command_input.setText(
+                    self.command_history[-(self.history_index + 1)]
+                )
+            elif self.history_index == 0:
+                self.history_index = -1
+                self.command_input.clear()
+            event.accept()
+        else:
+            super().keyPressEvent(event)
+
+    def _execute_command(self):
+        """Execute local system command"""
+        import subprocess
+
+        command = self.command_input.text().strip()
+        if not command:
+            return
+
+        # History
+        if not self.command_history or self.command_history[-1] != command:
+            self.command_history.append(command)
+        self.history_index = -1
+
+        # Echo
+        self._append_output(f"❯ {command}", "#FFFF00")
+        self.command_input.clear()
+
+        # Handle 'cd' specially
+        if command.startswith("cd "):
+            target = command[3:].strip().strip('"').strip("'")
+            try:
+                new_dir = os.path.abspath(os.path.join(self.working_dir, target))
+                if os.path.isdir(new_dir):
+                    self.working_dir = new_dir
+                    self.cwd_label.setText(f"📁 {self.working_dir}")
+                    self._append_output(f"Changed directory to: {self.working_dir}", "#00FF00")
+                else:
+                    self._append_output(f"Directory not found: {new_dir}", "#FF0000")
+            except Exception as e:
+                self._append_output(f"Error: {e}", "#FF0000")
+            return
+
+        if command == "cd":
+            self._append_output(self.working_dir)
+            return
+
+        # Execute command
+        try:
+            result = subprocess.run(
+                command,
+                shell=True,
+                capture_output=True,
+                text=True,
+                cwd=self.working_dir,
+                timeout=30
+            )
+
+            if result.stdout:
+                self._append_output(result.stdout.rstrip())
+            if result.stderr:
+                self._append_output(result.stderr.rstrip(), "#FF6B6B")
+            if result.returncode != 0 and not result.stdout and not result.stderr:
+                self._append_output(f"Command exited with code {result.returncode}", "#FF6B6B")
+
+        except subprocess.TimeoutExpired:
+            self._append_output("Command timed out (30s limit)", "#FF0000")
+        except Exception as e:
+            self._append_output(f"Error: {e}", "#FF0000")
+
+    def _append_output(self, text: str, color: str = "#CCCCCC"):
+        """Append colored text to terminal output"""
+        cursor = self.terminal_output.textCursor()
+        cursor.movePosition(QTextCursor.MoveOperation.End)
+        fmt = cursor.charFormat()
+        fmt.setForeground(QColor(color))
+        cursor.setCharFormat(fmt)
+        cursor.insertText(text + "\n")
+        self.terminal_output.setTextCursor(cursor)
+        self.terminal_output.ensureCursorVisible()
+
 
 class ShellManagementWidget(QWidget):
     """Main shell management widget with new layout"""
@@ -484,17 +1008,26 @@ class ShellManagementWidget(QWidget):
         return left_panel
         
     def build_right_panel(self):
-        """Build right panel with terminal workspace only"""
+        """Build right panel with terminal workspace"""
         right_panel = QWidget()
         right_layout = QVBoxLayout(right_panel)
-        
+
         # Terminal workspace
         self.terminal_tabs = QTabWidget()
         self.terminal_tabs.setTabsClosable(True)
         self.terminal_tabs.tabCloseRequested.connect(self.close_terminal_tab)
         right_layout.addWidget(self.terminal_tabs)
-        
+
+        # Add a default local terminal tab
+        self._add_local_terminal_tab()
+
         return right_panel
+
+    def _add_local_terminal_tab(self):
+        """Add a local system terminal tab for quick command execution"""
+        terminal = EmbeddedLocalTerminal()
+        self.terminal_tabs.addTab(terminal, "🖥 Terminal")
+        terminal.command_input.setFocus()
 
         
     def connect_signals(self):
@@ -547,60 +1080,76 @@ class ShellManagementWidget(QWidget):
         return ShellPayloadWidget()
         
     def build_listener_tab(self):
-        """Build listener creation utility tab"""
+        """Build listener creation utility tab with interface selection"""
         widget = QWidget()
         layout = QFormLayout(widget)
-        
+
         self.port_spin = QSpinBox()
         self.port_spin.setRange(1, 65535)
         self.port_spin.setValue(4444)
         layout.addRow("Port:", self.port_spin)
-        
+
         self.shell_type_combo = QComboBox()
         self.shell_type_combo.addItems(["netcat", "http", "dns_oob", "powershell"])
         layout.addRow("Listener Type:", self.shell_type_combo)
-        
-        self.bind_ip_input = QLineEdit("0.0.0.0")
-        layout.addRow("Bind IP:", self.bind_ip_input)
-        
+
+        # Interface/IP dropdown populated from system interfaces
+        self.bind_interface_combo = QComboBox()
+        self._populate_interfaces()
+        layout.addRow("Bind Interface:", self.bind_interface_combo)
+
+        refresh_ifaces_btn = QPushButton("↻ Refresh Interfaces")
+        refresh_ifaces_btn.setMaximumWidth(140)
+        refresh_ifaces_btn.clicked.connect(self._populate_interfaces)
+        layout.addRow("", refresh_ifaces_btn)
+
         create_btn = QPushButton("Create Listener")
         create_btn.clicked.connect(self.create_listener)
         layout.addRow(create_btn)
-        
+
         return widget
+
+    def _populate_interfaces(self):
+        """Populate the bind interface dropdown with available network interfaces"""
+        self.bind_interface_combo.clear()
+        interfaces = get_network_interfaces()
+        for iface in interfaces:
+            display = f"{iface['ip']}  ({iface['name']})"
+            self.bind_interface_combo.addItem(display, iface['ip'])
     
     def create_listener(self):
         """Create new reverse shell listener"""
         port = self.port_spin.value()
         shell_type = self.shell_type_combo.currentText()
-        bind_ip = self.bind_ip_input.text().strip()
-        
+        bind_ip = self.bind_interface_combo.currentData() or "0.0.0.0"
+
         try:
             listener_id = listener_manager.create_listener(port, shell_type, bind_ip)
             success = listener_manager.start_listener(listener_id)
-            
+
             if success:
                 self.status_updated.emit(f"Listener {listener_id} started on {bind_ip}:{port}")
             else:
-                QMessageBox.critical(self, "Error", "Failed to start listener")
-            
+                error_info = ""
+                linfo = listener_manager._listeners.get(listener_id)
+                if linfo and linfo.get('error'):
+                    error_info = f"\n\nDetails: {linfo['error']}"
+                QMessageBox.critical(self, "Error",
+                                     f"Failed to start listener on {bind_ip}:{port}{error_info}")
+
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Failed to create listener: {str(e)}")
     
     def open_terminal_tab(self, title: str, session_id: str = None, listener_id: str = None):
-        """Open new terminal tab in embedded workspace"""
-        # Create embedded terminal
-        if session_id:
-            terminal = TerminalWindow(session_id=session_id)
-        elif listener_id:
-            terminal = TerminalWindow(listener_id=listener_id)
-        else:
-            terminal = SystemTerminalWindow()
-            
+        """Open new terminal tab in embedded workspace using an embeddable widget"""
+        terminal = EmbeddedTerminalWidget(session_id=session_id, listener_id=listener_id)
+
         # Add tab
         tab_index = self.terminal_tabs.addTab(terminal, title)
         self.terminal_tabs.setCurrentIndex(tab_index)
-        
+
+        # Focus the command input
+        terminal.command_input.setFocus()
         return terminal
         
     def close_terminal_tab(self, index: int):

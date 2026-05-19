@@ -164,17 +164,37 @@ class ServiceScannersMixin:
                 else:
                     pass  # Listener not enabled - no debug message
             
+            # Get authentication settings
+            auth_method = None
+            username = ""
+            password = ""
+            auth_headers = {}
+            auth_cookies = {}
+            
+            if control_panel and hasattr(control_panel, 'controls'):
+                controls = control_panel.controls
+                if 'http_auth_method' in controls:
+                    auth_method_text = controls['http_auth_method'].currentText()
+                    if auth_method_text == "Basic Auth":
+                        auth_method = "basic"
+                        username = controls['http_username'].text() if 'http_username' in controls else ""
+                        password = controls['http_password'].text() if 'http_password' in controls else ""
+                    elif auth_method_text == "Captured Sessions":
+                        auth_method = "captured_sessions"
+                        auth_headers = getattr(control_panel, 'captured_auth_headers', {})
+                        auth_cookies = getattr(control_panel, 'captured_auth_cookies', {})
+            
             worker = HTTPEnumWorker(
                 target=target,
                 scan_type=scan_type,
                 wordlist_path=wordlist_path,
                 extensions=extensions,
                 preset=preset,
-                auth_method=None,
-                username="",
-                password="",
-                auth_headers={},
-                auth_cookies={},
+                auth_method=auth_method,
+                username=username,
+                password=password,
+                auth_headers=auth_headers,
+                auth_cookies=auth_cookies,
                 tenant_id=tenant_id,
                 listener_id=listener_id
             )

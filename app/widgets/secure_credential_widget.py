@@ -111,7 +111,7 @@ class SecureCredentialWidget(QWidget):
         self.type_combo = QComboBox()
         self.type_combo.addItems(["Username/Password", "NTLM Hash",
                                   "Kerberos Ticket", "SQL Server Auth",
-                                  "Windows Auth", "Contacts"])
+                                  "Windows Auth", "API Key", "Contacts"])
         self.type_combo.setFixedHeight(FIELD_HEIGHT)
         self.type_combo.setStyleSheet("font-size: 10pt;")
         self.type_combo.currentTextChanged.connect(self.on_type_changed)
@@ -132,6 +132,12 @@ class SecureCredentialWidget(QWidget):
         self.service_edit     = field("e.g., SSH, RDP, SMB, HTTP")
         self.notes_label      = lbl("Notes:")
         self.notes_edit       = field("Optional notes")
+
+        # API Key fields
+        self.api_key_name_label  = lbl("Key Name:")
+        self.api_key_name_edit   = field("e.g., Shodan, VirusTotal")
+        self.api_key_value_label = lbl("API Key:")
+        self.api_key_value_edit  = field("Enter API key", echo=True)
 
         # Contacts fields
         self.account_name_label  = lbl("Account Name:")
@@ -157,6 +163,8 @@ class SecureCredentialWidget(QWidget):
             (self.domain_label,      self.domain_edit),
             (self.service_label,     self.service_edit),
             (self.notes_label,       self.notes_edit),
+            (self.api_key_name_label, self.api_key_name_edit),
+            (self.api_key_value_label, self.api_key_value_edit),
             (self.account_name_label,self.account_name_edit),
             (self.first_name_label,  self.first_name_edit),
             (self.middle_name_label, self.middle_name_edit),
@@ -239,14 +247,11 @@ class SecureCredentialWidget(QWidget):
             }
         """)
         hdr_view = self.credentials_table.horizontalHeader()
-        # Set all columns to Interactive (user-resizable) with a sensible
-        # initial size, then force the Notes column to fill remaining space.
-        hdr_view.setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
+        # Resize columns to fit their content so nothing is truncated,
+        # then let the Notes column stretch to fill remaining space.
+        hdr_view.setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
         hdr_view.setSectionResizeMode(6, QHeaderView.ResizeMode.Stretch)
         hdr_view.setStretchLastSection(True)
-        # Give non-stretch columns a reasonable default width
-        for col, width in enumerate([90, 120, 110, 110, 90, 90]):
-            self.credentials_table.setColumnWidth(col, width)
         self.credentials_table.verticalHeader().setVisible(False)
         widget_layout.addWidget(self.credentials_table, stretch=1)
 
@@ -756,6 +761,18 @@ Examples:
                 source="manual", credential_type=credential_type)
             success = True
 
+        elif credential_type == "API Key":
+            key_name  = self.api_key_name_edit.text().strip()
+            key_value = self.api_key_value_edit.text().strip()
+            if not key_name or not key_value:
+                QMessageBox.warning(self, "Error", "Key name and API key are required")
+                return
+            credential_manager.add_credential(
+                username=key_name, password=key_value,
+                service=service or key_name, notes=notes,
+                source="manual", credential_type=credential_type)
+            success = True
+
         elif credential_type == "Contacts":
             account = self.account_name_edit.text().strip()
             email   = self.email_edit.text().strip()
@@ -791,6 +808,8 @@ Examples:
             (self.domain_label,      self.domain_edit),
             (self.service_label,     self.service_edit),
             (self.notes_label,       self.notes_edit),
+            (self.api_key_name_label, self.api_key_name_edit),
+            (self.api_key_value_label, self.api_key_value_edit),
             (self.account_name_label,self.account_name_edit),
             (self.first_name_label,  self.first_name_edit),
             (self.middle_name_label, self.middle_name_edit),
@@ -835,6 +854,12 @@ Examples:
                 (self.service_label,  self.service_edit),
                 (self.notes_label,    self.notes_edit),
             ],
+            "API Key": [
+                (self.api_key_name_label,  self.api_key_name_edit),
+                (self.api_key_value_label, self.api_key_value_edit),
+                (self.service_label,       self.service_edit),
+                (self.notes_label,         self.notes_edit),
+            ],
             "Contacts": [
                 (self.account_name_label, self.account_name_edit),
                 (self.first_name_label,   self.first_name_edit),
@@ -854,7 +879,8 @@ Examples:
         """Clear the credential form"""
         for w in (self.username_edit, self.password_edit, self.ntlm_hash_edit,
                   self.ticket_file_edit, self.domain_edit, self.service_edit,
-                  self.notes_edit, self.account_name_edit, self.first_name_edit,
+                  self.notes_edit, self.api_key_name_edit, self.api_key_value_edit,
+                  self.account_name_edit, self.first_name_edit,
                   self.middle_name_edit, self.last_name_edit, self.email_edit,
                   self.mobile_edit, self.address_edit):
             w.clear()

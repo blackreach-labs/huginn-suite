@@ -68,6 +68,10 @@ psutil>=5.9.0  # Already included above
 # Windows API access
 pywin32>=304; sys_platform == "win32"
 
+# Interactive terminal (ConPTY + VT100 emulation)
+pywinpty>=2.0.0; sys_platform == "win32"
+pyte==0.8.2
+
 # Assembly and shellcode generation
 keystone-engine>=0.9.2
 

@@ -529,7 +529,7 @@ class AttackChainHomePage(BasePage):
 
         self.type_combo = QComboBox()
         self.type_combo.addItems(["Username/Password", "NTLM Hash", "Kerberos Ticket",
-                                  "SQL Server Auth", "Windows Auth", "Contacts"])
+                                  "SQL Server Auth", "Windows Auth", "API Key", "Contacts"])
         self.type_combo.setFixedHeight(FIELD_HEIGHT)
         self.type_combo.setStyleSheet("font-size: 10pt;")
         self.type_combo.currentTextChanged.connect(self.on_credential_type_changed)
@@ -556,6 +556,13 @@ class AttackChainHomePage(BasePage):
 
         self.notes_label      = make_label("Notes:")
         self.notes            = make_line("Optional notes")
+
+        # ── API Key fields ──────────────────────────────────────────────────
+        self.api_key_name_label  = make_label("Key Name:")
+        self.api_key_name        = make_line("e.g., Shodan, VirusTotal")
+
+        self.api_key_value_label = make_label("API Key:")
+        self.api_key_value       = make_line("Enter API key", echo=True)
 
         # ── Contacts fields ─────────────────────────────────────────────────
         self.account_name_label  = make_label("Account Name:")
@@ -588,6 +595,8 @@ class AttackChainHomePage(BasePage):
             (self.domain_label,      self.domain),
             (self.service_label,     self.service),
             (self.notes_label,       self.notes),
+            (self.api_key_name_label, self.api_key_name),
+            (self.api_key_value_label, self.api_key_value),
             (self.account_name_label,self.account_name),
             (self.first_name_label,  self.first_name),
             (self.middle_name_label, self.middle_name),
@@ -617,6 +626,8 @@ class AttackChainHomePage(BasePage):
             (self.domain_label, self.domain),
             (self.service_label, self.service),
             (self.notes_label, self.notes),
+            (self.api_key_name_label, self.api_key_name),
+            (self.api_key_value_label, self.api_key_value),
             (self.account_name_label, self.account_name),
             (self.first_name_label, self.first_name),
             (self.middle_name_label, self.middle_name),
@@ -653,6 +664,11 @@ class AttackChainHomePage(BasePage):
         elif credential_type == "Windows Auth":
             for label, field in [(self.username_label, self.username), (self.password_label, self.password), 
                                (self.domain_label, self.domain), (self.service_label, self.service), (self.notes_label, self.notes)]:
+                label.setVisible(True)
+                field.setVisible(True)
+        elif credential_type == "API Key":
+            for label, field in [(self.api_key_name_label, self.api_key_name), (self.api_key_value_label, self.api_key_value),
+                               (self.service_label, self.service), (self.notes_label, self.notes)]:
                 label.setVisible(True)
                 field.setVisible(True)
         elif credential_type == "Contacts":
@@ -1420,6 +1436,20 @@ class AttackChainHomePage(BasePage):
                 self.username.clear()
                 self.password.clear()
                 self.domain.clear()
+            
+            elif credential_type == "API Key":
+                key_name = self.api_key_name.text().strip()
+                key_value = self.api_key_value.text().strip()
+                
+                if not key_name or not key_value:
+                    return
+                
+                credential_manager.add_credential(
+                    username=key_name, password=key_value, domain="",
+                    service=service or key_name, notes=notes, source="manual", credential_type=credential_type
+                )
+                self.api_key_name.clear()
+                self.api_key_value.clear()
             
             self.service.clear()
             self.notes.clear()

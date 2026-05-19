@@ -44,6 +44,10 @@ class ServiceFieldVisibilityMixin:
                 control_widgets['http_preset'].currentTextChanged.connect(
                     lambda preset: self.on_http_preset_changed(tool_key, preset)
                 )
+            if 'http_cred_manager_btn' in control_widgets:
+                control_widgets['http_cred_manager_btn'].clicked.connect(
+                    lambda: self.load_captured_sessions(tool_key)
+                )
             if 'enable_listener' in control_widgets:
                 control_widgets['enable_listener'].stateChanged.connect(
                     lambda state: self.toggle_http_listener_row(tool_key, state)
@@ -318,8 +322,7 @@ class ServiceFieldVisibilityMixin:
             # Adjust panel height to fit visible rows
             visible_rows = sum(1 for lbl, vis in row_visibility_map.items() if vis) + 1  # +1 for Scan Type row
             needed_height = visible_rows * 30 + 4
-            control_panel.setMaximumHeight(needed_height)
-            control_panel.setMinimumHeight(needed_height)
+            control_panel.setFixedHeight(needed_height)
         
         # Store current scan type first
         setattr(self, f"{tool_key}_current_scan_type", scan_type)
@@ -639,8 +642,7 @@ class ServiceFieldVisibilityMixin:
             if control_panel.row_widgets.get('Auth Method:', None) and control_panel.row_widgets['Auth Method:'].isVisible():
                 visible_count += 1
             needed_height = visible_count * 30 + 4
-            control_panel.setMaximumHeight(needed_height)
-            control_panel.setMinimumHeight(needed_height)
+            control_panel.setFixedHeight(needed_height)
         
 
     
@@ -714,6 +716,7 @@ class ServiceFieldVisibilityMixin:
         # Determine which fields to show based on auth method
         show_basic = (auth_method == "Basic Auth")
         show_session = (auth_method == "Session Replay")
+        show_captured = (auth_method == "Captured Sessions")
         
         # Show/hide individual controls
         if 'http_username' in controls and controls['http_username'] is not None:
@@ -734,7 +737,7 @@ class ServiceFieldVisibilityMixin:
             auth_row_visibility = {
                 'Username:': show_basic,
                 'Password:': show_basic,
-                'Credentials:': show_session
+                'Credentials:': show_session or show_captured
             }
             
             for row_label, should_show in auth_row_visibility.items():
@@ -743,7 +746,7 @@ class ServiceFieldVisibilityMixin:
                         row_widget = control_panel.row_widgets[row_label]
                         if should_show:
                             row_widget.setVisible(True)
-                            row_widget.setMaximumHeight(26)
+                            row_widget.setMaximumHeight(30)
                             row_widget.setMinimumHeight(26)
                         else:
                             row_widget.setVisible(False)
@@ -752,6 +755,111 @@ class ServiceFieldVisibilityMixin:
                     except RuntimeError as _exc:
                         pass
                         logger.debug("Suppressed exception", exc_info=True)
+        
+        # Update Credentials button text for Captured Sessions
+        if 'http_cred_manager_btn' in controls and controls['http_cred_manager_btn'] is not None:
+            try:
+                if show_captured:
+                    controls['http_cred_manager_btn'].setText("🍪 Load Captured Session Tokens")
+                    controls['http_cred_manager_btn'].setVisible(True)
+                elif show_session:
+                    controls['http_cred_manager_btn'].setText("📋 Load from Credential Manager")
+                    controls['http_cred_manager_btn'].setVisible(True)
+                else:
+                    controls['http_cred_manager_btn'].setVisible(False)
+            except RuntimeError as _exc:
+                pass
+                logger.debug("Suppressed exception", exc_info=True)
+        
+        # Recalculate panel height to accommodate newly visible/hidden rows
+        if hasattr(control_panel, 'row_widgets'):
+            try:
+                visible_count = 0
+                for row_label, row_widget in control_panel.row_widgets.items():
+                    if row_widget is not None and row_widget.isVisible():
+                        visible_count += 1
+                needed_height = visible_count * 30 + 4
+                control_panel.setFixedHeight(needed_height)
+            except RuntimeError:
+                pass
+    
+    def load_captured_sessions(self, tool_key):
+        """Load captured session tokens from the HTTP Interceptor's session harvester"""
+        from PyQt6.QtWidgets import QMessageBox
+        
+        # Find the CurlWidget instance to access its session harvester
+        session_harvester = None
+        try:
+            # Navigate up to the main window to find the HTTP Interceptor
+            main_window = self
+            while main_window.parent():
+                main_window = main_window.parent()
+            
+            # Search for CurlWidget in the widget tree
+            from app.widgets.curl_widget import CurlWidget
+            curl_widgets = main_window.findChildren(CurlWidget)
+            if curl_widgets:
+                session_harvester = curl_widgets[0].session_harvester
+        except Exception:
+            pass
+        
+        if not session_harvester or not session_harvester.tokens:
+            QMessageBox.information(
+                self, "No Captured Sessions",
+                "No session tokens have been captured yet.\n\n"
+                "To capture sessions:\n"
+                "1. Go to HTTP Interceptor\n"
+                "2. Start the proxy\n"
+                "3. Browse the target application\n"
+                "4. Session tokens will be automatically harvested"
+            )
+            return
+        
+        # Get session/JWT/CSRF tokens (the useful ones for auth)
+        auth_tokens = [
+            t for t in session_harvester.tokens.values()
+            if t.category in ('session', 'jwt', 'csrf')
+        ]
+        
+        if not auth_tokens:
+            QMessageBox.information(
+                self, "No Auth Tokens",
+                "Captured traffic contains no session/JWT/CSRF tokens.\n"
+                "Browse authenticated pages to capture auth tokens."
+            )
+            return
+        
+        # Store the captured tokens for use by the scanner
+        # Build auth headers and cookies from captured tokens
+        auth_cookies = {}
+        auth_headers = {}
+        
+        for token in auth_tokens:
+            if token.source == 'cookie':
+                auth_cookies[token.name] = token.value
+            elif token.source == 'header':
+                if 'bearer' in token.name.lower():
+                    auth_headers['Authorization'] = f"Bearer {token.value}"
+                else:
+                    auth_headers[token.name] = token.value
+            elif token.source == 'body' and token.category == 'jwt':
+                auth_headers['Authorization'] = f"Bearer {token.value}"
+        
+        # Store on the control panel for the scanner to pick up
+        control_panel = getattr(self, f"{tool_key}_control_panel", None)
+        if control_panel:
+            control_panel.captured_auth_cookies = auth_cookies
+            control_panel.captured_auth_headers = auth_headers
+        
+        # Show confirmation
+        summary = f"Loaded {len(auth_tokens)} token(s):\n\n"
+        for token in auth_tokens[:10]:
+            value_preview = token.value[:30] + "..." if len(token.value) > 30 else token.value
+            summary += f"  [{token.category.upper()}] {token.name} = {value_preview}\n"
+        if len(auth_tokens) > 10:
+            summary += f"\n  ... and {len(auth_tokens) - 10} more"
+        
+        QMessageBox.information(self, "Sessions Loaded", summary)
     
     def toggle_db_fields(self, tool_key, db_type):
         """Toggle database fields based on database type selection"""
