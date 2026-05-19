@@ -1,12 +1,13 @@
 # app/widgets/vpn_widget.py
+import datetime
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
                              QPushButton, QLineEdit, QComboBox, QTextEdit,
                              QFileDialog, QGroupBox, QSpinBox, QTabWidget,
-                             QProgressBar, QFrame)
+                             QFrame, QSplitter, QFormLayout)
 from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QFont
 from app.core.vpn_manager import vpn_manager
-# from app.core.python_vpn import python_vpn  # Removed - using official OpenVPN
+
 
 class VPNWidget(QWidget):
     """VPN connection management widget"""
@@ -14,8 +15,8 @@ class VPNWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("VPN Connection Manager")
-        self.resize(1000, 800)
-        self.setMinimumSize(900, 500)
+        self.resize(1000, 600)
+        self.setMinimumSize(800, 400)
         
         self.is_connecting = False
         
@@ -26,218 +27,258 @@ class VPNWidget(QWidget):
         # Status update timer
         self.status_timer = QTimer()
         self.status_timer.timeout.connect(self.update_status)
-        self.status_timer.start(2000)  # Update every 2 seconds
+        self.status_timer.start(2000)
     
     def setup_ui(self):
-        """Setup the UI"""
-        layout = QVBoxLayout(self)
+        """Setup the UI with side-by-side layout"""
+        main_layout = QVBoxLayout(self)
+        main_layout.setContentsMargins(10, 10, 10, 10)
+        main_layout.setSpacing(8)
         
-        # Professional license notice
-        license_frame = QFrame()
-        license_frame.setStyleSheet("background-color: rgba(0, 100, 0, 50); border-radius: 5px; padding: 5px;")
-        license_layout = QHBoxLayout(license_frame)
-        license_label = QLabel("✓ Licensed Features")
-        license_label.setStyleSheet("color: #00FF00; font-weight: bold;")
-        license_layout.addWidget(license_label)
-        layout.addWidget(license_frame)
+        # Status bar at the top
+        self._create_status_bar(main_layout)
         
-        # Status section
-        status_group = QGroupBox("Connection Status")
-        status_layout = QVBoxLayout(status_group)
+        # Side-by-side: config (left) | log (right)
+        splitter = QSplitter(Qt.Orientation.Horizontal)
         
-        self.status_label = QLabel("Disconnected")
-        self.status_label.setStyleSheet("font-weight: bold; font-size: 14pt;")
+        # Left panel: connection config
+        left_panel = self._create_config_panel()
+        splitter.addWidget(left_panel)
+        
+        # Right panel: connection log
+        right_panel = self._create_log_panel()
+        splitter.addWidget(right_panel)
+        
+        # Set initial split ratio (55% config, 45% log)
+        splitter.setSizes([550, 450])
+        
+        main_layout.addWidget(splitter, 1)
+    
+    def _create_status_bar(self, parent_layout):
+        """Create the compact status bar with connection state"""
+        status_frame = QFrame()
+        status_frame.setStyleSheet(
+            "QFrame { background-color: rgba(30, 30, 50, 180); "
+            "border-radius: 6px; padding: 4px; }"
+        )
+        status_layout = QHBoxLayout(status_frame)
+        status_layout.setContentsMargins(12, 6, 12, 6)
+        status_layout.setSpacing(12)
+        
+        # Status indicator
+        self.status_label = QLabel("● Disconnected")
+        self.status_label.setStyleSheet("color: #FF4444; font-weight: bold; font-size: 12pt;")
         status_layout.addWidget(self.status_label)
         
         self.status_details = QLabel("No active VPN connection")
+        self.status_details.setStyleSheet("color: #AAAAAA; font-size: 9pt;")
         status_layout.addWidget(self.status_details)
         
-        # Connection controls
-        controls_layout = QHBoxLayout()
+        status_layout.addStretch()
+        
+        parent_layout.addWidget(status_frame)
+    
+    def _create_config_panel(self):
+        """Create the left config panel with tabs and action buttons"""
+        panel = QWidget()
+        layout = QVBoxLayout(panel)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+        
+        self.tabs = QTabWidget()
+        self._setup_config_tab()
+        self._setup_manual_tab()
+        
+        # Action buttons as corner widget (sits next to tab labels)
+        btn_widget = QWidget()
+        btn_layout = QHBoxLayout(btn_widget)
+        btn_layout.setContentsMargins(4, 0, 4, 0)
+        btn_layout.setSpacing(6)
         
         self.connect_btn = QPushButton("Connect")
+        self.connect_btn.setFixedWidth(90)
+        self.connect_btn.setFixedHeight(26)
+        self.connect_btn.setStyleSheet(
+            "QPushButton { background-color: #2E7D32; color: white; "
+            "border-radius: 4px; padding: 4px 8px; font-weight: bold; }"
+            "QPushButton:hover { background-color: #388E3C; }"
+            "QPushButton:disabled { background-color: #555555; color: #888888; }"
+        )
         self.connect_btn.clicked.connect(self.connect_vpn)
-        controls_layout.addWidget(self.connect_btn)
+        btn_layout.addWidget(self.connect_btn)
         
         self.disconnect_btn = QPushButton("Disconnect")
+        self.disconnect_btn.setFixedWidth(120)
+        self.disconnect_btn.setFixedHeight(26)
+        self.disconnect_btn.setStyleSheet(
+            "QPushButton { background-color: #C62828; color: white; "
+            "border-radius: 4px; padding: 4px 8px; font-weight: bold; }"
+            "QPushButton:hover { background-color: #D32F2F; }"
+            "QPushButton:disabled { background-color: #555555; color: #888888; }"
+        )
         self.disconnect_btn.clicked.connect(self.disconnect_vpn)
         self.disconnect_btn.setEnabled(False)
-        controls_layout.addWidget(self.disconnect_btn)
+        btn_layout.addWidget(self.disconnect_btn)
         
-        self.test_btn = QPushButton("Test Connection")
+        self.test_btn = QPushButton("Test")
+        self.test_btn.setFixedWidth(55)
+        self.test_btn.setFixedHeight(26)
+        self.test_btn.setStyleSheet(
+            "QPushButton { background-color: #1565C0; color: white; "
+            "border-radius: 4px; padding: 4px 8px; }"
+            "QPushButton:hover { background-color: #1976D2; }"
+        )
         self.test_btn.clicked.connect(self.test_connection)
-        controls_layout.addWidget(self.test_btn)
+        btn_layout.addWidget(self.test_btn)
         
-        status_layout.addLayout(controls_layout)
-        layout.addWidget(status_group)
+        self.tabs.setCornerWidget(btn_widget, Qt.Corner.TopRightCorner)
         
-        # Connection tabs
-        self.tabs = QTabWidget()
+        layout.addWidget(self.tabs)
         
-        # OpenVPN config tab
-        self.setup_config_tab()
-        
-        # Manual connection tab
-        self.setup_manual_tab()
-        
-        # Python VPN tab removed - using official OpenVPN only
-        
-        layout.addWidget(self.tabs, 1)  # Give tabs more vertical space
-        
-        # Output area
-        output_group = QGroupBox("Connection Log")
-        output_layout = QVBoxLayout(output_group)
-        
-        self.output_text = QTextEdit()
-        self.output_text.setMaximumHeight(200)  # Increased height
-        self.output_text.setReadOnly(True)
-        output_layout.addWidget(self.output_text)
-        
-        layout.addWidget(output_group)
+        return panel
     
-    def setup_config_tab(self):
-        """Setup OpenVPN config file tab"""
+    def _setup_config_tab(self):
+        """Setup OpenVPN config file tab with form layout"""
         config_widget = QWidget()
         layout = QVBoxLayout(config_widget)
+        layout.setContentsMargins(12, 12, 12, 12)
+        layout.setSpacing(10)
         
-        # Config file selection
-        file_layout = QHBoxLayout()
-        file_layout.addWidget(QLabel("Config File:"))
+        # Config file row
+        file_group = QGroupBox("Configuration File")
+        file_layout = QHBoxLayout(file_group)
+        file_layout.setContentsMargins(10, 14, 10, 10)
         
         self.config_file_input = QLineEdit()
         self.config_file_input.setPlaceholderText("Select .ovpn config file...")
         file_layout.addWidget(self.config_file_input)
         
         browse_btn = QPushButton("Browse")
+        browse_btn.setFixedWidth(90)
         browse_btn.clicked.connect(self.browse_config_file)
         file_layout.addWidget(browse_btn)
         
-        layout.addLayout(file_layout)
+        layout.addWidget(file_group)
         
-        # Authentication
+        # Authentication section
         auth_group = QGroupBox("Authentication (Optional)")
-        auth_group.setFixedHeight(120)  # Set fixed height to fit username and password fields
-        auth_layout = QVBoxLayout(auth_group)
+        auth_form = QFormLayout(auth_group)
+        auth_form.setContentsMargins(10, 14, 10, 10)
+        auth_form.setSpacing(8)
+        auth_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
         
-        username_layout = QHBoxLayout()
-        username_layout.addWidget(QLabel("Username:"))
         self.config_username = QLineEdit()
-        username_layout.addWidget(self.config_username)
-        auth_layout.addLayout(username_layout)
+        self.config_username.setPlaceholderText("Leave blank if not required")
+        auth_form.addRow("Username:", self.config_username)
         
-        password_layout = QHBoxLayout()
-        password_layout.addWidget(QLabel("Password:"))
         self.config_password = QLineEdit()
         self.config_password.setEchoMode(QLineEdit.EchoMode.Password)
-        password_layout.addWidget(self.config_password)
-        auth_layout.addLayout(password_layout)
-        
-        layout.addWidget(auth_group)
-        
-        self.tabs.addTab(config_widget, "OpenVPN Config")
-    
-    def setup_manual_tab(self):
-        """Setup manual connection tab"""
-        manual_widget = QWidget()
-        layout = QVBoxLayout(manual_widget)
-        
-        # Server settings
-        server_group = QGroupBox("Server Settings")
-        server_layout = QVBoxLayout(server_group)
-        
-        server_layout.addWidget(QLabel("Server:"))
-        self.manual_server = QLineEdit()
-        self.manual_server.setPlaceholderText("vpn.example.com")
-        server_layout.addWidget(self.manual_server)
-        
-        port_protocol_layout = QHBoxLayout()
-        
-        port_protocol_layout.addWidget(QLabel("Port:"))
-        self.manual_port = QSpinBox()
-        self.manual_port.setRange(1, 65535)
-        self.manual_port.setValue(1194)
-        port_protocol_layout.addWidget(self.manual_port)
-        
-        port_protocol_layout.addWidget(QLabel("Protocol:"))
-        self.manual_protocol = QComboBox()
-        self.manual_protocol.addItems(["UDP", "TCP"])
-        port_protocol_layout.addWidget(self.manual_protocol)
-        
-        server_layout.addLayout(port_protocol_layout)
-        layout.addWidget(server_group)
-        
-        # Authentication
-        auth_group = QGroupBox("Authentication")
-        auth_layout = QVBoxLayout(auth_group)
-        
-        auth_layout.addWidget(QLabel("Username:"))
-        self.manual_username = QLineEdit()
-        auth_layout.addWidget(self.manual_username)
-        
-        auth_layout.addWidget(QLabel("Password:"))
-        self.manual_password = QLineEdit()
-        self.manual_password.setEchoMode(QLineEdit.EchoMode.Password)
-        auth_layout.addWidget(self.manual_password)
-        
-        layout.addWidget(auth_group)
-        
-        self.tabs.addTab(manual_widget, "Manual Setup")
-    
-    def setup_python_vpn_tab(self):
-        """Setup Python VPN tab"""
-        python_widget = QWidget()
-        layout = QVBoxLayout(python_widget)
-        
-        # Connection type
-        type_group = QGroupBox("Connection Type")
-        type_layout = QVBoxLayout(type_group)
-        
-        self.python_connection_type = QComboBox()
-        self.python_connection_type.addItems(["SSL/TLS Tunnel", "TCP Tunnel", "SOCKS5 Proxy"])
-        type_layout.addWidget(self.python_connection_type)
-        layout.addWidget(type_group)
-        
-        # Server settings
-        server_group = QGroupBox("Server Settings")
-        server_layout = QVBoxLayout(server_group)
-        
-        server_layout.addWidget(QLabel("Server:"))
-        self.python_server = QLineEdit()
-        self.python_server.setPlaceholderText("vpn.example.com")
-        server_layout.addWidget(self.python_server)
-        
-        port_layout = QHBoxLayout()
-        port_layout.addWidget(QLabel("Port:"))
-        self.python_port = QSpinBox()
-        self.python_port.setRange(1, 65535)
-        self.python_port.setValue(443)
-        port_layout.addWidget(self.python_port)
-        server_layout.addLayout(port_layout)
-        
-        layout.addWidget(server_group)
-        
-        # Authentication
-        auth_group = QGroupBox("Authentication")
-        auth_layout = QVBoxLayout(auth_group)
-        
-        auth_layout.addWidget(QLabel("Username:"))
-        self.python_username = QLineEdit()
-        auth_layout.addWidget(self.python_username)
-        
-        auth_layout.addWidget(QLabel("Password:"))
-        self.python_password = QLineEdit()
-        self.python_password.setEchoMode(QLineEdit.EchoMode.Password)
-        auth_layout.addWidget(self.python_password)
+        self.config_password.setPlaceholderText("Leave blank if not required")
+        auth_form.addRow("Password:", self.config_password)
         
         layout.addWidget(auth_group)
         layout.addStretch()
         
-        self.tabs.addTab(python_widget, "Python VPN")
+        self.tabs.addTab(config_widget, "OpenVPN Config")
+    
+    def _setup_manual_tab(self):
+        """Setup manual connection tab with form layout"""
+        manual_widget = QWidget()
+        layout = QVBoxLayout(manual_widget)
+        layout.setContentsMargins(12, 12, 12, 12)
+        layout.setSpacing(10)
+        
+        # Server section
+        server_group = QGroupBox("Server Settings")
+        server_form = QFormLayout(server_group)
+        server_form.setContentsMargins(10, 14, 10, 10)
+        server_form.setSpacing(8)
+        server_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+        
+        self.manual_server = QLineEdit()
+        self.manual_server.setPlaceholderText("vpn.example.com")
+        server_form.addRow("Server:", self.manual_server)
+        
+        # Port and protocol on one row
+        port_proto_widget = QWidget()
+        port_proto_layout = QHBoxLayout(port_proto_widget)
+        port_proto_layout.setContentsMargins(0, 0, 0, 0)
+        port_proto_layout.setSpacing(10)
+        
+        self.manual_port = QSpinBox()
+        self.manual_port.setRange(1, 65535)
+        self.manual_port.setValue(1194)
+        self.manual_port.setFixedWidth(100)
+        port_proto_layout.addWidget(self.manual_port)
+        
+        port_proto_layout.addWidget(QLabel("Protocol:"))
+        self.manual_protocol = QComboBox()
+        self.manual_protocol.addItems(["UDP", "TCP"])
+        self.manual_protocol.setFixedWidth(80)
+        port_proto_layout.addWidget(self.manual_protocol)
+        port_proto_layout.addStretch()
+        
+        server_form.addRow("Port:", port_proto_widget)
+        
+        layout.addWidget(server_group)
+        
+        # Authentication section
+        auth_group = QGroupBox("Authentication")
+        auth_form = QFormLayout(auth_group)
+        auth_form.setContentsMargins(10, 14, 10, 10)
+        auth_form.setSpacing(8)
+        auth_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+        
+        self.manual_username = QLineEdit()
+        self.manual_username.setPlaceholderText("VPN username")
+        auth_form.addRow("Username:", self.manual_username)
+        
+        self.manual_password = QLineEdit()
+        self.manual_password.setEchoMode(QLineEdit.EchoMode.Password)
+        self.manual_password.setPlaceholderText("VPN password")
+        auth_form.addRow("Password:", self.manual_password)
+        
+        layout.addWidget(auth_group)
+        layout.addStretch()
+        
+        self.tabs.addTab(manual_widget, "Manual Setup")
+    
+    def _create_log_panel(self):
+        """Create the right log panel"""
+        panel = QWidget()
+        layout = QVBoxLayout(panel)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+        
+        log_group = QGroupBox("Connection Log")
+        log_layout = QVBoxLayout(log_group)
+        log_layout.setContentsMargins(8, 14, 8, 8)
+        
+        self.output_text = QTextEdit()
+        self.output_text.setReadOnly(True)
+        self.output_text.setStyleSheet(
+            "QTextEdit { background-color: #1a1a2e; color: #e0e0e0; "
+            "font-family: 'Neuropol X', 'Neuropol', sans-serif; font-size: 9pt; "
+            "border: none; }"
+        )
+        log_layout.addWidget(self.output_text)
+        
+        # Clear button at bottom of log
+        clear_btn = QPushButton("Clear Log")
+        clear_btn.setFixedHeight(24)
+        clear_btn.setStyleSheet(
+            "QPushButton { background-color: #333; color: #aaa; border-radius: 3px; font-size: 8pt; }"
+            "QPushButton:hover { background-color: #444; color: #fff; }"
+        )
+        clear_btn.clicked.connect(self.output_text.clear)
+        log_layout.addWidget(clear_btn)
+        
+        layout.addWidget(log_group)
+        return panel
     
     def connect_signals(self):
         """Connect VPN manager signals"""
         vpn_manager.connection_status_changed.connect(self.on_status_changed)
-        # python_vpn.connection_status_changed.connect(self.on_status_changed)  # Removed
     
     def browse_config_file(self):
         """Browse for OpenVPN config file"""
@@ -247,16 +288,14 @@ class VPNWidget(QWidget):
             "",
             "OpenVPN Config (*.ovpn);;All Files (*)"
         )
-        
         if file_path:
             self.config_file_input.setText(file_path)
     
     def connect_vpn(self):
         """Connect VPN based on current tab"""
-        # Set status to connecting immediately
         self.is_connecting = True
-        self.status_label.setText("Connecting...")
-        self.status_label.setStyleSheet("color: #FFAA00; font-weight: bold; font-size: 14pt;")
+        self.status_label.setText("● Connecting...")
+        self.status_label.setStyleSheet("color: #FFAA00; font-weight: bold; font-size: 12pt;")
         self.status_details.setText("Establishing VPN connection...")
         self.connect_btn.setEnabled(False)
         self.disconnect_btn.setEnabled(True)
@@ -267,17 +306,18 @@ class VPNWidget(QWidget):
             config_file = self.config_file_input.text().strip()
             if not config_file:
                 self.log_message("Please select a config file")
+                self._reset_connecting_state()
                 return
             
             username = self.config_username.text().strip()
             password = self.config_password.text().strip()
-            
             result = vpn_manager.connect_openvpn(config_file, username, password)
             
         elif current_tab == 1:  # Manual setup
             server = self.manual_server.text().strip()
             if not server:
                 self.log_message("Please enter server address")
+                self._reset_connecting_state()
                 return
             
             port = self.manual_port.value()
@@ -287,43 +327,33 @@ class VPNWidget(QWidget):
             
             if not username or not password:
                 self.log_message("Please enter username and password")
+                self._reset_connecting_state()
                 return
             
             result = vpn_manager.connect_manual(server, port, protocol, username, password)
-            
-        elif current_tab == 2:  # Python VPN
-            server = self.python_server.text().strip()
-            if not server:
-                self.log_message("Please enter server address")
-                return
-            
-            port = self.python_port.value()
-            username = self.python_username.text().strip()
-            password = self.python_password.text().strip()
-            connection_type = self.python_connection_type.currentText()
-            
-            self.log_message("Python VPN removed - use OpenVPN config tab")
-            return
         else:
             self.log_message("Unknown tab selected")
+            self._reset_connecting_state()
             return
         
         if result["success"]:
             self.log_message(result["message"])
-            self.connect_btn.setEnabled(False)
-            self.disconnect_btn.setEnabled(True)
         else:
             self.log_message(f"Connection failed: {result['error']}")
+            self._reset_connecting_state()
+    
+    def _reset_connecting_state(self):
+        """Reset UI state when connection attempt fails immediately"""
+        self.is_connecting = False
+        self.connect_btn.setEnabled(True)
+        self.disconnect_btn.setEnabled(False)
+        self.status_label.setText("● Disconnected")
+        self.status_label.setStyleSheet("color: #FF4444; font-weight: bold; font-size: 12pt;")
+        self.status_details.setText("No active VPN connection")
     
     def disconnect_vpn(self):
         """Disconnect VPN"""
-        # Try disconnecting both VPN types
-        result1 = vpn_manager.disconnect()
-        result2 = {"success": True, "message": ""}
-        
-        # Use the successful result or the first error
-        result = result1 if result1["success"] else result2
-        
+        result = vpn_manager.disconnect()
         if result["success"]:
             self.log_message(result["message"])
             self.connect_btn.setEnabled(True)
@@ -334,58 +364,50 @@ class VPNWidget(QWidget):
     def test_connection(self):
         """Test VPN connection"""
         self.log_message("Testing connection...")
-        
-        # Test both VPN types
-        result1 = vpn_manager.test_connectivity()
-        result2 = {"success": False, "error": "Python VPN removed"}
-        
-        # Use the successful result
-        result = result1 if result1["success"] else result2
+        result = vpn_manager.test_connectivity()
         
         if result["success"]:
             latency = result.get("latency")
             if latency:
-                self.log_message(f"Connection test successful (latency: {latency}ms)")
+                self.log_message(f"Connection OK (latency: {latency}ms)")
             else:
-                self.log_message("Connection test successful")
+                self.log_message("Connection OK")
         else:
-            self.log_message(f"Connection test failed: {result.get('error', 'Unknown error')}")
+            self.log_message(f"Test failed: {result.get('error', 'Unknown error')}")
     
     def update_status(self):
         """Update connection status display"""
-        # Skip updates while connecting
         if self.is_connecting:
             return
-            
-        # Check both VPN types
-        openvpn_status = vpn_manager.get_status()
-        python_status = {"connected": False}
         
-        # Use whichever is connected
-        status = openvpn_status if openvpn_status["connected"] else python_status
+        status = vpn_manager.get_status()
         
         if status["connected"]:
-            self.status_label.setText("Connected")
-            self.status_label.setStyleSheet("color: #00AA00; font-weight: bold; font-size: 14pt;")
+            self.status_label.setText("● Connected")
+            self.status_label.setStyleSheet("color: #00CC00; font-weight: bold; font-size: 12pt;")
             
             if status["connection"]:
                 conn = status["connection"]
                 if conn["type"] == "openvpn":
-                    details = f"OpenVPN - {conn.get('config', 'Unknown config')}"
-                    if conn.get("username"):
-                        details += f" (User: {conn['username']})"
+                    import os
+                    config_name = os.path.basename(conn.get('config', 'Unknown'))
+                    details = f"OpenVPN — {config_name}"
                 else:
                     details = "Manual connection"
                 self.status_details.setText(details)
             
             self.connect_btn.setEnabled(False)
             self.disconnect_btn.setEnabled(True)
-            
+        elif status.get("process_running"):
+            # Process is alive but not yet connected — still connecting
+            self.status_label.setText("● Connecting...")
+            self.status_label.setStyleSheet("color: #FFAA00; font-weight: bold; font-size: 12pt;")
+            self.connect_btn.setEnabled(False)
+            self.disconnect_btn.setEnabled(True)
         else:
-            self.status_label.setText("Disconnected")
-            self.status_label.setStyleSheet("color: #FF4444; font-weight: bold; font-size: 14pt;")
+            self.status_label.setText("● Disconnected")
+            self.status_label.setStyleSheet("color: #FF4444; font-weight: bold; font-size: 12pt;")
             self.status_details.setText("No active VPN connection")
-            
             self.connect_btn.setEnabled(True)
             self.disconnect_btn.setEnabled(False)
     
@@ -394,31 +416,33 @@ class VPNWidget(QWidget):
         self.log_message(f"Status: {status} - {message}")
         
         if status == "connecting":
-            self.status_label.setText("Connecting...")
-            self.status_label.setStyleSheet("color: #FFAA00; font-weight: bold; font-size: 14pt;")
+            self.status_label.setText("● Connecting...")
+            self.status_label.setStyleSheet("color: #FFAA00; font-weight: bold; font-size: 12pt;")
             self.status_details.setText(message)
             self.connect_btn.setEnabled(False)
             self.disconnect_btn.setEnabled(True)
         elif status == "connected":
             self.is_connecting = False
-            self.status_label.setText("Connected")
-            self.status_label.setStyleSheet("color: #00AA00; font-weight: bold; font-size: 14pt;")
+            self.status_label.setText("● Connected")
+            self.status_label.setStyleSheet("color: #00CC00; font-weight: bold; font-size: 12pt;")
+            self.status_details.setText(message)
         elif status == "error":
             self.is_connecting = False
-            self.status_label.setText("Error")
-            self.status_label.setStyleSheet("color: #FF4444; font-weight: bold; font-size: 14pt;")
+            self.status_label.setText("● Error")
+            self.status_label.setStyleSheet("color: #FF4444; font-weight: bold; font-size: 12pt;")
             self.status_details.setText(message)
+            self.connect_btn.setEnabled(True)
+            self.disconnect_btn.setEnabled(False)
         elif status == "disconnected":
             self.is_connecting = False
-            self.status_label.setText("Disconnected")
-            self.status_label.setStyleSheet("color: #FF4444; font-weight: bold; font-size: 14pt;")
+            self.status_label.setText("● Disconnected")
+            self.status_label.setStyleSheet("color: #FF4444; font-weight: bold; font-size: 12pt;")
             self.status_details.setText("No active VPN connection")
             self.connect_btn.setEnabled(True)
             self.disconnect_btn.setEnabled(False)
     
     def log_message(self, message):
         """Add message to output log"""
-        import datetime
         timestamp = datetime.datetime.now().strftime("%H:%M:%S")
         self.output_text.append(f"[{timestamp}] {message}")
     

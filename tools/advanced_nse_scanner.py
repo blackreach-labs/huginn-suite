@@ -1050,6 +1050,292 @@ class AdvancedNSEScanner:
         
         print("\\n" + "=" * 80)
 
+    def test_follina(self):
+        """Test for Follina (CVE-2022-30190) - MSDT Remote Code Execution"""
+        try:
+            if not self.port_open(80) and not self.port_open(443):
+                return None
+            
+            import requests
+            scheme = 'https' if self.port_open(443) else 'http'
+            url = f"{scheme}://{self.target}"
+            
+            # Follina exploits MSDT via specially crafted Office documents served over HTTP
+            # We check if the target serves content that could be used in Follina chains
+            resp = requests.get(url, timeout=self.timeout, verify=False)
+            
+            # Check for ms-msdt protocol handler indicators
+            if 'ms-msdt:' in resp.text or 'msdt.exe' in resp.text:
+                return {
+                    'name': 'Follina (CVE-2022-30190)',
+                    'severity': 'CRITICAL',
+                    'description': 'Potential Follina/MSDT RCE vector detected',
+                    'cve': 'CVE-2022-30190',
+                    'recommendation': 'Disable MSDT URL protocol handler'
+                }
+        except Exception:
+            pass
+        return None
+
+    def test_smbghost(self):
+        """Test for SMBGhost (CVE-2020-0796) - SMBv3 Compression RCE"""
+        try:
+            if not self.port_open(445):
+                return None
+            
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(self.timeout)
+            sock.connect((self.target, 445))
+            
+            # SMBv3 negotiate with compression capability
+            negotiate = (
+                b'\x00\x00\x00\xc4'  # NetBIOS
+                b'\xfeSMB'  # SMB2 magic
+                b'\x40\x00'  # Header length
+                b'\x00\x00'  # Credit charge
+                b'\x00\x00'  # Channel sequence
+                b'\x00\x00'  # Reserved
+                b'\x00\x00'  # Command: NEGOTIATE
+                b'\x00\x00'  # Credits requested
+                b'\x00\x00\x00\x00'  # Flags
+                b'\x00\x00\x00\x00'  # Next command
+                b'\x00\x00\x00\x00\x00\x00\x00\x00'  # Message ID
+                b'\x00\x00\x00\x00'  # Reserved
+                b'\x00\x00\x00\x00'  # Tree ID
+                b'\x00\x00\x00\x00\x00\x00\x00\x00'  # Session ID
+                b'\x00\x00\x00\x00\x00\x00\x00\x00'  # Signature (16 bytes)
+                b'\x00\x00\x00\x00\x00\x00\x00\x00'
+                b'\x24\x00'  # Structure size
+                b'\x08\x00'  # Dialect count
+                b'\x01\x00'  # Security mode
+                b'\x00\x00'  # Reserved
+                b'\x7f\x00\x00\x00'  # Capabilities
+                b'\x00\x00\x00\x00\x00\x00\x00\x00'  # Client GUID
+                b'\x00\x00\x00\x00\x00\x00\x00\x00'
+                b'\x70\x00\x00\x00'  # Negotiate context offset
+                b'\x02\x00'  # Negotiate context count
+                b'\x00\x00'  # Reserved
+                b'\x02\x02'  # Dialect 0x0202
+                b'\x10\x02'  # Dialect 0x0210
+                b'\x22\x02'  # Dialect 0x0222
+                b'\x24\x02'  # Dialect 0x0224
+                b'\x00\x03'  # Dialect 0x0300
+                b'\x02\x03'  # Dialect 0x0302
+                b'\x10\x03'  # Dialect 0x0310
+                b'\x11\x03'  # Dialect 0x0311
+            )
+            
+            sock.send(negotiate)
+            response = sock.recv(1024)
+            sock.close()
+            
+            # Check if server responds with SMB 3.1.1 and compression support
+            if len(response) > 72 and b'\x11\x03' in response:
+                return {
+                    'name': 'SMBGhost (CVE-2020-0796)',
+                    'severity': 'CRITICAL',
+                    'description': 'SMBv3.1.1 with compression detected - potentially vulnerable to SMBGhost',
+                    'cve': 'CVE-2020-0796',
+                    'recommendation': 'Apply KB4551762 patch or disable SMBv3 compression'
+                }
+        except Exception:
+            pass
+        return None
+
+    def test_zerologon(self):
+        """Test for Zerologon (CVE-2020-1472) - Netlogon Elevation of Privilege"""
+        try:
+            if not self.port_open(135) and not self.port_open(445):
+                return None
+            
+            # Zerologon requires RPC access - check if RPC is available
+            if self.port_open(135):
+                return {
+                    'name': 'Zerologon Check (CVE-2020-1472)',
+                    'severity': 'INFO',
+                    'description': 'RPC port open - Zerologon testing requires domain controller context',
+                    'cve': 'CVE-2020-1472',
+                    'recommendation': 'Verify DC is patched against Zerologon (KB4571702)'
+                }
+        except Exception:
+            pass
+        return None
+
+    def test_shellshock(self):
+        """Test for Shellshock (CVE-2014-6271) - Bash Remote Code Execution"""
+        try:
+            if not self.port_open(80) and not self.port_open(443):
+                return None
+            
+            import requests
+            scheme = 'https' if self.port_open(443) else 'http'
+            
+            # Common CGI paths to test
+            cgi_paths = ['/cgi-bin/status', '/cgi-bin/test', '/cgi-bin/env', '/cgi-bin/info']
+            shellshock_header = '() { :;}; echo; echo vulnerable'
+            
+            for path in cgi_paths:
+                try:
+                    url = f"{scheme}://{self.target}{path}"
+                    headers = {
+                        'User-Agent': shellshock_header,
+                        'Referer': shellshock_header
+                    }
+                    resp = requests.get(url, headers=headers, timeout=self.timeout, verify=False)
+                    if 'vulnerable' in resp.text:
+                        return {
+                            'name': 'Shellshock (CVE-2014-6271)',
+                            'severity': 'CRITICAL',
+                            'description': f'Shellshock vulnerability detected at {path}',
+                            'cve': 'CVE-2014-6271',
+                            'recommendation': 'Update Bash to patched version'
+                        }
+                except Exception:
+                    continue
+        except Exception:
+            pass
+        return None
+
+    def test_poodle(self):
+        """Test for POODLE (CVE-2014-3566) - SSLv3 Padding Oracle"""
+        try:
+            if not self.port_open(443):
+                return None
+            
+            import ssl
+            context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+            context.check_hostname = False
+            context.verify_mode = ssl.CERT_NONE
+            context.maximum_version = ssl.TLSVersion.SSLv3 if hasattr(ssl.TLSVersion, 'SSLv3') else None
+            
+            if context.maximum_version is None:
+                # SSLv3 not supported by this Python build - can't test
+                return None
+            
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(self.timeout)
+            wrapped = context.wrap_socket(sock, server_hostname=self.target)
+            wrapped.connect((self.target, 443))
+            wrapped.close()
+            
+            return {
+                'name': 'POODLE (CVE-2014-3566)',
+                'severity': 'MEDIUM',
+                'description': 'Server supports SSLv3 - vulnerable to POODLE attack',
+                'cve': 'CVE-2014-3566',
+                'recommendation': 'Disable SSLv3 support on the server'
+            }
+        except Exception:
+            pass
+        return None
+
+    def test_robot(self):
+        """Test for ROBOT (Return Of Bleichenbacher's Oracle Threat)"""
+        try:
+            if not self.port_open(443):
+                return None
+            
+            import ssl
+            context = ssl.create_default_context()
+            context.check_hostname = False
+            context.verify_mode = ssl.CERT_NONE
+            
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(self.timeout)
+            wrapped = context.wrap_socket(sock, server_hostname=self.target)
+            wrapped.connect((self.target, 443))
+            
+            cipher = wrapped.cipher()
+            wrapped.close()
+            
+            # ROBOT affects RSA key exchange ciphers
+            if cipher and 'RSA' in cipher[0] and 'DHE' not in cipher[0] and 'ECDHE' not in cipher[0]:
+                return {
+                    'name': 'ROBOT Attack Vector',
+                    'severity': 'MEDIUM',
+                    'description': f'Server uses RSA key exchange ({cipher[0]}) - potentially vulnerable to ROBOT',
+                    'cve': 'CVE-2017-13099',
+                    'recommendation': 'Disable RSA key exchange, use ECDHE or DHE ciphers'
+                }
+        except Exception:
+            pass
+        return None
+
+    def test_sweet32(self):
+        """Test for Sweet32 (CVE-2016-2183) - 64-bit Block Cipher Birthday Attack"""
+        try:
+            if not self.port_open(443):
+                return None
+            
+            import ssl
+            context = ssl.create_default_context()
+            context.check_hostname = False
+            context.verify_mode = ssl.CERT_NONE
+            
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(self.timeout)
+            wrapped = context.wrap_socket(sock, server_hostname=self.target)
+            wrapped.connect((self.target, 443))
+            
+            cipher = wrapped.cipher()
+            wrapped.close()
+            
+            # Sweet32 affects 64-bit block ciphers (3DES, Blowfish)
+            weak_ciphers = ['3DES', 'DES-CBC3', 'IDEA', 'RC2']
+            if cipher and any(wc in cipher[0] for wc in weak_ciphers):
+                return {
+                    'name': 'Sweet32 (CVE-2016-2183)',
+                    'severity': 'MEDIUM',
+                    'description': f'Server supports 64-bit block cipher ({cipher[0]})',
+                    'cve': 'CVE-2016-2183',
+                    'recommendation': 'Disable 3DES and other 64-bit block ciphers'
+                }
+        except Exception:
+            pass
+        return None
+
+    def test_auth_vulns(self):
+        """Test for common authentication vulnerabilities"""
+        findings = []
+        try:
+            if not self.port_open(80) and not self.port_open(443):
+                return None
+            
+            import requests
+            scheme = 'https' if self.port_open(443) else 'http'
+            base_url = f"{scheme}://{self.target}"
+            
+            # Test for default credentials on common paths
+            auth_paths = ['/admin', '/manager', '/login', '/wp-admin', '/administrator']
+            default_creds = [('admin', 'admin'), ('admin', 'password'), ('root', 'root')]
+            
+            for path in auth_paths:
+                try:
+                    resp = requests.get(f"{base_url}{path}", timeout=self.timeout, verify=False)
+                    if resp.status_code == 401:
+                        # Basic auth endpoint found - test defaults
+                        for user, passwd in default_creds:
+                            auth_resp = requests.get(
+                                f"{base_url}{path}", 
+                                auth=(user, passwd), 
+                                timeout=self.timeout, 
+                                verify=False
+                            )
+                            if auth_resp.status_code == 200:
+                                findings.append({
+                                    'name': f'Default Credentials ({path})',
+                                    'severity': 'CRITICAL',
+                                    'description': f'Default credentials {user}:{passwd} accepted at {path}',
+                                    'recommendation': 'Change default credentials immediately'
+                                })
+                                break
+                except Exception:
+                    continue
+        except Exception:
+            pass
+        
+        return findings if findings else None
+
 def main():
     parser = argparse.ArgumentParser(description="Advanced NSE Vulnerability Scanner")
     parser.add_argument("target", nargs='?', help="Target IP or hostname")

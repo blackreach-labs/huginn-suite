@@ -1,8 +1,8 @@
-﻿{
+{
   "api_keys": {
     "hashes_com": "",
-    "md5decrypt_email": "huginn.confound232@passinbox.com",
-    "md5decrypt_key": "666e49dde10e0bb1",
+    "md5decrypt_email": "",
+    "md5decrypt_key": "",
     "shodan": "",
     "virustotal": "",
     "urlvoid": "",
@@ -14,7 +14,15 @@
     "google_cse_cx": "",
     "hunter": "",
     "numverify": "",
-    "abstractapi_phone": ""
+    "abstractapi_phone": "",
+    "certspotter": "",
+    "censys_id": "",
+    "censys_secret": "",
+    "securitytrails": "",
+    "binaryedge": "",
+    "passivetotal_user": "",
+    "passivetotal_key": "",
+    "dnsdb": ""
   },
   "general": {
     "default_timeout": 30,

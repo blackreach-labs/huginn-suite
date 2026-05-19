@@ -238,7 +238,7 @@ class ServiceUIComponentsMixin:
             # Create terminals for each scan type
             terminals = {}
             tables = {}
-            scan_types = ["Fingerprinting", "Directory Enum", "Source Code", "Crawler", "Enterprise Scripts", "Huginn Scan", "Full Scan"]
+            scan_types = ["Fingerprinting", "Directory Enum", "Source Code", "Crawler", "VHost Brute", "Enterprise Scripts", "Huginn Scan", "Full Scan"]
             
             for scan_type in scan_types:
                 # Text view (terminal) for this scan type
@@ -626,7 +626,7 @@ class ServiceUIComponentsMixin:
         """Hide HTTP optional fields by default on page load"""
         if hasattr(controls, 'row_widgets'):
             # Hide all optional fields by default (Fingerprinting is default scan type)
-            optional_rows = ['Preset:', 'PHP:', 'ASP:', 'JSP:', 'HTML:', 'JS:', 'Config:', 'Backup:', 'Wordlist:', 'Auth Method:', 'Username:', 'Password:', 'Credentials:']
+            optional_rows = ['Preset:', 'Extensions:', 'Wordlist:', 'Auth Method:', 'Username:', 'Password:', 'Credentials:']
             for row_label in optional_rows:
                 if row_label in controls.row_widgets and controls.row_widgets[row_label] is not None:
                     try:
@@ -637,6 +637,10 @@ class ServiceUIComponentsMixin:
                     except RuntimeError as _exc:
                         pass  # Widget has been deleted
                         logger.debug("Suppressed exception", exc_info=True)
+            
+            # Set panel to minimal height (just Scan Type row)
+            controls.setMaximumHeight(34)
+            controls.setMinimumHeight(34)
     
     def toggle_service_scan(self, tool_key):
         """Toggle service scan - start if not running, stop if running"""

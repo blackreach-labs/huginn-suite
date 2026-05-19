@@ -37,3 +37,68 @@ Traceback (most recent call last):
                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 AttributeError: 'MainWindow' object has no attribute 'post_exploitation_page'
 
+2026-05-18 21:10:36 - ERROR - OpenVPN monitor error: 'NoneType' object has no attribute 'poll'
+2026-05-18 21:30:25 - ERROR - OpenVPN monitor error: 'NoneType' object has no attribute 'poll'
+2026-05-18 22:41:38 - ERROR - Unhandled exception:
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\components\ssh_vuln_scanner_component.py", line 323, in start_scan
+    self.worker = SSHVulnWorker(target, port)
+                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\components\ssh_vuln_scanner_component.py", line 29, in __init__
+    self.audit_engine = SSHAuditEngine()
+                        ~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\ssh_audit_engine.py", line 12, in __init__
+    self.ssh_protocol = SSHProtocol()
+                        ~~~~~~~~~~~^^
+TypeError: SSHProtocol.__init__() missing 1 required positional argument: 'target'
+
+2026-05-18 22:42:40 - ERROR - ❌ Target verification failed: Cannot connect to host silentium.htb:80 ssl:default [getaddrinfo failed]
+2026-05-18 22:42:40 - ERROR - 
+⚠️  SCAN ABORTED - Target is not accessible
+2026-05-18 22:42:40 - ERROR - Please verify the URL is correct and the target is online.
+2026-05-18 22:50:05 - ERROR - Unexpected error in DNS enumeration: 'charmap' codec can't decode byte 0x90 in position 37: character maps to <undefined>
+2026-05-18 23:04:38 - ERROR - OpenVPN monitor error: 'NoneType' object has no attribute 'poll'
+2026-05-18 23:07:32 - ERROR - OpenVPN monitor error: 'NoneType' object has no attribute 'poll'
+2026-05-18 23:13:20 - ERROR - OpenVPN monitor error: 'NoneType' object has no attribute 'poll'
+2026-05-18 23:40:04 - ERROR - OpenVPN monitor error: 'NoneType' object has no attribute 'poll'
+2026-05-19 08:51:27 - ERROR - OpenVPN monitor error: 'NoneType' object has no attribute 'poll'
+2026-05-19 10:32:22 - ERROR - Unhandled exception:
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\session_info_page.py", line 220, in _sm_delete_session
+    self.update_status(f"Deleted session: {name_item.text()}")
+                                           ~~~~~~~~~~~~~~^^
+RuntimeError: wrapped C/C++ object of type QTableWidgetItem has been deleted
+
+2026-05-19 11:13:18 - ERROR - Unhandled exception:
+Traceback (most recent call last):
+  File "C:\Users\allie\anaconda3\Lib\urllib\parse.py", line 1004, in urlencode
+    raise TypeError
+TypeError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\curl_widget.py", line 564, in _intercept_forward_modified
+    if self.request_handler.modify_and_forward_request(flow_id, modified_request):
+       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\unified_request_handler.py", line 97, in modify_and_forward_request
+    return self.proxy_engine.modify_and_forward_request(flow_id, modified_request)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\proxy_engine.py", line 239, in modify_and_forward_request
+    return self.addon.modify_and_resume_flow(flow_id, modified_request) if self.addon else False
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\proxy_engine.py", line 137, in modify_and_resume_flow
+    flow.request.query = parsed_url.query
+    ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\mitmproxy\http.py", line 862, in query
+    self._set_query(value)
+    ~~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\mitmproxy\http.py", line 847, in _set_query
+    query = url.encode(query_data)
+  File "C:\Users\allie\AppData\Roaming\Python\Python313\site-packages\mitmproxy\net\http\url.py", line 108, in encode
+    encoded = urllib.parse.urlencode(s, False, errors="surrogateescape")
+  File "C:\Users\allie\anaconda3\Lib\urllib\parse.py", line 1010, in urlencode
+    raise TypeError("not a valid non-string sequence "
+                    "or mapping object") from err
+TypeError: not a valid non-string sequence or mapping object
+

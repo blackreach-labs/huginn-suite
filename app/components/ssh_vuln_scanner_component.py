@@ -31,6 +31,16 @@ class SSHVulnWorker(QThread):
     
     def run(self):
         try:
+            from app.core.dns_resolver import dns_resolver
+            
+            # Resolve target hostname using global DNS settings
+            resolved_target = self.target
+            resolved_ip = dns_resolver.resolve_hostname(self.target)
+            if resolved_ip and resolved_ip != self.target:
+                resolved_target = resolved_ip
+                self.output.emit(f"<p style='color: #87CEEB;'>Using DNS: {h(self.target)} → {h(resolved_ip)}</p><br>")
+                self.target = resolved_target
+            
             self.output.emit(f"<p style='color: #00BFFF;'>[SSH VULN] Starting vulnerability scan for {h(self.target)}:{h(self.port)}</p><br>")
             self.progress.emit(10)
             

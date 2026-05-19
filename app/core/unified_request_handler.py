@@ -17,6 +17,7 @@ class UnifiedRequestHandler(QObject):
     # Signals
     request_sent = pyqtSignal(object, object)      # request, response
     request_intercepted = pyqtSignal(int, object)   # flow_id, request
+    request_failed = pyqtSignal(object, str)        # request, error message
     history_updated = pyqtSignal(list)
     finding_detected = pyqtSignal(dict)
     scan_completed = pyqtSignal(dict)
@@ -147,6 +148,7 @@ class UnifiedRequestHandler(QObject):
             request=request
         )
         self._add_to_history(request, error_response)
+        self.request_failed.emit(request, error)
     
     def _on_request_intercepted(self, flow_id: int, request: HttpRequest):
         """Handle intercepted request from proxy"""

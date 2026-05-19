@@ -27,9 +27,26 @@ class HuginnScanWorker(QThread):
         """Run the scan in a separate thread"""
         try:
             from app.tools.huginn_vuln_scanner import HuginnVulnScanner
+            from app.core.dns_resolver import dns_resolver
+            from urllib.parse import urlparse, urlunparse
+            
+            # Resolve hostname using global DNS settings
+            parsed = urlparse(self.target_url)
+            hostname = parsed.hostname
+            resolved_url = self.target_url
+            
+            if hostname:
+                resolved_ip = dns_resolver.resolve_hostname(hostname)
+                if resolved_ip and resolved_ip != hostname:
+                    if parsed.port:
+                        new_netloc = f"{resolved_ip}:{parsed.port}"
+                    else:
+                        new_netloc = resolved_ip
+                    resolved_url = urlunparse(parsed._replace(netloc=new_netloc))
+                    self.progress_updated.emit(f"Using DNS: {hostname} → {resolved_ip}")
             
             self.progress_updated.emit("Initializing Huginn Scanner...")
-            scanner = HuginnVulnScanner(self.target_url, profile=self.profile)
+            scanner = HuginnVulnScanner(resolved_url, profile=self.profile)
             
             if self.config.get('webhook_url'):
                 scanner.webhook_notifier.set_webhook_url(self.config['webhook_url'])

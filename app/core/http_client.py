@@ -142,15 +142,39 @@ class UnifiedHttpClient(QObject):
     def send_request(self, http_request: HttpRequest) -> Optional[HttpResponse]:
         """Send HTTP request using requests library"""
         try:
+            # Resolve hostname using global DNS configuration
+            from urllib.parse import urlparse, urlunparse
+            from app.core.dns_resolver import dns_resolver
+            
+            parsed_url = urlparse(http_request.url)
+            original_hostname = parsed_url.hostname
+            resolved_url = http_request.url
+            host_header = None
+            
+            if original_hostname and not self._is_ip(original_hostname):
+                resolved_ip = dns_resolver.resolve_hostname(original_hostname)
+                if resolved_ip and resolved_ip != original_hostname:
+                    # Replace hostname with resolved IP in URL
+                    if parsed_url.port:
+                        new_netloc = f"{resolved_ip}:{parsed_url.port}"
+                    else:
+                        new_netloc = resolved_ip
+                    resolved_url = urlunparse(parsed_url._replace(netloc=new_netloc))
+                    host_header = original_hostname
+            
             # Prepare request parameters
             kwargs = {
                 'method': http_request.method,
-                'url': http_request.url,
-                'headers': http_request.headers,
+                'url': resolved_url,
+                'headers': dict(http_request.headers) if http_request.headers else {},
                 'timeout': http_request.timeout,
                 'allow_redirects': http_request.allow_redirects,
                 'verify': http_request.verify
             }
+            
+            # Add Host header if we resolved the hostname to an IP
+            if host_header and 'Host' not in kwargs['headers']:
+                kwargs['headers']['Host'] = host_header
             
             # Add data/json based on content type
             if http_request.data:
@@ -253,3 +277,13 @@ class UnifiedHttpClient(QObject):
     def close(self):
         """Close the session"""
         self.session.close()
+    
+    @staticmethod
+    def _is_ip(hostname):
+        """Check if a string is an IP address"""
+        import ipaddress
+        try:
+            ipaddress.ip_address(hostname)
+            return True
+        except ValueError:
+            return False

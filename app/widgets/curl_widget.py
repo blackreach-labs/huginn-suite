@@ -27,6 +27,7 @@ class CurlWidget(QWidget):
         
         # Connect signals
         self.request_handler.request_sent.connect(self.on_request_sent)
+        self.request_handler.request_failed.connect(self.on_request_failed)
         self.request_handler.request_intercepted.connect(self.on_request_intercepted)
         self.request_handler.proxy_engine.history_updated.connect(self.refresh_history_table)
         self.request_handler.finding_detected.connect(self.on_security_finding)
@@ -34,6 +35,10 @@ class CurlWidget(QWidget):
         
         self.paused_requests = {}
         self.proxy_running = False
+        self.curl_preview = QTextEdit()  # Hidden compatibility widget
+        self.status_badge = QLabel()  # Hidden compatibility widget
+        self.paused_requests_list = QListWidget()  # Hidden compatibility widget
+        self.paused_frame = QFrame()  # Hidden compatibility widget
         self.setup_ui()
     
     def setup_ui(self):
@@ -58,6 +63,18 @@ class CurlWidget(QWidget):
         control_layout.addWidget(self.intercept_checkbox)
         
         control_layout.addStretch()
+        
+        # Install CA certificate button
+        self.install_cert_btn = QPushButton("Install CA Cert")
+        self.install_cert_btn.setToolTip("Install mitmproxy CA certificate to trusted root store (requires admin)")
+        self.install_cert_btn.setStyleSheet(
+            "QPushButton { background-color: #6A1B9A; color: white; "
+            "border-radius: 4px; padding: 4px 10px; }"
+            "QPushButton:hover { background-color: #7B1FA2; }"
+        )
+        self.install_cert_btn.clicked.connect(self.install_proxy_certificate)
+        control_layout.addWidget(self.install_cert_btn)
+        
         layout.addWidget(control_frame)
         
         # Connect proxy signals
@@ -67,226 +84,518 @@ class CurlWidget(QWidget):
         self.proxy_running = False
         
         # Tab widget for different views
-        main_tabs = QTabWidget()
+        self.main_tabs = QTabWidget()
         
         # Repeater tab
         repeater_tab = self.create_repeater_tab()
-        main_tabs.addTab(repeater_tab, "Repeater")
+        self.main_tabs.addTab(repeater_tab, "Repeater")
+        
+        # Interceptor tab
+        interceptor_tab = self.create_interceptor_tab()
+        self.main_tabs.addTab(interceptor_tab, "Interceptor")
         
         # History tab
         history_tab = self.create_history_tab()
-        main_tabs.addTab(history_tab, "History")
+        self.main_tabs.addTab(history_tab, "History")
         
         # Scanner tab
         scanner_tab = self.create_scanner_tab()
-        main_tabs.addTab(scanner_tab, "Scanner")
+        self.main_tabs.addTab(scanner_tab, "Scanner")
         
         # Decoder tab
         decoder_tab = self.create_decoder_tab()
-        main_tabs.addTab(decoder_tab, "Decoder")
+        self.main_tabs.addTab(decoder_tab, "Decoder")
         
-        layout.addWidget(main_tabs)
+        layout.addWidget(self.main_tabs)
     
     def create_repeater_tab(self):
-        """Create the main repeater tab"""
+        """Create the redesigned repeater tab - Burp-style layout"""
         tab = QWidget()
         layout = QVBoxLayout(tab)
+        layout.setContentsMargins(6, 6, 6, 6)
+        layout.setSpacing(4)
         
-        # Main splitter
-        splitter = QSplitter(Qt.Orientation.Horizontal)
+        # Top bar: Method + URL + Send button
+        url_bar = QFrame()
+        url_bar.setStyleSheet(
+            "QFrame { background-color: rgba(30, 30, 50, 150); "
+            "border-radius: 4px; padding: 2px; }"
+        )
+        url_bar_layout = QHBoxLayout(url_bar)
+        url_bar_layout.setContentsMargins(6, 4, 6, 4)
+        url_bar_layout.setSpacing(6)
         
-        # Left panel - Request builder
-        left_panel = self.create_request_builder()
-        
-        # Right panel - Response and controls
-        right_panel = QFrame()
-        right_layout = QVBoxLayout(right_panel)
-        
-        # Response area
-        right_layout.addWidget(QLabel("Response:"))
-        self.curl_response = QTextEdit()
-        self.curl_response.setReadOnly(True)
-        self.curl_response.setPlaceholderText("Response will appear here...")
-        right_layout.addWidget(self.curl_response)
-        
-        # Paused requests
-        right_layout.addWidget(QLabel("Paused Requests:"))
-        self.paused_requests_list = QListWidget()
-        self.paused_requests_list.setMaximumHeight(100)
-        self.paused_requests_list.itemDoubleClicked.connect(self.edit_paused_request)
-        right_layout.addWidget(self.paused_requests_list)
-        
-        paused_controls = QHBoxLayout()
-        forward_btn = QPushButton("Forward")
-        forward_btn.clicked.connect(self.forward_paused_request)
-        drop_btn = QPushButton("Drop")
-        drop_btn.clicked.connect(self.drop_paused_request)
-        paused_controls.addWidget(forward_btn)
-        paused_controls.addWidget(drop_btn)
-        right_layout.addLayout(paused_controls)
-        
-        splitter.addWidget(left_panel)
-        splitter.addWidget(right_panel)
-        splitter.setSizes([500, 700])
-        
-        layout.addWidget(splitter)
-        return tab
-    
-    def create_request_builder(self):
-        """Create the GUI request builder"""
-        frame = QFrame()
-        layout = QVBoxLayout(frame)
-        
-        # Basic request info
-        basic_frame = QFrame()
-        basic_layout = QGridLayout(basic_frame)
-        
-        # Method
-        basic_layout.addWidget(QLabel("Method:"), 0, 0)
         self.method_combo = QComboBox()
         self.method_combo.addItems(["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"])
-        basic_layout.addWidget(self.method_combo, 0, 1)
+        self.method_combo.setFixedWidth(110)
+        self.method_combo.setStyleSheet(
+            "QComboBox { font-weight: bold; padding: 4px; }"
+        )
+        url_bar_layout.addWidget(self.method_combo)
         
-        # URL
-        basic_layout.addWidget(QLabel("URL:"), 1, 0)
         self.url_input = QLineEdit()
-        self.url_input.setPlaceholderText("https://api.example.com/endpoint")
-        basic_layout.addWidget(self.url_input, 1, 1)
+        self.url_input.setPlaceholderText("https://target.com/api/endpoint")
+        self.url_input.setStyleSheet("QLineEdit { padding: 5px; font-size: 10pt; }")
+        url_bar_layout.addWidget(self.url_input)
         
-        layout.addWidget(basic_frame)
+        send_btn = QPushButton("Send")
+        send_btn.setFixedWidth(70)
+        send_btn.setStyleSheet(
+            "QPushButton { background-color: #FF6633; color: white; "
+            "font-weight: bold; border-radius: 4px; padding: 6px; }"
+            "QPushButton:hover { background-color: #FF7744; }"
+        )
+        send_btn.clicked.connect(self.send_request)
+        url_bar_layout.addWidget(send_btn)
         
-        # Tabs for different sections
-        tabs = QTabWidget()
+        layout.addWidget(url_bar)
+        
+        # Main splitter: Request (top) / Response (bottom)
+        splitter = QSplitter(Qt.Orientation.Vertical)
+        
+        # Request panel (top)
+        request_panel = self._create_request_panel()
+        splitter.addWidget(request_panel)
+        
+        # Response panel (bottom)
+        response_panel = self._create_response_panel()
+        splitter.addWidget(response_panel)
+        
+        splitter.setSizes([300, 400])
+        layout.addWidget(splitter, 1)
+        
+        return tab
+    
+    def _create_request_panel(self):
+        """Create the request editing panel with tabs"""
+        panel = QWidget()
+        layout = QVBoxLayout(panel)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+        
+        request_tabs = QTabWidget()
+        request_tabs.setStyleSheet("QTabWidget::pane { border-top: 1px solid #444; }")
         
         # Headers tab
-        headers_tab = QWidget()
-        headers_layout = QVBoxLayout(headers_tab)
+        headers_widget = QWidget()
+        headers_layout = QVBoxLayout(headers_widget)
+        headers_layout.setContentsMargins(6, 6, 6, 6)
         
-        headers_layout.addWidget(QLabel("Headers (one per line, format: Key: Value):"))
-        self.headers_text = QTextEdit()
-        self.headers_text.setMaximumHeight(100)
-        self.headers_text.setPlaceholderText("Content-Type: application/json\nAuthorization: Bearer token123")
-        headers_layout.addWidget(self.headers_text)
+        # Quick header buttons
+        header_btns = QHBoxLayout()
+        header_btns.setSpacing(4)
         
-        # Common headers buttons
-        common_headers = QHBoxLayout()
         self.json_btn = QPushButton("JSON")
         self.json_btn.setCheckable(True)
+        self.json_btn.setFixedHeight(24)
         self.json_btn.clicked.connect(lambda: self.toggle_header("Content-Type: application/json", self.json_btn))
+        header_btns.addWidget(self.json_btn)
         
         self.form_btn = QPushButton("Form")
         self.form_btn.setCheckable(True)
+        self.form_btn.setFixedHeight(24)
         self.form_btn.clicked.connect(lambda: self.toggle_header("Content-Type: application/x-www-form-urlencoded", self.form_btn))
+        header_btns.addWidget(self.form_btn)
         
-        self.auth_btn = QPushButton("Auth")
+        self.auth_btn = QPushButton("Bearer")
         self.auth_btn.setCheckable(True)
+        self.auth_btn.setFixedHeight(24)
         self.auth_btn.clicked.connect(lambda: self.toggle_header("Authorization: Bearer ", self.auth_btn))
+        header_btns.addWidget(self.auth_btn)
         
-        common_headers.addWidget(self.json_btn)
-        common_headers.addWidget(self.form_btn)
-        common_headers.addWidget(self.auth_btn)
-        common_headers.addStretch()
-        headers_layout.addLayout(common_headers)
+        header_btns.addStretch()
+        headers_layout.addLayout(header_btns)
         
-        tabs.addTab(headers_tab, "Headers")
+        self.headers_text = QTextEdit()
+        self.headers_text.setPlaceholderText("Content-Type: application/json\nAuthorization: Bearer token123")
+        self.headers_text.setStyleSheet(
+            "QTextEdit { font-family: 'Consolas', monospace; font-size: 9pt; }"
+        )
+        headers_layout.addWidget(self.headers_text)
+        
+        request_tabs.addTab(headers_widget, "Headers")
         
         # Body tab
-        body_tab = QWidget()
-        body_layout = QVBoxLayout(body_tab)
-        
-        body_layout.addWidget(QLabel("Request Body:"))
-        self.body_text = QTextEdit()
-        self.body_text.setMaximumHeight(120)
-        self.body_text.setPlaceholderText('{"key": "value"}')
-        body_layout.addWidget(self.body_text)
+        body_widget = QWidget()
+        body_layout = QVBoxLayout(body_widget)
+        body_layout.setContentsMargins(6, 6, 6, 6)
         
         # Body format buttons
-        body_formats = QHBoxLayout()
-        json_format_btn = QPushButton("JSON Format")
+        body_btns = QHBoxLayout()
+        body_btns.setSpacing(4)
+        
+        json_format_btn = QPushButton("Pretty JSON")
+        json_format_btn.setFixedHeight(24)
         json_format_btn.clicked.connect(self.format_json)
+        body_btns.addWidget(json_format_btn)
+        
         url_encode_btn = QPushButton("URL Encode")
+        url_encode_btn.setFixedHeight(24)
         url_encode_btn.clicked.connect(self.url_encode_body)
+        body_btns.addWidget(url_encode_btn)
         
-        body_formats.addWidget(json_format_btn)
-        body_formats.addWidget(url_encode_btn)
-        body_formats.addStretch()
-        body_layout.addLayout(body_formats)
+        body_btns.addStretch()
+        body_layout.addLayout(body_btns)
         
-        tabs.addTab(body_tab, "Body")
+        self.body_text = QTextEdit()
+        self.body_text.setPlaceholderText('{"email": "test@example.com"}')
+        self.body_text.setStyleSheet(
+            "QTextEdit { font-family: 'Consolas', monospace; font-size: 9pt; }"
+        )
+        body_layout.addWidget(self.body_text)
+        
+        request_tabs.addTab(body_widget, "Body")
         
         # Auth tab
-        auth_tab = QWidget()
-        auth_layout = QGridLayout(auth_tab)
+        auth_widget = QWidget()
+        auth_layout = QVBoxLayout(auth_widget)
+        auth_layout.setContentsMargins(6, 10, 6, 6)
         
-        auth_layout.addWidget(QLabel("Username:"), 0, 0)
+        auth_form = QGridLayout()
+        auth_form.setSpacing(8)
+        auth_form.addWidget(QLabel("Username:"), 0, 0)
         self.username_input = QLineEdit()
-        auth_layout.addWidget(self.username_input, 0, 1)
+        self.username_input.setPlaceholderText("username")
+        auth_form.addWidget(self.username_input, 0, 1)
         
-        auth_layout.addWidget(QLabel("Password:"), 1, 0)
+        auth_form.addWidget(QLabel("Password:"), 1, 0)
         self.password_input = QLineEdit()
         self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
-        auth_layout.addWidget(self.password_input, 1, 1)
+        self.password_input.setPlaceholderText("password")
+        auth_form.addWidget(self.password_input, 1, 1)
+        auth_layout.addLayout(auth_form)
+        auth_layout.addStretch()
         
-        tabs.addTab(auth_tab, "Auth")
+        request_tabs.addTab(auth_widget, "Auth")
         
         # Options tab
-        options_tab = QWidget()
-        options_layout = QGridLayout(options_tab)
+        options_widget = QWidget()
+        options_layout = QVBoxLayout(options_widget)
+        options_layout.setContentsMargins(6, 10, 6, 6)
         
-        options_layout.addWidget(QLabel("Timeout (seconds):"), 0, 0)
+        options_form = QGridLayout()
+        options_form.setSpacing(8)
+        
+        options_form.addWidget(QLabel("Timeout (s):"), 0, 0)
         self.timeout_spin = QSpinBox()
         self.timeout_spin.setRange(1, 300)
         self.timeout_spin.setValue(30)
-        options_layout.addWidget(self.timeout_spin, 0, 1)
+        self.timeout_spin.setFixedWidth(80)
+        options_form.addWidget(self.timeout_spin, 0, 1)
         
         self.follow_redirects_cb = QCheckBox("Follow redirects")
         self.follow_redirects_cb.setChecked(True)
-        options_layout.addWidget(self.follow_redirects_cb, 1, 0, 1, 2)
+        options_form.addWidget(self.follow_redirects_cb, 1, 0, 1, 2)
         
         self.verify_ssl_cb = QCheckBox("Verify SSL certificates")
         self.verify_ssl_cb.setChecked(True)
-        options_layout.addWidget(self.verify_ssl_cb, 2, 0, 1, 2)
+        options_form.addWidget(self.verify_ssl_cb, 2, 0, 1, 2)
         
-        tabs.addTab(options_tab, "Options")
+        options_layout.addLayout(options_form)
+        options_layout.addStretch()
         
-        layout.addWidget(tabs)
+        request_tabs.addTab(options_widget, "Options")
+        
+        layout.addWidget(request_tabs)
+        return panel
+    
+    def _create_response_panel(self):
+        """Create the response display panel with tabs"""
+        panel = QWidget()
+        layout = QVBoxLayout(panel)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+        
+        # Response info bar
+        self.response_info = QLabel("  No response yet")
+        self.response_info.setStyleSheet(
+            "QLabel { color: #888; padding: 4px 8px; font-size: 9pt; "
+            "background-color: rgba(30, 30, 50, 100); }"
+        )
+        self.response_info.setFixedHeight(24)
+        layout.addWidget(self.response_info)
+        
+        self.response_tabs = QTabWidget()
+        self.response_tabs.setStyleSheet("QTabWidget::pane { border-top: 1px solid #444; }")
+        
+        # Body tab (pretty-printed)
+        self.response_body = QTextEdit()
+        self.response_body.setReadOnly(True)
+        self.response_body.setStyleSheet(
+            "QTextEdit { font-family: 'Consolas', monospace; font-size: 9pt; "
+            "background-color: #1a1a2e; color: #e0e0e0; }"
+        )
+        self.response_body.setPlaceholderText("Send a request to see the response...")
+        self.response_tabs.addTab(self.response_body, "Body")
+        
+        # Headers tab
+        self.response_headers = QTextEdit()
+        self.response_headers.setReadOnly(True)
+        self.response_headers.setStyleSheet(
+            "QTextEdit { font-family: 'Consolas', monospace; font-size: 9pt; "
+            "background-color: #1a1a2e; color: #e0e0e0; }"
+        )
+        self.response_tabs.addTab(self.response_headers, "Headers")
+        
+        # Raw tab
+        self.response_raw = QTextEdit()
+        self.response_raw.setReadOnly(True)
+        self.response_raw.setStyleSheet(
+            "QTextEdit { font-family: 'Consolas', monospace; font-size: 9pt; "
+            "background-color: #1a1a2e; color: #e0e0e0; }"
+        )
+        self.response_tabs.addTab(self.response_raw, "Raw")
+        
+        layout.addWidget(self.response_tabs, 1)
+        
+        # Keep curl_response as a hidden compatibility widget (other code references it)
+        self.curl_response = QTextEdit()
+        self.curl_response.setVisible(False)
+        layout.addWidget(self.curl_response)
+        
+        return panel
+    
+    def create_request_builder(self):
+        """Legacy method - returns an empty frame for compatibility"""
+        return QFrame()
+
+    def create_interceptor_tab(self):
+        """Create the Interceptor tab for viewing/editing intercepted requests"""
+        tab = QWidget()
+        layout = QVBoxLayout(tab)
+        layout.setContentsMargins(6, 6, 6, 6)
+        layout.setSpacing(6)
+        
+        # Top: intercepted requests list
+        list_frame = QFrame()
+        list_frame.setStyleSheet(
+            "QFrame { background-color: rgba(30, 30, 50, 100); border-radius: 4px; }"
+        )
+        list_layout = QVBoxLayout(list_frame)
+        list_layout.setContentsMargins(8, 8, 8, 8)
+        
+        list_header = QHBoxLayout()
+        list_header.addWidget(QLabel("Intercepted Requests"))
+        list_header.addStretch()
+        
+        self.intercept_status_label = QLabel("Intercept: OFF")
+        self.intercept_status_label.setStyleSheet("color: #FF4444; font-weight: bold;")
+        list_header.addWidget(self.intercept_status_label)
+        list_layout.addLayout(list_header)
+        
+        self.interceptor_list = QListWidget()
+        self.interceptor_list.setMaximumHeight(120)
+        self.interceptor_list.currentRowChanged.connect(self._on_interceptor_selection_changed)
+        list_layout.addWidget(self.interceptor_list)
+        
+        layout.addWidget(list_frame)
+        
+        # Bottom: editable request view + action buttons
+        editor_splitter = QSplitter(Qt.Orientation.Vertical)
+        
+        # Request editor
+        editor_panel = QWidget()
+        editor_layout = QVBoxLayout(editor_panel)
+        editor_layout.setContentsMargins(0, 0, 0, 0)
+        editor_layout.setSpacing(4)
+        
+        # Request line (method + URL) - editable
+        req_line_layout = QHBoxLayout()
+        self.intercept_method = QComboBox()
+        self.intercept_method.addItems(["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"])
+        self.intercept_method.setFixedWidth(110)
+        req_line_layout.addWidget(self.intercept_method)
+        
+        self.intercept_url = QLineEdit()
+        self.intercept_url.setPlaceholderText("Select an intercepted request above...")
+        self.intercept_url.setStyleSheet("QLineEdit { padding: 5px; font-size: 10pt; }")
+        req_line_layout.addWidget(self.intercept_url)
+        editor_layout.addLayout(req_line_layout)
+        
+        # Tabs for headers and body editing
+        self.intercept_editor_tabs = QTabWidget()
+        
+        # Headers editor
+        self.intercept_headers_edit = QTextEdit()
+        self.intercept_headers_edit.setPlaceholderText("Request headers will appear here for editing...")
+        self.intercept_headers_edit.setStyleSheet(
+            "QTextEdit { font-family: 'Consolas', monospace; font-size: 9pt; }"
+        )
+        self.intercept_editor_tabs.addTab(self.intercept_headers_edit, "Headers")
+        
+        # Body editor
+        self.intercept_body_edit = QTextEdit()
+        self.intercept_body_edit.setPlaceholderText("Request body will appear here for editing...")
+        self.intercept_body_edit.setStyleSheet(
+            "QTextEdit { font-family: 'Consolas', monospace; font-size: 9pt; }"
+        )
+        self.intercept_editor_tabs.addTab(self.intercept_body_edit, "Body")
+        
+        editor_layout.addWidget(self.intercept_editor_tabs)
         
         # Action buttons
-        button_layout = QHBoxLayout()
+        action_layout = QHBoxLayout()
         
-        send_btn = QPushButton("Send Request")
-        send_btn.clicked.connect(self.send_request)
-        button_layout.addWidget(send_btn)
+        forward_btn = QPushButton("Forward")
+        forward_btn.setStyleSheet(
+            "QPushButton { background-color: #2E7D32; color: white; "
+            "font-weight: bold; border-radius: 4px; padding: 6px 16px; }"
+            "QPushButton:hover { background-color: #388E3C; }"
+        )
+        forward_btn.clicked.connect(self._intercept_forward_modified)
+        action_layout.addWidget(forward_btn)
         
-        pause_send_btn = QPushButton("Send with Pause")
-        pause_send_btn.clicked.connect(self.send_with_pause)
-        button_layout.addWidget(pause_send_btn)
+        drop_btn = QPushButton("Drop")
+        drop_btn.setStyleSheet(
+            "QPushButton { background-color: #C62828; color: white; "
+            "font-weight: bold; border-radius: 4px; padding: 6px 16px; }"
+            "QPushButton:hover { background-color: #D32F2F; }"
+        )
+        drop_btn.clicked.connect(self._intercept_drop)
+        action_layout.addWidget(drop_btn)
         
-        # Intruder functionality
-        repeat_btn = QPushButton("Repeat 5x")
-        repeat_btn.clicked.connect(lambda: self.repeat_request(5))
-        button_layout.addWidget(repeat_btn)
+        action_layout.addStretch()
         
-        clear_btn = QPushButton("Clear All")
-        clear_btn.clicked.connect(self.clear_all)
-        button_layout.addWidget(clear_btn)
+        send_to_repeater_btn = QPushButton("Send to Repeater")
+        send_to_repeater_btn.setStyleSheet(
+            "QPushButton { background-color: #1565C0; color: white; "
+            "border-radius: 4px; padding: 6px 16px; }"
+            "QPushButton:hover { background-color: #1976D2; }"
+        )
+        send_to_repeater_btn.clicked.connect(self._intercept_send_to_repeater)
+        action_layout.addWidget(send_to_repeater_btn)
         
-        layout.addLayout(button_layout)
+        editor_layout.addLayout(action_layout)
         
-        # Generated curl command preview
-        layout.addWidget(QLabel("Generated curl command:"))
-        self.curl_preview = QTextEdit()
-        self.curl_preview.setMaximumHeight(60)
-        self.curl_preview.setReadOnly(True)
-        layout.addWidget(self.curl_preview)
+        editor_splitter.addWidget(editor_panel)
+        layout.addWidget(editor_splitter, 1)
         
-        # Update preview when inputs change
-        self.method_combo.currentTextChanged.connect(self.update_curl_preview)
-        self.url_input.textChanged.connect(self.update_curl_preview)
-        self.headers_text.textChanged.connect(self.update_curl_preview)
-        self.body_text.textChanged.connect(self.update_curl_preview)
+        return tab
+
+    def _on_interceptor_selection_changed(self, row):
+        """Load the selected intercepted request into the editor"""
+        if row < 0:
+            return
         
-        return frame
+        item = self.interceptor_list.item(row)
+        if not item:
+            return
+        
+        item_text = item.text()
+        try:
+            flow_id = int(item_text.split(']')[0][1:])
+        except (ValueError, IndexError):
+            return
+        
+        request = self.paused_requests.get(flow_id)
+        if not request:
+            return
+        
+        # Populate editor fields
+        self.intercept_method.setCurrentText(request.method)
+        self.intercept_url.setText(request.url)
+        
+        # Headers
+        if request.headers:
+            headers_text = '\n'.join([f"{k}: {v}" for k, v in request.headers.items()])
+            self.intercept_headers_edit.setPlainText(headers_text)
+        else:
+            self.intercept_headers_edit.clear()
+        
+        # Body
+        if request.data:
+            self.intercept_body_edit.setPlainText(request.data)
+        else:
+            self.intercept_body_edit.clear()
+
+    def _get_selected_flow_id(self):
+        """Get the flow_id of the currently selected intercepted request"""
+        row = self.interceptor_list.currentRow()
+        if row < 0:
+            return None
+        item = self.interceptor_list.item(row)
+        if not item:
+            return None
+        try:
+            return int(item.text().split(']')[0][1:])
+        except (ValueError, IndexError):
+            return None
+
+    def _intercept_forward(self):
+        """Forward the selected request without modification"""
+        flow_id = self._get_selected_flow_id()
+        if flow_id is None:
+            return
+        
+        if self.request_handler.forward_request(flow_id):
+            self._remove_intercepted(flow_id)
+
+    def _intercept_forward_modified(self):
+        """Forward the selected request with modifications from the editor"""
+        flow_id = self._get_selected_flow_id()
+        if flow_id is None:
+            return
+        
+        # Build modified request from editor fields
+        headers = {}
+        headers_text = self.intercept_headers_edit.toPlainText().strip()
+        if headers_text:
+            for line in headers_text.split('\n'):
+                if ':' in line:
+                    key, value = line.split(':', 1)
+                    headers[key.strip()] = value.strip()
+        
+        modified_request = HttpRequest(
+            method=self.intercept_method.currentText(),
+            url=self.intercept_url.text(),
+            headers=headers,
+            data=self.intercept_body_edit.toPlainText(),
+        )
+        
+        if self.request_handler.modify_and_forward_request(flow_id, modified_request):
+            self._remove_intercepted(flow_id)
+
+    def _intercept_drop(self):
+        """Drop the selected intercepted request"""
+        flow_id = self._get_selected_flow_id()
+        if flow_id is None:
+            return
+        
+        if self.request_handler.drop_request(flow_id):
+            self._remove_intercepted(flow_id)
+
+    def _intercept_send_to_repeater(self):
+        """Send the selected intercepted request to the Repeater tab"""
+        flow_id = self._get_selected_flow_id()
+        if flow_id is None:
+            return
+        
+        # Load current editor state into repeater
+        self.method_combo.setCurrentText(self.intercept_method.currentText())
+        self.url_input.setText(self.intercept_url.text())
+        self.headers_text.setPlainText(self.intercept_headers_edit.toPlainText())
+        self.body_text.setPlainText(self.intercept_body_edit.toPlainText())
+        
+        # Switch to Repeater tab
+        self.main_tabs.setCurrentIndex(0)
+
+    def _remove_intercepted(self, flow_id):
+        """Remove a request from the interceptor list and paused_requests"""
+        for i in range(self.interceptor_list.count()):
+            item = self.interceptor_list.item(i)
+            if item and f"[{flow_id}]" in item.text():
+                self.interceptor_list.takeItem(i)
+                break
+        
+        if flow_id in self.paused_requests:
+            del self.paused_requests[flow_id]
+        
+        # Clear editor if list is empty
+        if self.interceptor_list.count() == 0:
+            self.intercept_method.setCurrentText("GET")
+            self.intercept_url.clear()
+            self.intercept_headers_edit.clear()
+            self.intercept_body_edit.clear()
     
     def toggle_header(self, header, button):
         current = self.headers_text.toPlainText()
@@ -419,6 +728,18 @@ class CurlWidget(QWidget):
         self.password_input.clear()
         self.curl_response.clear()
         self.curl_preview.clear()
+        self.response_body.clear()
+        self.response_headers.clear()
+        self.response_raw.clear()
+        self.response_info.setText("  No response yet")
+        self.response_info.setStyleSheet(
+            "QLabel { color: #888; padding: 4px 8px; font-size: 9pt; "
+            "background-color: rgba(30, 30, 50, 100); }"
+        )
+        self.status_badge.setText("")
+        self.status_badge.setStyleSheet(
+            "QLabel { font-weight: bold; border-radius: 3px; padding: 3px; }"
+        )
         self.method_combo.setCurrentText("GET")
         self.timeout_spin.setValue(30)
         self.follow_redirects_cb.setChecked(True)
@@ -460,27 +781,198 @@ class CurlWidget(QWidget):
             self.request_handler.enable_intercept(enabled)
             status = "enabled" if enabled else "disabled"
             self.curl_response.append(f"\n[INFO] Request interception {status}")
+            # Update interceptor tab status
+            if enabled:
+                self.intercept_status_label.setText("Intercept: ON")
+                self.intercept_status_label.setStyleSheet("color: #00CC00; font-weight: bold;")
+            else:
+                self.intercept_status_label.setText("Intercept: OFF")
+                self.intercept_status_label.setStyleSheet("color: #FF4444; font-weight: bold;")
         else:
             self.intercept_checkbox.setChecked(False)
             if not self.proxy_running:
                 self.curl_response.append("\n[WARNING] Start proxy first to enable interception")
             else:
                 self.curl_response.append("\n[WARNING] Proxy not available - install mitmproxy for interception")
-    
+
+    def install_proxy_certificate(self):
+        """Install mitmproxy CA certificate to Windows trusted root store."""
+        import os
+        import subprocess
+        
+        # Find the mitmproxy CA certificate
+        cert_path = os.path.join(os.path.expanduser("~"), ".mitmproxy", "mitmproxy-ca-cert.cer")
+        
+        if not os.path.exists(cert_path):
+            # Try to generate it by starting proxy briefly if cert doesn't exist
+            pem_path = os.path.join(os.path.expanduser("~"), ".mitmproxy", "mitmproxy-ca-cert.pem")
+            if os.path.exists(pem_path):
+                cert_path = pem_path
+            else:
+                QMessageBox.warning(
+                    self, "Certificate Not Found",
+                    "The mitmproxy CA certificate was not found.\n\n"
+                    "Start the proxy at least once to generate it, then try again.\n\n"
+                    f"Expected location: {cert_path}"
+                )
+                return
+        
+        # Install using certutil (requires admin)
+        try:
+            result = subprocess.run(
+                ["certutil", "-addstore", "root", cert_path],
+                capture_output=True, text=True,
+                creationflags=subprocess.CREATE_NO_WINDOW
+            )
+            
+            if result.returncode == 0:
+                QMessageBox.information(
+                    self, "Certificate Installed",
+                    "The mitmproxy CA certificate has been installed to the "
+                    "Trusted Root Certification Authorities store.\n\n"
+                    "HTTPS interception will now work without certificate errors.\n"
+                    "You may need to restart your browser."
+                )
+                self.curl_response.append("\n[SUCCESS] CA certificate installed to trusted root store")
+            elif "Access is denied" in result.stderr or "access is denied" in result.stdout.lower():
+                # Need elevation — retry with runas
+                self._install_cert_elevated(cert_path)
+            else:
+                QMessageBox.warning(
+                    self, "Installation Failed",
+                    f"Failed to install certificate:\n\n{result.stdout}\n{result.stderr}"
+                )
+        except Exception as e:
+            QMessageBox.warning(self, "Error", f"Failed to install certificate: {e}")
+
+    def _install_cert_elevated(self, cert_path):
+        """Install certificate with UAC elevation."""
+        import ctypes
+        import subprocess
+        
+        try:
+            # Use ShellExecute with 'runas' verb for UAC prompt
+            ret = ctypes.windll.shell32.ShellExecuteW(
+                None, "runas", "certutil",
+                f'-addstore root "{cert_path}"',
+                None, 0  # SW_HIDE
+            )
+            if ret > 32:
+                QMessageBox.information(
+                    self, "Certificate Installation",
+                    "UAC prompt was shown. If you approved it, the certificate "
+                    "is now installed.\n\nRestart your browser for changes to take effect."
+                )
+                self.curl_response.append("\n[SUCCESS] CA certificate installation initiated (elevated)")
+            else:
+                QMessageBox.warning(
+                    self, "Installation Cancelled",
+                    "Certificate installation was cancelled or failed.\n"
+                    "You can install manually by running as admin:\n\n"
+                    f'certutil -addstore root "{cert_path}"'
+                )
+        except Exception as e:
+            QMessageBox.warning(self, "Error", f"Elevated installation failed: {e}")
+
     def on_request_intercepted(self, flow_id, http_request):
         """Handle intercepted request"""
         item_text = f"{http_request.method} {http_request.url}"
         self.paused_requests[flow_id] = http_request
-        self.paused_requests_list.addItem(f"[{flow_id}] {item_text}")
+        
+        # Add to the Interceptor tab list
+        self.interceptor_list.addItem(f"[{flow_id}] {item_text}")
+        
+        # Auto-select the new item and switch to Interceptor tab
+        self.interceptor_list.setCurrentRow(self.interceptor_list.count() - 1)
+        self.main_tabs.setCurrentIndex(1)  # Interceptor tab
+        
+        # Update intercept status
+        self.intercept_status_label.setText("Intercept: ON")
+        self.intercept_status_label.setStyleSheet("color: #00CC00; font-weight: bold;")
+        
         self.curl_response.append(f"\n[INTERCEPTED] {item_text}")
     
     def on_request_sent(self, request, response):
         """Handle request sent and response received"""
-        self.curl_response.append(f"\n[REQUEST] {request.method} {request.url}")
-        self.curl_response.append(f"[STATUS] {response.status_code}")
-        self.curl_response.append(f"[TIME] {response.elapsed_time*1000:.2f}ms")
-        self.curl_response.append(f"\n[RESPONSE]\n{response.text[:1000]}{'...' if len(response.text) > 1000 else ''}")
-        self.curl_response.append("\n" + "="*50)
+        import json as json_mod
+        
+        # Update status badge
+        status = response.status_code
+        if 200 <= status < 300:
+            color = "#2E7D32"
+        elif 300 <= status < 400:
+            color = "#F57C00"
+        elif 400 <= status < 500:
+            color = "#C62828"
+        else:
+            color = "#6A1B9A"
+        self.status_badge.setText(str(status))
+        self.status_badge.setStyleSheet(
+            f"QLabel {{ font-weight: bold; border-radius: 3px; padding: 3px; "
+            f"background-color: {color}; color: white; }}"
+        )
+        
+        # Update response info bar
+        time_ms = response.elapsed_time * 1000
+        size = len(response.text)
+        self.response_info.setText(
+            f"  Status: {status}  •  Time: {time_ms:.0f}ms  •  Size: {size} bytes"
+        )
+        self.response_info.setStyleSheet(
+            f"QLabel {{ color: white; padding: 4px 8px; font-size: 9pt; "
+            f"background-color: {color}; }}"
+        )
+        
+        # Populate Body tab (pretty-printed JSON or raw)
+        self.response_body.clear()
+        try:
+            parsed = json_mod.loads(response.text)
+            formatted = json_mod.dumps(parsed, indent=2)
+            self.response_body.setPlainText(formatted)
+        except (json_mod.JSONDecodeError, ValueError):
+            self.response_body.setPlainText(response.text)
+        
+        # Populate Headers tab
+        self.response_headers.clear()
+        if hasattr(response, 'headers') and response.headers:
+            header_lines = []
+            for key, value in response.headers.items():
+                header_lines.append(f"{key}: {value}")
+            self.response_headers.setPlainText("\n".join(header_lines))
+        
+        # Populate Raw tab
+        self.response_raw.clear()
+        raw_lines = [f"HTTP/1.1 {status}"]
+        if hasattr(response, 'headers') and response.headers:
+            for key, value in response.headers.items():
+                raw_lines.append(f"{key}: {value}")
+        raw_lines.append("")
+        raw_lines.append(response.text[:10000])
+        self.response_raw.setPlainText("\n".join(raw_lines))
+        
+        # Also update hidden curl_response for compatibility
+        self.curl_response.append(f"[{request.method}] {request.url} → {status}")
+
+    def on_request_failed(self, request, error):
+        """Handle failed request"""
+        self.status_badge.setText("ERR")
+        self.status_badge.setStyleSheet(
+            "QLabel { font-weight: bold; border-radius: 3px; padding: 3px; "
+            "background-color: #C62828; color: white; }"
+        )
+        self.response_info.setText(f"  Error: Request failed")
+        self.response_info.setStyleSheet(
+            "QLabel { color: white; padding: 4px 8px; font-size: 9pt; "
+            "background-color: #C62828; }"
+        )
+        
+        self.response_body.clear()
+        self.response_body.setPlainText(f"ERROR\n\n{error}")
+        self.response_headers.clear()
+        self.response_raw.clear()
+        self.response_raw.setPlainText(f"Request failed:\n{error}")
+        
+        self.curl_response.append(f"[ERROR] {request.method} {request.url}: {error}")
     
     def forward_paused_request(self):
         current_row = self.paused_requests_list.currentRow()
@@ -492,6 +984,8 @@ class CurlWidget(QWidget):
                 self.paused_requests_list.takeItem(current_row)
                 del self.paused_requests[flow_id]
                 self.curl_response.append(f"\n[INFO] Forwarded request {flow_id}")
+                if self.paused_requests_list.count() == 0:
+                    self.paused_frame.setVisible(False)
     
     def drop_paused_request(self):
         current_row = self.paused_requests_list.currentRow()
@@ -503,6 +997,8 @@ class CurlWidget(QWidget):
                 self.paused_requests_list.takeItem(current_row)
                 del self.paused_requests[flow_id]
                 self.curl_response.append(f"\n[INFO] Dropped request {flow_id}")
+                if self.paused_requests_list.count() == 0:
+                    self.paused_frame.setVisible(False)
     
     def edit_paused_request(self, item):
         """Edit a paused request"""
@@ -608,7 +1104,7 @@ class CurlWidget(QWidget):
         back_layout = QHBoxLayout()
         self.back_btn = QPushButton("← Back to History")
         self.back_btn.clicked.connect(self.show_history_table)
-        self.back_btn.setFixedWidth(150)
+        self.back_btn.setFixedWidth(180)
         back_layout.addWidget(self.back_btn)
         back_layout.addStretch()
         layout.addLayout(back_layout)

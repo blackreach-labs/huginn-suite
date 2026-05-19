@@ -18,8 +18,35 @@ class WebScanWorker(QThread):
         self.scan_types = scan_types
         
     def run(self):
-        result = web_scanner.comprehensive_scan(self.url)
-        self.scan_completed.emit(result)
+        from app.core.dns_resolver import dns_resolver
+        from urllib.parse import urlparse, urlunparse
+        
+        # Resolve hostname using global DNS settings
+        parsed = urlparse(self.url)
+        hostname = parsed.hostname
+        resolved_url = self.url
+        host_header_set = False
+        
+        if hostname:
+            resolved_ip = dns_resolver.resolve_hostname(hostname)
+            if resolved_ip and resolved_ip != hostname:
+                # Replace hostname with IP in URL
+                if parsed.port:
+                    new_netloc = f"{resolved_ip}:{parsed.port}"
+                else:
+                    new_netloc = resolved_ip
+                resolved_url = urlunparse(parsed._replace(netloc=new_netloc))
+                # Set Host header so the server responds correctly
+                web_scanner.session.headers['Host'] = hostname
+                host_header_set = True
+        
+        try:
+            result = web_scanner.comprehensive_scan(resolved_url)
+            self.scan_completed.emit(result)
+        finally:
+            # Clean up Host header to avoid affecting other scans
+            if host_header_set:
+                web_scanner.session.headers.pop('Host', None)
 
 class WebScannerWidget(QWidget):
     """Web application security scanner widget"""

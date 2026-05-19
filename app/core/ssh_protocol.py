@@ -10,7 +10,7 @@ from app.core.logger import logger
 class SSHProtocol:
     """Low-level SSH protocol implementation for advanced reconnaissance"""
     
-    def __init__(self, target: str, port: int = 22, timeout: int = 10):
+    def __init__(self, target: str = "", port: int = 22, timeout: int = 10):
         self.target = target
         self.port = port
         self.timeout = timeout

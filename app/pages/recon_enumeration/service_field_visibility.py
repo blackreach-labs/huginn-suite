@@ -223,6 +223,11 @@ class ServiceFieldVisibilityMixin:
             show_extensions = False
             show_preset = False
             show_auth = False
+        elif scan_type == "VHost Brute":
+            show_wordlist = True
+            show_extensions = False
+            show_preset = False
+            show_auth = False
         elif scan_type == "Huginn Scan":
             show_wordlist = False
             show_extensions = False
@@ -259,24 +264,6 @@ class ServiceFieldVisibilityMixin:
         # Toggle listener options based on scan type
         self.toggle_http_listener_options(tool_key, scan_type)
         
-        # Extension checkboxes - comprehensive list from config
-        ext_controls = [
-            'ext_php', 'ext_php3', 'ext_php4', 'ext_php5', 'ext_phtml',  # PHP extensions
-            'ext_asp', 'ext_aspx', 'ext_ascx', 'ext_ashx',  # ASP extensions
-            'ext_jsp', 'ext_jspx', 'ext_do', 'ext_action',  # JSP extensions
-            'ext_html', 'ext_htm', 'ext_xhtml',  # HTML extensions
-            'ext_js', 'ext_json', 'ext_jsx',  # JS extensions
-            'ext_env', 'ext_config', 'ext_conf', 'ext_ini',  # Config extensions
-            'ext_bak', 'ext_old', 'ext_tmp', 'ext_backup'  # Backup extensions
-        ]
-        for ext_control in ext_controls:
-            if ext_control in controls and controls[ext_control] is not None:
-                try:
-                    controls[ext_control].setVisible(show_extensions)
-                except RuntimeError as _exc:
-                    pass
-                    logger.debug("Suppressed exception", exc_info=True)
-        
         # Authentication method field
         if 'http_auth_method' in controls and controls['http_auth_method'] is not None:
             try:
@@ -293,17 +280,18 @@ class ServiceFieldVisibilityMixin:
         
         # Hide/show rows if available
         if hasattr(control_panel, 'row_widgets'):
+            # Extensions are only shown when preset is "Manual" AND scan type needs them
+            current_preset = "Manual"
+            if 'http_preset' in controls:
+                try:
+                    current_preset = controls['http_preset'].currentText()
+                except RuntimeError:
+                    pass
+            show_extensions_rows = show_extensions and (current_preset == "Manual")
+            
             row_visibility_map = {
                 'Preset:': show_preset,
-                'PHP:': show_extensions,
-                'ASP:': show_extensions,
-                'JSP:': show_extensions,
-                'HTML:': show_extensions,
-                'JS:': show_extensions,
-                'JSON:': show_extensions,
-                'ENV:': show_extensions,
-                'Config:': show_extensions,
-                'Backup:': show_extensions,
+                'Extensions:': show_extensions_rows,
                 'Wordlist:': show_wordlist,
                 'Auth Method:': show_auth,
                 'Username:': False,  # Hidden by default, shown only when Basic Auth selected
@@ -317,8 +305,8 @@ class ServiceFieldVisibilityMixin:
                         row_widget = control_panel.row_widgets[row_label]
                         if should_show:
                             row_widget.setVisible(True)
-                            row_widget.setMaximumHeight(30)  # Slightly taller for better spacing
-                            row_widget.setMinimumHeight(30)
+                            row_widget.setMaximumHeight(30)
+                            row_widget.setMinimumHeight(26)
                         else:
                             row_widget.setVisible(False)
                             row_widget.setMaximumHeight(0)
@@ -326,6 +314,12 @@ class ServiceFieldVisibilityMixin:
                     except RuntimeError as _exc:
                         pass  # Widget has been deleted
                         logger.debug("Suppressed exception", exc_info=True)
+            
+            # Adjust panel height to fit visible rows
+            visible_rows = sum(1 for lbl, vis in row_visibility_map.items() if vis) + 1  # +1 for Scan Type row
+            needed_height = visible_rows * 30 + 4
+            control_panel.setMaximumHeight(needed_height)
+            control_panel.setMinimumHeight(needed_height)
         
         # Store current scan type first
         setattr(self, f"{tool_key}_current_scan_type", scan_type)
@@ -365,8 +359,8 @@ class ServiceFieldVisibilityMixin:
                 try:
                     listener_row.setVisible(show_listener)
                     if show_listener:
-                        listener_row.setMaximumHeight(16777215)
-                        listener_row.setMinimumHeight(0)
+                        listener_row.setMaximumHeight(30)
+                        listener_row.setMinimumHeight(26)
                     else:
                         listener_row.setMaximumHeight(0)
                         listener_row.setMinimumHeight(0)
@@ -610,16 +604,14 @@ class ServiceFieldVisibilityMixin:
         if not control_panel or not hasattr(control_panel, 'controls'):
             return
         
-        # Only hide extensions if Directory Enum is selected and preset is not Manual
+        # Only show extensions when preset is "Manual" and scan type requires them
         current_scan_type = getattr(self, f"{tool_key}_current_scan_type", "Fingerprinting")
-        if current_scan_type == "Directory Enum" and preset != "Manual":
-            show_extensions = False
-        else:
-            show_extensions = current_scan_type == "Directory Enum"
+        needs_extensions = current_scan_type in ("Directory Enum", "Full Scan")
+        show_extensions = needs_extensions and (preset == "Manual")
         
-        # Hide/show extension rows
+        # Hide/show extension rows (now a single row with grouped dropdowns)
         if hasattr(control_panel, 'row_widgets'):
-            ext_rows = ['PHP:', 'ASP:', 'JSP:', 'HTML:', 'JS:', 'JSON:', 'ENV:', 'Config:', 'Backup:']
+            ext_rows = ['Extensions:']
             for row_label in ext_rows:
                 if row_label in control_panel.row_widgets and control_panel.row_widgets[row_label] is not None:
                     try:
@@ -627,7 +619,7 @@ class ServiceFieldVisibilityMixin:
                         if show_extensions:
                             row_widget.setVisible(True)
                             row_widget.setMaximumHeight(30)
-                            row_widget.setMinimumHeight(30)
+                            row_widget.setMinimumHeight(26)
                         else:
                             row_widget.setVisible(False)
                             row_widget.setMaximumHeight(0)
@@ -635,6 +627,20 @@ class ServiceFieldVisibilityMixin:
                     except RuntimeError as _exc:
                         pass
                         logger.debug("Suppressed exception", exc_info=True)
+            
+            # Recalculate panel height
+            visible_count = 1  # Scan Type row always visible
+            if control_panel.row_widgets.get('Preset:', None) and control_panel.row_widgets['Preset:'].isVisible():
+                visible_count += 1
+            if show_extensions:
+                visible_count += 1  # Single extension row with grouped dropdowns
+            if control_panel.row_widgets.get('Wordlist:', None) and control_panel.row_widgets['Wordlist:'].isVisible():
+                visible_count += 1
+            if control_panel.row_widgets.get('Auth Method:', None) and control_panel.row_widgets['Auth Method:'].isVisible():
+                visible_count += 1
+            needed_height = visible_count * 30 + 4
+            control_panel.setMaximumHeight(needed_height)
+            control_panel.setMinimumHeight(needed_height)
         
 
     
@@ -645,8 +651,8 @@ class ServiceFieldVisibilityMixin:
         graph_view_btn = getattr(self, f"{tool_key}_graph_view_btn", None)
         
         if table_view_btn:
-            # Hide table view for Fingerprinting, Source Code, Crawler, and Enterprise Scripts scan types
-            table_view_btn.setVisible(scan_type not in ["Fingerprinting", "Source Code", "Crawler", "Enterprise Scripts"])
+            # Hide table view for Fingerprinting, Source Code, Crawler, VHost Brute, and Enterprise Scripts scan types
+            table_view_btn.setVisible(scan_type not in ["Fingerprinting", "Source Code", "Crawler", "VHost Brute", "Enterprise Scripts"])
         
         # Update graph button text based on scan type
         if graph_view_btn:

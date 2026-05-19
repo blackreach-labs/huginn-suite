@@ -118,15 +118,12 @@ class ServiceScannersMixin:
                 wordlist_path = controls['http_wordlist'].currentData() if 'http_wordlist' in controls else None
                 
                 # Get extensions for directory enumeration
-                if scan_type == "Directory Enum":
-                    ext_mapping = {
-                        'ext_php': '.php', 'ext_asp': '.asp', 'ext_aspx': '.aspx', 'ext_jsp': '.jsp',
-                        'ext_html': '.html', 'ext_js': '.js', 'ext_json': '.json',
-                        'ext_env': '.env', 'ext_config': '.config', 'ext_bak': '.bak'
-                    }
-                    for control_name, control in controls.items():
-                        if control_name in ext_mapping and hasattr(control, 'isChecked') and control.isChecked():
-                            extensions.append(ext_mapping[control_name])
+                if scan_type in ("Directory Enum", "Full Scan"):
+                    # Read from checkable combobox controls
+                    from app.core.control_panel_factory import CheckableComboBox
+                    for control_name in ('ext_web', 'ext_frontend', 'ext_config', 'ext_backup'):
+                        if control_name in controls and isinstance(controls[control_name], CheckableComboBox):
+                            extensions.extend(controls[control_name].getCheckedItems())
             
             # Set current scan type and switch to appropriate terminal
             setattr(self, f"{tool_key}_current_scan_type", scan_type)
@@ -188,7 +185,7 @@ class ServiceScannersMixin:
             worker.signals.results.connect(lambda results: self.store_http_results(tool_key, scan_type, results))
             worker.signals.results_ready.connect(lambda results: self.handle_http_realtime_results(tool_key, scan_type, results))
             # Connect progress signals for Directory Enum, Enterprise Scripts, and Full Scan
-            if scan_type in ["Directory Enum", "Enterprise Scripts", "Full Scan"]:
+            if scan_type in ["Directory Enum", "VHost Brute", "Enterprise Scripts", "Full Scan"]:
                 worker.signals.progress_start.connect(lambda total, msg: self.start_http_progress(tool_key, total, msg))
                 worker.signals.progress_update.connect(lambda current, found, msg: self.update_http_progress(tool_key, current, found, msg))
             

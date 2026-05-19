@@ -259,7 +259,15 @@ class HuginnScannerComponent(QWidget):
             def run(self):
                 try:
                     from app.tools.huginn_vuln_scanner import HuginnVulnScanner
+                    from app.core.dns_resolver import dns_resolver
                     import logging
+                    
+                    # Resolve target hostname using global DNS settings
+                    resolved_target = self.target
+                    resolved_ip = dns_resolver.resolve_hostname(self.target)
+                    if resolved_ip and resolved_ip != self.target:
+                        resolved_target = resolved_ip
+                        self.output_signal.emit(f"Using DNS: {self.target} → {resolved_ip}")
                     
                     # Capture log messages for UI display
                     class UILogHandler(logging.Handler):
@@ -279,7 +287,13 @@ class HuginnScannerComponent(QWidget):
                     logger.addHandler(ui_handler)
                     
                     async def run_scan():
-                        scanner = HuginnVulnScanner(self.target, self.profile, verify_ssl=False)
+                        # Use resolved IP but pass original hostname for Host header
+                        target_url = resolved_target
+                        if resolved_ip and resolved_ip != self.target:
+                            # If target was a hostname, use http://IP format with original as context
+                            if not target_url.startswith('http'):
+                                target_url = f"http://{resolved_target}"
+                        scanner = HuginnVulnScanner(target_url, self.profile, verify_ssl=False)
                         
                         # Track progress through phases - match actual scanner phases
                         phase_names = [

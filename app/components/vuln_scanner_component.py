@@ -29,12 +29,20 @@ class VulnScanWorker(QThread):
             if tools_path not in sys.path:
                 sys.path.insert(0, tools_path)
             from tools.advanced_nse_scanner import AdvancedNSEScanner
+            from app.core.dns_resolver import dns_resolver
+            
+            # Resolve target hostname using global DNS settings
+            resolved_target = self.target
+            resolved_ip = dns_resolver.resolve_hostname(self.target)
+            if resolved_ip and resolved_ip != self.target:
+                resolved_target = resolved_ip
+                self.output.emit(f"<p style='color: #87CEEB;'>Using DNS: {h(self.target)} → {h(resolved_ip)}</p><br>")
             
             self.output.emit(f"<p style='color: #00BFFF;'>[VULN SCAN] Starting vulnerability scan on {h(self.target)}</p><br>")
             self.progress.emit(10)
             self.output.emit("<br>")
             
-            scanner = AdvancedNSEScanner(self.target, timeout=10, threads=5)
+            scanner = AdvancedNSEScanner(resolved_target, timeout=10, threads=5)
             
             # Custom output formatting instead of capturing print statements
             self.output.emit(f"<p style='color: #64C8FF; font-weight: bold;'>🔍 VULNERABILITY SCAN INITIATED</p><br>")
@@ -122,6 +130,9 @@ class VulnScanWorker(QThread):
             self.output.emit(f"<p style='color: #FFD700; font-weight: bold;'>🔧 COMMON SCAN - Protocol Issues</p><br>")
             for test_name, test_func in [('SMB Issues', scanner.test_smb_vulns), ('SSL/TLS Issues', scanner.test_ssl_vulns), ('Auth Issues', scanner.test_auth_vulns)]:
                 self.run_single_test(test_name, test_func, scanner)
+        
+        # Run application-specific detectors
+        self._run_app_detectors(scanner)
     
     def run_single_test(self, test_name, test_func, scanner):
         """Run a single test with formatted output"""
@@ -140,6 +151,41 @@ class VulnScanWorker(QThread):
                 self.output.emit(f"<p style='color: #90EE90;'>    ✅ Secure</p><br>")
         except Exception as e:
             self.output.emit(f"<p style='color: #FFA500;'>    ⚠️ Test error: {h(str(e)[:50])}...</p><br>")
+
+    def _run_app_detectors(self, scanner):
+        """Run application-specific vulnerability detectors (Flowise, etc.)"""
+        self.output.emit(f"<p style='color: #FFD700; font-weight: bold;'>🔬 APPLICATION SCAN - Service-Specific CVEs</p><br>")
+        
+        try:
+            from app.core.flowise_detector import FlowiseDetector
+            
+            self.output.emit(f"<p style='color: #87CEEB;'>  → Flowise CVE-2025-58434...</p><br>")
+            
+            # Determine target URL (try common Flowise ports)
+            target_base = self.target
+            if not target_base.startswith('http'):
+                target_base = f"http://{target_base}"
+            
+            detector = FlowiseDetector(timeout=8)
+            result = detector.scan(target_base)
+            
+            if result.vulnerable:
+                finding = result.to_finding()
+                scanner.results.append(finding)
+                self.output.emit(
+                    f"<p style='color: #FF0000;'>    🚨 {h(finding['name'])} - CRITICAL</p><br>"
+                    f"<p style='color: #FF6B6B;'>       Version: {h(result.version or 'unknown')}</p><br>"
+                    f"<p style='color: #FF6B6B;'>       Leaked: {h(', '.join(result.leaked_fields))}</p><br>"
+                )
+            elif result.detected:
+                self.output.emit(
+                    f"<p style='color: #90EE90;'>    ✅ Flowise detected (v{h(result.version or '?')}) - Not vulnerable</p><br>"
+                )
+            else:
+                self.output.emit(f"<p style='color: #90EE90;'>    ✅ Flowise not detected</p><br>")
+                
+        except Exception as e:
+            self.output.emit(f"<p style='color: #FFA500;'>    ⚠️ App detector error: {h(str(e)[:80])}</p><br>")
     
     def generate_scan_summary(self, results):
         """Generate formatted scan summary"""

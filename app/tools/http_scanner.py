@@ -194,6 +194,8 @@ class HTTPEnumWorker(QRunnable):
                 self._enterprise_scripts(results)
                 if results.get('enterprise_results'):
                     self._build_enterprise_tree(results)
+            elif self.scan_type == "VHost Brute":
+                self._vhost_brute(results)
             elif self.scan_type == "Huginn Scan":
                 self._nikto_scan(results)
                 if results.get('huginn_scan'):
@@ -2281,6 +2283,148 @@ class HTTPEnumWorker(QRunnable):
     
 
     
+    def _vhost_brute(self, results):
+        """Virtual host brute-force via Host header manipulation.
+        
+        Replicates gobuster vhost --append-domain behavior:
+        - Gets baseline response from target
+        - Iterates wordlist, sending requests with Host: <word>.<domain>
+        - Reports entries where response differs from baseline
+        """
+        try:
+            parsed = urlparse(self.target if '://' in self.target else f'http://{self.target}')
+            base_domain = parsed.hostname
+            scheme = parsed.scheme or 'http'
+            port = parsed.port
+            
+            # Use resolved IP if available (critical for .htb domains that don't resolve via system DNS)
+            if hasattr(self, 'resolved_ip') and self.resolved_ip:
+                connect_host = self.resolved_ip
+            else:
+                connect_host = base_domain
+            
+            # Build the URL to connect to (using IP, not hostname)
+            if port and port not in (80, 443):
+                base_url = f"{scheme}://{connect_host}:{port}"
+            else:
+                base_url = f"{scheme}://{connect_host}"
+            
+            self.signals.output.emit(f"<p style='color: #FFD700;'>Starting VHost brute-force on {h(base_domain)}...</p><br>")
+            self.signals.output.emit(f"<p style='color: #87CEEB;'>Connecting to: {h(base_url)}, Host header domain: {h(base_domain)}</p><br>")
+            
+            # Load wordlist
+            wordlist = []
+            if self.wordlist_path and os.path.exists(self.wordlist_path):
+                with open(self.wordlist_path, 'r', encoding='utf-8', errors='ignore') as f:
+                    wordlist = [line.strip() for line in f if line.strip() and not line.startswith('#')]
+                self.signals.output.emit(f"<p style='color: #87CEEB;'>Loaded wordlist: {h(os.path.basename(self.wordlist_path))} ({len(wordlist)} entries)</p><br>")
+            else:
+                # Default common vhosts
+                wordlist = [
+                    'admin', 'api', 'dev', 'test', 'staging', 'beta', 'demo', 'www',
+                    'mail', 'ftp', 'blog', 'shop', 'store', 'portal', 'app', 'mobile',
+                    'internal', 'intranet', 'vpn', 'remote', 'secure', 'dashboard',
+                    'monitor', 'status', 'docs', 'wiki', 'git', 'jenkins', 'ci',
+                    'cdn', 'static', 'assets', 'media', 'images', 'files', 'backup',
+                    'db', 'database', 'mysql', 'postgres', 'redis', 'elastic',
+                    'grafana', 'prometheus', 'kibana', 'sentry', 'jira', 'confluence'
+                ]
+                self.signals.output.emit(f"<p style='color: #87CEEB;'>No wordlist selected, using built-in list ({len(wordlist)} entries)</p><br>")
+            
+            # Get baseline response (with the original domain as Host header)
+            self.signals.output.emit(f"<p style='color: #87CEEB;'>Getting baseline response...</p><br>")
+            session = self._get_session()
+            
+            try:
+                baseline_resp = session.get(
+                    base_url, 
+                    headers={'Host': base_domain},
+                    timeout=10, 
+                    allow_redirects=True
+                )
+                baseline_status = baseline_resp.status_code
+                baseline_size = len(baseline_resp.text)
+                self.signals.output.emit(
+                    f"<p style='color: #87CEEB;'>Baseline: Status={baseline_status}, Size={baseline_size}</p><br>"
+                )
+            except Exception as e:
+                self.signals.output.emit(f"<p style='color: #FF4444;'>Failed to get baseline: {h(str(e))}</p><br>")
+                results['vhost_results'] = []
+                return
+            
+            # Brute-force vhosts
+            discovered = []
+            total = len(wordlist)
+            self.signals.progress_start.emit(total, "VHost brute-force")
+            
+            for i, word in enumerate(wordlist):
+                if not getattr(self, 'is_running', True):
+                    break
+                
+                test_host = f"{word}.{base_domain}"
+                
+                try:
+                    resp = session.get(
+                        base_url, 
+                        headers={'Host': test_host}, 
+                        timeout=5, 
+                        allow_redirects=False
+                    )
+                    resp_status = resp.status_code
+                    resp_size = len(resp.text)
+                    
+                    # Detect difference from baseline (filter out redirects as false positives)
+                    if resp_status in (301, 302, 307, 308):
+                        continue
+                    
+                    status_diff = resp_status != baseline_status
+                    size_diff = abs(resp_size - baseline_size) > 50
+                    
+                    if status_diff or size_diff:
+                        discovered.append({
+                            'vhost': test_host,
+                            'status': resp_status,
+                            'size': resp_size,
+                            'reason': 'status' if status_diff else 'size'
+                        })
+                        
+                        reason = f"Status: {resp_status}" if status_diff else f"Size: {resp_size} (baseline: {baseline_size})"
+                        self.signals.output.emit(
+                            f"<p style='color: #00FF41;'>✓ Found: {h(test_host)} [{reason}]</p><br>"
+                        )
+                
+                except requests.exceptions.ConnectionError:
+                    continue
+                except requests.exceptions.Timeout:
+                    continue
+                except Exception:
+                    continue
+                
+                # Progress update every 50 entries
+                if i % 50 == 0:
+                    self.signals.progress_update.emit(i, 0, f"Testing: {test_host}")
+            
+            # Summary
+            self.signals.progress_update.emit(total, 0, "Complete")
+            self.signals.output.emit(f"<br><p style='color: #FFD700;'>━━━ VHost Brute-Force Complete ━━━</p><br>")
+            self.signals.output.emit(f"<p style='color: #87CEEB;'>Tested: {total} hosts</p><br>")
+            self.signals.output.emit(f"<p style='color: #00FF41;'>Discovered: {len(discovered)} virtual hosts</p><br>")
+            
+            if discovered:
+                self.signals.output.emit(f"<br><p style='color: #FFD700;'>Discovered Virtual Hosts:</p><br>")
+                for entry in discovered:
+                    self.signals.output.emit(
+                        f"<p style='color: #00FF41;'>  • {h(entry['vhost'])} "
+                        f"[Status: {entry['status']}, Size: {entry['size']}]</p><br>"
+                    )
+            
+            results['vhost_results'] = discovered
+            
+        except Exception as e:
+            self.signals.output.emit(f"<p style='color: #FF4444;'>VHost brute-force error: {h(str(e))}</p><br>")
+            logger.error(f"VHost brute-force error: {e}")
+            results['vhost_results'] = []
+
     def _full_scan(self, results):
         self.signals.output.emit("<p style='color: #87CEEB;'>Starting comprehensive HTTP scan...</p><br>")
         

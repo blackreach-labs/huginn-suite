@@ -133,7 +133,7 @@
       {
         "label": "Scan Type:",
         "controls": [
-          {"type": "combobox", "name": "http_scan_type", "items": ["Fingerprinting", "Source Code", "Crawler", "Directory Enum", "Enterprise Scripts", "Full Scan"], "width": 220},
+          {"type": "combobox", "name": "http_scan_type", "items": ["Fingerprinting", "Source Code", "Crawler", "Directory Enum", "VHost Brute", "Enterprise Scripts", "Full Scan"], "width": 250},
           {"type": "checkbox", "name": "enable_listener", "text": "Enable Listener", "style": "margin-left: 20px;"}
         ]
       },
@@ -148,79 +148,21 @@
       {
         "label": "Preset:",
         "controls": [
-          {"type": "combobox", "name": "http_preset", "items": ["Manual", "PHP Apps", "API-focused", "Login Pages", "Backup Files", "CMS Common"], "width": 170, "default": "Manual"},
+          {"type": "combobox", "name": "http_preset", "items": ["Manual", "PHP Apps", "API-focused", "Login Pages", "Backup Files", "CMS Common"], "width": 180, "default": "Manual"},
           {"type": "label", "name": "size_label", "text": "Size:", "width": 50, "visible": false},
           {"type": "combobox", "name": "wordlist_size", "items": ["Small", "Medium", "Large"], "width": 120, "default": "Medium", "visible": false}
         ],
         "visible": false
       },
       {
-        "label": "PHP:",
+        "label": "Extensions:",
         "controls": [
-          {"type": "checkbox", "name": "ext_php", "text": ".php", "checked": true},
-          {"type": "checkbox", "name": "ext_php3", "text": ".php3"},
-          {"type": "checkbox", "name": "ext_php4", "text": ".php4"},
-          {"type": "checkbox", "name": "ext_php5", "text": ".php5"},
-          {"type": "checkbox", "name": "ext_phtml", "text": ".phtml"}
+          {"type": "checkable_combobox", "name": "ext_web", "group_label": "Web", "items": [".php", ".php3", ".php4", ".php5", ".phtml", ".asp", ".aspx", ".ascx", ".ashx", ".jsp", ".jspx", ".do", ".action"], "checked_items": [".php"], "width": 170},
+          {"type": "checkable_combobox", "name": "ext_frontend", "group_label": "Frontend", "items": [".html", ".htm", ".xhtml", ".js", ".jsx", ".json"], "checked_items": [".html"], "width": 198},
+          {"type": "checkable_combobox", "name": "ext_config", "group_label": "Config", "items": [".env", ".config", ".conf", ".ini"], "checked_items": [], "width": 175},
+          {"type": "checkable_combobox", "name": "ext_backup", "group_label": "Backup", "items": [".bak", ".old", ".tmp", ".backup"], "checked_items": [], "width": 190}
         ],
-        "visible": false
-      },
-      {
-        "label": "ASP:",
-        "controls": [
-          {"type": "checkbox", "name": "ext_asp", "text": ".asp"},
-          {"type": "checkbox", "name": "ext_aspx", "text": ".aspx"},
-          {"type": "checkbox", "name": "ext_ascx", "text": ".ascx"},
-          {"type": "checkbox", "name": "ext_ashx", "text": ".ashx"}
-        ],
-        "visible": false
-      },
-      {
-        "label": "JSP:",
-        "controls": [
-          {"type": "checkbox", "name": "ext_jsp", "text": ".jsp"},
-          {"type": "checkbox", "name": "ext_jspx", "text": ".jspx"},
-          {"type": "checkbox", "name": "ext_do", "text": ".do"},
-          {"type": "checkbox", "name": "ext_action", "text": ".action"}
-        ],
-        "visible": false
-      },
-      {
-        "label": "HTML:",
-        "controls": [
-          {"type": "checkbox", "name": "ext_html", "text": ".html", "checked": true},
-          {"type": "checkbox", "name": "ext_htm", "text": ".htm"},
-          {"type": "checkbox", "name": "ext_xhtml", "text": ".xhtml"}
-        ],
-        "visible": false
-      },
-      {
-        "label": "JS:",
-        "controls": [
-          {"type": "checkbox", "name": "ext_js", "text": ".js"},
-          {"type": "checkbox", "name": "ext_json", "text": ".json"},
-          {"type": "checkbox", "name": "ext_jsx", "text": ".jsx"}
-        ],
-        "visible": false
-      },
-      {
-        "label": "Config:",
-        "controls": [
-          {"type": "checkbox", "name": "ext_env", "text": ".env"},
-          {"type": "checkbox", "name": "ext_config", "text": ".config"},
-          {"type": "checkbox", "name": "ext_conf", "text": ".conf"},
-          {"type": "checkbox", "name": "ext_ini", "text": ".ini"}
-        ],
-        "visible": false
-      },
-      {
-        "label": "Backup:",
-        "controls": [
-          {"type": "checkbox", "name": "ext_bak", "text": ".bak"},
-          {"type": "checkbox", "name": "ext_old", "text": ".old"},
-          {"type": "checkbox", "name": "ext_tmp", "text": ".tmp"},
-          {"type": "checkbox", "name": "ext_backup", "text": ".backup"}
-        ],
+        "add_stretch": true,
         "visible": false
       },
       {
@@ -534,13 +476,13 @@
       {
         "label": "Scan Type:",
         "controls": [
-          {"type": "combobox", "name": "ssh_scan_type", "items": ["Enumeration", "Banner Grab", "Key Exchange", "Cipher Analysis", "Full Scan"], "width": 150}
+          {"type": "combobox", "name": "ssh_scan_type", "items": ["Enumeration", "Banner Grab", "Key Exchange", "Cipher Analysis", "Full Scan"], "width": 200}
         ]
       },
       {
         "label": "Auth Type:",
         "controls": [
-          {"type": "combobox", "name": "ssh_auth_type", "items": ["Anonymous", "Password", "Key File", "Bruteforce"], "width": 150}
+          {"type": "combobox", "name": "ssh_auth_type", "items": ["Anonymous", "Password", "Key File", "Bruteforce"], "width": 200}
         ]
       },
       {

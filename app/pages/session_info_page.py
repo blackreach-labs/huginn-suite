@@ -215,9 +215,10 @@ class SessionInfoPage(BasePage):
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
         )
         if reply == QMessageBox.StandardButton.Yes:
+            session_name = name_item.text()
             session_manager.delete_session(sid_item.text())
             self._sm_refresh()
-            self.update_status(f"Deleted session: {name_item.text()}")
+            self.update_status(f"Deleted session: {session_name}")
 
     def create_stats_tab(self):
         """Create statistics tab"""

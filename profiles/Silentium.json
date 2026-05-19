@@ -1,0 +1,15 @@
+{
+  "target_name": "Silentium",
+  "primary_target": "10.129.229.187",
+  "scope": "10.129.229.187",
+  "subdomains": "staging.silentium.htb",
+  "cloud_assets": "",
+  "out_scope": "",
+  "restrictions": "",
+  "dos_allowed": false,
+  "social_eng_allowed": false,
+  "physical_allowed": false,
+  "credentials": {
+    "credentials": []
+  }
+}
