@@ -614,20 +614,18 @@ class CurlWidget(QWidget):
             self.intercept_body_edit.clear()
     
     def toggle_header(self, header, button):
-        current = self.headers_text.toPlainText()
-        lines = current.split('\n') if current else []
+        current = self.headers_text.toPlainText().strip()
+        lines = [line for line in current.split('\n') if line.strip()] if current else []
         header_key = header.split(':')[0]
         
         if button.isChecked():
             # Add header if not present
-            if not any(line.startswith(header_key + ':') for line in lines):
-                if current:
-                    self.headers_text.setPlainText(current + '\n' + header)
-                else:
-                    self.headers_text.setPlainText(header)
+            if not any(line.strip().startswith(header_key + ':') for line in lines):
+                lines.append(header)
+            self.headers_text.setPlainText('\n'.join(lines))
         else:
             # Remove header
-            filtered_lines = [line for line in lines if not line.startswith(header_key + ':')]
+            filtered_lines = [line for line in lines if not line.strip().startswith(header_key + ':')]
             self.headers_text.setPlainText('\n'.join(filtered_lines))
         
         # Uncheck other content-type buttons if this is a content-type

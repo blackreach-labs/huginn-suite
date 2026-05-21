@@ -8,7 +8,8 @@ for cursor movement, line editing, colors, and screen management.
 
 import threading
 import pyte
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QPlainTextEdit, QApplication
+from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QPlainTextEdit, QApplication,
+                             QTabWidget, QPushButton, QHBoxLayout)
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal
 from PyQt6.QtGui import QFont, QTextCursor, QKeyEvent
 
@@ -160,8 +161,9 @@ class InteractiveTerminalWidget(QWidget):
         self._cols = cols
         self._rows = rows
 
-        # pyte virtual terminal screen
-        self._screen = pyte.Screen(cols, rows)
+        # pyte virtual terminal screen with scrollback history
+        self._screen = pyte.HistoryScreen(cols, rows, history=10000)
+        self._screen.set_mode(pyte.modes.LNM)
         self._stream = pyte.Stream(self._screen)
 
         self._setup_ui()
@@ -252,31 +254,31 @@ class InteractiveTerminalWidget(QWidget):
             return
         self._screen_dirty = False
 
-        # Build display text from pyte screen (only non-empty lines from top)
-        lines = []
-        last_non_empty = -1
+        # Build scrollback history lines
+        history_lines = []
+        if hasattr(self._screen, 'history') and self._screen.history.top:
+            for hist_line in self._screen.history.top:
+                chars = []
+                for col in range(self._screen.columns):
+                    char = hist_line.get(col)
+                    chars.append(char.data if char and char.data else ' ')
+                history_lines.append(''.join(chars).rstrip())
 
+        # Build visible screen lines
+        visible_lines = []
+        last_non_empty = -1
         for row in range(self._screen.lines):
             line_chars = []
             for col in range(self._screen.columns):
                 char = self._screen.buffer[row][col]
                 line_chars.append(char.data if char.data else ' ')
             line = ''.join(line_chars).rstrip()
-            lines.append(line)
+            visible_lines.append(line)
             if line:
                 last_non_empty = row
 
-        # Include history (scrollback) if available
-        history_lines = []
-        if hasattr(self._screen, 'history') and self._screen.history.top:
-            for hist_line in self._screen.history.top:
-                chars = []
-                for col in sorted(hist_line.keys()):
-                    chars.append(hist_line[col].data if hist_line[col].data else ' ')
-                history_lines.append(''.join(chars).rstrip())
-
         # Combine history + visible screen
-        display_lines = history_lines + lines[:last_non_empty + 1]
+        display_lines = history_lines + visible_lines[:last_non_empty + 1]
         new_text = '\n'.join(display_lines)
 
         # Only update if content changed
@@ -346,4 +348,83 @@ class InteractiveTerminalWidget(QWidget):
     def closeEvent(self, event):
         """Clean up on widget close."""
         self.stop()
+        super().closeEvent(event)
+
+
+class MultiTerminalWidget(QWidget):
+    """Tabbed container that allows launching multiple interactive terminals.
+    
+    Provides a tab bar with a "+" button to spawn new terminal instances,
+    and closable tabs to terminate individual sessions.
+    """
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._terminal_count = 0
+        self._setup_ui()
+
+    def _setup_ui(self):
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+
+        # Tab widget for multiple terminals
+        self._tabs = QTabWidget()
+        self._tabs.setTabsClosable(True)
+        self._tabs.tabCloseRequested.connect(self._close_tab)
+
+        # "+" button in the tab bar corner to add new terminals
+        new_tab_btn = QPushButton("+")
+        new_tab_btn.setFixedSize(28, 28)
+        new_tab_btn.setToolTip("Open new terminal")
+        new_tab_btn.setStyleSheet("""
+            QPushButton {
+                background: rgba(100, 200, 255, 150);
+                color: #000;
+                border: none;
+                border-radius: 4px;
+                font-weight: bold;
+                font-size: 14px;
+            }
+            QPushButton:hover {
+                background: rgba(120, 220, 255, 200);
+            }
+        """)
+        new_tab_btn.clicked.connect(self.add_terminal)
+        self._tabs.setCornerWidget(new_tab_btn, Qt.Corner.TopRightCorner)
+
+        layout.addWidget(self._tabs)
+
+        # Start with one terminal
+        self.add_terminal()
+
+    def add_terminal(self):
+        """Spawn a new interactive terminal tab."""
+        self._terminal_count += 1
+        terminal = InteractiveTerminalWidget()
+        index = self._tabs.addTab(terminal, f"Terminal {self._terminal_count}")
+        self._tabs.setCurrentIndex(index)
+        terminal._display.setFocus()
+
+    def _close_tab(self, index: int):
+        """Close a terminal tab and stop its PTY process."""
+        widget = self._tabs.widget(index)
+        if widget:
+            widget.stop()
+        self._tabs.removeTab(index)
+
+        # If all tabs closed, open a fresh one
+        if self._tabs.count() == 0:
+            self.add_terminal()
+
+    def stop_all(self):
+        """Stop all terminal processes."""
+        for i in range(self._tabs.count()):
+            widget = self._tabs.widget(i)
+            if widget:
+                widget.stop()
+
+    def closeEvent(self, event):
+        """Clean up all terminals on widget close."""
+        self.stop_all()
         super().closeEvent(event)

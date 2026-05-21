@@ -180,10 +180,9 @@ class UnifiedHttpClient(QObject):
             if http_request.data:
                 content_type = http_request.headers.get('Content-Type', '').lower()
                 if 'application/json' in content_type:
-                    try:
-                        kwargs['json'] = json.loads(http_request.data)
-                    except json.JSONDecodeError:
-                        kwargs['data'] = http_request.data
+                    # Send body as-is with the Content-Type header already set.
+                    # Using json= would re-serialize and double-set Content-Type.
+                    kwargs['data'] = http_request.data.encode('utf-8')
                 else:
                     kwargs['data'] = http_request.data
             
