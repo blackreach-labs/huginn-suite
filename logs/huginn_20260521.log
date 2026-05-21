@@ -1,0 +1,1015 @@
+2026-05-21 09:30:22 - huginn - INFO - License saved successfully
+2026-05-21 09:30:22 - huginn - INFO - License loaded and validated successfully
+2026-05-21 09:30:23 - huginn - INFO - Application starting...
+2026-05-21 09:30:23 - huginn - INFO - Font loaded successfully
+2026-05-21 09:30:23 - huginn - INFO - Stylesheet loaded successfully
+2026-05-21 09:30:23 - huginn - INFO - Creating main window...
+2026-05-21 09:30:23 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-05-21 09:30:23 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-05-21 09:30:23 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\db_attacks_page.py)
+2026-05-21 09:30:28 - huginn - DEBUG - Credentials loaded for profile 'Silentium'
+2026-05-21 09:30:28 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-05-21 09:30:28 - huginn - DEBUG - Credentials loaded for profile 'Silentium'
+2026-05-21 09:30:28 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-05-21 09:30:37 - huginn - INFO - VPN connection terminated
+2026-05-21 09:30:37 - huginn - INFO - OpenVPN connection started with config: C:/Users/allie/Downloads/machines_au-1.ovpn
+2026-05-21 09:30:38 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:37 Note: --data-ciphers-fallback with cipher 'AES-128-CBC' disables data channel offload.
+2026-05-21 09:30:38 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:37 OpenVPN 2.6.14 [git:none/0169b4ad2bb35d2c] Windows [SSL (OpenSSL)] [LZO] [LZ4] [PKCS11] [AEAD] [DCO] built on Jun 19 2025
+2026-05-21 09:30:38 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:37 Windows version 10.0 (Windows 10 or greater), amd64 executable
+2026-05-21 09:30:38 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:37 library versions: OpenSSL 3.5.0 8 Apr 2025, LZO 2.10
+2026-05-21 09:30:38 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:37 DCO version: N/A
+2026-05-21 09:30:38 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:37 TCP/UDP: Preserving recently used remote address: [AF_INET]206.148.40.161:1337
+2026-05-21 09:30:38 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:37 Socket Buffers: R=[65536->65536] S=[65536->65536]
+2026-05-21 09:30:38 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:37 UDPv4 link local: (not bound)
+2026-05-21 09:30:38 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:37 UDPv4 link remote: [AF_INET]206.148.40.161:1337
+2026-05-21 09:30:38 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:37 TLS: Initial packet from [AF_INET]206.148.40.161:1337, sid=2d357273 1ba39f54
+2026-05-21 09:30:38 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:37 VERIFY OK: depth=2, C=GR, O=Hack The Box, OU=Systems, CN=HTB VPN: Root Certificate Authority
+2026-05-21 09:30:38 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:37 VERIFY OK: depth=1, C=GR, O=Hack The Box, OU=Systems, CN=HTB VPN: au-free-1 Issuing CA
+2026-05-21 09:30:38 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:37 VERIFY KU OK
+2026-05-21 09:30:38 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:37 Validating certificate extended key usage
+2026-05-21 09:30:38 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:37 ++ Certificate has EKU (str) TLS Web Client Authentication, expects TLS Web Server Authentication
+2026-05-21 09:30:38 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:37 ++ Certificate has EKU (oid) 1.3.6.1.5.5.7.3.2, expects TLS Web Server Authentication
+2026-05-21 09:30:38 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:37 ++ Certificate has EKU (str) TLS Web Server Authentication, expects TLS Web Server Authentication
+2026-05-21 09:30:38 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:37 VERIFY EKU OK
+2026-05-21 09:30:38 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:37 VERIFY OK: depth=0, C=GR, O=Hack The Box, OU=Systems, CN=au-free-1
+2026-05-21 09:30:38 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:37 Control Channel: TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM_SHA384, peer certificate: 256 bits ED25519, signature: ED25519, peer temporary key: 253 bits X25519
+2026-05-21 09:30:38 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:37 [au-free-1] Peer Connection Initiated with [AF_INET]206.148.40.161:1337
+2026-05-21 09:30:38 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:37 TLS: move_session: dest=TM_ACTIVE src=TM_INITIAL reinit_src=1
+2026-05-21 09:30:38 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:37 TLS: tls_multi_process: initial untrusted session promoted to trusted
+2026-05-21 09:30:39 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:38 SENT CONTROL [au-free-1]: 'PUSH_REQUEST' (status=1)
+2026-05-21 09:30:39 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:38 PUSH: Received control message: 'PUSH_REPLY,route 10.10.8.0 255.255.252.0,route 10.129.0.0 255.255.0.0,route-ipv6 dead:beef::/64,explicit-exit-notify,tun-ipv6,route-gateway 10.10.14.1,topology subnet,ping 10,ping-restart 120,ifconfig-ipv6 dead:beef:2::1016/64 dead:beef:2::1,ifconfig 10.10.14.24 255.255.254.0,peer-id 0,cipher AES-256-CBC,protocol-flags cc-exit tls-ekm dyn-tls-crypt,tun-mtu 1500'
+2026-05-21 09:30:39 - huginn - INFO - VPN IP address assigned: 10.10.14.24
+2026-05-21 09:30:39 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:38 OPTIONS IMPORT: --ifconfig/up options modified
+2026-05-21 09:30:39 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:38 OPTIONS IMPORT: route options modified
+2026-05-21 09:30:39 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:38 OPTIONS IMPORT: route-related options modified
+2026-05-21 09:30:39 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:38 OPTIONS IMPORT: tun-mtu set to 1500
+2026-05-21 09:30:39 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:38 interactive service msg_channel=0
+2026-05-21 09:30:39 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:38 ROUTE_GATEWAY 192.168.1.1/255.255.255.0 I=23 HWADDR=88:d8:2e:79:0c:48
+2026-05-21 09:30:39 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:38 GDG6: remote_host_ipv6=n/a
+2026-05-21 09:30:39 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:38 NOTE: GetBestInterfaceEx returned error: Element not found.   (code=1168)
+2026-05-21 09:30:39 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:38 ROUTE6: default_gateway=UNDEF
+2026-05-21 09:30:39 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:38 open_tun
+2026-05-21 09:30:39 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:38 tap-windows6 device [OpenVPN TAP-Windows6] opened
+2026-05-21 09:30:39 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:38 TAP-Windows Driver Version 9.27
+2026-05-21 09:30:39 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:38 Set TAP-Windows TUN subnet mode network/local/netmask = 10.10.14.0/10.10.14.24/255.255.254.0 [SUCCEEDED]
+2026-05-21 09:30:39 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:38 Notified TAP-Windows driver to set a DHCP IP/netmask of 10.10.14.24/255.255.254.0 on interface {9624926F-3F6E-402F-BBEF-68BB8BB5B777} [DHCP-serv: 10.10.14.0, lease-time: 31536000]
+2026-05-21 09:30:39 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:38 Successful ARP Flush on interface [18] {9624926F-3F6E-402F-BBEF-68BB8BB5B777}
+2026-05-21 09:30:39 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:38 IPv4 MTU set to 1500 on interface 18 using SetIpInterfaceEntry()
+2026-05-21 09:30:39 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:38 NETSH: C:\WINDOWS\system32\netsh.exe interface ipv6 set address 18 dead:beef:2::1016/128 store=active
+2026-05-21 09:30:39 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:38 add_route_ipv6(dead:beef:2::/64 -> dead:beef:2::1016 metric 0) IF 18
+2026-05-21 09:30:39 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:38 IPv6 route addition using ipapi failed because route exists
+2026-05-21 09:30:39 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:38 NETSH: C:\WINDOWS\system32\netsh.exe interface ipv6 delete dns 18 all
+2026-05-21 09:30:39 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:38 IPv6 MTU set to 1500 on interface 18 using SetIpInterfaceEntry()
+2026-05-21 09:30:39 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:38 Data Channel: cipher 'AES-256-CBC', auth 'SHA256', peer-id: 0, compression: 'lzo'
+2026-05-21 09:30:39 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:38 Timers: ping 10, ping-restart 120
+2026-05-21 09:30:39 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:38 Protocol options: explicit-exit-notify 1, protocol-flags cc-exit tls-ekm dyn-tls-crypt
+2026-05-21 09:30:43 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:43 TEST ROUTES: 2/2 succeeded len=2 ret=1 a=0 u/d=up
+2026-05-21 09:30:43 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:43 C:\WINDOWS\system32\route.exe ADD 10.10.8.0 MASK 255.255.252.0 10.10.14.1
+2026-05-21 09:30:43 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:43 Route addition via ipapi [adaptive] failed because route exists
+2026-05-21 09:30:43 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:43 C:\WINDOWS\system32\route.exe ADD 10.129.0.0 MASK 255.255.0.0 10.10.14.1
+2026-05-21 09:30:43 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:43 Route addition via ipapi [adaptive] failed because route exists
+2026-05-21 09:30:43 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:43 add_route_ipv6(dead:beef::/64 -> dead:beef:2::1 metric -1) IF 18
+2026-05-21 09:30:43 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:43 IPv6 route addition using ipapi failed because route exists
+2026-05-21 09:30:43 - huginn - DEBUG - OpenVPN: 2026-05-21 09:30:43 Initialization Sequence Completed
+2026-05-21 09:31:00 - huginn - INFO - DNS server changed to: LocalDNS
+2026-05-21 09:31:02 - huginn - INFO - Local DNS server started on port 53530
+2026-05-21 09:31:09 - huginn - INFO - Removed DNS record: staging.silentium.htb A 10.129.230.11
+2026-05-21 09:31:10 - huginn - INFO - Removed DNS record: silentium.htb A 10.129.230.11
+2026-05-21 09:31:13 - huginn - INFO - Added DNS record: staging.silentium.htb A 10.129.230.41
+2026-05-21 09:31:22 - huginn - INFO - Added DNS record: silentium.htb A 10.129.230.41
+2026-05-21 09:31:37 - huginn - DEBUG - Wireless security tab unavailable
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\recon_enumeration_page.py", line 99, in setup_ui
+    wireless_tab = WirelessSecurityWidget(self)
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\wireless_security_widget.py", line 52, in __init__
+    self.connect_signals()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\wireless_security_widget.py", line 303, in connect_signals
+    self.generate_report_btn.clicked.connect(self.generate_report)
+    ^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'WirelessSecurityWidget' object has no attribute 'generate_report_btn'. Did you mean: 'generate_report'?
+2026-05-21 09:31:48 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-21 09:31:48 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-21 09:31:48 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-21 09:31:48 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-21 09:34:09 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\dns_resolver.py", line 14, in resolve_hostname
+    ipaddress.ip_address(hostname)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 54, in ip_address
+    raise ValueError(f'{address!r} does not appear to be an IPv4 or IPv6 address')
+ValueError: 'staging.silentium.htb' does not appear to be an IPv4 or IPv6 address
+2026-05-21 09:35:06 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\dns_resolver.py", line 14, in resolve_hostname
+    ipaddress.ip_address(hostname)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 54, in ip_address
+    raise ValueError(f'{address!r} does not appear to be an IPv4 or IPv6 address')
+ValueError: 'staging.silentium.htb' does not appear to be an IPv4 or IPv6 address
+2026-05-21 09:38:11 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\dns_resolver.py", line 14, in resolve_hostname
+    ipaddress.ip_address(hostname)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 54, in ip_address
+    raise ValueError(f'{address!r} does not appear to be an IPv4 or IPv6 address')
+ValueError: 'staging.silentium.htb' does not appear to be an IPv4 or IPv6 address
+2026-05-21 09:48:58 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-21 09:48:58 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-21 09:48:58 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-21 09:48:58 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-21 09:48:58 - huginn - INFO - Using default configuration
+2026-05-21 09:48:59 - huginn - INFO - Local DNS server stopped
+2026-05-21 09:48:59 - huginn - INFO - local_dns_server stopped
+2026-05-21 09:48:59 - huginn - INFO - VPN connection terminated
+2026-05-21 09:48:59 - huginn - INFO - vpn_manager disconnected
+2026-05-21 09:48:59 - huginn - DEBUG - Memory monitoring stopped
+2026-05-21 09:48:59 - huginn - DEBUG - Connection pool closed all sessions
+2026-05-21 09:48:59 - huginn - INFO - Update manager stopped during cleanup
+2026-05-21 09:49:00 - huginn - INFO - License saved successfully
+2026-05-21 09:49:00 - huginn - INFO - License loaded and validated successfully
+2026-05-21 09:49:08 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-21 09:49:08 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-21 09:49:08 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-21 09:49:08 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-21 09:49:08 - huginn - INFO - Using default configuration
+2026-05-21 09:49:11 - huginn - INFO - License saved successfully
+2026-05-21 09:49:11 - huginn - INFO - License loaded and validated successfully
+2026-05-21 09:49:17 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-21 09:49:17 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-21 09:49:17 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-21 09:49:17 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-21 09:49:17 - huginn - INFO - Using default configuration
+2026-05-21 09:49:19 - huginn - INFO - License saved successfully
+2026-05-21 09:49:19 - huginn - INFO - License loaded and validated successfully
+2026-05-21 09:49:43 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-21 09:49:43 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-21 09:49:43 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-21 09:49:43 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-21 09:49:44 - huginn - INFO - Using default configuration
+2026-05-21 09:49:46 - huginn - INFO - License saved successfully
+2026-05-21 09:49:46 - huginn - INFO - License loaded and validated successfully
+2026-05-21 09:49:56 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-21 09:49:56 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-21 09:49:56 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-21 09:49:56 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-21 09:49:56 - huginn - INFO - Using default configuration
+2026-05-21 09:49:58 - huginn - INFO - License saved successfully
+2026-05-21 09:49:58 - huginn - INFO - License loaded and validated successfully
+2026-05-21 09:50:13 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-21 09:50:13 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-21 09:50:13 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-21 09:50:13 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-21 09:50:14 - huginn - INFO - Using default configuration
+2026-05-21 09:50:16 - huginn - INFO - License saved successfully
+2026-05-21 09:50:16 - huginn - INFO - License loaded and validated successfully
+2026-05-21 09:50:27 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-21 09:50:27 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-21 09:50:27 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-21 09:50:27 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-21 09:50:27 - huginn - INFO - Using default configuration
+2026-05-21 09:50:29 - huginn - INFO - License saved successfully
+2026-05-21 09:50:29 - huginn - INFO - License loaded and validated successfully
+2026-05-21 09:50:41 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-21 09:50:41 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-21 09:50:41 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-21 09:50:41 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-21 09:50:41 - huginn - INFO - Using default configuration
+2026-05-21 09:50:43 - huginn - INFO - License saved successfully
+2026-05-21 09:50:43 - huginn - INFO - License loaded and validated successfully
+2026-05-21 09:50:52 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-21 09:50:52 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-21 09:50:52 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-21 09:50:52 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-21 09:50:52 - huginn - INFO - Using default configuration
+2026-05-21 09:50:54 - huginn - INFO - License saved successfully
+2026-05-21 09:50:54 - huginn - INFO - License loaded and validated successfully
+2026-05-21 09:51:02 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-21 09:51:02 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-21 09:51:02 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-21 09:51:02 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-21 09:51:02 - huginn - INFO - Using default configuration
+2026-05-21 09:51:04 - huginn - INFO - License saved successfully
+2026-05-21 09:51:04 - huginn - INFO - License loaded and validated successfully
+2026-05-21 09:51:31 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-21 09:51:31 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-21 09:51:31 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-21 09:51:31 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-21 09:51:31 - huginn - INFO - Using default configuration
+2026-05-21 09:51:33 - huginn - INFO - License saved successfully
+2026-05-21 09:51:33 - huginn - INFO - License loaded and validated successfully
+2026-05-21 09:51:52 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-21 09:51:52 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-21 09:51:52 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-21 09:51:52 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-21 09:51:52 - huginn - INFO - Using default configuration
+2026-05-21 09:51:54 - huginn - INFO - License saved successfully
+2026-05-21 09:51:54 - huginn - INFO - License loaded and validated successfully
+2026-05-21 09:52:15 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-21 09:52:15 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-21 09:52:15 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-21 09:52:15 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-21 09:52:15 - huginn - INFO - Using default configuration
+2026-05-21 09:52:17 - huginn - INFO - License saved successfully
+2026-05-21 09:52:17 - huginn - INFO - License loaded and validated successfully
+2026-05-21 09:52:36 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-21 09:52:36 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-21 09:52:36 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-21 09:52:36 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-21 09:52:36 - huginn - INFO - Using default configuration
+2026-05-21 09:52:38 - huginn - INFO - License saved successfully
+2026-05-21 09:52:38 - huginn - INFO - License loaded and validated successfully
+2026-05-21 09:53:01 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-21 09:53:01 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-21 09:53:01 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-21 09:53:01 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-21 09:53:01 - huginn - INFO - Using default configuration
+2026-05-21 09:53:04 - huginn - INFO - License saved successfully
+2026-05-21 09:53:04 - huginn - INFO - License loaded and validated successfully
+2026-05-21 09:53:08 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-21 09:53:08 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-21 09:53:08 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-21 09:53:08 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-21 09:53:08 - huginn - INFO - Using default configuration
+2026-05-21 09:53:10 - huginn - INFO - License saved successfully
+2026-05-21 09:53:10 - huginn - INFO - License loaded and validated successfully
+2026-05-21 10:00:56 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-21 10:00:56 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-21 10:00:56 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-21 10:00:56 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-21 10:00:56 - huginn - INFO - Using default configuration
+2026-05-21 10:00:58 - huginn - INFO - License saved successfully
+2026-05-21 10:00:58 - huginn - INFO - License loaded and validated successfully
+2026-05-21 10:01:08 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-21 10:01:08 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-21 10:01:08 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-21 10:01:08 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-21 10:01:08 - huginn - INFO - Using default configuration
+2026-05-21 10:01:10 - huginn - INFO - License saved successfully
+2026-05-21 10:01:10 - huginn - INFO - License loaded and validated successfully
+2026-05-21 10:03:41 - huginn - INFO - License saved successfully
+2026-05-21 10:03:41 - huginn - INFO - License loaded and validated successfully
+2026-05-21 10:03:41 - huginn - INFO - Application starting...
+2026-05-21 10:03:41 - huginn - INFO - Font loaded successfully
+2026-05-21 10:03:41 - huginn - INFO - Stylesheet loaded successfully
+2026-05-21 10:03:41 - huginn - INFO - Creating main window...
+2026-05-21 10:03:41 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-05-21 10:03:41 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-05-21 10:03:41 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\db_attacks_page.py)
+2026-05-21 10:03:46 - huginn - DEBUG - Credentials loaded for profile 'Silentium'
+2026-05-21 10:03:46 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-05-21 10:03:46 - huginn - DEBUG - Credentials loaded for profile 'Silentium'
+2026-05-21 10:03:46 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-05-21 10:03:48 - huginn - DEBUG - Credentials loaded for profile 'LAB'
+2026-05-21 10:03:48 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in '*.lab.local'
+2026-05-21 10:03:48 - huginn - DEBUG - Credentials loaded for profile 'LAB'
+2026-05-21 10:03:48 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in '*.lab.local'
+2026-05-21 10:19:57 - huginn - DEBUG - Memory monitoring stopped
+2026-05-21 10:19:57 - huginn - DEBUG - Connection pool closed all sessions
+2026-05-21 10:19:57 - huginn - INFO - Update manager stopped during cleanup
+2026-05-21 10:23:03 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-21 10:23:03 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-21 10:23:03 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-21 10:23:03 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-21 10:23:04 - huginn - INFO - Using default configuration
+2026-05-21 10:23:06 - huginn - INFO - License saved successfully
+2026-05-21 10:23:06 - huginn - INFO - License loaded and validated successfully
+2026-05-21 10:30:22 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-21 10:30:22 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-21 10:30:22 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-21 10:30:22 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-21 10:30:22 - huginn - INFO - Using default configuration
+2026-05-21 10:30:25 - huginn - INFO - License saved successfully
+2026-05-21 10:30:25 - huginn - INFO - License loaded and validated successfully
+2026-05-21 10:35:09 - huginn - INFO - License saved successfully
+2026-05-21 10:35:09 - huginn - INFO - License loaded and validated successfully
+2026-05-21 10:35:09 - huginn - INFO - Application starting...
+2026-05-21 10:35:09 - huginn - INFO - Font loaded successfully
+2026-05-21 10:35:09 - huginn - INFO - Stylesheet loaded successfully
+2026-05-21 10:35:09 - huginn - INFO - Creating main window...
+2026-05-21 10:35:09 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-05-21 10:35:09 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-05-21 10:35:09 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\db_attacks_page.py)
+2026-05-21 10:35:19 - huginn - DEBUG - Credentials loaded for profile 'LAB'
+2026-05-21 10:35:19 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in '*.lab.local'
+2026-05-21 10:35:19 - huginn - DEBUG - Credentials loaded for profile 'LAB'
+2026-05-21 10:35:19 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in '*.lab.local'
+2026-05-21 10:36:05 - huginn - DEBUG - Session token generated
+2026-05-21 10:36:19 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-21 10:36:19 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-21 10:36:19 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-21 10:36:19 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-21 10:36:30 - huginn - DEBUG - Memory monitoring stopped
+2026-05-21 10:36:30 - huginn - DEBUG - Connection pool closed all sessions
+2026-05-21 10:36:30 - huginn - INFO - Update manager stopped during cleanup
+2026-05-21 10:37:01 - huginn - DEBUG - Session token generated
+2026-05-21 10:38:24 - huginn - INFO - License saved successfully
+2026-05-21 10:38:24 - huginn - INFO - License loaded and validated successfully
+2026-05-21 10:38:24 - huginn - INFO - Application starting...
+2026-05-21 10:38:24 - huginn - INFO - Font loaded successfully
+2026-05-21 10:38:24 - huginn - INFO - Stylesheet loaded successfully
+2026-05-21 10:38:24 - huginn - INFO - Creating main window...
+2026-05-21 10:38:24 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-05-21 10:38:24 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-05-21 10:38:24 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\db_attacks_page.py)
+2026-05-21 10:38:28 - huginn - DEBUG - Credentials loaded for profile 'LAB'
+2026-05-21 10:38:28 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in '*.lab.local'
+2026-05-21 10:38:28 - huginn - DEBUG - Credentials loaded for profile 'LAB'
+2026-05-21 10:38:28 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in '*.lab.local'
+2026-05-21 10:39:00 - huginn - DEBUG - Memory monitoring stopped
+2026-05-21 10:39:00 - huginn - DEBUG - Connection pool closed all sessions
+2026-05-21 10:39:00 - huginn - INFO - Update manager stopped during cleanup
+2026-05-21 10:41:21 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-21 10:41:21 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-21 10:41:21 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-21 10:41:21 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-21 10:41:21 - huginn - INFO - Using default configuration
+2026-05-21 10:41:24 - huginn - INFO - License saved successfully
+2026-05-21 10:41:24 - huginn - INFO - License loaded and validated successfully
+2026-05-21 10:41:53 - huginn - INFO - License saved successfully
+2026-05-21 10:41:53 - huginn - INFO - License loaded and validated successfully
+2026-05-21 10:41:53 - huginn - INFO - Application starting...
+2026-05-21 10:41:53 - huginn - INFO - Font loaded successfully
+2026-05-21 10:41:53 - huginn - INFO - Stylesheet loaded successfully
+2026-05-21 10:41:53 - huginn - INFO - Creating main window...
+2026-05-21 10:41:53 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-05-21 10:41:53 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-05-21 10:41:53 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\db_attacks_page.py)
+2026-05-21 10:41:57 - huginn - DEBUG - Credentials loaded for profile 'LAB'
+2026-05-21 10:41:57 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in '*.lab.local'
+2026-05-21 10:41:57 - huginn - DEBUG - Credentials loaded for profile 'LAB'
+2026-05-21 10:41:57 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in '*.lab.local'
+2026-05-21 10:42:02 - huginn - DEBUG - Session token generated
+2026-05-21 10:42:18 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-21 10:42:18 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-21 10:42:18 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-21 10:42:18 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-21 10:59:59 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-05-21 10:59:59 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-05-21 10:59:59 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-05-21 10:59:59 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-05-21 10:59:59 - huginn - INFO - Using default configuration
+2026-05-21 11:00:01 - huginn - INFO - License saved successfully
+2026-05-21 11:00:01 - huginn - INFO - License loaded and validated successfully
+2026-05-21 11:00:35 - huginn - DEBUG - Memory monitoring stopped
+2026-05-21 11:00:35 - huginn - DEBUG - Connection pool closed all sessions
+2026-05-21 11:00:35 - huginn - INFO - Update manager stopped during cleanup
+2026-05-21 11:02:00 - huginn - INFO - License saved successfully
+2026-05-21 11:02:00 - huginn - INFO - License loaded and validated successfully
+2026-05-21 11:02:00 - huginn - INFO - Application starting...
+2026-05-21 11:02:00 - huginn - INFO - Font loaded successfully
+2026-05-21 11:02:00 - huginn - INFO - Stylesheet loaded successfully
+2026-05-21 11:02:00 - huginn - INFO - Creating main window...
+2026-05-21 11:02:00 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-05-21 11:02:00 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-05-21 11:02:00 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\db_attacks_page.py)
+2026-05-21 11:03:03 - huginn - DEBUG - Session token generated
+2026-05-21 11:03:39 - huginn - DEBUG - Memory monitoring stopped
+2026-05-21 11:03:39 - huginn - DEBUG - Connection pool closed all sessions
+2026-05-21 11:03:39 - huginn - INFO - Update manager stopped during cleanup

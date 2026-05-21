@@ -5,7 +5,8 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QTabWidget,
                             QTextEdit, QLineEdit, QPushButton, QLabel, QComboBox,
                             QSpinBox, QTableWidget, QTableWidgetItem, QSplitter,
                             QGroupBox, QFormLayout, QCheckBox, QProgressBar,
-                            QMessageBox, QFileDialog, QScrollArea, QFrame)
+                            QMessageBox, QFileDialog, QScrollArea, QFrame,
+                            QApplication)
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal
 from PyQt6.QtGui import QFont, QTextCursor, QColor, QPalette
 from app.core.shell_manager import shell_manager
@@ -466,6 +467,9 @@ class EmbeddedTerminalWidget(QWidget):
     listener interaction.
     """
 
+    # Maximum number of lines to keep in the terminal output buffer
+    MAX_BUFFER_LINES = 10000
+
     def __init__(self, session_id: str = None, listener_id: str = None, parent=None):
         super().__init__(parent)
         self.session_id = session_id
@@ -517,6 +521,8 @@ class EmbeddedTerminalWidget(QWidget):
                 selection-background-color: #264F78;
             }
         """)
+        # Enable word wrap so long lines don't force horizontal scrolling
+        self.terminal_output.setLineWrapMode(QTextEdit.LineWrapMode.WidgetWidth)
         layout.addWidget(self.terminal_output)
 
         # Command input area
@@ -543,7 +549,11 @@ class EmbeddedTerminalWidget(QWidget):
             }
         """)
         self.command_input.setPlaceholderText("Type command and press Enter...")
+        # Remove max length restriction so long commands (e.g. base64 payloads) aren't truncated
+        self.command_input.setMaxLength(1000000)
         self.command_input.returnPressed.connect(self._execute_command)
+        # Install event filter to handle paste properly for long single-line commands
+        self.command_input.installEventFilter(self)
         input_layout.addWidget(self.command_input)
 
         layout.addLayout(input_layout)
@@ -566,6 +576,31 @@ class EmbeddedTerminalWidget(QWidget):
             listener_manager.connection_received.connect(self._on_connection_received)
             listener_manager.oob_data_received.connect(self._on_oob_data_received)
             listener_manager.listener_stopped.connect(self._on_listener_stopped)
+
+    # ------------------------------------------------------------------
+    # Event filter for paste handling
+    # ------------------------------------------------------------------
+
+    def eventFilter(self, obj, event):
+        """Intercept paste events on command_input to sanitize clipboard content.
+        
+        Strips newlines/carriage returns so that long single-line commands
+        (like base64-encoded PowerShell payloads) paste correctly without
+        being split into multiple lines.
+        """
+        from PyQt6.QtCore import QEvent
+        if obj is self.command_input and event.type() == QEvent.Type.KeyPress:
+            key_event = event
+            if (key_event.key() == Qt.Key.Key_V and 
+                    key_event.modifiers() & Qt.KeyboardModifier.ControlModifier):
+                clipboard = QApplication.clipboard()
+                text = clipboard.text()
+                if text:
+                    # Strip all newlines and carriage returns to form a single line
+                    sanitized = text.replace('\r\n', '').replace('\n', '').replace('\r', '')
+                    self.command_input.insert(sanitized)
+                    return True  # Event handled
+        return super().eventFilter(obj, event)
 
     # ------------------------------------------------------------------
     # Key handling for command history
@@ -688,7 +723,7 @@ class EmbeddedTerminalWidget(QWidget):
     # ------------------------------------------------------------------
 
     def _append_output(self, text: str, color: str = "#CCCCCC"):
-        """Append colored text to terminal output"""
+        """Append colored text to terminal output, enforcing buffer limit."""
         cursor = self.terminal_output.textCursor()
         cursor.movePosition(QTextCursor.MoveOperation.End)
         fmt = cursor.charFormat()
@@ -697,6 +732,18 @@ class EmbeddedTerminalWidget(QWidget):
         cursor.insertText(text + "\n")
         self.terminal_output.setTextCursor(cursor)
         self.terminal_output.ensureCursorVisible()
+
+        # Trim buffer if it exceeds the max line count
+        doc = self.terminal_output.document()
+        if doc.blockCount() > self.MAX_BUFFER_LINES:
+            trim_cursor = QTextCursor(doc)
+            lines_to_remove = doc.blockCount() - self.MAX_BUFFER_LINES
+            trim_cursor.movePosition(QTextCursor.MoveOperation.Start)
+            for _ in range(lines_to_remove):
+                trim_cursor.movePosition(QTextCursor.MoveOperation.Down, QTextCursor.MoveMode.KeepAnchor)
+            trim_cursor.movePosition(QTextCursor.MoveOperation.StartOfBlock, QTextCursor.MoveMode.KeepAnchor)
+            trim_cursor.removeSelectedText()
+            trim_cursor.deleteChar()  # Remove the trailing newline
 
     # ------------------------------------------------------------------
     # Signal handlers
@@ -758,6 +805,9 @@ class EmbeddedLocalTerminal(QWidget):
     executing commands on the local system and displaying output.
     """
 
+    # Maximum number of lines to keep in the terminal output buffer
+    MAX_BUFFER_LINES = 10000
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.command_history: list = []
@@ -797,6 +847,8 @@ class EmbeddedLocalTerminal(QWidget):
                 selection-background-color: #264F78;
             }
         """)
+        # Enable word wrap so long lines don't force horizontal scrolling
+        self.terminal_output.setLineWrapMode(QTextEdit.LineWrapMode.WidgetWidth)
         layout.addWidget(self.terminal_output)
 
         # Command input
@@ -823,7 +875,11 @@ class EmbeddedLocalTerminal(QWidget):
             }
         """)
         self.command_input.setPlaceholderText("Type command and press Enter...")
+        # Remove max length restriction so long commands (e.g. base64 payloads) aren't truncated
+        self.command_input.setMaxLength(1000000)
         self.command_input.returnPressed.connect(self._execute_command)
+        # Install event filter to handle paste properly for long single-line commands
+        self.command_input.installEventFilter(self)
         input_layout.addWidget(self.command_input)
 
         layout.addLayout(input_layout)
@@ -832,6 +888,27 @@ class EmbeddedLocalTerminal(QWidget):
         self._append_output("Local System Terminal", "#00FFFF")
         self._append_output(f"Working directory: {self.working_dir}", "#888888")
         self._append_output("Type commands below. Use 'cd <path>' to change directory.\n", "#888888")
+
+    def eventFilter(self, obj, event):
+        """Intercept paste events on command_input to sanitize clipboard content.
+        
+        Strips newlines/carriage returns so that long single-line commands
+        (like base64-encoded PowerShell payloads) paste correctly without
+        being split into multiple lines.
+        """
+        from PyQt6.QtCore import QEvent
+        if obj is self.command_input and event.type() == QEvent.Type.KeyPress:
+            key_event = event
+            if (key_event.key() == Qt.Key.Key_V and 
+                    key_event.modifiers() & Qt.KeyboardModifier.ControlModifier):
+                clipboard = QApplication.clipboard()
+                text = clipboard.text()
+                if text:
+                    # Strip all newlines and carriage returns to form a single line
+                    sanitized = text.replace('\r\n', '').replace('\n', '').replace('\r', '')
+                    self.command_input.insert(sanitized)
+                    return True  # Event handled
+        return super().eventFilter(obj, event)
 
     def keyPressEvent(self, event):
         """Handle Up/Down arrow for command history"""
@@ -915,7 +992,7 @@ class EmbeddedLocalTerminal(QWidget):
             self._append_output(f"Error: {e}", "#FF0000")
 
     def _append_output(self, text: str, color: str = "#CCCCCC"):
-        """Append colored text to terminal output"""
+        """Append colored text to terminal output, enforcing buffer limit."""
         cursor = self.terminal_output.textCursor()
         cursor.movePosition(QTextCursor.MoveOperation.End)
         fmt = cursor.charFormat()
@@ -924,6 +1001,19 @@ class EmbeddedLocalTerminal(QWidget):
         cursor.insertText(text + "\n")
         self.terminal_output.setTextCursor(cursor)
         self.terminal_output.ensureCursorVisible()
+
+        # Trim buffer if it exceeds the max line count
+        doc = self.terminal_output.document()
+        if doc.blockCount() > self.MAX_BUFFER_LINES:
+            cursor = QTextCursor(doc)
+            # Remove oldest lines to bring count back to limit
+            lines_to_remove = doc.blockCount() - self.MAX_BUFFER_LINES
+            cursor.movePosition(QTextCursor.MoveOperation.Start)
+            for _ in range(lines_to_remove):
+                cursor.movePosition(QTextCursor.MoveOperation.Down, QTextCursor.MoveMode.KeepAnchor)
+            cursor.movePosition(QTextCursor.MoveOperation.StartOfBlock, QTextCursor.MoveMode.KeepAnchor)
+            cursor.removeSelectedText()
+            cursor.deleteChar()  # Remove the trailing newline
 
 
 class ShellManagementWidget(QWidget):
@@ -1036,6 +1126,26 @@ class ShellManagementWidget(QWidget):
         shell_manager.session_terminated.connect(self.remove_session)
         listener_manager.listener_started.connect(self.add_listener)
         listener_manager.listener_stopped.connect(self.remove_listener)
+        listener_manager.connection_received.connect(self._on_connection_received)
+
+    def _on_connection_received(self, listener_id: str, client_ip: str, data: str):
+        """Auto-open or focus a terminal tab when a shell connects to a listener."""
+        if data != "Connected":
+            return  # Only act on new connection events, not shell output
+
+        title = f"Listener: {listener_id}"
+
+        # Check if a tab already exists for this listener
+        for i in range(self.terminal_tabs.count()):
+            if self.terminal_tabs.tabText(i) == title:
+                self.terminal_tabs.setCurrentIndex(i)
+                return
+
+        # Auto-open a new interactive terminal tab for this listener
+        self.open_terminal_tab(title, listener_id=listener_id)
+        self.status_updated.emit(
+            f"🐚 Shell connected from {client_ip} on listener {listener_id}"
+        )
         
     def build_connect_tab(self):
         """Build outbound connection utility tab"""
@@ -1129,6 +1239,14 @@ class ShellManagementWidget(QWidget):
 
             if success:
                 self.status_updated.emit(f"Listener {listener_id} started on {bind_ip}:{port}")
+                # Open embedded terminal tab
+                try:
+                    title = f"Listener: {listener_id}"
+                    self.open_terminal_tab(title, listener_id=listener_id)
+                except Exception as e:
+                    logger.error(f"Failed to open terminal tab: {e}")
+                # Also launch a standalone terminal window so it's always visible
+                self._launch_listener_window(listener_id)
             else:
                 error_info = ""
                 linfo = listener_manager._listeners.get(listener_id)
@@ -1139,6 +1257,23 @@ class ShellManagementWidget(QWidget):
 
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Failed to create listener: {str(e)}")
+
+    def _launch_listener_window(self, listener_id: str):
+        """Launch a standalone TerminalWindow for a listener."""
+        # Keep a reference so it doesn't get garbage collected
+        if not hasattr(self, '_terminal_windows'):
+            self._terminal_windows = {}
+
+        if listener_id in self._terminal_windows:
+            # Bring existing window to front
+            self._terminal_windows[listener_id].raise_()
+            self._terminal_windows[listener_id].activateWindow()
+            return
+
+        window = TerminalWindow(listener_id=listener_id)
+        window.window_closed.connect(lambda lid=listener_id: self._terminal_windows.pop(lid, None))
+        window.show()
+        self._terminal_windows[listener_id] = window
     
     def open_terminal_tab(self, title: str, session_id: str = None, listener_id: str = None):
         """Open new terminal tab in embedded workspace using an embeddable widget"""

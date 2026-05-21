@@ -3,9 +3,10 @@ from PyQt6.QtWidgets import (QWidget, QPushButton, QLabel, QLineEdit, QTextEdit,
                             QVBoxLayout, QHBoxLayout, QFrame, QCheckBox, QListWidget, 
                             QSplitter, QComboBox, QSpinBox, QTabWidget, QGridLayout, 
                             QScrollArea, QTableWidget, QTableWidgetItem, QHeaderView,
-                            QMessageBox, QDialog, QStackedWidget)
+                            QMessageBox, QDialog, QStackedWidget, QTreeWidget,
+                            QTreeWidgetItem)
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtGui import QFont
+from PyQt6.QtGui import QFont, QColor, QBrush
 import json
 from app.core.logger import logger
 
@@ -1112,14 +1113,14 @@ class CurlWidget(QWidget):
         self.curl_response.append(f"\n[INFO] Sending request {times} times...")
     
     def create_history_tab(self):
-        """Create request history tab"""
+        """Create request history tab with Burp Suite-style tree view"""
         tab = QWidget()
         layout = QVBoxLayout(tab)
         
-        # Create stacked widget to switch between history table and details view
+        # Create stacked widget to switch between history tree and details view
         self.history_stack = QStackedWidget()
         
-        # History table page
+        # History tree page
         history_page = QWidget()
         history_layout = QVBoxLayout(history_page)
         
@@ -1128,36 +1129,72 @@ class CurlWidget(QWidget):
         clear_history_btn = QPushButton("Clear History")
         clear_history_btn.clicked.connect(self.clear_history)
         controls.addWidget(clear_history_btn)
+        
+        self.expand_all_btn = QPushButton("Expand All")
+        self.expand_all_btn.clicked.connect(lambda: self.history_tree.expandAll())
+        controls.addWidget(self.expand_all_btn)
+        
+        self.collapse_all_btn = QPushButton("Collapse All")
+        self.collapse_all_btn.clicked.connect(lambda: self.history_tree.collapseAll())
+        controls.addWidget(self.collapse_all_btn)
+        
         controls.addStretch()
         history_layout.addLayout(controls)
         
-        # History table
-        self.history_table = QTableWidget()
-        self.history_table.setColumnCount(6)
-        self.history_table.setHorizontalHeaderLabels(["Time", "Method", "URL", "Status", "Timing", "Size(bytes)"])
-        # Set custom column widths
-        header = self.history_table.horizontalHeader()
-        header.setSectionResizeMode(0, QHeaderView.ResizeMode.Fixed)  # Time
-        header.setSectionResizeMode(1, QHeaderView.ResizeMode.Fixed)  # Method
-        header.setSectionResizeMode(2, QHeaderView.ResizeMode.Stretch) # URL (stretches)
-        header.setSectionResizeMode(3, QHeaderView.ResizeMode.Fixed)  # Status
-        header.setSectionResizeMode(4, QHeaderView.ResizeMode.Fixed)  # Timing
-        header.setSectionResizeMode(5, QHeaderView.ResizeMode.Fixed)  # Size
+        # History tree widget (Burp Suite-style site map tree)
+        self.history_tree = QTreeWidget()
+        self.history_tree.setColumnCount(5)
+        self.history_tree.setHeaderLabels(["Host / Path", "Method", "Status", "Timing", "Size"])
         
-        # Set fixed column widths
-        self.history_table.setColumnWidth(0, 260)  # Time
-        self.history_table.setColumnWidth(1, 100)   # Method
-        self.history_table.setColumnWidth(3, 85)   # Status
-        self.history_table.setColumnWidth(4, 130)  # Timing
-        self.history_table.setColumnWidth(5, 200)  # Size
-        self.history_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
-        self.history_table.itemDoubleClicked.connect(self.view_request_details)
+        # Set column widths - right-side columns sized to fit header text without truncation
+        header = self.history_tree.header()
+        header.setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)  # Host/Path stretches
+        header.setSectionResizeMode(1, QHeaderView.ResizeMode.Fixed)    # Method
+        header.setSectionResizeMode(2, QHeaderView.ResizeMode.Fixed)    # Status
+        header.setSectionResizeMode(3, QHeaderView.ResizeMode.Fixed)    # Timing
+        header.setSectionResizeMode(4, QHeaderView.ResizeMode.Fixed)    # Size
+        header.setStretchLastSection(False)
         
-        # Context menu for history table
-        self.history_table.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-        self.history_table.customContextMenuRequested.connect(self.show_history_context_menu)
+        self.history_tree.setColumnWidth(1, 90)   # Method - fits "Method" header + content
+        self.history_tree.setColumnWidth(2, 80)   # Status - fits "Status" header + content
+        self.history_tree.setColumnWidth(3, 100)  # Timing - fits "Timing" header + content
+        self.history_tree.setColumnWidth(4, 90)   # Size - fits "Size" header + content
         
-        history_layout.addWidget(self.history_table)
+        # Align right-side columns to the right
+        header.setDefaultAlignment(Qt.AlignmentFlag.AlignLeft)
+        
+        self.history_tree.setStyleSheet("""
+            QTreeWidget {
+                font-family: 'Neuropol X', monospace;
+                font-size: 9pt;
+            }
+            QTreeWidget::item {
+                padding: 2px 0;
+            }
+            QHeaderView::section {
+                font-family: 'Neuropol X', monospace;
+                font-size: 9pt;
+                padding: 4px 6px;
+            }
+            QTreeWidget::branch:has-children:!has-siblings:closed,
+            QTreeWidget::branch:closed:has-children:has-siblings {
+                image: none;
+                border-image: none;
+            }
+            QTreeWidget::branch:open:has-children:!has-siblings,
+            QTreeWidget::branch:open:has-children:has-siblings {
+                image: none;
+                border-image: none;
+            }
+        """)
+        
+        self.history_tree.itemDoubleClicked.connect(self._on_history_tree_double_click)
+        
+        # Context menu for history tree
+        self.history_tree.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.history_tree.customContextMenuRequested.connect(self.show_history_context_menu)
+        
+        history_layout.addWidget(self.history_tree)
         
         # Details page
         self.details_page = self.create_request_details_page()
@@ -1837,113 +1874,193 @@ Response Time: {request_data.get('response_time', 0)*1000:.2f}ms"""
         self.session_count_label.setText("Tokens: 0")
     
     def refresh_history_table(self, request_id=None):
-        """Refresh the history table from database"""
+        """Refresh the history tree from database (Burp Suite-style site map)"""
         try:
+            from urllib.parse import urlparse
+            
             history = self.request_handler.proxy_engine.get_history(limit=1000)
-            self.history_table.setRowCount(len(history))
+            self.history_tree.clear()
             
-            for i, entry in enumerate(history):
-                # Store request ID in first column for reference
-                id_item = QTableWidgetItem(entry['formatted_time'])
-                id_item.setData(Qt.ItemDataRole.UserRole, entry['id'])  # Store ID
-                self.history_table.setItem(i, 0, id_item)
-                
-                self.history_table.setItem(i, 1, QTableWidgetItem(entry['method']))
-                
-                # Truncate long URLs
+            # Build tree structure: host -> path segments -> leaf (request)
+            # Track host nodes so we can reuse them
+            host_nodes = {}  # host -> QTreeWidgetItem
+            
+            for entry in history:
                 url = entry['url']
-                if len(url) > 80:
-                    url = url[:77] + "..."
-                self.history_table.setItem(i, 2, QTableWidgetItem(url))
+                parsed = urlparse(url)
                 
-                # Color-code status
-                status_item = QTableWidgetItem(str(entry['status_code']) if entry['status_code'] else 'N/A')
-                if entry['status_code']:
-                    if 200 <= entry['status_code'] < 300:
-                        status_item.setForeground(Qt.GlobalColor.green)
-                    elif entry['status_code'] >= 400:
-                        status_item.setForeground(Qt.GlobalColor.red)
+                # Determine host display (include scheme and port if non-standard)
+                scheme = parsed.scheme or 'http'
+                host = parsed.hostname or url
+                port = parsed.port
+                
+                if port and not (scheme == 'http' and port == 80) and not (scheme == 'https' and port == 443):
+                    host_key = f"{scheme}://{host}:{port}"
+                else:
+                    host_key = f"{scheme}://{host}"
+                
+                # Get or create host node
+                if host_key not in host_nodes:
+                    host_item = QTreeWidgetItem(self.history_tree)
+                    host_item.setText(0, host_key)
+                    host_item.setForeground(0, QBrush(QColor("#64C8FF")))
+                    font = host_item.font(0)
+                    font.setBold(True)
+                    host_item.setFont(0, font)
+                    host_item.setExpanded(True)
+                    host_nodes[host_key] = host_item
+                
+                parent_node = host_nodes[host_key]
+                
+                # Split path into segments and build intermediate nodes
+                path = parsed.path or '/'
+                query = parsed.query
+                
+                # Build path segments (skip empty segments from leading slash)
+                segments = [s for s in path.split('/') if s]
+                
+                # Navigate/create intermediate path nodes
+                current_parent = parent_node
+                for i, segment in enumerate(segments[:-1] if segments else []):
+                    # Look for existing child with this segment name
+                    found = None
+                    for child_idx in range(current_parent.childCount()):
+                        child = current_parent.child(child_idx)
+                        # Only match directory nodes (those without request data)
+                        if child.text(0) == segment + '/' and child.data(0, Qt.ItemDataRole.UserRole) is None:
+                            found = child
+                            break
+                    
+                    if found:
+                        current_parent = found
                     else:
-                        status_item.setForeground(Qt.GlobalColor.yellow)
-                self.history_table.setItem(i, 3, status_item)
+                        dir_item = QTreeWidgetItem(current_parent)
+                        dir_item.setText(0, segment + '/')
+                        dir_item.setForeground(0, QBrush(QColor("#AAAAAA")))
+                        dir_item.setExpanded(True)
+                        current_parent = dir_item
                 
-                self.history_table.setItem(i, 4, QTableWidgetItem(f"{entry['response_time']*1000:.0f}ms"))
-                self.history_table.setItem(i, 5, QTableWidgetItem(f"{entry['response_size']} bytes"))
+                # Create the leaf node (the actual request)
+                leaf_text = segments[-1] if segments else '/'
+                if query:
+                    leaf_text += f'?{query}'
+                
+                leaf_item = QTreeWidgetItem(current_parent)
+                leaf_item.setText(0, leaf_text)
+                leaf_item.setData(0, Qt.ItemDataRole.UserRole, entry['id'])  # Store request ID
+                
+                # Method column
+                leaf_item.setText(1, entry['method'])
+                leaf_item.setTextAlignment(1, Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+                method_color = {
+                    'GET': '#00FF41', 'POST': '#FF6633', 'PUT': '#FFAA00',
+                    'DELETE': '#FF4444', 'PATCH': '#AA88FF', 'HEAD': '#888888',
+                    'OPTIONS': '#888888'
+                }.get(entry['method'], '#DCDCDC')
+                leaf_item.setForeground(1, QBrush(QColor(method_color)))
+                
+                # Status column (color-coded)
+                status_code = entry['status_code']
+                if status_code:
+                    leaf_item.setText(2, str(status_code))
+                    leaf_item.setTextAlignment(2, Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+                    if 200 <= status_code < 300:
+                        leaf_item.setForeground(2, QBrush(QColor("#00FF41")))
+                    elif 300 <= status_code < 400:
+                        leaf_item.setForeground(2, QBrush(QColor("#FFAA00")))
+                    elif status_code >= 400:
+                        leaf_item.setForeground(2, QBrush(QColor("#FF4444")))
+                else:
+                    leaf_item.setText(2, 'N/A')
+                    leaf_item.setTextAlignment(2, Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+                
+                # Timing column
+                leaf_item.setText(3, f"{entry['response_time']*1000:.0f}ms")
+                leaf_item.setTextAlignment(3, Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+                
+                # Size column
+                leaf_item.setText(4, f"{entry['response_size']}B")
+                leaf_item.setTextAlignment(4, Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
             
-            # Scroll to the latest entry at the bottom
-            if history:
-                self.history_table.scrollToBottom()
         except Exception as e:
             print(f"Error refreshing history: {e}")
     
+    def _on_history_tree_double_click(self, item, column):
+        """Handle double-click on history tree item"""
+        request_id = item.data(0, Qt.ItemDataRole.UserRole)
+        if request_id:
+            self.view_request_details_by_id(request_id)
+    
     def view_request_details(self, item):
+        """View detailed request information (legacy compatibility)"""
+        request_id = item.data(0, Qt.ItemDataRole.UserRole)
+        if request_id:
+            self.view_request_details_by_id(request_id)
+    
+    def view_request_details_by_id(self, request_id):
         """View detailed request information within the History tab"""
         try:
-            # Get request ID from the first column
-            row = item.row()
-            id_item = self.history_table.item(row, 0)
-            if id_item:
-                request_id = id_item.data(Qt.ItemDataRole.UserRole)
-                if request_id:
-                    request_data = self.request_handler.proxy_engine.get_request_details(request_id)
-                    if request_data:
-                        self.show_request_details_inline(request_data)
+            if request_id:
+                request_data = self.request_handler.proxy_engine.get_request_details(request_id)
+                if request_data:
+                    self.show_request_details_inline(request_data)
         except Exception as e:
             QMessageBox.warning(self, "Error", f"Could not load request details: {e}")
     
     def show_history_context_menu(self, position):
-        """Show context menu for history table"""
+        """Show context menu for history tree"""
         from PyQt6.QtWidgets import QMenu
         from PyQt6.QtGui import QAction
         
-        item = self.history_table.itemAt(position)
+        item = self.history_tree.itemAt(position)
         if item:
-            menu = QMenu(self)
-            
-            view_action = QAction("View Details", self)
-            view_action.triggered.connect(lambda: self.view_request_details(item))
-            menu.addAction(view_action)
-            
-            send_to_repeater_action = QAction("Send to Repeater", self)
-            send_to_repeater_action.triggered.connect(lambda: self.send_to_repeater(item))
-            menu.addAction(send_to_repeater_action)
-            
-            menu.exec(self.history_table.mapToGlobal(position))
+            request_id = item.data(0, Qt.ItemDataRole.UserRole)
+            if request_id:
+                menu = QMenu(self)
+                
+                view_action = QAction("View Details", self)
+                view_action.triggered.connect(lambda: self.view_request_details_by_id(request_id))
+                menu.addAction(view_action)
+                
+                send_to_repeater_action = QAction("Send to Repeater", self)
+                send_to_repeater_action.triggered.connect(lambda: self._send_tree_item_to_repeater(request_id))
+                menu.addAction(send_to_repeater_action)
+                
+                menu.exec(self.history_tree.mapToGlobal(position))
     
-    def send_to_repeater(self, item):
-        """Send request from history to repeater"""
+    def _send_tree_item_to_repeater(self, request_id):
+        """Send request from history tree to repeater by request ID"""
         try:
-            row = item.row()
-            id_item = self.history_table.item(row, 0)
-            if id_item:
-                request_id = id_item.data(Qt.ItemDataRole.UserRole)
-                if request_id:
-                    request_data = self.request_handler.proxy_engine.get_request_details(request_id)
-                    if request_data:
-                        # Load into repeater
-                        self.method_combo.setCurrentText(request_data['method'])
-                        self.url_input.setText(request_data['url'])
-                        
-                        # Load headers
-                        headers = request_data.get('request_headers', {})
-                        headers_text = '\n'.join([f"{k}: {v}" for k, v in headers.items()])
-                        self.headers_text.setPlainText(headers_text)
-                        
-                        # Load body
-                        self.body_text.setPlainText(request_data.get('request_body', ''))
-                        
-                        # Switch to repeater tab
-                        parent_tabs = self.parent()
-                        while parent_tabs and not isinstance(parent_tabs, QTabWidget):
-                            parent_tabs = parent_tabs.parent()
-                        if parent_tabs:
-                            parent_tabs.setCurrentIndex(0)  # Repeater tab
+            if request_id:
+                request_data = self.request_handler.proxy_engine.get_request_details(request_id)
+                if request_data:
+                    # Load into repeater
+                    self.method_combo.setCurrentText(request_data['method'])
+                    self.url_input.setText(request_data['url'])
+                    
+                    # Load headers
+                    headers = request_data.get('request_headers', {})
+                    headers_text = '\n'.join([f"{k}: {v}" for k, v in headers.items()])
+                    self.headers_text.setPlainText(headers_text)
+                    
+                    # Load body
+                    self.body_text.setPlainText(request_data.get('request_body', ''))
+                    
+                    # Switch to repeater tab
+                    self.main_tabs.setCurrentIndex(0)
         except Exception as e:
             QMessageBox.warning(self, "Error", f"Could not load request: {e}")
+    
+    def send_to_repeater(self, item):
+        """Send request from history to repeater (legacy compatibility)"""
+        request_id = item.data(0, Qt.ItemDataRole.UserRole)
+        if request_id:
+            self._send_tree_item_to_repeater(request_id)
     
     def clear_history(self):
         """Clear request history"""
         self.request_handler.proxy_engine.clear_history()
+        self.history_tree.clear()
         self.refresh_history_table()
     
     def scan_current_request(self):

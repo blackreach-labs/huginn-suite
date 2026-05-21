@@ -26,7 +26,7 @@ class CrawlTreeWidget(QWidget):
                 background-color: rgba(20, 30, 40, 150);
                 color: #DCDCDC;
                 border: 1px solid rgba(100, 200, 255, 100);
-                font-family: Consolas, Monaco, monospace;
+                font-family: 'Neuropol X', monospace;
                 font-size: 12px;
             }
             QTreeWidget::item {
@@ -43,7 +43,8 @@ class CrawlTreeWidget(QWidget):
                 background-color: rgba(40, 50, 60, 200);
                 color: #64C8FF;
                 border: 1px solid rgba(100, 200, 255, 100);
-                padding: 4px;
+                padding: 4px 6px;
+                font-family: 'Neuropol X', monospace;
                 font-weight: bold;
             }
         """)
@@ -172,12 +173,18 @@ class CrawlTreeWidget(QWidget):
         
         # Update the tree display
         self.tree.update()
+        self._autosize_columns()
     
     def clear(self):
         """Clear the tree"""
         self.tree.clear()
         self.url_items.clear()
         self.path_items.clear()
+    
+    def _autosize_columns(self):
+        """Auto-resize all columns to fit their content without truncation"""
+        for col in range(self.tree.columnCount()):
+            self.tree.resizeColumnToContents(col)
     
     def get_discovered_paths(self):
         """Get all discovered paths from tree"""
@@ -297,6 +304,7 @@ class CrawlTreeWidget(QWidget):
                 current_item = self.path_items[current_path]
         
         self.tree.update()
+        self._autosize_columns()
     
     def update_from_crawl_data(self, crawl_data, scan_type=None):
         """Update tree from crawl data dictionary"""
@@ -320,6 +328,7 @@ class CrawlTreeWidget(QWidget):
                     title=data.get('title'),
                     node_type=data.get('type')
                 )
+            self._autosize_columns()
     
     def _is_fingerprint_data(self, crawl_data):
         """Check if data is fingerprint hierarchical structure"""
@@ -357,6 +366,8 @@ class CrawlTreeWidget(QWidget):
                 
                 # Expand category by default
                 self.tree.expandItem(category_item)
+        
+        self._autosize_columns()
     
     def _add_fingerprint_children(self, parent_item, children):
         """Add children to fingerprint tree node"""
@@ -434,7 +445,7 @@ class CrawlTreeWidget(QWidget):
     
     def _build_scan_type_tree(self, crawl_data, scan_type):
         """Build tree for specific scan types with field/value structure"""
-        from PyQt6.QtGui import QFont
+        from PyQt6.QtGui import QFont, QColor, QBrush
         from PyQt6.QtWidgets import QTreeWidgetItem
         
         self.clear()
@@ -445,7 +456,8 @@ class CrawlTreeWidget(QWidget):
         elif scan_type == "Source Code":
             self.tree.setHeaderLabels(["Finding", "Type", "Details"])
         elif scan_type == "Crawler":
-            self.tree.setHeaderLabels(["URL", "Title", "Status"])
+            self._build_crawler_site_tree(crawl_data)
+            return
         else:
             self.tree.setHeaderLabels(["Item", "Value", "Status"])
         
@@ -474,6 +486,168 @@ class CrawlTreeWidget(QWidget):
                     item.setForeground(0, Qt.GlobalColor.green)
                 else:
                     item.setForeground(0, Qt.GlobalColor.white)
+        
+        self._autosize_columns()
+    
+    def _build_crawler_site_tree(self, crawl_data):
+        """Build Burp Suite-style expandable/collapsible site tree for Crawler results.
+        
+        Organizes crawled URLs into a hierarchical tree:
+        host → path segments → leaf endpoint with metadata columns.
+        
+        Handles two data formats:
+        1. Rich format: {url, title, status_code, links, forms, authenticated, ...}
+        2. Flat format: {field: url, value: title, extra: status_code, type: 'page'}
+        """
+        from PyQt6.QtGui import QFont, QColor, QBrush
+        from PyQt6.QtWidgets import QTreeWidgetItem
+        from urllib.parse import urlparse
+        
+        self.clear()
+        self.tree.setHeaderLabels(["Host / Path", "Status", "Title", "Links", "Forms"])
+        self.tree.setHeaderHidden(False)
+        
+        # Build tree structure: host -> path segments -> leaf (page)
+        host_nodes = {}  # host_key -> QTreeWidgetItem
+        
+        for url, data in crawl_data.items():
+            if not isinstance(data, dict):
+                continue
+            
+            # Normalize data from both formats into a consistent structure
+            # Format 1 (rich): has 'url', 'title', 'status_code', 'links', 'forms'
+            # Format 2 (flat): has 'field', 'value', 'extra', 'type'
+            if 'field' in data and 'value' in data:
+                # Flat format - normalize to rich format
+                actual_url = data.get('field', url)
+                title = data.get('value', '')
+                try:
+                    status_code = int(data.get('extra', 0))
+                except (ValueError, TypeError):
+                    status_code = 0
+                links = 0
+                forms = 0
+                authenticated = False
+            else:
+                # Rich format
+                actual_url = data.get('url', url)
+                title = data.get('title', '')
+                status_code = data.get('status_code', 0)
+                links = data.get('links', 0)
+                forms = data.get('forms', 0)
+                authenticated = data.get('authenticated', False)
+            
+            parsed = urlparse(actual_url)
+            
+            if not parsed.hostname:
+                # Try parsing the url key itself as fallback
+                parsed = urlparse(url)
+                if not parsed.hostname:
+                    continue
+            
+            # Determine host display (include scheme and port if non-standard)
+            scheme = parsed.scheme or 'http'
+            host = parsed.hostname
+            port = parsed.port
+            
+            if port and not (scheme == 'http' and port == 80) and not (scheme == 'https' and port == 443):
+                host_key = f"{scheme}://{host}:{port}"
+            else:
+                host_key = f"{scheme}://{host}"
+            
+            # Get or create host node
+            if host_key not in host_nodes:
+                host_item = QTreeWidgetItem(self.tree)
+                host_item.setText(0, host_key)
+                host_item.setForeground(0, QBrush(QColor("#64C8FF")))
+                font = QFont()
+                font.setBold(True)
+                host_item.setFont(0, font)
+                host_item.setExpanded(True)
+                host_nodes[host_key] = host_item
+                self.path_items[host_key] = host_item
+            
+            parent_node = host_nodes[host_key]
+            
+            # Split path into segments and build intermediate directory nodes
+            path = parsed.path or '/'
+            query = parsed.query
+            segments = [s for s in path.split('/') if s]
+            
+            # Navigate/create intermediate path nodes (directories)
+            current_parent = parent_node
+            for i, segment in enumerate(segments[:-1] if segments else []):
+                dir_path_key = host_key + '/' + '/'.join(segments[:i+1]) + '/'
+                
+                if dir_path_key in self.path_items:
+                    current_parent = self.path_items[dir_path_key]
+                else:
+                    # Look for existing child with this segment name
+                    found = None
+                    for child_idx in range(current_parent.childCount()):
+                        child = current_parent.child(child_idx)
+                        if child.text(0) == segment + '/' and child.data(0, Qt.ItemDataRole.UserRole) is None:
+                            found = child
+                            break
+                    
+                    if found:
+                        current_parent = found
+                        self.path_items[dir_path_key] = found
+                    else:
+                        dir_item = QTreeWidgetItem(current_parent)
+                        dir_item.setText(0, segment + '/')
+                        dir_item.setForeground(0, QBrush(QColor("#AAAAAA")))
+                        font = QFont()
+                        font.setBold(True)
+                        dir_item.setFont(0, font)
+                        dir_item.setExpanded(True)
+                        self.path_items[dir_path_key] = dir_item
+                        current_parent = dir_item
+            
+            # Create the leaf node (the actual crawled page)
+            leaf_text = segments[-1] if segments else '/'
+            if query:
+                leaf_text += f'?{query}'
+            
+            leaf_item = QTreeWidgetItem(current_parent)
+            leaf_item.setText(0, leaf_text)
+            leaf_item.setData(0, Qt.ItemDataRole.UserRole, actual_url)  # Store full URL
+            leaf_item.setToolTip(0, actual_url)
+            
+            # Status column (color-coded)
+            if status_code:
+                leaf_item.setText(1, str(status_code))
+                if isinstance(status_code, int):
+                    if 200 <= status_code < 300:
+                        leaf_item.setForeground(1, QBrush(QColor("#00FF41")))
+                    elif 300 <= status_code < 400:
+                        leaf_item.setForeground(1, QBrush(QColor("#FFAA00")))
+                    elif status_code >= 400:
+                        leaf_item.setForeground(1, QBrush(QColor("#FF4444")))
+            
+            # Title column
+            if title and title != 'No title':
+                leaf_item.setText(2, title)
+                leaf_item.setForeground(2, QBrush(QColor("#DCDCDC")))
+            
+            # Links count
+            if links:
+                leaf_item.setText(3, str(links))
+                leaf_item.setForeground(3, QBrush(QColor("#888888")))
+            
+            # Forms count
+            if forms:
+                leaf_item.setText(4, str(forms))
+                leaf_item.setForeground(4, QBrush(QColor("#FF6633")))
+            
+            # Color the leaf name based on authentication status
+            if authenticated:
+                leaf_item.setForeground(0, QBrush(QColor("#FFD700")))  # Gold for authenticated pages
+            else:
+                leaf_item.setForeground(0, QBrush(QColor("#00FF41")))  # Green for standard pages
+        
+        self.tree.update()
+        self._autosize_columns()
     
     def _build_source_code_tree(self, crawl_data):
         """Build expandable Source Code tree structure"""
@@ -524,3 +698,5 @@ class CrawlTreeWidget(QWidget):
                 
                 # Expand category by default
                 self.tree.expandItem(category_item)
+        
+        self._autosize_columns()

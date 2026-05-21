@@ -37,6 +37,7 @@ class VPNManager(QObject):
         self.openvpn_client = None
         self.connection_thread = None
         self.is_connected = False
+        self.vpn_ip = None
         self._load_state()
         
     def connect_openvpn(self, config_file: str, username: str = "", password: str = "") -> Dict:
@@ -62,6 +63,7 @@ class VPNManager(QObject):
 
             # Disconnect any existing connection first (releases TAP adapter)
             self.disconnect()
+            self.vpn_ip = None
 
             # Ensure the interactive service is running - this is what allows
             # non-admin openvpn.exe to create adapters and routes
@@ -212,12 +214,38 @@ class VPNManager(QObject):
 
     def _process_openvpn_line(self, line: str):
         """Process a single line of OpenVPN log output."""
+        import re
         logger.debug(f"OpenVPN: {line}")
+        
+        # Extract VPN IP from various OpenVPN log formats
+        # TUN mode: "ifconfig 10.8.0.2 10.8.0.1" or "ifconfig_local 10.8.0.2"
+        # TAP mode: "IFCONFIG local 10.8.0.2 netmask ..."
+        # Windows TAP subnet: "Set TAP-Windows TUN subnet mode network/local/netmask = 10.8.0.0/10.8.0.2/255.255.255.0"
+        # PUSH_REPLY: "PUSH_REPLY,...,ifconfig 10.8.0.2 10.8.0.1,..."
+        if not self.vpn_ip:
+            # Match "ifconfig <ip> <peer_ip>" from PUSH_REPLY or direct log
+            ip_match = re.search(r'ifconfig\s+(\d+\.\d+\.\d+\.\d+)\s+\d+\.\d+\.\d+\.\d+', line)
+            if not ip_match:
+                # Match "IFCONFIG local <ip>"
+                ip_match = re.search(r'IFCONFIG\s+local\s+(\d+\.\d+\.\d+\.\d+)', line, re.IGNORECASE)
+            if not ip_match:
+                # Match TAP subnet mode: "network/local/netmask = x.x.x.x/10.8.0.2/x.x.x.x"
+                ip_match = re.search(r'subnet mode network/local/netmask\s*=\s*[\d.]+/(\d+\.\d+\.\d+\.\d+)/', line)
+            if not ip_match:
+                # Match "ip addr add dev ... local <ip>"
+                ip_match = re.search(r'ip addr add dev\s+\S+\s+local\s+(\d+\.\d+\.\d+\.\d+)', line)
+            if ip_match:
+                self.vpn_ip = ip_match.group(1)
+                logger.info(f"VPN IP address assigned: {self.vpn_ip}")
         
         # Successful connection
         if "Initialization Sequence Completed" in line:
             self.is_connected = True
-            self.connection_status_changed.emit("connected", "VPN connection established")
+            if self.vpn_ip:
+                msg = f"VPN connection established — IP: {self.vpn_ip}"
+            else:
+                msg = "VPN connection established"
+            self.connection_status_changed.emit("connected", msg)
             self._save_state()
         
         # Authentication failure
@@ -306,6 +334,7 @@ verb 3
             
             self.is_connected = False
             self.current_connection = None
+            self.vpn_ip = None
             
             # Clean up temp files
             for temp_file in ["temp_auth.txt", "temp_vpn_config.ovpn"]:
@@ -334,7 +363,8 @@ verb 3
         return {
             "connected": self.is_connected,
             "connection": self.current_connection,
-            "process_running": process_running
+            "process_running": process_running,
+            "vpn_ip": self.vpn_ip
         }
     
     def test_connectivity(self, target: str = "8.8.8.8") -> Dict:

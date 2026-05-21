@@ -14,6 +14,8 @@ class TerminalWindow(QMainWindow):
     """Standalone terminal window for shell sessions"""
     
     window_closed = pyqtSignal(str)  # session_id
+    # Maximum number of lines to keep in the terminal output buffer
+    MAX_BUFFER_LINES = 10000
     
     def __init__(self, session_id: str = None, listener_id: str = None, parent=None):
         super().__init__(parent)
@@ -75,6 +77,8 @@ class TerminalWindow(QMainWindow):
                 selection-background-color: #264F78;
             }
         """)
+        # Enable word wrap so long lines don't force horizontal scrolling
+        self.terminal_output.setLineWrapMode(QTextEdit.LineWrapMode.WidgetWidth)
         layout.addWidget(self.terminal_output)
         
         # Command input area
@@ -98,6 +102,8 @@ class TerminalWindow(QMainWindow):
                 border: 1px solid #007ACC;
             }
         """)
+        # Remove max length restriction so long commands (e.g. base64 payloads) aren't truncated
+        self.command_input.setMaxLength(1000000)
         self.command_input.returnPressed.connect(self.execute_command)
         self.command_input.keyPressEvent = self.handle_key_press
         input_layout.addWidget(self.command_input)
@@ -175,7 +181,17 @@ class TerminalWindow(QMainWindow):
             listener_manager.listener_stopped.connect(self.on_listener_stopped)
         
     def handle_key_press(self, event):
-        """Handle special key presses for command history"""
+        """Handle special key presses for command history and paste sanitization"""
+        # Intercept Ctrl+V to strip newlines from pasted content
+        if (event.key() == Qt.Key.Key_V and 
+                event.modifiers() & Qt.KeyboardModifier.ControlModifier):
+            clipboard = QApplication.clipboard()
+            text = clipboard.text()
+            if text:
+                sanitized = text.replace('\r\n', '').replace('\n', '').replace('\r', '')
+                self.command_input.insert(sanitized)
+            return
+        
         if event.key() == Qt.Key.Key_Up:
             if self.history_index < len(self.command_history) - 1:
                 self.history_index += 1
@@ -275,7 +291,7 @@ class TerminalWindow(QMainWindow):
             self.append_output("Type 'help' for available commands")
             
     def append_output(self, text: str, color: str = "#CCCCCC"):
-        """Append text to terminal output"""
+        """Append text to terminal output, enforcing buffer limit."""
         cursor = self.terminal_output.textCursor()
         cursor.movePosition(QTextCursor.MoveOperation.End)
         
@@ -287,6 +303,18 @@ class TerminalWindow(QMainWindow):
         cursor.insertText(text + "\n")
         self.terminal_output.setTextCursor(cursor)
         self.terminal_output.ensureCursorVisible()
+
+        # Trim buffer if it exceeds the max line count
+        doc = self.terminal_output.document()
+        if doc.blockCount() > self.MAX_BUFFER_LINES:
+            trim_cursor = QTextCursor(doc)
+            lines_to_remove = doc.blockCount() - self.MAX_BUFFER_LINES
+            trim_cursor.movePosition(QTextCursor.MoveOperation.Start)
+            for _ in range(lines_to_remove):
+                trim_cursor.movePosition(QTextCursor.MoveOperation.Down, QTextCursor.MoveMode.KeepAnchor)
+            trim_cursor.movePosition(QTextCursor.MoveOperation.StartOfBlock, QTextCursor.MoveMode.KeepAnchor)
+            trim_cursor.removeSelectedText()
+            trim_cursor.deleteChar()  # Remove the trailing newline
         
     def clear_terminal(self):
         """Clear terminal output"""
@@ -301,9 +329,12 @@ class TerminalWindow(QMainWindow):
         self.terminal_output.copy()
         
     def paste_to_input(self):
-        """Paste clipboard content to input"""
+        """Paste clipboard content to input, stripping newlines for single-line commands"""
         clipboard = QApplication.clipboard()
-        self.command_input.setText(clipboard.text())
+        text = clipboard.text()
+        if text:
+            sanitized = text.replace('\r\n', '').replace('\n', '').replace('\r', '')
+            self.command_input.insert(sanitized)
         
     def save_output(self):
         """Save terminal output to file"""

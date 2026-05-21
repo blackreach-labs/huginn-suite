@@ -95,26 +95,27 @@ class ServiceUIComponentsMixin:
             # Get current auth selection and apply it
             current_auth = controls.controls['rpc_auth_combo'].currentText()
             QTimer.singleShot(10, lambda: self.toggle_rpc_auth_fields(tool_key, current_auth))
-        elif tool_key == 'smb_enum' and 'smb_auth_combo' in controls.controls:
-            from PyQt6.QtCore import QTimer
-            QTimer.singleShot(0, lambda: self.toggle_smb_auth_fields(tool_key, "Anonymous"))
-            # Set initial scan type to Basic Info
-            QTimer.singleShot(5, lambda: self.on_smb_scan_type_changed(tool_key, "Basic Info"))
+        elif tool_key == 'smb_enum':
+            # Immediately hide optional fields and set correct panel height
+            self._hide_smb_optional_fields_by_default(tool_key, controls)
         elif tool_key == 'http_enum':
             # Immediately hide optional fields and set correct panel height
             self.hide_http_optional_fields_by_default(tool_key, controls)
         elif tool_key == 'av_detect' and 'av_detection_type' in controls.controls:
             from PyQt6.QtCore import QTimer
             QTimer.singleShot(0, lambda: self.toggle_av_fields(tool_key, "WAF Detection"))
-        elif tool_key == 'db_enum' and 'db_type_combo' in controls.controls:
-            from PyQt6.QtCore import QTimer
-            QTimer.singleShot(0, lambda: self.toggle_db_fields(tool_key, "MSSQL"))
+        elif tool_key == 'db_enum':
+            # Immediately hide optional fields and set correct panel height
+            self._hide_db_optional_fields_by_default(tool_key, controls)
         elif tool_key == 'snmp_enum' and 'snmp_version' in controls.controls:
             from PyQt6.QtCore import QTimer
             QTimer.singleShot(0, lambda: self.toggle_snmp_fields(tool_key, "2c"))
-        elif tool_key == 'ssh_enum' and 'ssh_auth_type' in controls.controls:
-            from PyQt6.QtCore import QTimer
-            QTimer.singleShot(0, lambda: self.toggle_ssh_auth_fields(tool_key, "Anonymous"))
+        elif tool_key == 'ssh_enum':
+            # Immediately hide optional fields and set correct panel height
+            self._hide_ssh_optional_fields_by_default(tool_key, controls)
+        elif tool_key == 'ldap_enum':
+            # Immediately hide optional fields and set correct panel height
+            self._hide_ldap_optional_fields_by_default(tool_key, controls)
     
     def _create_service_controls_row(self, tool_key):
         """Create controls row with run button and view toggles"""
@@ -285,10 +286,15 @@ class ServiceUIComponentsMixin:
                         tables[scan_type] = tree
                 elif scan_type == "Directory Enum":
                     # Tree view for Directory Enum (graph view)
-                    tree = QTreeWidget()
-                    tree.setHeaderLabels(["Path/Status", "Size/Count", "Details"])
-                    tree.setRootIsDecorated(True)
-                    tables[scan_type] = tree
+                    try:
+                        from app.widgets.crawl_tree_widget import CrawlTreeWidget
+                        tree_view = CrawlTreeWidget()
+                        tables[scan_type] = tree_view
+                    except ImportError:
+                        tree = QTreeWidget()
+                        tree.setHeaderLabels(["Path/Status", "Size/Count", "Details"])
+                        tree.setRootIsDecorated(True)
+                        tables[scan_type] = tree
                 elif scan_type == "Enterprise Scripts":
                     # Tree view for Enterprise Scripts using CrawlTreeWidget
                     try:
@@ -630,7 +636,7 @@ class ServiceUIComponentsMixin:
         """Hide HTTP optional fields by default on page load"""
         if hasattr(controls, 'row_widgets'):
             # Hide all optional fields by default (Fingerprinting is default scan type)
-            optional_rows = ['Listener:', 'Preset:', 'Extensions:', 'Wordlist:', 'Auth Method:', 'Username:', 'Password:', 'Credentials:']
+            optional_rows = ['Listener:', 'Preset:', 'Extensions:', 'Wordlist:', 'Auth Method:', 'Login URL:', 'Username:', 'Password:', 'Credentials:']
             for row_label in optional_rows:
                 if row_label in controls.row_widgets and controls.row_widgets[row_label] is not None:
                     try:
@@ -644,6 +650,93 @@ class ServiceUIComponentsMixin:
             
             # Set panel to minimal height (just Scan Type row)
             controls.setFixedHeight(34)
+    
+    def _hide_smb_optional_fields_by_default(self, tool_key, controls):
+        """Hide SMB optional fields by default on page load"""
+        if hasattr(controls, 'row_widgets'):
+            # Hide all optional fields by default (Anonymous auth, Basic Info scan type)
+            optional_rows = ['Domain:', 'Username:', 'Password:', 'Credentials:', 'Wordlist:']
+            for row_label in optional_rows:
+                if row_label in controls.row_widgets and controls.row_widgets[row_label] is not None:
+                    try:
+                        row_widget = controls.row_widgets[row_label]
+                        row_widget.setVisible(False)
+                        row_widget.setMaximumHeight(0)
+                        row_widget.setMinimumHeight(0)
+                    except RuntimeError:
+                        pass
+            
+            # Set panel to minimal height (just Scan Type row)
+            controls.setMinimumHeight(34)
+            controls.setMaximumHeight(34)
+            controls.setFixedHeight(34)
+            controls.updateGeometry()
+    
+    def _hide_ssh_optional_fields_by_default(self, tool_key, controls):
+        """Hide SSH optional fields by default on page load"""
+        if hasattr(controls, 'row_widgets'):
+            # Hide all auth-dependent fields by default (Anonymous auth)
+            optional_rows = ['Username:', 'Password:', 'Key Path:', 'Wordlist:']
+            for row_label in optional_rows:
+                if row_label in controls.row_widgets and controls.row_widgets[row_label] is not None:
+                    try:
+                        row_widget = controls.row_widgets[row_label]
+                        row_widget.setVisible(False)
+                        row_widget.setMaximumHeight(0)
+                        row_widget.setMinimumHeight(0)
+                    except RuntimeError:
+                        pass
+            
+            # Set panel to correct height (Port + Scan Type + Auth Type = 3 rows)
+            height = 3 * 30 + 4
+            controls.setMinimumHeight(height)
+            controls.setMaximumHeight(height)
+            controls.setFixedHeight(height)
+            controls.updateGeometry()
+    
+    def _hide_ldap_optional_fields_by_default(self, tool_key, controls):
+        """Hide LDAP optional fields by default on page load"""
+        if hasattr(controls, 'row_widgets'):
+            # Hide auth-related fields by default (shown when Authenticated Enum selected)
+            optional_rows = ['Auth:', 'Username:', 'Password:']
+            for row_label in optional_rows:
+                if row_label in controls.row_widgets and controls.row_widgets[row_label] is not None:
+                    try:
+                        row_widget = controls.row_widgets[row_label]
+                        row_widget.setVisible(False)
+                        row_widget.setMaximumHeight(0)
+                        row_widget.setMinimumHeight(0)
+                    except RuntimeError:
+                        pass
+            
+            # Set panel to correct height (Port + Scan Type + Base DN = 3 rows)
+            height = 3 * 30 + 4
+            controls.setMinimumHeight(height)
+            controls.setMaximumHeight(height)
+            controls.setFixedHeight(height)
+            controls.updateGeometry()
+    
+    def _hide_db_optional_fields_by_default(self, tool_key, controls):
+        """Hide Database optional fields by default on page load"""
+        if hasattr(controls, 'row_widgets'):
+            # Hide all optional fields by default (None auth)
+            optional_rows = ['Oracle SID:', 'Domain:', 'Username:', 'Credentials:']
+            for row_label in optional_rows:
+                if row_label in controls.row_widgets and controls.row_widgets[row_label] is not None:
+                    try:
+                        row_widget = controls.row_widgets[row_label]
+                        row_widget.setVisible(False)
+                        row_widget.setMaximumHeight(0)
+                        row_widget.setMinimumHeight(0)
+                    except RuntimeError:
+                        pass
+            
+            # Set panel to correct height (DB Type + Scan Type = 2 rows)
+            height = 2 * 30 + 4
+            controls.setMinimumHeight(height)
+            controls.setMaximumHeight(height)
+            controls.setFixedHeight(height)
+            controls.updateGeometry()
     
     def toggle_service_scan(self, tool_key):
         """Toggle service scan - start if not running, stop if running"""

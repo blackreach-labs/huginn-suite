@@ -87,7 +87,7 @@ class ControlPanelFactory:
         # Don't set a hard max height - let visibility toggling control panel size dynamically
         
         layout = QVBoxLayout(widget)
-        layout.setSpacing(1)
+        layout.setSpacing(0)
         layout.setContentsMargins(0, 0, 0, 0)
         
         controls = {}

@@ -170,6 +170,7 @@ class ServiceScannersMixin:
             password = ""
             auth_headers = {}
             auth_cookies = {}
+            login_url = ""
             
             if control_panel and hasattr(control_panel, 'controls'):
                 controls = control_panel.controls
@@ -179,6 +180,11 @@ class ServiceScannersMixin:
                         auth_method = "basic"
                         username = controls['http_username'].text() if 'http_username' in controls else ""
                         password = controls['http_password'].text() if 'http_password' in controls else ""
+                    elif auth_method_text == "Form-Based Auth":
+                        auth_method = "form_login"
+                        username = controls['http_username'].text() if 'http_username' in controls else ""
+                        password = controls['http_password'].text() if 'http_password' in controls else ""
+                        login_url = controls['http_login_url'].text() if 'http_login_url' in controls else ""
                     elif auth_method_text == "Captured Sessions":
                         auth_method = "captured_sessions"
                         auth_headers = getattr(control_panel, 'captured_auth_headers', {})
@@ -195,6 +201,7 @@ class ServiceScannersMixin:
                 password=password,
                 auth_headers=auth_headers,
                 auth_cookies=auth_cookies,
+                login_url=login_url,
                 tenant_id=tenant_id,
                 listener_id=listener_id
             )

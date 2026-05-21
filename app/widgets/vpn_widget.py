@@ -383,7 +383,11 @@ class VPNWidget(QWidget):
         status = vpn_manager.get_status()
         
         if status["connected"]:
-            self.status_label.setText("● Connected")
+            vpn_ip = status.get("vpn_ip")
+            if vpn_ip:
+                self.status_label.setText(f"● Connected — {vpn_ip}")
+            else:
+                self.status_label.setText("● Connected")
             self.status_label.setStyleSheet("color: #00CC00; font-weight: bold; font-size: 12pt;")
             
             if status["connection"]:
@@ -423,7 +427,11 @@ class VPNWidget(QWidget):
             self.disconnect_btn.setEnabled(True)
         elif status == "connected":
             self.is_connecting = False
-            self.status_label.setText("● Connected")
+            vpn_ip = vpn_manager.vpn_ip
+            if vpn_ip:
+                self.status_label.setText(f"● Connected — {vpn_ip}")
+            else:
+                self.status_label.setText("● Connected")
             self.status_label.setStyleSheet("color: #00CC00; font-weight: bold; font-size: 12pt;")
             self.status_details.setText(message)
         elif status == "error":

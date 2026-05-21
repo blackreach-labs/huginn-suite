@@ -48,15 +48,13 @@ class SecureCredentialWidget(QWidget):
         self.init_credentials_tab()
         self.tab_widget.addTab(self.credentials_tab, "🔑 Credentials")
 
-        # Security tab
-        self.security_tab = QWidget()
-        self.init_security_tab()
-        self.tab_widget.addTab(self.security_tab, "🔒 Security")
-
         # Enterprise tab
         self.enterprise_tab = QWidget()
         self.init_enterprise_tab()
         self.tab_widget.addTab(self.enterprise_tab, "🏢 Enterprise")
+
+        # Initialize security attributes (tab removed from UI)
+        self.init_security_tab()
     
     def init_credentials_tab(self):
         """Initialize credentials management tab — original compact style."""
@@ -374,62 +372,14 @@ class SecureCredentialWidget(QWidget):
         self.on_type_changed("Username/Password")
     
     def init_security_tab(self):
-        """Initialize security overview tab"""
-        layout = QVBoxLayout(self.security_tab)
-        
-        # Security summary
-        summary_group = QGroupBox("Security Summary")
-        summary_layout = QVBoxLayout(summary_group)
-        
+        """Stub — Security tab removed from UI. Attributes kept for internal use."""
         self.security_summary = QLabel()
-        summary_layout.addWidget(self.security_summary)
-        
-        layout.addWidget(summary_group)
-        
-        # Security options
-        options_group = QGroupBox("Security Options")
-        options_layout = QFormLayout(options_group)
-        
-        self.use_env_checkbox = QCheckBox("Prioritize environment variables")
+        self.use_env_checkbox = QCheckBox()
         self.use_env_checkbox.setChecked(True)
-        options_layout.addRow("", self.use_env_checkbox)
-        
-        self.use_secrets_checkbox = QCheckBox("Use enterprise secrets manager")
+        self.use_secrets_checkbox = QCheckBox()
         self.use_secrets_checkbox.setChecked(True)
-        options_layout.addRow("", self.use_secrets_checkbox)
-        
-        # Memory management
-        memory_buttons = QHBoxLayout()
-        self.clear_memory_btn = QPushButton("Clear Secure Memory")
+        self.clear_memory_btn = QPushButton()
         self.clear_memory_btn.clicked.connect(self.clear_secure_memory)
-        memory_buttons.addWidget(self.clear_memory_btn)
-        memory_buttons.addStretch()
-        options_layout.addRow("Memory:", memory_buttons)
-        
-        layout.addWidget(options_group)
-        
-        # Environment variables
-        env_group = QGroupBox("Environment Variables")
-        env_layout = QVBoxLayout(env_group)
-        
-        env_info = QLabel("""
-Environment variables take priority over stored credentials. Use these patterns:
-• SERVICE_USERNAME or SERVICE_USER
-• SERVICE_PASSWORD or SERVICE_PASS  
-• SERVICE_API_KEY or SERVICE_KEY
-• SERVICE_TOKEN
-
-Examples:
-• SHODAN_API_KEY=your_key_here
-• AWS_ACCESS_KEY_ID=AKIA...
-• AWS_SECRET_ACCESS_KEY=...
-        """)
-        env_info.setStyleSheet("color: #666; font-family: monospace;")
-        env_layout.addWidget(env_info)
-        
-        layout.addWidget(env_group)
-        
-        layout.addStretch()
     
     def init_enterprise_tab(self):
         """Initialize enterprise secrets management tab with inline configuration."""
@@ -588,12 +538,22 @@ Examples:
         self.sm_aws_region.setText("us-east-1")
         aws_grid.addWidget(self.sm_aws_region, 4, 1)
 
-        aws_hint = QLabel(
-            "Leave Access Key ID blank to fall back to the standard AWS credential chain\n"
-            "(env vars → ~/.aws/credentials → IAM instance role)."
+        aws_notes = QLabel(
+            "On AWS portal:\n"
+            "\n"
+            "1. Create an IAM user with the following policy:\n"
+            '   {"Version": "2012-10-17",\n'
+            '    "Statement": [{"Effect": "Allow",\n'
+            '      "Action": ["secretsmanager:GetSecretValue",\n'
+            '                  "secretsmanager:CreateSecret",\n'
+            '                  "secretsmanager:PutSecretValue"],\n'
+            '      "Resource": "*"}]}\n'
+            "\n"
+            "2. Create an Access Key for the IAM user and enter above"
         )
-        aws_hint.setStyleSheet(HINT_STYLE)
-        aws_grid.addWidget(aws_hint, 5, 0, 1, 2)
+        aws_notes.setStyleSheet("font-size: 9pt; color: #AAAAAA; font-family: 'Neuropol X';")
+        aws_notes.setWordWrap(True)
+        aws_grid.addWidget(aws_notes, 5, 0, 1, 2)
         self.sm_config_stack.addWidget(aws_page)     # index 1
 
         # — Azure Key Vault page —

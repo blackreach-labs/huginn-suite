@@ -35,7 +35,7 @@ class HTTPWorkerSignals(QObject):
     results_ready = pyqtSignal(dict)
 
 class HTTPEnumWorker(QRunnable):
-    def __init__(self, target, scan_type="Fingerprinting", wordlist_path=None, extensions=None, dns_server=None, preset="Manual", wordlist_size="Medium", enable_plugins=True, enable_crawl=False, auth_method=None, username="", password="", auth_headers=None, auth_cookies=None, tenant_id="default", listener_id=None):
+    def __init__(self, target, scan_type="Fingerprinting", wordlist_path=None, extensions=None, dns_server=None, preset="Manual", wordlist_size="Medium", enable_plugins=True, enable_crawl=False, auth_method=None, username="", password="", auth_headers=None, auth_cookies=None, login_url="", tenant_id="default", listener_id=None):
         super().__init__()
         self.target = target
         self.scan_type = scan_type
@@ -51,6 +51,7 @@ class HTTPEnumWorker(QRunnable):
         self.password = password
         self.auth_headers = auth_headers or {}
         self.auth_cookies = auth_cookies or {}
+        self.login_url = login_url
         self.tenant_id = tenant_id
         self.listener_id = listener_id
         self.signals = HTTPWorkerSignals()
@@ -1332,8 +1333,15 @@ class HTTPEnumWorker(QRunnable):
             # Attempt authentication
             self.signals.output.emit(f"<p style='color: #87CEEB;'>Attempting authentication using {h(self.auth_method)}...</p><br>")
             
+            # For form-based auth, use the login_url if provided, otherwise fall back to target
+            auth_target = self.login_url if (self.auth_method == "form_login" and self.login_url) else self.target
+            
+            if self.auth_method == "form_login":
+                self.signals.output.emit(f"<p style='color: #87CEEB;'>Login URL: {h(auth_target)}</p><br>")
+                self.signals.output.emit(f"<p style='color: #87CEEB;'>Username: {h(self.username)}</p><br>")
+            
             auth_success = self.authenticated_crawler.authenticate(
-                target_url=self.target,
+                target_url=auth_target,
                 auth_method=self.auth_method,
                 username=self.username,
                 password=self.password,
@@ -1343,6 +1351,11 @@ class HTTPEnumWorker(QRunnable):
             
             if auth_success:
                 self.signals.output.emit("<p style='color: #00FF41;'>Authentication successful! Starting authenticated crawl...</p><br>")
+                
+                # Show which tokens/cookies were obtained
+                if self.authenticated_crawler.auth_tokens:
+                    token_names = list(self.authenticated_crawler.auth_tokens.keys())[:5]
+                    self.signals.output.emit(f"<p style='color: #00FF41;'>Session tokens: {h(', '.join(token_names))}</p><br>")
                 
                 # Perform authenticated crawling
                 crawled_data = self.authenticated_crawler.crawl_authenticated(
@@ -1356,10 +1369,34 @@ class HTTPEnumWorker(QRunnable):
                 results['auth_session'] = auth_session
                 results['crawl_results'] = crawled_data
                 
-                self.signals.output.emit(f"<p style='color: #00FF41;'>Authenticated crawl completed: {len([p for p in crawled_data.values() if 'error' not in p])} pages</p><br>")
+                # Show SPA detection info
+                for url, page_data in crawled_data.items():
+                    if page_data.get('spa_detected'):
+                        spa_links = page_data.get('links', [])
+                        self.signals.output.emit(f"<p style='color: #FFD700;'>🔍 SPA detected! Discovered {len(spa_links)} routes from JavaScript bundles</p><br>")
+                        break
+                
+                # Show API endpoints discovered
+                for url, page_data in crawled_data.items():
+                    if page_data.get('api_endpoints'):
+                        api_eps = page_data['api_endpoints']
+                        self.signals.output.emit(f"<p style='color: #87CEEB;'>📡 Found {len(api_eps)} accessible API endpoints</p><br>")
+                        for ep in api_eps[:10]:
+                            self.signals.output.emit(f"<p style='color: #87CEEB;'>  {h(ep)}</p><br>")
+                        break
+                
+                successful_pages = [p for p in crawled_data.values() if 'error' not in p]
+                self.signals.output.emit(f"<p style='color: #00FF41;'>Authenticated crawl completed: {len(successful_pages)} pages</p><br>")
                 
             else:
-                self.signals.output.emit("<p style='color: #FFAA00;'>Authentication failed, falling back to standard crawler...</p><br>")
+                if self.auth_method == "form_login":
+                    self.signals.output.emit("<p style='color: #FFAA00;'>Form-based authentication failed. Possible causes:</p><br>")
+                    self.signals.output.emit("<p style='color: #FFAA00;'>  - Login form not found in page HTML (SPA/JS-rendered)</p><br>")
+                    self.signals.output.emit("<p style='color: #FFAA00;'>  - API login endpoint not discovered automatically</p><br>")
+                    self.signals.output.emit("<p style='color: #FFAA00;'>  - Invalid credentials or account locked</p><br>")
+                    self.signals.output.emit(f"<p style='color: #FFAA00;'>  Tried login URL: {h(auth_target)}</p><br>")
+                else:
+                    self.signals.output.emit("<p style='color: #FFAA00;'>Authentication failed, falling back to standard crawler...</p><br>")
                 self._standard_crawler(results)
                 
         except Exception as e:

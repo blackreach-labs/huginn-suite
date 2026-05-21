@@ -84,6 +84,17 @@ class ServiceFieldVisibilityMixin:
                     lambda: self.open_db_credential_manager(tool_key)
                 )
         
+        # LDAP enumeration field interactions
+        elif tool_key == 'ldap_enum':
+            if 'ldap_scan_type' in control_widgets:
+                control_widgets['ldap_scan_type'].currentTextChanged.connect(
+                    lambda scan_type: self.on_ldap_scan_type_changed(tool_key, scan_type)
+                )
+            if 'ldap_auth_combo' in control_widgets:
+                control_widgets['ldap_auth_combo'].currentTextChanged.connect(
+                    lambda auth_type: self.toggle_ldap_auth_fields(tool_key, auth_type)
+                )
+        
         # AV/Firewall detection field interactions
         elif tool_key == 'av_detect' and 'av_detection_type' in control_widgets:
             control_widgets['av_detection_type'].currentTextChanged.connect(
@@ -188,11 +199,39 @@ class ServiceFieldVisibilityMixin:
                             control_panel.row_widgets[row_label].setMinimumHeight(0)
                         else:
                             control_panel.row_widgets[row_label].setMaximumHeight(30)
-                            control_panel.row_widgets[row_label].setMinimumHeight(30)
+                            control_panel.row_widgets[row_label].setMinimumHeight(26)
                     except RuntimeError as _exc:
                         pass
                         logger.debug("Suppressed exception", exc_info=True)
+            
+            # Recalculate panel height
+            self._recalculate_smb_panel_height(tool_key)
     
+    def _recalculate_http_panel_height(self, tool_key):
+        """Recalculate HTTP control panel height based on all currently visible rows"""
+        self._recalculate_panel_height(tool_key)
+
+    def _recalculate_smb_panel_height(self, tool_key):
+        """Recalculate SMB control panel height based on all currently visible rows"""
+        self._recalculate_panel_height(tool_key)
+
+    def _recalculate_panel_height(self, tool_key):
+        """Recalculate control panel height based on all currently visible rows"""
+        control_panel = getattr(self, f"{tool_key}_control_panel", None)
+        if not control_panel or not hasattr(control_panel, 'row_widgets'):
+            return
+        
+        try:
+            visible_count = 0
+            for row_label, row_widget in control_panel.row_widgets.items():
+                if row_widget is not None and row_widget.isVisible():
+                    visible_count += 1
+            needed_height = visible_count * 30 + 4
+            control_panel.setFixedHeight(needed_height)
+            control_panel.setMaximumHeight(needed_height)
+        except RuntimeError:
+            pass
+
     def on_http_scan_type_changed(self, tool_key, scan_type):
         """Handle HTTP scan type change to show/hide relevant fields"""
         control_panel = getattr(self, f"{tool_key}_control_panel", None)
@@ -298,8 +337,9 @@ class ServiceFieldVisibilityMixin:
                 'Extensions:': show_extensions_rows,
                 'Wordlist:': show_wordlist,
                 'Auth Method:': show_auth,
-                'Username:': False,  # Hidden by default, shown only when Basic Auth selected
-                'Password:': False,  # Hidden by default, shown only when Basic Auth selected
+                'Login URL:': False,  # Hidden by default, shown only when Form-Based Auth selected
+                'Username:': False,  # Hidden by default, shown only when Basic Auth or Form-Based Auth selected
+                'Password:': False,  # Hidden by default, shown only when Basic Auth or Form-Based Auth selected
                 'Credentials:': False  # Hidden by default, shown only when Session Replay selected
             }
             
@@ -319,10 +359,8 @@ class ServiceFieldVisibilityMixin:
                         pass  # Widget has been deleted
                         logger.debug("Suppressed exception", exc_info=True)
             
-            # Adjust panel height to fit visible rows
-            visible_rows = sum(1 for lbl, vis in row_visibility_map.items() if vis) + 1  # +1 for Scan Type row
-            needed_height = visible_rows * 30 + 4
-            control_panel.setFixedHeight(needed_height)
+            # Recalculate panel height based on all visible rows
+            self._recalculate_http_panel_height(tool_key)
         
         # Store current scan type first
         setattr(self, f"{tool_key}_current_scan_type", scan_type)
@@ -370,6 +408,9 @@ class ServiceFieldVisibilityMixin:
                 except RuntimeError as _exc:
                     pass  # Widget has been deleted
                     logger.debug("Suppressed exception", exc_info=True)
+        
+        # Recalculate panel height
+        self._recalculate_http_panel_height(tool_key)
     
     def toggle_http_listener_options(self, tool_key, scan_type):
         """Toggle HTTP listener options based on scan type"""
@@ -631,18 +672,8 @@ class ServiceFieldVisibilityMixin:
                         pass
                         logger.debug("Suppressed exception", exc_info=True)
             
-            # Recalculate panel height
-            visible_count = 1  # Scan Type row always visible
-            if control_panel.row_widgets.get('Preset:', None) and control_panel.row_widgets['Preset:'].isVisible():
-                visible_count += 1
-            if show_extensions:
-                visible_count += 1  # Single extension row with grouped dropdowns
-            if control_panel.row_widgets.get('Wordlist:', None) and control_panel.row_widgets['Wordlist:'].isVisible():
-                visible_count += 1
-            if control_panel.row_widgets.get('Auth Method:', None) and control_panel.row_widgets['Auth Method:'].isVisible():
-                visible_count += 1
-            needed_height = visible_count * 30 + 4
-            control_panel.setFixedHeight(needed_height)
+            # Recalculate panel height based on all visible rows
+            self._recalculate_http_panel_height(tool_key)
         
 
     
@@ -715,19 +746,26 @@ class ServiceFieldVisibilityMixin:
         
         # Determine which fields to show based on auth method
         show_basic = (auth_method == "Basic Auth")
+        show_form = (auth_method == "Form-Based Auth")
         show_session = (auth_method == "Session Replay")
         show_captured = (auth_method == "Captured Sessions")
         
         # Show/hide individual controls
         if 'http_username' in controls and controls['http_username'] is not None:
             try:
-                controls['http_username'].setVisible(show_basic)
+                controls['http_username'].setVisible(show_basic or show_form)
             except RuntimeError as _exc:
                 pass
                 logger.debug("Suppressed exception", exc_info=True)
         if 'http_password' in controls and controls['http_password'] is not None:
             try:
-                controls['http_password'].setVisible(show_basic)
+                controls['http_password'].setVisible(show_basic or show_form)
+            except RuntimeError as _exc:
+                pass
+                logger.debug("Suppressed exception", exc_info=True)
+        if 'http_login_url' in controls and controls['http_login_url'] is not None:
+            try:
+                controls['http_login_url'].setVisible(show_form)
             except RuntimeError as _exc:
                 pass
                 logger.debug("Suppressed exception", exc_info=True)
@@ -735,8 +773,9 @@ class ServiceFieldVisibilityMixin:
         # Hide/show rows if available
         if hasattr(control_panel, 'row_widgets'):
             auth_row_visibility = {
-                'Username:': show_basic,
-                'Password:': show_basic,
+                'Login URL:': show_form,
+                'Username:': show_basic or show_form,
+                'Password:': show_basic or show_form,
                 'Credentials:': show_session or show_captured
             }
             
@@ -772,20 +811,14 @@ class ServiceFieldVisibilityMixin:
                 logger.debug("Suppressed exception", exc_info=True)
         
         # Recalculate panel height to accommodate newly visible/hidden rows
-        if hasattr(control_panel, 'row_widgets'):
-            try:
-                visible_count = 0
-                for row_label, row_widget in control_panel.row_widgets.items():
-                    if row_widget is not None and row_widget.isVisible():
-                        visible_count += 1
-                needed_height = visible_count * 30 + 4
-                control_panel.setFixedHeight(needed_height)
-            except RuntimeError:
-                pass
+        self._recalculate_http_panel_height(tool_key)
     
     def load_captured_sessions(self, tool_key):
         """Load captured session tokens from the HTTP Interceptor's session harvester"""
-        from PyQt6.QtWidgets import QMessageBox
+        from PyQt6.QtWidgets import (QMessageBox, QDialog, QVBoxLayout, QHBoxLayout,
+                                     QLabel, QPushButton, QTableWidget, QTableWidgetItem,
+                                     QHeaderView, QAbstractItemView)
+        from PyQt6.QtCore import Qt
         
         # Find the CurlWidget instance to access its session harvester
         session_harvester = None
@@ -829,37 +862,338 @@ class ServiceFieldVisibilityMixin:
             )
             return
         
-        # Store the captured tokens for use by the scanner
-        # Build auth headers and cookies from captured tokens
-        auth_cookies = {}
-        auth_headers = {}
+        # Build a selection dialog with clickable session rows
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Select Captured Session Tokens")
+        dialog.setModal(True)
+        dialog.resize(650, 420)
+        dialog.setStyleSheet("""
+            QDialog {
+                background-color: rgba(20, 25, 35, 240);
+                border: 1px solid rgba(100, 200, 255, 80);
+                border-radius: 8px;
+            }
+        """)
         
-        for token in auth_tokens:
-            if token.source == 'cookie':
-                auth_cookies[token.name] = token.value
-            elif token.source == 'header':
-                if 'bearer' in token.name.lower():
+        layout = QVBoxLayout(dialog)
+        layout.setSpacing(10)
+        
+        # Title
+        title = QLabel("🍪 Captured Session Tokens")
+        title.setStyleSheet("font-size: 14pt; font-weight: bold; color: #64C8FF;")
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(title)
+        
+        # Instructions
+        instructions = QLabel("Select the sessions to load as authentication for the HTTP crawler scan.")
+        instructions.setStyleSheet("color: #AAAAAA; font-size: 9pt;")
+        instructions.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(instructions)
+        
+        # Session table
+        table = QTableWidget()
+        table.setColumnCount(5)
+        table.setHorizontalHeaderLabels(["", "Type", "Name", "Domain", "Value Preview"])
+        table.setRowCount(len(auth_tokens))
+        table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        table.setSelectionMode(QAbstractItemView.SelectionMode.MultiSelection)
+        table.setStyleSheet("""
+            QTableWidget {
+                background-color: rgba(15, 20, 30, 200);
+                border: 1px solid rgba(100, 200, 255, 50);
+                border-radius: 5px;
+                color: #DCDCDC;
+                gridline-color: rgba(100, 200, 255, 30);
+            }
+            QTableWidget::item {
+                padding: 4px 8px;
+            }
+            QTableWidget::item:selected {
+                background-color: rgba(100, 200, 255, 80);
+                color: #FFFFFF;
+            }
+            QTableWidget::item:hover {
+                background-color: rgba(100, 200, 255, 40);
+            }
+            QHeaderView::section {
+                background-color: rgba(100, 200, 255, 100);
+                color: #000000;
+                font-weight: bold;
+                padding: 5px;
+                border: none;
+            }
+        """)
+        
+        # Category icons/colors
+        category_display = {
+            'session': ('🔑', '#00FF41'),
+            'jwt': ('🎫', '#FFD700'),
+            'csrf': ('🛡️', '#FF6B6B'),
+        }
+        
+        for i, token in enumerate(auth_tokens):
+            icon, color = category_display.get(token.category, ('❓', '#AAAAAA'))
+            
+            # Checkbox-style icon column
+            icon_item = QTableWidgetItem(icon)
+            icon_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            icon_item.setFlags(icon_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+            table.setItem(i, 0, icon_item)
+            
+            # Type
+            type_item = QTableWidgetItem(token.category.upper())
+            type_item.setForeground(Qt.GlobalColor.white)
+            type_item.setFlags(type_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+            table.setItem(i, 1, type_item)
+            
+            # Name
+            name_item = QTableWidgetItem(token.name)
+            name_item.setForeground(Qt.GlobalColor.white)
+            name_item.setFlags(name_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+            table.setItem(i, 2, name_item)
+            
+            # Domain
+            domain_item = QTableWidgetItem(token.domain)
+            domain_item.setForeground(Qt.GlobalColor.white)
+            domain_item.setFlags(domain_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+            table.setItem(i, 3, domain_item)
+            
+            # Value preview (truncated for security)
+            value_preview = token.value[:40] + "..." if len(token.value) > 40 else token.value
+            value_item = QTableWidgetItem(value_preview)
+            value_item.setForeground(Qt.GlobalColor.white)
+            value_item.setFlags(value_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+            value_item.setToolTip(f"Full value: {token.value[:100]}{'...' if len(token.value) > 100 else ''}")
+            table.setItem(i, 4, value_item)
+        
+        # Auto-resize columns
+        header = table.horizontalHeader()
+        table.setColumnWidth(0, 35)
+        header.setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)
+        header.setSectionResizeMode(2, QHeaderView.ResizeMode.ResizeToContents)
+        header.setSectionResizeMode(3, QHeaderView.ResizeMode.ResizeToContents)
+        header.setSectionResizeMode(4, QHeaderView.ResizeMode.Stretch)
+        
+        layout.addWidget(table)
+        
+        # Select All / Deselect All row
+        select_layout = QHBoxLayout()
+        
+        select_all_btn = QPushButton("Select All")
+        select_all_btn.setStyleSheet("""
+            QPushButton {
+                background-color: rgba(100, 200, 255, 60);
+                border: 1px solid rgba(100, 200, 255, 120);
+                border-radius: 4px;
+                color: #DCDCDC;
+                padding: 4px 12px;
+                font-size: 9pt;
+            }
+            QPushButton:hover {
+                background-color: rgba(100, 200, 255, 100);
+            }
+        """)
+        select_all_btn.clicked.connect(table.selectAll)
+        select_layout.addWidget(select_all_btn)
+        
+        deselect_btn = QPushButton("Deselect All")
+        deselect_btn.setStyleSheet("""
+            QPushButton {
+                background-color: rgba(100, 100, 100, 60);
+                border: 1px solid rgba(150, 150, 150, 120);
+                border-radius: 4px;
+                color: #DCDCDC;
+                padding: 4px 12px;
+                font-size: 9pt;
+            }
+            QPushButton:hover {
+                background-color: rgba(100, 100, 100, 100);
+            }
+        """)
+        deselect_btn.clicked.connect(table.clearSelection)
+        select_layout.addWidget(deselect_btn)
+        
+        select_layout.addStretch()
+        
+        # Selection count label
+        selection_label = QLabel(f"{len(auth_tokens)} token(s) available")
+        selection_label.setStyleSheet("color: #AAAAAA; font-size: 9pt;")
+        select_layout.addWidget(selection_label)
+        
+        layout.addLayout(select_layout)
+        
+        # Update selection count on change
+        def update_selection_count():
+            selected_rows = set(idx.row() for idx in table.selectedIndexes())
+            selection_label.setText(f"{len(selected_rows)} of {len(auth_tokens)} token(s) selected")
+        
+        table.itemSelectionChanged.connect(update_selection_count)
+        
+        # Action buttons
+        btn_layout = QHBoxLayout()
+        
+        load_btn = QPushButton("⚡ Load Selected Sessions")
+        load_btn.setStyleSheet("""
+            QPushButton {
+                background-color: rgba(50, 150, 50, 150);
+                border: 2px solid #32CD32;
+                border-radius: 5px;
+                color: #FFFFFF;
+                font-weight: bold;
+                padding: 8px 16px;
+                font-size: 10pt;
+            }
+            QPushButton:hover {
+                background-color: rgba(50, 180, 50, 200);
+            }
+        """)
+        btn_layout.addWidget(load_btn)
+        
+        cancel_btn = QPushButton("Cancel")
+        cancel_btn.setStyleSheet("""
+            QPushButton {
+                background-color: rgba(100, 100, 100, 150);
+                border: 2px solid #666666;
+                border-radius: 5px;
+                color: #FFFFFF;
+                font-weight: bold;
+                padding: 8px 16px;
+            }
+            QPushButton:hover {
+                background-color: rgba(120, 120, 120, 180);
+            }
+        """)
+        cancel_btn.clicked.connect(dialog.reject)
+        btn_layout.addWidget(cancel_btn)
+        
+        layout.addLayout(btn_layout)
+        
+        # Load button action
+        def on_load_selected():
+            selected_rows = sorted(set(idx.row() for idx in table.selectedIndexes()))
+            if not selected_rows:
+                QMessageBox.warning(dialog, "No Selection", "Please select at least one session token to load.")
+                return
+            
+            # Build auth headers and cookies from selected tokens
+            auth_cookies = {}
+            auth_headers = {}
+            
+            for row in selected_rows:
+                token = auth_tokens[row]
+                if token.source == 'cookie':
+                    auth_cookies[token.name] = token.value
+                elif token.source == 'header':
+                    if 'bearer' in token.name.lower():
+                        auth_headers['Authorization'] = f"Bearer {token.value}"
+                    else:
+                        auth_headers[token.name] = token.value
+                elif token.source == 'body' and token.category == 'jwt':
                     auth_headers['Authorization'] = f"Bearer {token.value}"
-                else:
-                    auth_headers[token.name] = token.value
-            elif token.source == 'body' and token.category == 'jwt':
-                auth_headers['Authorization'] = f"Bearer {token.value}"
+            
+            # Store on the control panel for the scanner to pick up
+            control_panel = getattr(self, f"{tool_key}_control_panel", None)
+            if control_panel:
+                control_panel.captured_auth_cookies = auth_cookies
+                control_panel.captured_auth_headers = auth_headers
+            
+            dialog.accept()
+            
+            # Show brief confirmation
+            loaded_count = len(selected_rows)
+            QMessageBox.information(
+                self, "Sessions Loaded",
+                f"✓ Loaded {loaded_count} session token(s) into HTTP crawler auth.\n\n"
+                f"Cookies: {len(auth_cookies)}\n"
+                f"Headers: {len(auth_headers)}"
+            )
         
-        # Store on the control panel for the scanner to pick up
+        load_btn.clicked.connect(on_load_selected)
+        
+        # Pre-select all rows by default
+        table.selectAll()
+        update_selection_count()
+        
+        dialog.exec()
+    
+    def on_ldap_scan_type_changed(self, tool_key, scan_type):
+        """Handle LDAP scan type change to show/hide auth fields"""
         control_panel = getattr(self, f"{tool_key}_control_panel", None)
-        if control_panel:
-            control_panel.captured_auth_cookies = auth_cookies
-            control_panel.captured_auth_headers = auth_headers
+        if not control_panel or not hasattr(control_panel, 'row_widgets'):
+            return
         
-        # Show confirmation
-        summary = f"Loaded {len(auth_tokens)} token(s):\n\n"
-        for token in auth_tokens[:10]:
-            value_preview = token.value[:30] + "..." if len(token.value) > 30 else token.value
-            summary += f"  [{token.category.upper()}] {token.name} = {value_preview}\n"
-        if len(auth_tokens) > 10:
-            summary += f"\n  ... and {len(auth_tokens) - 10} more"
+        # Show auth fields for Authenticated Enum and Full Scan
+        show_auth = (scan_type in ["Authenticated Enum", "Full Scan"])
         
-        QMessageBox.information(self, "Sessions Loaded", summary)
+        if 'Auth:' in control_panel.row_widgets and control_panel.row_widgets['Auth:'] is not None:
+            try:
+                row_widget = control_panel.row_widgets['Auth:']
+                row_widget.setVisible(show_auth)
+                if show_auth:
+                    row_widget.setMaximumHeight(30)
+                    row_widget.setMinimumHeight(26)
+                else:
+                    row_widget.setMaximumHeight(0)
+                    row_widget.setMinimumHeight(0)
+            except RuntimeError:
+                pass
+        
+        # If hiding auth, also hide username/password
+        if not show_auth:
+            for row_label in ['Username:', 'Password:']:
+                if row_label in control_panel.row_widgets and control_panel.row_widgets[row_label] is not None:
+                    try:
+                        row_widget = control_panel.row_widgets[row_label]
+                        row_widget.setVisible(False)
+                        row_widget.setMaximumHeight(0)
+                        row_widget.setMinimumHeight(0)
+                    except RuntimeError:
+                        pass
+        else:
+            # Re-apply auth field visibility based on current auth type
+            if hasattr(control_panel, 'controls') and 'ldap_auth_combo' in control_panel.controls:
+                try:
+                    current_auth = control_panel.controls['ldap_auth_combo'].currentText()
+                    self.toggle_ldap_auth_fields(tool_key, current_auth)
+                except RuntimeError:
+                    pass
+        
+        # Recalculate panel height
+        self._recalculate_panel_height(tool_key)
+    
+    def toggle_ldap_auth_fields(self, tool_key, auth_type):
+        """Toggle LDAP authentication fields based on auth type selection"""
+        control_panel = getattr(self, f"{tool_key}_control_panel", None)
+        if not control_panel or not hasattr(control_panel, 'row_widgets'):
+            return
+        
+        show_creds = (auth_type != "Anonymous")
+        
+        for row_label in ['Username:', 'Password:']:
+            if row_label in control_panel.row_widgets and control_panel.row_widgets[row_label] is not None:
+                try:
+                    row_widget = control_panel.row_widgets[row_label]
+                    row_widget.setVisible(show_creds)
+                    if show_creds:
+                        row_widget.setMaximumHeight(30)
+                        row_widget.setMinimumHeight(26)
+                    else:
+                        row_widget.setMaximumHeight(0)
+                        row_widget.setMinimumHeight(0)
+                except RuntimeError:
+                    pass
+        
+        # Also toggle control visibility
+        if hasattr(control_panel, 'controls'):
+            for ctrl_name in ['ldap_username', 'ldap_password']:
+                if ctrl_name in control_panel.controls and control_panel.controls[ctrl_name] is not None:
+                    try:
+                        control_panel.controls[ctrl_name].setVisible(show_creds)
+                    except RuntimeError:
+                        pass
+        
+        # Recalculate panel height
+        self._recalculate_panel_height(tool_key)
     
     def toggle_db_fields(self, tool_key, db_type):
         """Toggle database fields based on database type selection"""
@@ -929,10 +1263,20 @@ class ServiceFieldVisibilityMixin:
         if hasattr(control_panel, 'row_widgets'):
             if 'Oracle SID:' in control_panel.row_widgets and control_panel.row_widgets['Oracle SID:'] is not None:
                 try:
-                    control_panel.row_widgets['Oracle SID:'].setVisible(show_oracle_sid)
+                    row_widget = control_panel.row_widgets['Oracle SID:']
+                    row_widget.setVisible(show_oracle_sid)
+                    if show_oracle_sid:
+                        row_widget.setMaximumHeight(30)
+                        row_widget.setMinimumHeight(26)
+                    else:
+                        row_widget.setMaximumHeight(0)
+                        row_widget.setMinimumHeight(0)
                 except RuntimeError as _exc:
                     pass
                     logger.debug("Suppressed exception", exc_info=True)
+        
+        # Recalculate panel height
+        self._recalculate_panel_height(tool_key)
     
     def toggle_db_auth_fields(self, tool_key, auth_type):
         """Toggle database authentication fields based on method selection"""
@@ -993,7 +1337,7 @@ class ServiceFieldVisibilityMixin:
                         if should_show:
                             row_widget.setVisible(True)
                             row_widget.setMaximumHeight(30)
-                            row_widget.setMinimumHeight(30)
+                            row_widget.setMinimumHeight(26)
                         else:
                             row_widget.setVisible(False)
                             row_widget.setMaximumHeight(0)
@@ -1001,6 +1345,9 @@ class ServiceFieldVisibilityMixin:
                     except RuntimeError as _exc:
                         pass
                         logger.debug("Suppressed exception", exc_info=True)
+        
+        # Recalculate panel height
+        self._recalculate_panel_height(tool_key)
     
     def toggle_av_fields(self, tool_key, detection_type):
         """Toggle AV/Firewall detection specific fields"""
@@ -1113,7 +1460,7 @@ class ServiceFieldVisibilityMixin:
                         if should_show:
                             row_widget.setVisible(True)
                             row_widget.setMaximumHeight(30)
-                            row_widget.setMinimumHeight(30)
+                            row_widget.setMinimumHeight(26)
                         else:
                             row_widget.setVisible(False)
                             row_widget.setMaximumHeight(0)
@@ -1121,6 +1468,9 @@ class ServiceFieldVisibilityMixin:
                     except RuntimeError as _exc:
                         pass
                         logger.debug("Suppressed exception", exc_info=True)
+        
+        # Recalculate panel height
+        self._recalculate_panel_height(tool_key)
     
     def on_ssh_scan_type_changed(self, tool_key, scan_type):
         """Handle SSH scan type change to switch terminal views and hide auth fields"""
@@ -1136,9 +1486,29 @@ class ServiceFieldVisibilityMixin:
                 if not show_auth:
                     auth_row.setMaximumHeight(0)
                     auth_row.setMinimumHeight(0)
+                    # Also hide auth-dependent rows when auth is hidden
+                    for row_label in ['Username:', 'Password:', 'Key Path:', 'Wordlist:']:
+                        if row_label in control_panel.row_widgets and control_panel.row_widgets[row_label] is not None:
+                            try:
+                                row_widget = control_panel.row_widgets[row_label]
+                                row_widget.setVisible(False)
+                                row_widget.setMaximumHeight(0)
+                                row_widget.setMinimumHeight(0)
+                            except RuntimeError:
+                                pass
                 else:
                     auth_row.setMaximumHeight(30)
-                    auth_row.setMinimumHeight(30)
+                    auth_row.setMinimumHeight(26)
+                    # Re-apply auth field visibility based on current auth type
+                    if hasattr(control_panel, 'controls') and 'ssh_auth_type' in control_panel.controls:
+                        try:
+                            current_auth = control_panel.controls['ssh_auth_type'].currentText()
+                            self.toggle_ssh_auth_fields(tool_key, current_auth)
+                        except RuntimeError:
+                            pass
+            
+            # Recalculate panel height
+            self._recalculate_panel_height(tool_key)
         
         # Update the results stack to show the correct terminal/table for this scan type
         results_stack = getattr(self, f"{tool_key}_results_stack", None)
@@ -1172,6 +1542,33 @@ class ServiceFieldVisibilityMixin:
     def on_smb_scan_type_changed(self, tool_key, scan_type):
         """Handle SMB scan type change to switch terminal views"""
         setattr(self, f"{tool_key}_current_scan_type", scan_type)
+        
+        # Show/hide wordlist row based on scan type
+        control_panel = getattr(self, f"{tool_key}_control_panel", None)
+        if control_panel and hasattr(control_panel, 'row_widgets'):
+            show_wordlist = (scan_type == "Share Enumeration")
+            if 'Wordlist:' in control_panel.row_widgets and control_panel.row_widgets['Wordlist:'] is not None:
+                try:
+                    row_widget = control_panel.row_widgets['Wordlist:']
+                    row_widget.setVisible(show_wordlist)
+                    if show_wordlist:
+                        row_widget.setMaximumHeight(30)
+                        row_widget.setMinimumHeight(26)
+                    else:
+                        row_widget.setMaximumHeight(0)
+                        row_widget.setMinimumHeight(0)
+                except RuntimeError:
+                    pass
+            
+            # Also toggle the wordlist combobox control visibility
+            if hasattr(control_panel, 'controls') and 'smb_wordlist' in control_panel.controls:
+                try:
+                    control_panel.controls['smb_wordlist'].setVisible(show_wordlist)
+                except RuntimeError:
+                    pass
+            
+            # Recalculate panel height
+            self._recalculate_smb_panel_height(tool_key)
         
         # Update the results stack to show the correct terminal/table for this scan type
         results_stack = getattr(self, f"{tool_key}_results_stack", None)
