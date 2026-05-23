@@ -209,6 +209,7 @@ class InfrastructureOSINTComponent(QWidget):
         
         self.output_text = QTextEdit()
         self.output_text.setReadOnly(True)
+        self.output_text.setFont(QFont("Neuropol X", 9))
         self.output_text.setPlaceholderText("Professional subdomain enumeration results will appear here...")
         console_layout.addWidget(self.output_text)
         
@@ -243,6 +244,7 @@ class InfrastructureOSINTComponent(QWidget):
         
         self.stats_text = QTextEdit()
         self.stats_text.setReadOnly(True)
+        self.stats_text.setFont(QFont("Neuropol X", 9))
         self.stats_text.setPlaceholderText("Enumeration statistics will appear here...")
         stats_layout.addWidget(self.stats_text)
         
@@ -303,7 +305,7 @@ class InfrastructureOSINTComponent(QWidget):
         sources_str = ", ".join([s.upper() for s in selected_sources])
         
         self.output_text.setHtml(f"""
-        <div style='font-family: "Courier New", monospace; background-color: rgba(0,0,50,0.3); padding: 15px; border-radius: 5px;'>
+        <div style='font-family: "Neuropol X", monospace; background-color: rgba(0,0,50,0.3); padding: 15px; border-radius: 5px;'>
         <p style='color: #64C8FF; font-weight: bold; font-size: 16px;'>🚀 PROFESSIONAL SUBDOMAIN ENUMERATION</p>
         <p style='color: #DCDCDC;'>Target: <span style='color: #00FF41; font-weight: bold;'>{target}</span></p>
         <p style='color: #DCDCDC;'>Data Sources: <span style='color: #FFD93D;'>{sources_str}</span></p>
@@ -319,7 +321,7 @@ class InfrastructureOSINTComponent(QWidget):
         # Start the professional enumeration
         from app.core.html_utils import h
         self.output_text.setHtml(f"""
-        <div style='font-family: "Courier New", monospace; background-color: rgba(0,0,50,0.3); padding: 15px; border-radius: 5px;'>
+        <div style='font-family: "Neuropol X", monospace; background-color: rgba(0,0,50,0.3); padding: 15px; border-radius: 5px;'>
         <p style='color: #64C8FF; font-weight: bold; font-size: 16px;'>🚀 PROFESSIONAL SUBDOMAIN ENUMERATION</p>
         <p style='color: #DCDCDC;'>Target: <span style='color: #00FF41; font-weight: bold;'>{h(target)}</span></p>
         <p style='color: #DCDCDC;'>Data Sources: <span style='color: #FFD93D;'>{h(sources_str)}</span></p>
@@ -341,56 +343,188 @@ class InfrastructureOSINTComponent(QWidget):
         )
 
     def run_dns_analysis(self):
-        """Run DNS analysis"""
+        """Run real DNS analysis"""
         target = self.target_input.text().strip()
         if not target:
+            self.output_text.append("<p style='color: #FF6B6B;'>❌ Please enter a target domain</p>")
             return
-        
+
         self.osint_started.emit(target, "DNS Analysis")
-        self.output_text.append("""
-        <p style='color: #64C8FF;'>[DNS ANALYSIS] Deep DNS record analysis...</p>
-        <p style='color: #00FF41;'>A, MX, TXT, SRV records extracted and analyzed</p>
-        """)
-        self.osint_completed.emit({"dns_records": 156})
+        self.output_text.clear()
+        self.output_text.append(f"<p style='color: #64C8FF;'>[DNS ANALYSIS] Starting deep DNS record analysis for {target}...</p>")
+
+        from app.core.osint_workers import OSINTWorker
+        from app.core.osint_engines import dns_analysis
+
+        self._worker = OSINTWorker(dns_analysis, target)
+        self._worker.output_signal.connect(lambda msg: self.output_text.append(
+            f"<p style='color: #DCDCDC;'>{msg}</p>"))
+        self._worker.result_signal.connect(self._display_dns_results)
+        self._worker.finished_signal.connect(lambda: self.osint_completed.emit({}))
+        self._worker.start()
+
+    def _display_dns_results(self, results):
+        """Display DNS analysis results."""
+        from app.core.html_utils import h
+        if results.get("errors"):
+            for err in results["errors"]:
+                self.output_text.append(f"<p style='color: #FF6B6B;'>⚠ {h(err)}</p>")
+
+        self.output_text.append(f"<p style='color: #00FF41; font-weight: bold;'>✅ DNS Analysis Complete — {results.get('total_records', 0)} records found</p>")
+
+        for rtype, records in results.get("records", {}).items():
+            self.output_text.append(f"<p style='color: #FFD93D; font-weight: bold;'>{rtype} Records ({len(records)}):</p>")
+            for rec in records:
+                self.output_text.append(f"<p style='color: #DCDCDC; margin-left: 20px;'>• {h(rec)}</p>")
+
+        if results.get("zone_transfer"):
+            self.output_text.append("<p style='color: #FF6B6B; font-weight: bold;'>⚠ ZONE TRANSFER ALLOWED — Critical vulnerability!</p>")
 
     def run_tech_stack(self):
-        """Run technology stack detection"""
+        """Run real technology stack detection"""
         target = self.target_input.text().strip()
         if not target:
+            self.output_text.append("<p style='color: #FF6B6B;'>❌ Please enter a target domain</p>")
             return
-        
+
         self.osint_started.emit(target, "Technology Stack")
-        self.output_text.append("""
-        <p style='color: #64C8FF;'>[TECHNOLOGY STACK] Identifying web technologies...</p>
-        <p style='color: #00FF41;'>CMS, frameworks, and server software detected</p>
-        """)
-        self.osint_completed.emit({"technologies": 23})
+        self.output_text.clear()
+        self.output_text.append(f"<p style='color: #64C8FF;'>[TECH STACK] Detecting web technologies for {target}...</p>")
+
+        from app.core.osint_workers import OSINTWorker
+        from app.core.osint_engines import tech_stack_detection
+
+        self._worker = OSINTWorker(tech_stack_detection, target)
+        self._worker.output_signal.connect(lambda msg: self.output_text.append(
+            f"<p style='color: #DCDCDC;'>{msg}</p>"))
+        self._worker.result_signal.connect(self._display_tech_results)
+        self._worker.finished_signal.connect(lambda: self.osint_completed.emit({}))
+        self._worker.start()
+
+    def _display_tech_results(self, results):
+        """Display tech stack results."""
+        from app.core.html_utils import h
+        techs = results.get("technologies", [])
+        self.output_text.append(f"<p style='color: #00FF41; font-weight: bold;'>✅ Detected {len(techs)} technologies</p>")
+
+        if results.get("server"):
+            self.output_text.append(f"<p style='color: #DCDCDC;'>Server: <span style='color: #64C8FF;'>{h(results['server'])}</span></p>")
+        if results.get("cms"):
+            self.output_text.append(f"<p style='color: #DCDCDC;'>CMS: <span style='color: #FFD93D;'>{h(results['cms'])}</span></p>")
+        if results.get("cdn"):
+            self.output_text.append(f"<p style='color: #DCDCDC;'>CDN: <span style='color: #FF69B4;'>{h(results['cdn'])}</span></p>")
+
+        # Group by category
+        categories = {}
+        for tech in techs:
+            cat = tech.get("category", "Other")
+            categories.setdefault(cat, []).append(tech["name"])
+
+        for cat, names in categories.items():
+            self.output_text.append(f"<p style='color: #FFD93D; font-weight: bold;'>{h(cat)}:</p>")
+            for name in names:
+                self.output_text.append(f"<p style='color: #DCDCDC; margin-left: 20px;'>• {h(name)}</p>")
 
     def run_asn_lookup(self):
-        """Run ASN lookup"""
+        """Run real ASN lookup"""
         target = self.target_input.text().strip()
         if not target:
+            self.output_text.append("<p style='color: #FF6B6B;'>❌ Please enter a target domain</p>")
             return
-        
+
         self.osint_started.emit(target, "ASN Lookup")
-        self.output_text.append("""
-        <p style='color: #64C8FF;'>[ASN LOOKUP] Autonomous System Number analysis...</p>
-        <p style='color: #00FF41;'>IP ranges and network ownership identified</p>
-        """)
-        self.osint_completed.emit({"asn_info": True})
+        self.output_text.clear()
+        self.output_text.append(f"<p style='color: #64C8FF;'>[ASN LOOKUP] Querying ASN for {target}...</p>")
+
+        from app.core.osint_workers import OSINTWorker
+        from app.core.osint_engines import asn_lookup
+
+        self._worker = OSINTWorker(asn_lookup, target)
+        self._worker.output_signal.connect(lambda msg: self.output_text.append(
+            f"<p style='color: #DCDCDC;'>{msg}</p>"))
+        self._worker.result_signal.connect(self._display_asn_results)
+        self._worker.finished_signal.connect(lambda: self.osint_completed.emit({}))
+        self._worker.start()
+
+    def _display_asn_results(self, results):
+        """Display ASN lookup results."""
+        from app.core.html_utils import h
+        if results.get("errors"):
+            for err in results["errors"]:
+                self.output_text.append(f"<p style='color: #FF6B6B;'>⚠ {h(err)}</p>")
+            return
+
+        self.output_text.append("<p style='color: #00FF41; font-weight: bold;'>✅ ASN Lookup Complete</p>")
+        self.output_text.append(f"<p style='color: #DCDCDC;'>IP: <span style='color: #64C8FF;'>{results.get('ip', 'N/A')}</span></p>")
+        self.output_text.append(f"<p style='color: #DCDCDC;'>ASN: <span style='color: #FFD93D; font-weight: bold;'>AS{results.get('asn', 'N/A')}</span></p>")
+        self.output_text.append(f"<p style='color: #DCDCDC;'>Organization: <span style='color: #00FF41;'>{h(results.get('asn_name', 'N/A'))}</span></p>")
+        self.output_text.append(f"<p style='color: #DCDCDC;'>Prefix: <span style='color: #64C8FF;'>{results.get('prefix', 'N/A')}</span></p>")
+        self.output_text.append(f"<p style='color: #DCDCDC;'>Country: <span style='color: #FF69B4;'>{results.get('country', 'N/A')}</span></p>")
+        self.output_text.append(f"<p style='color: #DCDCDC;'>Registry: {results.get('registry', 'N/A')}</p>")
+        self.output_text.append(f"<p style='color: #DCDCDC;'>Allocated: {results.get('allocated', 'N/A')}</p>")
 
     def run_whois_current(self):
-        """Run current WHOIS lookup"""
+        """Run real WHOIS lookup"""
         target = self.target_input.text().strip()
         if not target:
+            self.output_text.append("<p style='color: #FF6B6B;'>❌ Please enter a target domain</p>")
             return
-        
+
         self.osint_started.emit(target, "WHOIS Current")
-        self.output_text.append("""
-        <p style='color: #64C8FF;'>[WHOIS CURRENT] Current domain registration data...</p>
-        <p style='color: #00FF41;'>Current WHOIS records retrieved and analyzed</p>
-        """)
-        self.osint_completed.emit({"whois_current": True})
+        self.output_text.clear()
+        self.output_text.append(f"<p style='color: #64C8FF;'>[WHOIS] Querying registration data for {target}...</p>")
+
+        from app.core.osint_workers import OSINTWorker
+        from app.core.osint_engines import whois_lookup
+
+        self._worker = OSINTWorker(whois_lookup, target)
+        self._worker.output_signal.connect(lambda msg: self.output_text.append(
+            f"<p style='color: #DCDCDC;'>{msg}</p>"))
+        self._worker.result_signal.connect(self._display_whois_results)
+        self._worker.finished_signal.connect(lambda: self.osint_completed.emit({}))
+        self._worker.start()
+
+    def _display_whois_results(self, results):
+        """Display WHOIS results."""
+        from app.core.html_utils import h
+        if results.get("errors"):
+            for err in results["errors"]:
+                self.output_text.append(f"<p style='color: #FF6B6B;'>⚠ {h(err)}</p>")
+
+        self.output_text.append("<p style='color: #00FF41; font-weight: bold;'>✅ WHOIS Lookup Complete</p>")
+
+        fields = [
+            ("registrar", "Registrar"),
+            ("registrant", "Registrant"),
+            ("creation_date", "Created"),
+            ("expiration_date", "Expires"),
+            ("updated_date", "Last Modified"),
+            ("domain_id", "Domain ID"),
+            ("dnssec", "DNSSEC"),
+        ]
+        for key, label in fields:
+            val = results.get(key)
+            if val:
+                self.output_text.append(f"<p style='color: #DCDCDC;'>{label}: <span style='color: #64C8FF;'>{h(val)}</span></p>")
+
+        if results.get("nameservers"):
+            self.output_text.append("<p style='color: #FFD93D; font-weight: bold;'>Nameservers:</p>")
+            for ns in results["nameservers"]:
+                self.output_text.append(f"<p style='color: #DCDCDC; margin-left: 20px;'>• {h(ns)}</p>")
+        if results.get("status"):
+            self.output_text.append("<p style='color: #FFD93D; font-weight: bold;'>Status:</p>")
+            for s in results["status"]:
+                self.output_text.append(f"<p style='color: #DCDCDC; margin-left: 20px;'>• {h(s)}</p>")
+
+        # Show raw WHOIS data
+        raw = results.get("raw", "")
+        if raw:
+            self.output_text.append("<p style='color: #FFD93D; font-weight: bold; margin-top: 10px;'>Raw WHOIS Data:</p>")
+            # Show raw text preserving line breaks
+            for line in raw.strip().splitlines()[:60]:
+                line = line.strip()
+                if line:
+                    self.output_text.append(f"<p style='color: #888888; margin-left: 10px; font-size: 9px;'>{h(line)}</p>")
 
     def run_whois_historical(self):
         """Run historical WHOIS lookup"""
@@ -406,30 +540,88 @@ class InfrastructureOSINTComponent(QWidget):
         self.osint_completed.emit({"whois_historical": True})
 
     def run_cert_search(self):
-        """Run certificate search"""
+        """Run real certificate transparency search"""
         target = self.target_input.text().strip()
         if not target:
+            self.output_text.append("<p style='color: #FF6B6B;'>❌ Please enter a target domain</p>")
             return
-        
+
         self.osint_started.emit(target, "Certificate Search")
-        self.output_text.append("""
-        <p style='color: #64C8FF;'>[CERTIFICATE SEARCH] SSL/TLS certificate analysis...</p>
-        <p style='color: #00FF41;'>Certificate transparency logs searched</p>
-        """)
-        self.osint_completed.emit({"certificates": 12})
+        self.output_text.clear()
+        self.output_text.append(f"<p style='color: #64C8FF;'>[CERT SEARCH] Searching certificate transparency logs for {target}...</p>")
+
+        from app.core.osint_workers import OSINTWorker
+        from app.core.osint_engines import cert_search
+
+        self._worker = OSINTWorker(cert_search, target)
+        self._worker.output_signal.connect(lambda msg: self.output_text.append(
+            f"<p style='color: #DCDCDC;'>{msg}</p>"))
+        self._worker.result_signal.connect(self._display_cert_results)
+        self._worker.finished_signal.connect(lambda: self.osint_completed.emit({}))
+        self._worker.start()
+
+    def _display_cert_results(self, results):
+        """Display certificate search results."""
+        from app.core.html_utils import h
+        if results.get("errors"):
+            for err in results["errors"]:
+                self.output_text.append(f"<p style='color: #FF6B6B;'>⚠ {h(err)}</p>")
+
+        total = results.get("total_certs", 0)
+        domains = results.get("unique_domains", [])
+        self.output_text.append(f"<p style='color: #00FF41; font-weight: bold;'>✅ Found {total} certificates, {len(domains)} unique domains</p>")
+
+        if domains:
+            self.output_text.append("<p style='color: #FFD93D; font-weight: bold;'>Unique domains from certificates:</p>")
+            for domain in domains[:50]:  # Show first 50
+                self.output_text.append(f"<p style='color: #DCDCDC; margin-left: 20px;'>• {h(domain)}</p>")
+            if len(domains) > 50:
+                self.output_text.append(f"<p style='color: #DCDCDC; margin-left: 20px;'>... and {len(domains) - 50} more</p>")
 
     def run_port_discovery(self):
-        """Run port discovery"""
+        """Run real port discovery scan"""
         target = self.target_input.text().strip()
         if not target:
+            self.output_text.append("<p style='color: #FF6B6B;'>❌ Please enter a target domain</p>")
             return
-        
+
         self.osint_started.emit(target, "Port Discovery")
-        self.output_text.append("""
-        <p style='color: #64C8FF;'>[PORT DISCOVERY] Scanning for open ports...</p>
-        <p style='color: #00FF41;'>Common ports: 80, 443, 22, 21, 25, 53 detected</p>
-        """)
-        self.osint_completed.emit({"open_ports": 6})
+        self.output_text.clear()
+        self.output_text.append(f"<p style='color: #64C8FF;'>[PORT SCAN] Scanning common ports on {target}...</p>")
+
+        from app.core.osint_workers import OSINTWorker
+        from app.core.osint_engines import port_discovery
+
+        self._worker = OSINTWorker(port_discovery, target)
+        self._worker.output_signal.connect(lambda msg: self.output_text.append(
+            f"<p style='color: #DCDCDC;'>{msg}</p>"))
+        self._worker.result_signal.connect(self._display_port_results)
+        self._worker.finished_signal.connect(lambda: self.osint_completed.emit({}))
+        self._worker.start()
+
+    def _display_port_results(self, results):
+        """Display port discovery results."""
+        from app.core.html_utils import h
+        if results.get("errors"):
+            for err in results["errors"]:
+                self.output_text.append(f"<p style='color: #FF6B6B;'>⚠ {h(err)}</p>")
+            return
+
+        open_ports = results.get("open_ports", [])
+        total = results.get("total_scanned", 0)
+        self.output_text.append(f"<p style='color: #00FF41; font-weight: bold;'>✅ Port Scan Complete — {len(open_ports)} open / {total} scanned</p>")
+        self.output_text.append(f"<p style='color: #DCDCDC;'>Target IP: {results.get('ip', 'N/A')}</p>")
+
+        if open_ports:
+            self.output_text.append("<p style='color: #FFD93D; font-weight: bold;'>Open Ports:</p>")
+            for p in open_ports:
+                banner = p.get("banner", "")
+                banner_str = f" — <span style='color: #64C8FF;'>{h(banner[:60])}</span>" if banner else ""
+                self.output_text.append(
+                    f"<p style='color: #00FF41; margin-left: 20px;'>• {p['port']}/{p['service']}{banner_str}</p>"
+                )
+        else:
+            self.output_text.append("<p style='color: #FFD93D;'>No open ports found on common ports.</p>")
 
     def run_service_detection(self):
         """Run service detection"""
@@ -547,7 +739,7 @@ class InfrastructureOSINTComponent(QWidget):
         # Update console with completion message
         from app.core.html_utils import h
         self.output_text.append(f"""
-        <div style='font-family: "Courier New", monospace; background-color: rgba(0,100,0,0.3); padding: 15px; border-radius: 5px; margin-top: 10px;'>
+        <div style='font-family: "Neuropol X", monospace; background-color: rgba(0,100,0,0.3); padding: 15px; border-radius: 5px; margin-top: 10px;'>
         <p style='color: #00FF41; font-weight: bold; font-size: 16px;'>✅ PROFESSIONAL ENUMERATION COMPLETED</p>
         <p style='color: #DCDCDC;'>Target: <span style='color: #64C8FF; font-weight: bold;'>{h(domain)}</span></p>
         <p style='color: #DCDCDC;'>Duration: <span style='color: #FFD93D;'>{duration:.2f} seconds</span></p>
@@ -630,7 +822,7 @@ class InfrastructureOSINTComponent(QWidget):
         """Update the statistics tab with detailed information"""
         
         stats_html = f"""
-        <div style='font-family: "Courier New", monospace; padding: 15px;'>
+        <div style='font-family: "Neuropol X", monospace; padding: 15px;'>
         <h2 style='color: #64C8FF;'>📈 ENUMERATION STATISTICS</h2>
         
         <h3 style='color: #00FF41;'>Overview</h3>
@@ -671,7 +863,7 @@ class InfrastructureOSINTComponent(QWidget):
         
         from app.core.html_utils import h
         self.output_text.append(f"""
-        <div style='font-family: "Courier New", monospace; background-color: rgba(50,0,0,0.3); padding: 10px; border-radius: 5px; margin-top: 10px;'>
+        <div style='font-family: "Neuropol X", monospace; background-color: rgba(50,0,0,0.3); padding: 10px; border-radius: 5px; margin-top: 10px;'>
         <p style='color: #FF6B6B; font-weight: bold;'>❌ ENUMERATION ERROR</p>
         <p style='color: #DCDCDC;'>{h(error_message)}</p>
         <p style='color: #FFD93D;'>Suggestions:</p>
@@ -730,7 +922,7 @@ class InfrastructureOSINTComponent(QWidget):
                 border: 1px solid rgba(100, 200, 255, 100);
                 border-radius: 5px;
                 color: #DCDCDC;
-                font-family: 'Courier New', monospace;
+                font-family: 'Neuropol X', monospace;
                 font-size: 11px;
             }
             QLabel {
