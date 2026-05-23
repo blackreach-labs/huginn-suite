@@ -58,6 +58,9 @@ paramiko>=2.11.0
 # Password Hashing (fix bcrypt compatibility)
 bcrypt>=3.2.0,<4.0.0
 
+# GPU Acceleration (OpenCL)
+pyopencl>=2022.1
+
 # Runecraft Payload Framework
 # Cryptography for payload encryption
 cryptography>=3.4.8

@@ -187,6 +187,8 @@ class MainWindow(QMainWindow):
         self.page_manager.register_page('global_settings', lambda: self._create_global_settings())
         self.page_manager.register_page('database_management', lambda: self._create_database_management())
         self.page_manager.register_page('vpn', lambda: self._create_vpn())
+        self.page_manager.register_page('script_editor', lambda: self._create_script_editor())
+        self.page_manager.register_page('cracking', lambda: self._create_cracking())
         # Add other pages as needed
         
 
@@ -302,6 +304,26 @@ class MainWindow(QMainWindow):
             return page
         except Exception as e:
             logger.error(f"Failed to create database management page: {e}")
+            return None
+    
+    def _create_script_editor(self):
+        try:
+            from app.pages.script_editor_page import ScriptEditorPage
+            page = ScriptEditorPage(self)
+            self._connect_page_signals(page)
+            return page
+        except Exception as e:
+            logger.error(f"Failed to create script editor page: {e}")
+            return None
+
+    def _create_cracking(self):
+        try:
+            from app.pages.cracking_page import CrackingPage
+            page = CrackingPage(self)
+            self._connect_page_signals(page)
+            return page
+        except Exception as e:
+            logger.error(f"Failed to create cracking page: {e}")
             return None
     
     def _connect_page_signals(self, page):
@@ -884,6 +906,27 @@ class MainWindow(QMainWindow):
                     page.tab_widget.setCurrentIndex(i)
                     break
         self.status_bar.showMessage("Anti-Forensics")
+
+    def navigate_to_cracking(self):
+        """Navigate to the Cracking tab under Post-Exploitation."""
+        from app.pages.post_exploitation_page import PostExploitationPage
+        page = None
+        for i in range(self.stack.count()):
+            widget = self.stack.widget(i)
+            if isinstance(widget, PostExploitationPage):
+                page = widget
+                break
+        if not page:
+            page = PostExploitationPage(self)
+            self.stack.addWidget(page)
+        self.stack.animate_to_widget(page)
+        # Select the Cracking tab
+        if hasattr(page, 'tab_widget'):
+            for i in range(page.tab_widget.count()):
+                if "Cracking" in page.tab_widget.tabText(i):
+                    page.tab_widget.setCurrentIndex(i)
+                    break
+        self.status_bar.showMessage("Cracking Tools")
     
     def open_vpn_manager(self):
         """Open VPN connection manager"""
@@ -972,3 +1015,7 @@ class MainWindow(QMainWindow):
     def open_global_settings(self):
         """Open global settings page"""
         self.navigate_to("global_settings")
+    
+    def open_script_editor(self):
+        """Open script editor page"""
+        self.navigate_to("script_editor")

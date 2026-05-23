@@ -29,6 +29,7 @@ class AuthenticatedCrawler(QObject):
         self.csrf_tokens = {}
         self.visited_urls = set()
         self.crawled_data = {}
+        self._post_login_url = None  # Captured after successful form login redirect
         
     def authenticate(self, target_url: str, auth_method: str = "auto", 
                     username: str = "", password: str = "", 
@@ -151,6 +152,11 @@ class AuthenticatedCrawler(QObject):
             # Check if login was successful
             if self._is_authenticated_response(response):
                 self.authenticated = True
+                
+                # Capture the post-login landing URL (where the app redirected after login)
+                # This is typically the authenticated area entry point (e.g. /admin/dashboard)
+                if response.url and response.url != login_form['action_url']:
+                    self._post_login_url = response.url
                 
                 # Extract session tokens from cookies
                 for cookie in self.session.cookies:
@@ -555,8 +561,28 @@ class AuthenticatedCrawler(QObject):
         self.visited_urls.clear()
         self.crawled_data.clear()
         
-        # Start crawling
-        self._crawl_recursive_authenticated(target_url, urlparse(target_url).netloc, 0, max_depth, max_pages)
+        base_domain = urlparse(target_url).netloc
+        
+        # Start crawling from the main target
+        self._crawl_recursive_authenticated(target_url, base_domain, 0, max_depth, max_pages)
+        
+        # Also crawl from the post-login landing page if it differs from target
+        # This ensures authenticated-only areas (e.g. /admin/dashboard) are discovered
+        if self._post_login_url:
+            parsed_post_login = urlparse(self._post_login_url)
+            if (self._post_login_url not in self.visited_urls and
+                parsed_post_login.netloc == base_domain):
+                self._crawl_recursive_authenticated(
+                    self._post_login_url, base_domain, 0, max_depth, max_pages)
+            
+            # Seed from the parent path of the post-login URL as well
+            # e.g. if post-login lands on /admin/dashboard, also try /admin/
+            parent_path = parsed_post_login.path.rsplit('/', 1)[0]
+            if parent_path and parent_path != '/':
+                parent_url = f"{parsed_post_login.scheme}://{parsed_post_login.netloc}{parent_path}"
+                if parent_url not in self.visited_urls:
+                    self._crawl_recursive_authenticated(
+                        parent_url, base_domain, 0, max_depth, max_pages)
         
         return self.crawled_data
     

@@ -43,20 +43,86 @@ class HashAnalysisWorker(QThread):
             96: "SHA384",
             128: "SHA512"
         }
+
+        # Prefix-based hash identification
+        prefix_types = {
+            "$sshng$": ("SSH Private Key (sshng)", "Dictionary attack with targeted wordlist"),
+            "$2b$": ("bcrypt", "Dictionary attack (slow — bcrypt KDF)"),
+            "$2a$": ("bcrypt", "Dictionary attack (slow — bcrypt KDF)"),
+            "$2y$": ("bcrypt", "Dictionary attack (slow — bcrypt KDF)"),
+            "$6$": ("SHA-512 Crypt", "Dictionary or Brute Force"),
+            "$5$": ("SHA-256 Crypt", "Dictionary or Brute Force"),
+            "$1$": ("MD5 Crypt", "Dictionary or Brute Force"),
+            "$apr1$": ("Apache MD5", "Dictionary or Brute Force"),
+            "$krb5tgs$": ("Kerberos TGS-REP", "Dictionary attack"),
+            "$krb5asrep$": ("Kerberos AS-REP", "Dictionary attack"),
+            "$office$": ("MS Office", "Dictionary attack"),
+            "$zip2$": ("ZIP (PKZIP)", "Dictionary or Brute Force"),
+            "$rar5$": ("RAR5", "Dictionary attack"),
+            "$keepass$": ("KeePass", "Dictionary attack"),
+            "$bitcoin$": ("Bitcoin Wallet", "Dictionary attack"),
+            "$ethereum$": ("Ethereum Wallet", "Dictionary attack"),
+            "$DCC2$": ("Domain Cached Credentials 2", "Dictionary attack"),
+            "$NETNTLMv2$": ("NetNTLMv2", "Dictionary or Brute Force"),
+        }
         
         for i, hash_val in enumerate(self.hashes, 1):
             hash_val = hash_val.strip()
             if not hash_val:
                 continue
-                
-            length = len(hash_val)
-            hash_type = hash_types.get(length, "Unknown")
+
+            # Check prefix-based types first
+            identified = False
+            for prefix, (type_name, hint) in prefix_types.items():
+                if hash_val.startswith(prefix):
+                    self.output_signal.emit(f"[HASH {i}] {type_name}")
+                    self.output_signal.emit(f"  Recommended: {hint}")
+                    if prefix == "$sshng$":
+                        self._parse_sshng_details(hash_val)
+                    identified = True
+                    break
+
+            if not identified:
+                length = len(hash_val)
+                hash_type = hash_types.get(length, "Unknown")
+                self.output_signal.emit(f"[HASH {i}] {hash_val[:16]}... -> {hash_type} ({length} chars)")
+                if ":" in hash_val:
+                    self.output_signal.emit(f"  Format: hash:salt or hash:user")
             
-            self.output_signal.emit(f"[HASH {i}] {hash_val[:16]}... -> {hash_type} ({length} chars)")
             self.msleep(200)
-            
-            if ":" in hash_val:
-                self.output_signal.emit(f"[FORMAT] Appears to be hash:salt format")
+
+    def _parse_sshng_details(self, hash_val):
+        """Parse $sshng$ hash and display details."""
+        try:
+            parts = hash_val.split("$")
+            # $sshng$<type>$<salt_len>$<salt>$<data_len>$<data>$<rounds>$<offset>
+            if len(parts) >= 6:
+                sshng_type = parts[2]
+                salt_len = parts[3]
+                salt = parts[4]
+                data_len = parts[5]
+
+                type_names = {
+                    "0": "3DES-CBC",
+                    "1": "AES-128-CBC (RSA/DSA)",
+                    "2": "AES-256-CBC + bcrypt",
+                    "3": "AES-128-CBC (EC)",
+                    "4": "AES-192-CBC",
+                    "5": "AES-256-CBC",
+                    "6": "AES-256-CTR + bcrypt",
+                }
+                cipher = type_names.get(sshng_type, f"type {sshng_type}")
+                self.output_signal.emit(f"  Cipher: {cipher}")
+                self.output_signal.emit(f"  Salt: {salt} ({salt_len} bytes)")
+                self.output_signal.emit(f"  Data: {data_len} bytes")
+
+                if len(parts) >= 8:
+                    rounds = parts[7] if len(parts) > 7 else "?"
+                    self.output_signal.emit(f"  Rounds: {parts[7]}")
+                    offset = parts[8] if len(parts) > 8 else "?"
+                    self.output_signal.emit(f"  Ciphertext offset: {offset}")
+        except Exception:
+            pass
 
     def validate_hashes(self):
         self.output_signal.emit("[VALIDATE] Checking hash formats...")
@@ -69,12 +135,16 @@ class HashAnalysisWorker(QThread):
             hash_val = hash_val.strip()
             if not hash_val:
                 continue
-                
-            if all(c in '0123456789abcdefABCDEF:' for c in hash_val):
+
+            # Structured hash formats (start with $)
+            if hash_val.startswith("$"):
+                self.output_signal.emit(f"[VALID] Hash {i}: Structured hash format")
+                valid_count += 1
+            elif all(c in '0123456789abcdefABCDEF:' for c in hash_val):
                 self.output_signal.emit(f"[VALID] Hash {i}: Valid hexadecimal format")
                 valid_count += 1
             else:
-                self.output_signal.emit(f"[INVALID] Hash {i}: Contains invalid characters")
+                self.output_signal.emit(f"[INVALID] Hash {i}: Unrecognized format")
                 invalid_count += 1
             
             self.msleep(150)
@@ -121,10 +191,6 @@ class HashAnalysisComponent(QWidget):
 
     def setup_ui(self):
         layout = QVBoxLayout(self)
-        
-        header = QLabel("Hash Analysis")
-        header.setFont(QFont("Arial", 12, QFont.Weight.Bold))
-        layout.addWidget(header)
         
         # Hash input
         self.hash_input = QTextEdit()

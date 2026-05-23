@@ -1,10 +1,12 @@
 # app/components/cracking/results_management_component.py
-from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
-                            QPushButton, QTableWidget, QTableWidgetItem, QHeaderView, QFileDialog)
+"""Cracked results table with export and credential storage."""
+
+from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
+                            QPushButton, QTableWidget, QTableWidgetItem,
+                            QHeaderView, QMessageBox)
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtGui import QFont
-import json
-import csv
+
 
 class ResultsManagementComponent(QWidget):
     def __init__(self):
@@ -14,119 +16,95 @@ class ResultsManagementComponent(QWidget):
 
     def setup_ui(self):
         layout = QVBoxLayout(self)
-        
-        header = QLabel("Results Management")
-        header.setFont(QFont("Arial", 12, QFont.Weight.Bold))
-        layout.addWidget(header)
-        
+
         # Results table
         self.results_table = QTableWidget()
-        self.results_table.setColumnCount(4)
-        self.results_table.setHorizontalHeaderLabels(["Hash", "Password", "Type", "Time"])
+        self.results_table.setColumnCount(3)
+        self.results_table.setHorizontalHeaderLabels(["Hash", "Password", "Type"])
         self.results_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        self.results_table.setMaximumHeight(120)
+        self.results_table.setFont(QFont("Neuropol X", 9))
+        self.results_table.setAlternatingRowColors(True)
         layout.addWidget(self.results_table)
-        
-        # Sample data
-        self.add_sample_results()
-        
-        # Export controls
-        export_layout = QHBoxLayout()
-        self.export_csv_btn = QPushButton("Export CSV")
-        self.export_csv_btn.clicked.connect(self.export_csv)
-        self.export_json_btn = QPushButton("Export JSON")
-        self.export_json_btn.clicked.connect(self.export_json)
-        self.clear_btn = QPushButton("Clear Results")
+
+        # Controls
+        controls_layout = QHBoxLayout()
+
+        self.save_cred_btn = QPushButton("💾 Save to Credentials")
+        self.save_cred_btn.setToolTip("Save selected result to Stored Credentials for the active profile")
+        self.save_cred_btn.clicked.connect(self.save_to_credentials)
+        controls_layout.addWidget(self.save_cred_btn)
+
+        self.clear_btn = QPushButton("Clear")
         self.clear_btn.clicked.connect(self.clear_results)
-        
-        export_layout.addWidget(self.export_csv_btn)
-        export_layout.addWidget(self.export_json_btn)
-        export_layout.addWidget(self.clear_btn)
-        layout.addLayout(export_layout)
-        
-        # Statistics
-        stats_layout = QHBoxLayout()
-        stats_layout.addWidget(QLabel("Total Results:"))
-        self.total_results_label = QLabel("0")
-        stats_layout.addWidget(self.total_results_label)
-        stats_layout.addWidget(QLabel("Success Rate:"))
-        self.success_rate_label = QLabel("0%")
-        stats_layout.addWidget(self.success_rate_label)
-        layout.addLayout(stats_layout)
-        
-        self.update_statistics()
+        controls_layout.addWidget(self.clear_btn)
 
-    def add_sample_results(self):
-        sample_results = [
-            ("5d41402abc4b2a76b9719d911017c592", "hello", "MD5", "2023-12-01 10:30:15"),
-            ("aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d", "hello", "SHA1", "2023-12-01 10:30:20"),
-            ("e3b0c44298fc1c149afbf4c8996fb924", "password123", "SHA256", "2023-12-01 10:31:05")
-        ]
-        
-        for hash_val, password, hash_type, time_cracked in sample_results:
-            self.add_result(hash_val, password, hash_type, time_cracked)
+        controls_layout.addStretch()
+        layout.addLayout(controls_layout)
 
-    def add_result(self, hash_val, password, hash_type, time_cracked):
+    def add_result(self, hash_val, password, hash_type, _time_unused=None):
+        """Add a cracked result to the table."""
         row = self.results_table.rowCount()
         self.results_table.insertRow(row)
-        
+
         # Truncate hash for display
-        display_hash = hash_val[:16] + "..." if len(hash_val) > 16 else hash_val
-        
+        display_hash = hash_val[:24] + "..." if len(hash_val) > 24 else hash_val
+
         self.results_table.setItem(row, 0, QTableWidgetItem(display_hash))
         self.results_table.setItem(row, 1, QTableWidgetItem(password))
         self.results_table.setItem(row, 2, QTableWidgetItem(hash_type))
-        self.results_table.setItem(row, 3, QTableWidgetItem(time_cracked))
-        
+
         # Store full result
         self.cracked_results.append({
             'hash': hash_val,
             'password': password,
             'type': hash_type,
-            'time': time_cracked
         })
-        
-        self.update_statistics()
 
-    def export_csv(self):
+    def save_to_credentials(self):
+        """Save selected (or all) cracked results to the active profile's credentials."""
         if not self.cracked_results:
+            QMessageBox.information(self, "No Results", "No cracked results to save.")
             return
-        
-        file_path, _ = QFileDialog.getSaveFileName(self, "Export CSV", "cracked_passwords.csv", "CSV Files (*.csv)")
-        if file_path:
-            try:
-                with open(file_path, 'w', newline='') as f:
-                    writer = csv.writer(f)
-                    writer.writerow(['Hash', 'Password', 'Type', 'Time'])
-                    for result in self.cracked_results:
-                        writer.writerow([result['hash'], result['password'], result['type'], result['time']])
-            except Exception as e:
-                print(f"Export error: {e}")
 
-    def export_json(self):
-        if not self.cracked_results:
-            return
-        
-        file_path, _ = QFileDialog.getSaveFileName(self, "Export JSON", "cracked_passwords.json", "JSON Files (*.json)")
-        if file_path:
-            try:
-                with open(file_path, 'w') as f:
-                    json.dump(self.cracked_results, f, indent=2)
-            except Exception as e:
-                print(f"Export error: {e}")
+        try:
+            from app.core.credential_manager import credential_manager
+
+            if not credential_manager.current_profile:
+                QMessageBox.warning(
+                    self, "No Active Profile",
+                    "No profile is currently active.\n\n"
+                    "Load or create a profile first via Engagement Setup."
+                )
+                return
+
+            # Get selected rows, or save all if none selected
+            selected_rows = set(idx.row() for idx in self.results_table.selectedIndexes())
+            if not selected_rows:
+                selected_rows = set(range(len(self.cracked_results)))
+
+            saved_count = 0
+            for row_idx in sorted(selected_rows):
+                if row_idx >= len(self.cracked_results):
+                    continue
+                result = self.cracked_results[row_idx]
+                credential_manager.add_credential(
+                    username="",
+                    password=result['password'],
+                    service=result['type'],
+                    notes=f"Cracked from hash: {result['hash'][:32]}...",
+                    source="exploitation",
+                    credential_type="Username/Password",
+                )
+                saved_count += 1
+
+            QMessageBox.information(
+                self, "Saved",
+                f"Saved {saved_count} credential(s) to profile: {credential_manager.current_profile}"
+            )
+
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Failed to save credentials: {e}")
 
     def clear_results(self):
         self.results_table.setRowCount(0)
         self.cracked_results.clear()
-        self.update_statistics()
-
-    def update_statistics(self):
-        total = len(self.cracked_results)
-        self.total_results_label.setText(str(total))
-        
-        # Calculate success rate (assuming some failed attempts)
-        if total > 0:
-            success_rate = min(100, (total * 100) // (total + 5))  # Simulate some failures
-            self.success_rate_label.setText(f"{success_rate}%")
-        else:
-            self.success_rate_label.setText("0%")

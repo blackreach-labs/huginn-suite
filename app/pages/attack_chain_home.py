@@ -222,7 +222,7 @@ class AttackChainHomePage(BasePage):
         self.target_table.setColumnCount(5)
         self.target_table.setHorizontalHeaderLabels(
             ["Profile Name", "In-Scope Targets", "Credentials", "Permissions", "Status"])
-        self.target_table.setFixedHeight(160)
+        self.target_table.setMinimumHeight(300)
         self.target_table.setStyleSheet("""
             QTableWidget {
                 background-color: rgba(20, 30, 40, 150);
@@ -245,7 +245,7 @@ class AttackChainHomePage(BasePage):
         header.setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
 
         self.target_table.itemSelectionChanged.connect(self.on_profile_selected)
-        layout.addWidget(self.target_table)
+        layout.addWidget(self.target_table, stretch=1)
 
         # ── Autosave connections ──────────────────────────────────────────────
         self.target_name.textChanged.connect(self._autosave_current_profile)

@@ -96,9 +96,11 @@ class MenuManager:
         tools_menu = self.menubar.addMenu('&Tools')
         
         self._add_action(tools_menu, '&Stealth Mode', None, 'Configure stealth and evasion settings', self.main_window.open_stealth_config)
+        self._add_action(tools_menu, 'Script &Editor', None, 'Write and save scripts or wordlists', self.main_window.open_script_editor)
         
         tools_menu.addSeparator()
         
+        self._add_action(tools_menu, '&Cracking', None, 'Password cracking and SSH key parsing tools', lambda: self.main_window.navigate_to_cracking())
         self._add_action(tools_menu, '&Databases', 'Ctrl+D', 'Database management and SQL queries', self.main_window.open_database_management)
         self._add_action(tools_menu, '&Global Settings', 'Ctrl+,', 'Configure API keys and global settings', self.main_window.open_global_settings)
         self._add_action(tools_menu, '&License Manager', None, 'Manage professional license', self.main_window.open_license_manager)

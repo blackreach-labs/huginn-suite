@@ -178,8 +178,15 @@ class NavigationManager:
     
     def _navigate_cracking(self):
         """Navigate to cracking page."""
+        if self._navigate_with_factory("cracking"):
+            return
+        # Fallback: create and cache the page
+        if not hasattr(self.main_window, 'cracking_page'):
+            from app.pages.cracking_page import CrackingPage
+            self.main_window.cracking_page = CrackingPage(self.main_window)
+            self.main_window.stack.addWidget(self.main_window.cracking_page)
         self.main_window.stack.animate_to_widget(self.main_window.cracking_page)
-        self.main_window.status_bar.showMessage("Password Cracking Tools")
+        self.main_window.status_bar.showMessage("Cracking Tools")
     
     def _navigate_osint(self):
         """Navigate to OSINT page."""
