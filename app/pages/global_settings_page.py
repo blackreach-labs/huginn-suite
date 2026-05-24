@@ -198,6 +198,17 @@ class GlobalSettingsPage(QWidget):
         )
         osint_form.addRow("URLVoid:", _row)
 
+        self.threatfox_key, _, _row = self._make_api_field(
+            "ThreatFox API key (abuse.ch)",
+            link="https://threatfox.abuse.ch/api/"
+        )
+        osint_form.addRow("ThreatFox:", _row)
+
+        self.alienvault_otx_key, _, _row = self._make_api_field(
+            "AlienVault OTX API key (optional, increases rate limits)",
+            link="https://otx.alienvault.com/api"
+        )
+        osint_form.addRow("AlienVault OTX:", _row)
         osint_group.setLayout(osint_form)
         osint_layout.addWidget(osint_group)
         osint_layout.addStretch()
@@ -414,6 +425,8 @@ class GlobalSettingsPage(QWidget):
         self.shodan_key.setText(global_settings.get("api_keys.shodan", ""))
         self.virustotal_key.setText(global_settings.get("api_keys.virustotal", ""))
         self.urlvoid_key.setText(global_settings.get("api_keys.urlvoid", ""))
+        self.threatfox_key.setText(global_settings.get("api_keys.threatfox", ""))
+        self.alienvault_otx_key.setText(global_settings.get("api_keys.alienvault_otx", ""))
         
         # Professional Subdomain Enumeration API Keys
         self.certspotter_key.setText(global_settings.get("api_keys.certspotter", ""))
@@ -458,6 +471,8 @@ class GlobalSettingsPage(QWidget):
         global_settings.set("api_keys.shodan", self.shodan_key.text())
         global_settings.set("api_keys.virustotal", self.virustotal_key.text())
         global_settings.set("api_keys.urlvoid", self.urlvoid_key.text())
+        global_settings.set("api_keys.threatfox", self.threatfox_key.text())
+        global_settings.set("api_keys.alienvault_otx", self.alienvault_otx_key.text())
         
         # Professional Subdomain Enumeration API Keys
         global_settings.set("api_keys.certspotter", self.certspotter_key.text())
@@ -529,6 +544,8 @@ class GlobalSettingsPage(QWidget):
             ("Shodan",         self.shodan_key),
             ("VirusTotal",     self.virustotal_key),
             ("URLVoid",        self.urlvoid_key),
+            ("ThreatFox",      self.threatfox_key),
+            ("AlienVault OTX", self.alienvault_otx_key),
             ("CertSpotter",    self.certspotter_key),
             ("Censys",         self.censys_id),
             ("SecurityTrails", self.securitytrails_key),

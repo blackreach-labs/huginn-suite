@@ -534,8 +534,10 @@ class SecureCredentialWidget(QWidget):
         aws_grid.addWidget(self.sm_aws_session_token, 3, 1)
 
         aws_grid.addWidget(_aws_lbl("Region:"), 4, 0)
-        self.sm_aws_region = _aws_field("e.g. us-east-1, ap-southeast-2")
-        self.sm_aws_region.setText("us-east-1")
+        self.sm_aws_region = QComboBox()
+        self.sm_aws_region.setFixedHeight(FIELD_HEIGHT)
+        self.sm_aws_region.setStyleSheet(INPUT_STYLE)
+        self._populate_aws_region_combo(self.sm_aws_region)
         aws_grid.addWidget(self.sm_aws_region, 4, 1)
 
         aws_notes = QLabel(
@@ -967,7 +969,7 @@ class SecureCredentialWidget(QWidget):
             elif provider == "AWS Secrets Manager":
                 success = secure_credential_manager.configure_secrets_manager(
                     "aws",
-                    region=self.sm_aws_region.text().strip() or "us-east-1",
+                    region=self.sm_aws_region.currentData() or "us-east-1",
                     access_key=self.sm_aws_access_key.text().strip() or None,
                     secret_key=self.sm_aws_secret_key.text().strip() or None,
                     session_token=self.sm_aws_session_token.text().strip() or None,
@@ -975,7 +977,7 @@ class SecureCredentialWidget(QWidget):
                 if success:
                     self._save_sm_config({
                         "provider": provider,
-                        "region": self.sm_aws_region.text().strip() or "us-east-1",
+                        "region": self.sm_aws_region.currentData() or "us-east-1",
                         "access_key": self.sm_aws_access_key.text().strip(),
                         "secret_key": self.sm_aws_secret_key.text().strip(),
                         "session_token": self.sm_aws_session_token.text().strip(),
@@ -1036,7 +1038,12 @@ class SecureCredentialWidget(QWidget):
             self.sm_vault_url.setText(config.get("vault_url", ""))
             self.sm_vault_token.setText(config.get("vault_token", ""))
         elif provider == "AWS Secrets Manager":
-            self.sm_aws_region.setText(config.get("region", "us-east-1"))
+            # Set region combo to saved value
+            saved_region = config.get("region", "us-east-1")
+            for i in range(self.sm_aws_region.count()):
+                if self.sm_aws_region.itemData(i) == saved_region:
+                    self.sm_aws_region.setCurrentIndex(i)
+                    break
             self.sm_aws_access_key.setText(config.get("access_key", ""))
             self.sm_aws_secret_key.setText(config.get("secret_key", ""))
             self.sm_aws_session_token.setText(config.get("session_token", ""))
@@ -1113,6 +1120,76 @@ class SecureCredentialWidget(QWidget):
     def _aws_sm_client(self):
         """Return the active AWS Secrets Manager boto3 client, or None."""
         return secure_credential_manager._secrets_manager.aws_client
+
+    @staticmethod
+    def _populate_aws_region_combo(combo: QComboBox):
+        """Populate a combo box with all AWS regions grouped by geography."""
+        regions = [
+            ("── North America ──", None),
+            ("us-east-1 — N. Virginia", "us-east-1"),
+            ("us-east-2 — Ohio", "us-east-2"),
+            ("us-west-1 — N. California", "us-west-1"),
+            ("us-west-2 — Oregon", "us-west-2"),
+            ("ca-central-1 — Canada (Central) / Montreal", "ca-central-1"),
+            ("ca-west-1 — Canada West (Calgary)", "ca-west-1"),
+            ("── South America ──", None),
+            ("sa-east-1 — São Paulo", "sa-east-1"),
+            ("mx-central-1 — Mexico (Central)", "mx-central-1"),
+            ("── Europe ──", None),
+            ("eu-west-1 — Ireland", "eu-west-1"),
+            ("eu-west-2 — London", "eu-west-2"),
+            ("eu-west-3 — Paris", "eu-west-3"),
+            ("eu-central-1 — Frankfurt", "eu-central-1"),
+            ("eu-central-2 — Zurich", "eu-central-2"),
+            ("eu-north-1 — Stockholm", "eu-north-1"),
+            ("eu-south-1 — Milan", "eu-south-1"),
+            ("eu-south-2 — Spain", "eu-south-2"),
+            ("il-central-1 — Tel Aviv", "il-central-1"),
+            ("── Middle East ──", None),
+            ("me-south-1 — Bahrain", "me-south-1"),
+            ("me-central-1 — UAE", "me-central-1"),
+            ("── Africa ──", None),
+            ("af-south-1 — Cape Town", "af-south-1"),
+            ("── Asia Pacific ──", None),
+            ("ap-southeast-2 — Sydney", "ap-southeast-2"),
+            ("ap-southeast-4 — Melbourne", "ap-southeast-4"),
+            ("ap-southeast-1 — Singapore", "ap-southeast-1"),
+            ("ap-southeast-3 — Jakarta", "ap-southeast-3"),
+            ("ap-southeast-5 — Malaysia", "ap-southeast-5"),
+            ("ap-southeast-7 — Thailand", "ap-southeast-7"),
+            ("ap-northeast-1 — Tokyo", "ap-northeast-1"),
+            ("ap-northeast-2 — Seoul", "ap-northeast-2"),
+            ("ap-northeast-3 — Osaka", "ap-northeast-3"),
+            ("ap-south-1 — Mumbai", "ap-south-1"),
+            ("ap-south-2 — Hyderabad", "ap-south-2"),
+            ("── China ──", None),
+            ("cn-north-1 — Beijing", "cn-north-1"),
+            ("cn-northwest-1 — Ningxia", "cn-northwest-1"),
+            ("── AWS GovCloud (US) ──", None),
+            ("us-gov-east-1", "us-gov-east-1"),
+            ("us-gov-west-1", "us-gov-west-1"),
+            ("── AWS Secret / Isolated ──", None),
+            ("us-iso-east-1", "us-iso-east-1"),
+            ("us-iso-west-1", "us-iso-west-1"),
+            ("us-isob-east-1", "us-isob-east-1"),
+            ("us-isof-east-1 — Top Secret", "us-isof-east-1"),
+        ]
+
+        for display_text, region_code in regions:
+            if region_code is None:
+                combo.addItem(display_text, "")
+                idx = combo.count() - 1
+                model = combo.model()
+                item = model.item(idx)
+                item.setEnabled(False)
+            else:
+                combo.addItem(display_text, region_code)
+
+        # Default to us-east-1
+        for i in range(combo.count()):
+            if combo.itemData(i) == "us-east-1":
+                combo.setCurrentIndex(i)
+                break
 
     def _aws_set_status(self, msg: str, ok: bool = True):
         colour = "#50C878" if ok else "#FF6347"

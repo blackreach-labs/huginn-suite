@@ -175,11 +175,67 @@ def shodan_lookup(target: str, progress_callback=None) -> Dict:
                 progress_callback(f"Shodan: {len(results['ports'])} ports, {len(results['vulns'])} vulns")
 
         elif resp.status_code == 404:
-            results["errors"].append("Host not found in Shodan database")
+            results["errors"].append("Host not found in Shodan database (not yet scanned)")
         elif resp.status_code == 401:
             results["errors"].append("Invalid Shodan API key")
+        elif resp.status_code == 403:
+            # Free plan doesn't have host lookup — try DNS resolve endpoint
+            if progress_callback:
+                progress_callback("Host lookup requires paid plan, trying DNS resolve...")
+            _shodan_dns_fallback(target, ip, api_key, results, progress_callback)
         else:
             results["errors"].append(f"Shodan returned status {resp.status_code}")
+
+    except Exception as e:
+        results["errors"].append(f"Shodan error: {e}")
+
+    return results
+
+
+def _shodan_dns_fallback(target: str, ip: str, api_key: str, results: Dict, progress_callback=None):
+    """Fallback for free Shodan plan — use DNS resolve and search endpoints."""
+    try:
+        # Try the free /dns/resolve endpoint
+        domain = target if not _is_ip(target) else None
+        if domain:
+            url = f"https://api.shodan.io/dns/resolve?hostnames={domain}&key={api_key}"
+            resp = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
+            if resp.status_code == 200:
+                data = resp.json()
+                resolved_ip = data.get(domain)
+                if resolved_ip:
+                    results["ip"] = resolved_ip
+                    if progress_callback:
+                        progress_callback(f"DNS resolved: {domain} → {resolved_ip}")
+
+        # Try the free /shodan/host/count endpoint
+        url = f"https://api.shodan.io/shodan/host/count?key={api_key}&query=ip:{ip}"
+        resp = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
+        if resp.status_code == 200:
+            data = resp.json()
+            results["total_results"] = data.get("total", 0)
+            if progress_callback:
+                progress_callback(f"Shodan has {data.get('total', 0)} results for this IP")
+
+        # Try the free API info to show what's available
+        url = f"https://api.shodan.io/api-info?key={api_key}"
+        resp = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
+        if resp.status_code == 200:
+            info = resp.json()
+            plan = info.get("plan", "free")
+            results["errors"].append(
+                f"Your Shodan plan ({plan}) doesn't include host lookup.\n"
+                "Upgrade at https://account.shodan.io/billing for full results.\n"
+                f"Query credits remaining: {info.get('query_credits', 0)}"
+            )
+        else:
+            results["errors"].append(
+                "Shodan host lookup requires a paid API plan.\n"
+                "Free plan only supports search queries, not direct host lookups."
+            )
+
+    except Exception as e:
+        results["errors"].append(f"Shodan fallback error: {e}")
 
     except Exception as e:
         results["errors"].append(f"Shodan error: {e}")
@@ -298,48 +354,71 @@ def alienvault_otx(target: str, progress_callback=None) -> Dict:
 
 
 # ---------------------------------------------------------------------------
-# ThreatCrowd (free, no key)
+# ThreatFox (abuse.ch — free, no key, replaces defunct ThreatCrowd)
 # ---------------------------------------------------------------------------
 
-def threatcrowd_lookup(target: str, progress_callback=None) -> Dict:
-    """Query ThreatCrowd for related threat data (free, no key)."""
-    results = {"target": target, "resolutions": [], "emails": [],
-               "subdomains": [], "references": [], "errors": []}
+def threatfox_lookup(target: str, progress_callback=None) -> Dict:
+    """Query ThreatFox for IOC threat data (requires free API key from abuse.ch)."""
+    results = {"target": target, "iocs": [], "malware": [],
+               "tags": [], "errors": []}
 
     if progress_callback:
-        progress_callback(f"Querying ThreatCrowd for {target}...")
+        progress_callback(f"Querying ThreatFox for {target}...")
+
+    api_key = _get_api_key("threatfox")
 
     try:
-        if _is_ip(target):
-            url = f"https://www.threatcrowd.org/searchApi/v2/ip/report/?ip={target}"
-        else:
-            url = f"https://www.threatcrowd.org/searchApi/v2/domain/report/?domain={target}"
+        url = "https://threatfox-api.abuse.ch/api/v1/"
+        
+        headers = {"Content-Type": "application/json", **HEADERS}
+        if api_key:
+            headers["Auth-Key"] = api_key
 
-        resp = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
+        # Try searching as IOC first
+        data = {"query": "search_ioc", "search_term": target}
+        resp = requests.post(url, json=data, timeout=TIMEOUT, headers=headers)
 
         if resp.status_code == 200:
-            data = resp.json()
+            result = resp.json()
 
-            if data.get("response_code") == "1":
-                results["resolutions"] = data.get("resolutions", [])[:20]
-                results["emails"] = data.get("emails", [])
-                results["subdomains"] = data.get("subdomains", [])[:20]
-                results["references"] = data.get("references", [])[:10]
-                results["votes"] = data.get("votes", 0)
+            if result.get("query_status") == "ok" and result.get("data"):
+                iocs = result["data"]
+                results["total"] = len(iocs)
+
+                for ioc in iocs[:15]:
+                    results["iocs"].append({
+                        "ioc": ioc.get("ioc", ""),
+                        "threat_type": ioc.get("threat_type", ""),
+                        "malware": ioc.get("malware_printable", ""),
+                        "confidence": ioc.get("confidence_level", 0),
+                        "first_seen": ioc.get("first_seen", ""),
+                        "tags": ioc.get("tags", []),
+                    })
+                    if ioc.get("malware_printable"):
+                        results["malware"].append(ioc["malware_printable"])
+                    results["tags"].extend(ioc.get("tags", []) or [])
+
+                results["malware"] = list(set(results["malware"]))
+                results["tags"] = list(set(results["tags"]))[:20]
 
                 if progress_callback:
-                    progress_callback(
-                        f"ThreatCrowd: {len(results['resolutions'])} resolutions, "
-                        f"{len(results['subdomains'])} subdomains"
-                    )
+                    progress_callback(f"ThreatFox: {len(iocs)} IOCs found")
             else:
-                results["errors"].append("No data found in ThreatCrowd")
-
+                # No results — not necessarily an error, target may be clean
+                results["total"] = 0
+                if progress_callback:
+                    progress_callback("ThreatFox: No IOCs found (target appears clean)")
+        elif resp.status_code == 401:
+            results["errors"].append(
+                "ThreatFox API key required.\n"
+                "Get a free key at https://threatfox.abuse.ch/api/\n"
+                "Set 'threatfox' in Tools → Global Settings → API Keys"
+            )
         else:
-            results["errors"].append(f"ThreatCrowd returned status {resp.status_code}")
+            results["errors"].append(f"ThreatFox returned status {resp.status_code}")
 
     except Exception as e:
-        results["errors"].append(f"ThreatCrowd error: {e}")
+        results["errors"].append(f"ThreatFox error: {e}")
 
     return results
 
@@ -417,7 +496,7 @@ def full_threat_intel(target: str, progress_callback=None) -> Dict:
         ("shodan", "Shodan Lookup", shodan_lookup),
         ("urlscan", "URLScan Reputation", urlvoid_check),
         ("otx", "AlienVault OTX", alienvault_otx),
-        ("threatcrowd", "ThreatCrowd", threatcrowd_lookup),
+        ("threatfox", "ThreatFox", threatfox_lookup),
         ("malware_bazaar", "Malware Bazaar", malware_bazaar),
     ]
 

@@ -22,7 +22,9 @@
     "binaryedge": "",
     "passivetotal_user": "",
     "passivetotal_key": "",
-    "dnsdb": ""
+    "dnsdb": "",
+    "threatfox": "",
+    "alienvault_otx": ""
   },
   "general": {
     "default_timeout": 30,

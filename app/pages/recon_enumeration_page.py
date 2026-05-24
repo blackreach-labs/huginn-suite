@@ -477,21 +477,7 @@ class ReconEnumerationPage(QWidget, ServiceScannersMixin, ServiceUIComponentsMix
         """Create AWS penetration testing tab"""
         tab = QWidget()
         layout = QVBoxLayout(tab)
-        layout.setContentsMargins(20, 20, 20, 20)
-        
-        # Warning banner
-        warning = QLabel("⚠️ AUTHORIZED TESTING ONLY - AWS Penetration Testing Suite")
-        warning.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        warning.setStyleSheet("""
-            background-color: #FF4444;
-            color: white;
-            padding: 10px;
-            font-weight: bold;
-            font-size: 14pt;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        """)
-        layout.addWidget(warning)
+        layout.setContentsMargins(0, 0, 0, 0)
         
         # AWS tools
         try:

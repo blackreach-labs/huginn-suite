@@ -1,1 +1,10 @@
 2026-05-23 21:16:09 - ERROR - Wayback plugin error: 
+2026-05-24 15:11:40 - ERROR - Unhandled exception:
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\cloud_assets_widget.py", line 205, in start_scan
+    proxy = stealth_config.get_proxy() if stealth_config.is_enabled() else None
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'StealthConfig' object has no attribute 'get_proxy'
+
+2026-05-24 15:18:01 - ERROR - Unexpected error in DNS enumeration: 'charmap' codec can't decode byte 0x90 in position 37: character maps to <undefined>
+2026-05-24 15:20:29 - ERROR - Unexpected error in DNS enumeration: 'charmap' codec can't decode byte 0x90 in position 37: character maps to <undefined>

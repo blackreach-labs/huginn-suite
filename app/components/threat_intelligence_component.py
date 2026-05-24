@@ -44,7 +44,7 @@ class ThreatIntelligenceComponent(QWidget):
             ("Shodan Lookup", self.run_shodan_lookup),
             ("URLScan Reputation", self.run_urlvoid_check),
             ("AlienVault OTX", self.run_alienvault_otx),
-            ("ThreatCrowd", self.run_threatcrowd),
+            ("ThreatFox", self.run_threatfox),
             ("Malware Bazaar", self.run_malware_bazaar),
             ("Full Threat Intel", self.run_full_threat_intel),
         ]
@@ -106,9 +106,9 @@ class ThreatIntelligenceComponent(QWidget):
         from app.core.threat_intel_engine import alienvault_otx
         self._run_module(alienvault_otx, "AlienVault OTX")
 
-    def run_threatcrowd(self):
-        from app.core.threat_intel_engine import threatcrowd_lookup
-        self._run_module(threatcrowd_lookup, "ThreatCrowd")
+    def run_threatfox(self):
+        from app.core.threat_intel_engine import threatfox_lookup
+        self._run_module(threatfox_lookup, "ThreatFox")
 
     def run_malware_bazaar(self):
         from app.core.threat_intel_engine import malware_bazaar
@@ -177,16 +177,17 @@ class ThreatIntelligenceComponent(QWidget):
             for pulse in results.get("pulses", [])[:5]:
                 self.output_text.append(f"<p style='color: #DCDCDC; margin-left: 15px;'>• {h(pulse['name'][:60])}</p>")
 
-        # ThreatCrowd
-        if "resolutions" in results and results["resolutions"]:
-            self.output_text.append(f"<p style='color: #DCDCDC;'>Resolutions: {len(results['resolutions'])}</p>")
-            for res in results["resolutions"][:8]:
-                if isinstance(res, dict):
-                    self.output_text.append(f"<p style='color: #DCDCDC; margin-left: 15px;'>• {h(res.get('ip_address', ''))} ({res.get('last_resolved', '')})</p>")
-            if results.get("subdomains"):
-                self.output_text.append(f"<p style='color: #FFD93D;'>Subdomains: {', '.join(results['subdomains'][:10])}</p>")
-            if results.get("emails"):
-                self.output_text.append(f"<p style='color: #FFD93D;'>Emails: {', '.join(results['emails'][:5])}</p>")
+        # ThreatFox
+        if "iocs" in results:
+            total = results.get("total", 0)
+            if total > 0:
+                self.output_text.append(f"<p style='color: #FF6B6B;'>IOCs found: {total}</p>")
+                for ioc in results["iocs"][:8]:
+                    self.output_text.append(f"<p style='color: #DCDCDC; margin-left: 15px;'>• {h(ioc.get('threat_type', ''))} — {h(ioc.get('malware', 'unknown'))} (confidence: {ioc.get('confidence', 0)}%)</p>")
+                if results.get("tags"):
+                    self.output_text.append(f"<p style='color: #FFD93D;'>Tags: {', '.join(results['tags'][:10])}</p>")
+            else:
+                self.output_text.append("<p style='color: #00FF41;'>No threat IOCs found — target appears clean</p>")
 
         # Malware Bazaar
         if "samples" in results and results["samples"]:
@@ -203,7 +204,7 @@ class ThreatIntelligenceComponent(QWidget):
             ("shodan", "Shodan"),
             ("urlscan", "URLScan"),
             ("otx", "AlienVault OTX"),
-            ("threatcrowd", "ThreatCrowd"),
+            ("threatfox", "ThreatFox"),
             ("malware_bazaar", "Malware Bazaar"),
         ]
 
