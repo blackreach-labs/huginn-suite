@@ -278,7 +278,7 @@ class PeopleSearchComponent(QWidget):
                 border: 1px solid rgba(100, 200, 255, 100);
                 border-radius: 5px;
                 color: #DCDCDC;
-                font-family: 'Courier New', monospace;
+                font-family: 'Neuropol X', monospace;
             }
             QLabel {
                 color: #64C8FF;

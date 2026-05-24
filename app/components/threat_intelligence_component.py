@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
-                            QLineEdit, QPushButton, QTextEdit, QFrame, QGroupBox, QGridLayout)
+                            QLineEdit, QPushButton, QTextEdit, QFrame, QGroupBox)
 from PyQt6.QtCore import pyqtSignal
 
 class ThreatIntelligenceComponent(QWidget):
@@ -8,6 +8,7 @@ class ThreatIntelligenceComponent(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._worker = None
         self.setup_ui()
         self.apply_theme()
 
@@ -15,11 +16,9 @@ class ThreatIntelligenceComponent(QWidget):
         """Setup threat intelligence UI"""
         layout = QHBoxLayout(self)
         
-        # Left panel - controls
         left_panel = self.create_controls_panel()
         layout.addWidget(left_panel)
         
-        # Right panel - output
         right_panel = self.create_output_panel()
         layout.addWidget(right_panel, 2)
 
@@ -29,37 +28,32 @@ class ThreatIntelligenceComponent(QWidget):
         panel.setFixedWidth(300)
         layout = QVBoxLayout(panel)
         
-        # Target input
         target_group = QGroupBox("Target Configuration")
         target_layout = QVBoxLayout(target_group)
-        
         target_layout.addWidget(QLabel("IOC/Domain/IP:"))
         self.target_input = QLineEdit()
         self.target_input.setPlaceholderText("malicious.com or 192.168.1.1")
         target_layout.addWidget(self.target_input)
-        
         layout.addWidget(target_group)
         
-        # Threat intelligence modules
         modules_group = QGroupBox("Threat Intelligence")
-        modules_layout = QGridLayout(modules_group)
+        modules_layout = QVBoxLayout(modules_group)
         
         buttons = [
             ("VirusTotal Scan", self.run_virustotal_scan),
             ("Shodan Lookup", self.run_shodan_lookup),
-            ("URLVoid Check", self.run_urlvoid_check),
-            ("Hybrid Analysis", self.run_hybrid_analysis),
-            ("ThreatCrowd", self.run_threatcrowd),
+            ("URLScan Reputation", self.run_urlvoid_check),
             ("AlienVault OTX", self.run_alienvault_otx),
+            ("ThreatCrowd", self.run_threatcrowd),
             ("Malware Bazaar", self.run_malware_bazaar),
-            ("Full Threat Intel", self.run_full_threat_intel)
+            ("Full Threat Intel", self.run_full_threat_intel),
         ]
         
-        for i, (text, method) in enumerate(buttons):
+        for text, method in buttons:
             btn = QPushButton(text)
             btn.clicked.connect(method)
-            btn.setMinimumHeight(35)
-            modules_layout.addWidget(btn, i // 2, i % 2)
+            btn.setMinimumHeight(30)
+            modules_layout.addWidget(btn)
         
         layout.addWidget(modules_group)
         layout.addStretch()
@@ -78,125 +72,146 @@ class ThreatIntelligenceComponent(QWidget):
         
         return panel
 
-    def run_virustotal_scan(self):
-        """Run VirusTotal scan"""
+    def _run_module(self, func, name):
+        """Run a threat intel module in background."""
         target = self.target_input.text().strip()
         if not target:
+            self.output_text.setHtml("<p style='color: #FFA500;'>⚠ Please enter a target</p>")
             return
-        
-        self.intel_started.emit(target, "VirusTotal Scan")
+
+        self.intel_started.emit(target, name)
         self.output_text.clear()
-        self.output_text.setHtml("""
-        <p style='color: #64C8FF;'>[VIRUSTOTAL] Multi-engine malware analysis...</p>
-        <p style='color: #FF6B6B;'>DETECTION: 15/70 engines flagged as malicious</p>
-        <p style='color: #FFA500;'>Threat categories: Trojan, Phishing, Malware</p>
-        """)
-        self.intel_completed.emit({"virustotal_detections": 15})
+        self.output_text.append(f"<p style='color: #64C8FF;'>[{name.upper()}] Querying for {target}...</p>")
+
+        from app.core.osint_workers import OSINTWorker
+        self._worker = OSINTWorker(func, target)
+        self._worker.output_signal.connect(lambda msg: self.output_text.append(f"<p style='color: #DCDCDC;'>{msg}</p>"))
+        self._worker.result_signal.connect(lambda r: self._display_results(r, name))
+        self._worker.finished_signal.connect(lambda: self.intel_completed.emit({}))
+        self._worker.start()
+
+    def run_virustotal_scan(self):
+        from app.core.threat_intel_engine import virustotal_scan
+        self._run_module(virustotal_scan, "VirusTotal")
 
     def run_shodan_lookup(self):
-        """Run Shodan lookup"""
-        target = self.target_input.text().strip()
-        if not target:
-            return
-        
-        self.intel_started.emit(target, "Shodan Lookup")
-        self.output_text.append("""
-        <p style='color: #64C8FF;'>[SHODAN] Internet-connected device search...</p>
-        <p style='color: #00FF41;'>Open ports, services, and vulnerabilities identified</p>
-        """)
-        self.intel_completed.emit({"shodan_results": True})
+        from app.core.threat_intel_engine import shodan_lookup
+        self._run_module(shodan_lookup, "Shodan")
 
     def run_urlvoid_check(self):
-        """Run URLVoid check"""
-        target = self.target_input.text().strip()
-        if not target:
-            return
-        
-        self.intel_started.emit(target, "URLVoid Check")
-        self.output_text.append("""
-        <p style='color: #64C8FF;'>[URLVOID] Website reputation analysis...</p>
-        <p style='color: #00FF41;'>Reputation score and blacklist status checked</p>
-        """)
-        self.intel_completed.emit({"urlvoid_results": True})
-
-    def run_hybrid_analysis(self):
-        """Run Hybrid Analysis"""
-        target = self.target_input.text().strip()
-        if not target:
-            return
-        
-        self.intel_started.emit(target, "Hybrid Analysis")
-        self.output_text.append("""
-        <p style='color: #64C8FF;'>[HYBRID ANALYSIS] Advanced malware sandbox...</p>
-        <p style='color: #00FF41;'>Behavioral analysis and IOC extraction complete</p>
-        """)
-        self.intel_completed.emit({"hybrid_analysis": True})
-
-    def run_threatcrowd(self):
-        """Run ThreatCrowd lookup"""
-        target = self.target_input.text().strip()
-        if not target:
-            return
-        
-        self.intel_started.emit(target, "ThreatCrowd")
-        self.output_text.append("""
-        <p style='color: #64C8FF;'>[THREATCROWD] Threat intelligence aggregation...</p>
-        <p style='color: #00FF41;'>Related domains, IPs, and malware samples found</p>
-        """)
-        self.intel_completed.emit({"threatcrowd_results": True})
+        from app.core.threat_intel_engine import urlvoid_check
+        self._run_module(urlvoid_check, "URLScan")
 
     def run_alienvault_otx(self):
-        """Run AlienVault OTX lookup"""
-        target = self.target_input.text().strip()
-        if not target:
-            return
-        
-        self.intel_started.emit(target, "AlienVault OTX")
-        self.output_text.append("""
-        <p style='color: #64C8FF;'>[ALIENVAULT OTX] Open threat exchange...</p>
-        <p style='color: #00FF41;'>Threat pulses and IOC correlations identified</p>
-        """)
-        self.intel_completed.emit({"otx_results": True})
+        from app.core.threat_intel_engine import alienvault_otx
+        self._run_module(alienvault_otx, "AlienVault OTX")
+
+    def run_threatcrowd(self):
+        from app.core.threat_intel_engine import threatcrowd_lookup
+        self._run_module(threatcrowd_lookup, "ThreatCrowd")
 
     def run_malware_bazaar(self):
-        """Run Malware Bazaar lookup"""
-        target = self.target_input.text().strip()
-        if not target:
-            return
-        
-        self.intel_started.emit(target, "Malware Bazaar")
-        self.output_text.append("""
-        <p style='color: #64C8FF;'>[MALWARE BAZAAR] Malware sample repository...</p>
-        <p style='color: #00FF41;'>Malware families and signatures analyzed</p>
-        """)
-        self.intel_completed.emit({"malware_bazaar": True})
+        from app.core.threat_intel_engine import malware_bazaar
+        self._run_module(malware_bazaar, "Malware Bazaar")
 
     def run_full_threat_intel(self):
-        """Run comprehensive threat intelligence"""
+        from app.core.threat_intel_engine import full_threat_intel
         target = self.target_input.text().strip()
         if not target:
+            self.output_text.setHtml("<p style='color: #FFA500;'>⚠ Please enter a target</p>")
             return
-        
+
         self.intel_started.emit(target, "Full Threat Intel")
         self.output_text.clear()
-        self.output_text.setHtml("""
-        <p style='color: #64C8FF;'>[COMPREHENSIVE THREAT INTEL] Multi-source analysis...</p>
-        <p style='color: #FFD93D;'>Phase 1: VirusTotal multi-engine scan</p>
-        <p style='color: #FFD93D;'>Phase 2: Shodan infrastructure lookup</p>
-        <p style='color: #FFD93D;'>Phase 3: URLVoid reputation check</p>
-        <p style='color: #FFD93D;'>Phase 4: Hybrid Analysis sandbox</p>
-        <p style='color: #FFD93D;'>Phase 5: ThreatCrowd and OTX correlation</p>
-        <p style='color: #00FF41;'>Comprehensive threat intelligence complete</p>
-        """)
-        self.intel_completed.emit({
-            "virustotal_detections": 15,
-            "shodan_results": True,
-            "urlvoid_results": True,
-            "hybrid_analysis": True,
-            "threatcrowd_results": True,
-            "otx_results": True,
-            "malware_bazaar": True
-        })
+        self.output_text.append(f"<p style='color: #64C8FF; font-weight: bold;'>[FULL THREAT INTEL] Comprehensive analysis for {target}...</p>")
+
+        from app.core.osint_workers import OSINTWorker
+        self._worker = OSINTWorker(full_threat_intel, target)
+        self._worker.output_signal.connect(lambda msg: self.output_text.append(f"<p style='color: #DCDCDC;'>{msg}</p>"))
+        self._worker.result_signal.connect(self._display_full_results)
+        self._worker.finished_signal.connect(lambda: self.intel_completed.emit({}))
+        self._worker.start()
+
+    def _display_results(self, results, module_name):
+        """Display results from a single module."""
+        from app.core.html_utils import h
+
+        errors = results.get("errors", [])
+        if errors:
+            for err in errors:
+                self.output_text.append(f"<p style='color: #FF6B6B;'>⚠ {h(err)}</p>")
+            if not any(k for k in results if k not in ("target", "errors") and results[k]):
+                return
+
+        self.output_text.append(f"<p style='color: #00FF41; font-weight: bold;'>✅ {module_name} Complete</p>")
+
+        # VirusTotal
+        if "detections" in results:
+            det = results["detections"]
+            total = results.get("total_engines", 0)
+            color = "#FF6B6B" if det > 5 else "#FFA500" if det > 0 else "#00FF41"
+            self.output_text.append(f"<p style='color: {color}; font-weight: bold;'>Detections: {det}/{total}</p>")
+            for d in results.get("details", [])[:10]:
+                self.output_text.append(f"<p style='color: #FF6B6B; margin-left: 15px;'>• {h(d['engine'])}: {h(d['result'])}</p>")
+
+        # Shodan
+        if "ports" in results and results["ports"]:
+            self.output_text.append(f"<p style='color: #DCDCDC;'>IP: {results.get('ip', 'N/A')} | Org: {h(results.get('org', 'N/A'))}</p>")
+            self.output_text.append(f"<p style='color: #FFD93D;'>Open Ports: {', '.join(str(p) for p in results['ports'][:20])}</p>")
+            if results.get("vulns"):
+                self.output_text.append(f"<p style='color: #FF6B6B; font-weight: bold;'>Vulnerabilities: {', '.join(results['vulns'][:10])}</p>")
+            for svc in results.get("services", [])[:8]:
+                self.output_text.append(f"<p style='color: #DCDCDC; margin-left: 15px;'>• {svc['port']}/{svc['transport']} — {h(svc.get('product', ''))} {h(svc.get('version', ''))}</p>")
+
+        # URLScan
+        if "total_scans" in results:
+            self.output_text.append(f"<p style='color: #DCDCDC;'>Total scans: {results['total_scans']}</p>")
+            if results.get("verdicts"):
+                self.output_text.append(f"<p style='color: #FF6B6B;'>Malicious verdicts: {len(results['verdicts'])}</p>")
+
+        # OTX
+        if "pulse_count" in results:
+            count = results["pulse_count"]
+            color = "#FF6B6B" if count > 5 else "#FFA500" if count > 0 else "#00FF41"
+            self.output_text.append(f"<p style='color: {color};'>Threat Pulses: {count}</p>")
+            for pulse in results.get("pulses", [])[:5]:
+                self.output_text.append(f"<p style='color: #DCDCDC; margin-left: 15px;'>• {h(pulse['name'][:60])}</p>")
+
+        # ThreatCrowd
+        if "resolutions" in results and results["resolutions"]:
+            self.output_text.append(f"<p style='color: #DCDCDC;'>Resolutions: {len(results['resolutions'])}</p>")
+            for res in results["resolutions"][:8]:
+                if isinstance(res, dict):
+                    self.output_text.append(f"<p style='color: #DCDCDC; margin-left: 15px;'>• {h(res.get('ip_address', ''))} ({res.get('last_resolved', '')})</p>")
+            if results.get("subdomains"):
+                self.output_text.append(f"<p style='color: #FFD93D;'>Subdomains: {', '.join(results['subdomains'][:10])}</p>")
+            if results.get("emails"):
+                self.output_text.append(f"<p style='color: #FFD93D;'>Emails: {', '.join(results['emails'][:5])}</p>")
+
+        # Malware Bazaar
+        if "samples" in results and results["samples"]:
+            self.output_text.append(f"<p style='color: #FF6B6B;'>Malware Samples: {results['total']}</p>")
+            for s in results["samples"][:5]:
+                self.output_text.append(f"<p style='color: #DCDCDC; margin-left: 15px;'>• {h(s.get('signature', 'unknown'))} — {h(s.get('file_type', ''))} ({s.get('first_seen', '')[:10]})</p>")
+
+    def _display_full_results(self, results):
+        """Display comprehensive threat intel results."""
+        self.output_text.append("<p style='color: #00FF41; font-weight: bold; font-size: 14px;'>✅ COMPREHENSIVE THREAT INTEL COMPLETE</p>")
+
+        modules = [
+            ("virustotal", "VirusTotal"),
+            ("shodan", "Shodan"),
+            ("urlscan", "URLScan"),
+            ("otx", "AlienVault OTX"),
+            ("threatcrowd", "ThreatCrowd"),
+            ("malware_bazaar", "Malware Bazaar"),
+        ]
+
+        for key, name in modules:
+            module_results = results.get(key, {})
+            if module_results:
+                self.output_text.append(f"<p style='color: #64C8FF; font-weight: bold; margin-top: 8px;'>━━ {name} ━━</p>")
+                self._display_results(module_results, name)
 
     def apply_theme(self):
         """Apply component theme"""
@@ -230,7 +245,7 @@ class ThreatIntelligenceComponent(QWidget):
                 border: 1px solid rgba(100, 200, 255, 100);
                 border-radius: 5px;
                 color: #DCDCDC;
-                font-family: 'Courier New', monospace;
+                font-family: 'Neuropol X', monospace;
             }
             QLabel {
                 color: #64C8FF;

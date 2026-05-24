@@ -422,7 +422,7 @@ class ComplianceComponent(QWidget):
                 border: 1px solid rgba(100, 200, 255, 100);
                 border-radius: 5px;
                 color: #DCDCDC;
-                font-family: 'Segoe UI', sans-serif;
+                font-family: 'Neuropol X', sans-serif;
             }
             QLabel {
                 color: #64C8FF;

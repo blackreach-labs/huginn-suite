@@ -2,6 +2,7 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
                             QLineEdit, QPushButton, QTextEdit, QFrame, QGroupBox,
                             QProgressBar, QCheckBox)
 from PyQt6.QtCore import pyqtSignal, QThreadPool
+from PyQt6.QtGui import QFont
 
 from app.core.breach_intel_engine import BreachIntelWorker
 
@@ -111,6 +112,7 @@ class BreachAnalysisComponent(QWidget):
         
         self.output_text = QTextEdit()
         self.output_text.setReadOnly(True)
+        self.output_text.setFont(QFont("Neuropol X", 9))
         self.output_text.setPlaceholderText("Breach analysis results will appear here...")
         layout.addWidget(self.output_text)
         
@@ -242,7 +244,7 @@ class BreachAnalysisComponent(QWidget):
                 border: 1px solid rgba(100, 200, 255, 100);
                 border-radius: 5px;
                 color: #DCDCDC;
-                font-family: 'Courier New', monospace;
+                font-family: 'Neuropol X', monospace;
             }
             QLabel {
                 color: #64C8FF;
