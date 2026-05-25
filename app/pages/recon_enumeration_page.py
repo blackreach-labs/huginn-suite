@@ -510,68 +510,48 @@ class ReconEnumerationPage(QWidget, ServiceScannersMixin, ServiceUIComponentsMix
         """Create Azure penetration testing tab"""
         tab = QWidget()
         layout = QVBoxLayout(tab)
-        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setContentsMargins(0, 0, 0, 0)
         
-        # Warning banner
-        warning = QLabel("⚠️ AUTHORIZED TESTING ONLY - Azure Penetration Testing Suite")
-        warning.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        warning.setStyleSheet("""
-            background-color: #0078D4;
-            color: white;
-            padding: 10px;
-            font-weight: bold;
-            font-size: 14pt;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        """)
-        layout.addWidget(warning)
-        
-        # Azure toolkit controls using factory
         try:
-            from app.core.control_panel_factory import ControlPanelFactory
-            from app.core.tool_helpers import load_tool_configs
+            from app.widgets.azure_pentest_widget import AzurePentestWidget
+            azure_widget = AzurePentestWidget(self)
+            layout.addWidget(azure_widget)
+        except (ImportError, Exception) as e:
+            logger.debug(f"Azure pentest widget unavailable: {e}")
+            # Show feature info when widget not available
+            from PyQt6.QtWidgets import QGroupBox
+            info_frame = QFrame()
+            info_layout = QVBoxLayout(info_frame)
+            info_layout.setContentsMargins(20, 20, 20, 20)
             
-            tool_configs = load_tool_configs()
-            if 'azure_toolkit' in tool_configs:
-                azure_controls = ControlPanelFactory.create_panel(tool_configs['azure_toolkit'], self)
-                
-                # Connect authentication method changes
-                if hasattr(azure_controls, 'controls') and 'azure_auth_method' in azure_controls.controls:
-                    azure_controls.controls['azure_auth_method'].currentTextChanged.connect(
-                        lambda auth_method: self.toggle_azure_auth_fields(azure_controls.controls, auth_method)
-                    )
-                    # Set initial state
-                    self.toggle_azure_auth_fields(azure_controls.controls, "Default Credential")
-                
-                layout.addWidget(azure_controls)
-                
-                # Add run button
-                run_btn = QPushButton("🚀 Run Azure Scan")
-                run_btn.setMinimumHeight(50)
-                run_btn.setStyleSheet("""
-                    QPushButton {
-                        background-color: #0078D4;
-                        color: white;
-                        font-size: 14pt;
-                        font-weight: bold;
-                        border-radius: 8px;
-                        padding: 10px;
-                    }
-                    QPushButton:hover {
-                        background-color: #106EBE;
-                    }
-                """)
-                run_btn.clicked.connect(lambda: self.run_azure_scan(azure_controls.controls))
-                layout.addWidget(run_btn)
-            else:
-                # Fallback if config not found
-                error_label = QLabel("Azure toolkit configuration not found")
-                error_label.setStyleSheet("color: #FF6B6B; font-size: 14pt;")
-                layout.addWidget(error_label)
-        except ImportError:
-            layout.addWidget(QLabel("Azure toolkit functionality will be available here"))
+            info_label = QLabel("🔷 Azure Cloud Penetration Testing Suite")
+            info_label.setStyleSheet("color: #0078D4; font-size: 16pt; font-weight: bold;")
+            info_layout.addWidget(info_label)
+            
+            desc_label = QLabel(
+                "Comprehensive Azure enumeration and exploitation toolkit.\n"
+                "Covers tenant discovery, blob storage, IMDS, Key Vault, App Services,\n"
+                "identity mapping, network topology, and post-compromise actions."
+            )
+            desc_label.setStyleSheet("color: #DCDCDC; font-size: 12pt; padding: 10px;")
+            info_layout.addWidget(desc_label)
+            
+            features_label = QLabel(
+                "• Tenant & Domain Enumeration\n"
+                "• Blob Storage & SAS Token Discovery\n"
+                "• IMDS / Managed Identity Token Theft\n"
+                "• Key Vault Secret Retrieval\n"
+                "• App Service & SCM Endpoint Scanning\n"
+                "• Authenticated ARM & Graph API Enumeration\n"
+                "• Network Topology & NSG Mapping\n"
+                "• Exploitation: Runbook RCE, Consent Grants, ARM Injection"
+            )
+            features_label.setStyleSheet("color: #87CEEB; font-size: 11pt; padding: 10px;")
+            info_layout.addWidget(features_label)
+            
+            info_layout.addStretch()
+            layout.addWidget(info_frame)
         
-        layout.addStretch()
         return tab
     
     def create_ad_tab(self):
@@ -1023,7 +1003,7 @@ class ReconEnumerationPage(QWidget, ServiceScannersMixin, ServiceUIComponentsMix
             self.status_updated.emit(f"DNS export error: {str(e)}")
     
     def toggle_azure_auth_fields(self, controls, auth_method):
-        """Toggle Azure authentication fields"""
+        """Toggle Azure authentication fields (legacy, kept for compatibility)"""
         show_client_secret = (auth_method == "Client Secret")
         
         if 'azure_tenant_id' in controls:
@@ -1034,5 +1014,5 @@ class ReconEnumerationPage(QWidget, ServiceScannersMixin, ServiceUIComponentsMix
             controls['azure_client_secret'].setVisible(show_client_secret)
     
     def run_azure_scan(self, controls):
-        """Run Azure scan"""
-        self.status_updated.emit("Azure scan functionality will be available here")
+        """Run Azure scan (legacy stub - functionality moved to AzurePentestWidget)"""
+        self.status_updated.emit("Use the Azure tab's built-in scan buttons")

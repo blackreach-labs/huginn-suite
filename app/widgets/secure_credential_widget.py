@@ -464,6 +464,7 @@ class SecureCredentialWidget(QWidget):
 
         vault_hdr = QLabel("HashiCorp Vault")
         vault_hdr.setStyleSheet(HDR_STYLE)
+        vault_hdr.setFixedHeight(20)
         vault_grid.addWidget(vault_hdr, 0, 0, 1, 2)
 
         vault_grid.addWidget(QLabel("Vault URL:"), 1, 0)
@@ -575,6 +576,7 @@ class SecureCredentialWidget(QWidget):
 
         az_hdr = QLabel("Azure Key Vault")
         az_hdr.setStyleSheet(HDR_STYLE)
+        az_hdr.setFixedHeight(20)
         az_grid.addWidget(az_hdr, 0, 0, 1, 2)
 
         az_grid.addWidget(QLabel("Key Vault URL:"), 1, 0)
