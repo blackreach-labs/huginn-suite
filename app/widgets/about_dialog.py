@@ -41,7 +41,7 @@ class AboutDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("About Huginn")
-        self.setFixedSize(500, 650)
+        self.setFixedSize(650, 750)
         self.setup_ui()
         
     def setup_ui(self):
@@ -50,7 +50,7 @@ class AboutDialog(QDialog):
         # Title
         title = QLabel("Huginn Advanced Security Framework")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        title.setFont(QFont("Arial", 16, QFont.Weight.Bold))
+        title.setFont(QFont("Neuropol X", 16, QFont.Weight.Bold))
         layout.addWidget(title)
         
         # Version info

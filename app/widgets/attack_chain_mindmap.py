@@ -22,6 +22,10 @@ class AttackChainMindmap(QWidget):
         self.selected_phase = None
         self.hover_phase = None
         
+        # Load background image
+        bg_path = os.path.join("resources", "icons", "attack_chain_bg.png")
+        self._bg_pixmap = QPixmap(bg_path) if os.path.exists(bg_path) else None
+        
         # Animation timer
         self.animation_timer = QTimer()
         self.animation_timer.timeout.connect(self.update)
@@ -86,7 +90,14 @@ class AttackChainMindmap(QWidget):
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         
         # Draw background
-        painter.fillRect(self.rect(), QColor(20, 30, 40))
+        if self._bg_pixmap and not self._bg_pixmap.isNull():
+            scaled_bg = self._bg_pixmap.scaled(
+                self.size(),
+                Qt.AspectRatioMode.IgnoreAspectRatio,
+                Qt.TransformationMode.SmoothTransformation)
+            painter.drawPixmap(0, 0, scaled_bg)
+        else:
+            painter.fillRect(self.rect(), QColor(20, 30, 40))
         
         # Stretch phases across full width with no margins
         width = self.width()
@@ -178,7 +189,11 @@ class AttackChainMindmap(QWidget):
             
             # Circle size and effects
             base_radius = 70
-            radius = base_radius + (5 if is_hovered else 0) + (3 if is_selected else 0)
+            radius = base_radius
+            if is_selected:
+                radius += 12
+            elif is_hovered:
+                radius += 10
             
             # Draw phase icon as entire oblong background
             icon_path = os.path.join("resources", "icons", f"{phase_name}.png")
@@ -192,13 +207,6 @@ class AttackChainMindmap(QWidget):
                     icon_x = int(pos[0] - width / 2)
                     icon_y = int(pos[1] - height / 2)
                     painter.drawPixmap(icon_x, icon_y, scaled_pixmap)
-                    
-                    # Draw glow effect for hover/selection over the image
-                    if is_hovered or is_selected:
-                        glow_color = QColor(255, 255, 255, 80)
-                        painter.setBrush(QBrush(glow_color))
-                        painter.setPen(QPen(QColor(255, 255, 255), 3))
-                        painter.drawEllipse(int(pos[0] - width/2), int(pos[1] - height/2), int(width), int(height))
             else:
                 # Fallback to colored ellipse if no icon
                 painter.setBrush(QBrush(color))

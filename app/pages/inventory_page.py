@@ -179,7 +179,7 @@ class InventoryPage(QWidget):
 
         refresh_btn = QPushButton("🔄 Refresh")
         refresh_btn.clicked.connect(self.load_assets)
-        refresh_btn.setFixedWidth(90)
+        refresh_btn.setFixedWidth(120)
         refresh_btn.setStyleSheet("""
             QPushButton {
                 background-color: rgba(100, 200, 255, 150);

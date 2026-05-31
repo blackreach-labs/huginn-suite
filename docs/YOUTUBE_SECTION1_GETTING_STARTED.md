@@ -23,7 +23,7 @@
 
 > "Huginn is a professional-grade penetration testing platform built in Python to run on Windows. It's a desktop application — not a web app, not a CLI-only tool — it has a full graphical interface designed to guide you through the entire penetration testing lifecycle from start to finish."
 
-> "The core idea behind Huginn is that a penetration test follows a structured methodology. You start with reconnaissance, move into vulnerability scanning, then exploitation, post-exploitation, and finally reporting. Huginn organises all of its tools around that workflow, so instead of jumping between a dozen different terminal windows and tools, everything lives in one place."
+> "The core idea behind Huginn is that a penetration test follows a structured methodology. You start withRreconnaissance & Enumeration, move into vulnerability analysis, then exploitation, post-exploitation, and finally reporting. Huginn organises all of its tools around that workflow, so instead of jumping between a dozen different terminal windows and tools, everything lives in one place."
 
 **[Point to the Attack Chain mindmap on screen]**
 
