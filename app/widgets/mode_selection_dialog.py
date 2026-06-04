@@ -38,16 +38,29 @@ class ModeSelectionDialog(QDialog):
         self._fade_anim.start()
 
     def paintEvent(self, event):
-        """Draw a radial gradient background with vignette effect."""
+        """Draw the welcome image as the full-page background."""
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         rect = self.rect()
-        gradient = QRadialGradient(rect.center().x(), rect.center().y(),
-                                   max(rect.width(), rect.height()) * 0.7)
-        gradient.setColorAt(0.0, QColor(30, 40, 50))
-        gradient.setColorAt(0.6, QColor(20, 25, 35))
-        gradient.setColorAt(1.0, QColor(5, 5, 10))
-        painter.fillRect(rect, QBrush(gradient))
+        bg_path = os.path.join(self._resources_path, "Welcome_to_Huginn.png")
+        bg_pixmap = QPixmap(bg_path)
+        if not bg_pixmap.isNull():
+            scaled_bg = bg_pixmap.scaled(
+                rect.size(),
+                Qt.AspectRatioMode.KeepAspectRatioByExpanding,
+                Qt.TransformationMode.SmoothTransformation)
+            # Center the scaled pixmap
+            x = (rect.width() - scaled_bg.width()) // 2
+            y = (rect.height() - scaled_bg.height()) // 2
+            painter.drawPixmap(x, y, scaled_bg)
+        else:
+            # Fallback gradient if image not found
+            gradient = QRadialGradient(rect.center().x(), rect.center().y(),
+                                       max(rect.width(), rect.height()) * 0.7)
+            gradient.setColorAt(0.0, QColor(30, 40, 50))
+            gradient.setColorAt(0.6, QColor(20, 25, 35))
+            gradient.setColorAt(1.0, QColor(5, 5, 10))
+            painter.fillRect(rect, QBrush(gradient))
         painter.end()
 
     def setup_ui(self):
@@ -66,18 +79,6 @@ class ModeSelectionDialog(QDialog):
         content_layout = QVBoxLayout(content)
         content_layout.setContentsMargins(40, 20, 40, 20)
         content_layout.setSpacing(24)
-
-        # Banner image
-        banner_label = QLabel()
-        banner_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        banner_label.setStyleSheet("background: transparent; border: none;")
-        banner_path = os.path.join(self._resources_path, "Welcome_to_Huginn.png")
-        pixmap = QPixmap(banner_path)
-        if not pixmap.isNull():
-            banner_label.setPixmap(pixmap.scaledToWidth(
-                min(pixmap.width(), 1100),
-                Qt.TransformationMode.SmoothTransformation))
-        content_layout.addWidget(banner_label)
 
         # Subtitle
         subtitle = QLabel("Choose your preferred mode to get started")

@@ -582,7 +582,30 @@ class MainWindow(QMainWindow):
         self.status_bar.showMessage("Enhanced help panel opened - F1 to close")
     
     def show_mode_selection(self):
-        """Show mode selection dialog on startup"""
+        """Show animated startup sequence, then mode selection dialog."""
+        try:
+            from app.ui.animations.startup_sequence import StartupSequenceWidget
+
+            resources_path = os.path.join(self.project_root, "resources", "icons")
+            self._startup_sequence = StartupSequenceWidget(resources_path=resources_path)
+            self._startup_sequence.sequence_finished.connect(self._on_startup_sequence_done)
+            self._startup_sequence.start()
+        except Exception as e:
+            logger.error(f"Error showing startup sequence: {e}")
+            self._show_mode_selection_dialog()
+
+    def _on_startup_sequence_done(self):
+        """Called when the startup sequence finishes."""
+        try:
+            if hasattr(self, '_startup_sequence') and self._startup_sequence:
+                self._startup_sequence.close()
+                self._startup_sequence = None
+        except Exception as e:
+            logger.warning(f"Error cleaning up startup sequence: {e}")
+        self._show_mode_selection_dialog()
+
+    def _show_mode_selection_dialog(self):
+        """Show the mode selection dialog (original behavior)."""
         try:
             from app.widgets.mode_selection_dialog import ModeSelectionDialog
             

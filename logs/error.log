@@ -7,3 +7,6 @@ AttributeError: 'StealthConfig' object has no attribute 'get_proxy'
 
 2026-05-24 15:18:01 - huginn - ERROR - Unexpected error in DNS enumeration: 'charmap' codec can't decode byte 0x90 in position 37: character maps to <undefined>
 2026-05-24 15:20:29 - huginn - ERROR - Unexpected error in DNS enumeration: 'charmap' codec can't decode byte 0x90 in position 37: character maps to <undefined>
+2026-06-01 15:49:22 - huginn - ERROR - Unhandled exception:
+TypeError: unable to convert a C++ 'QSystemTrayIcon::ActivationReason' instance to a Python object
+

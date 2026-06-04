@@ -6,6 +6,7 @@ from PyQt6.QtGui import QFont
 from typing import Dict, List, Any
 import uuid
 
+
 class QuestionnaireWidget(QWidget):
     """Widget for displaying and managing questionnaires"""
     
@@ -26,58 +27,146 @@ class QuestionnaireWidget(QWidget):
     def setup_ui(self):
         """Setup the questionnaire UI"""
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setContentsMargins(24, 24, 24, 24)
+        layout.setSpacing(16)
         
-        # Header
-        self.header_label = QLabel("📋 Penetration Test Questionnaire")
-        self.header_label.setStyleSheet("font-size: 20pt; font-weight: bold; color: #64C8FF; margin-bottom: 20px;")
-        layout.addWidget(self.header_label)
-        
-        # Progress bar
-        self.progress_bar = QProgressBar()
-        self.progress_bar.setStyleSheet("""
-            QProgressBar {
-                border: 2px solid #64C8FF;
-                border-radius: 5px;
-                text-align: center;
-                background-color: rgba(0, 0, 0, 100);
-            }
-            QProgressBar::chunk {
-                background-color: #64C8FF;
-                border-radius: 3px;
+        # Header area
+        header_frame = QFrame()
+        header_frame.setStyleSheet("""
+            QFrame {
+                background-color: rgba(10, 15, 25, 180);
+                border-radius: 10px;
+                border: 1px solid rgba(100, 200, 255, 30);
             }
         """)
-        layout.addWidget(self.progress_bar)
+        header_layout = QVBoxLayout(header_frame)
+        header_layout.setContentsMargins(20, 14, 20, 14)
+        header_layout.setSpacing(10)
         
-        # Question area
+        # Title row
+        title_row = QHBoxLayout()
+        self.header_label = QLabel("📋 Penetration Test Questionnaire")
+        self.header_label.setStyleSheet("font-size: 16pt; font-weight: bold; color: #64C8FF;")
+        title_row.addWidget(self.header_label)
+        title_row.addStretch()
+        
+        # Category badge
+        self.category_badge = QLabel()
+        self.category_badge.setStyleSheet("""
+            font-size: 9pt; color: #87CEEB; font-weight: bold;
+            background: rgba(135, 206, 235, 10);
+            border: 1px solid rgba(135, 206, 235, 40);
+            border-radius: 10px;
+            padding: 4px 12px;
+        """)
+        self.category_badge.setVisible(False)
+        title_row.addWidget(self.category_badge)
+        
+        header_layout.addLayout(title_row)
+        
+        # Progress bar
+        progress_row = QHBoxLayout()
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setFixedHeight(8)
+        self.progress_bar.setTextVisible(False)
+        self.progress_bar.setStyleSheet("""
+            QProgressBar {
+                background-color: rgba(40, 50, 70, 150);
+                border-radius: 4px;
+                border: none;
+            }
+            QProgressBar::chunk {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                    stop:0 #64C8FF, stop:1 #2ECC71);
+                border-radius: 4px;
+            }
+        """)
+        progress_row.addWidget(self.progress_bar, 1)
+        
+        self.progress_label = QLabel("0/0")
+        self.progress_label.setStyleSheet("font-size: 9pt; color: #87CEEB; margin-left: 10px;")
+        progress_row.addWidget(self.progress_label)
+        
+        header_layout.addLayout(progress_row)
+        layout.addWidget(header_frame)
+        
+        # Question card area
         self.question_frame = QFrame()
+        self.question_frame.setObjectName("QuestionCard")
         self.question_frame.setStyleSheet("""
-            QFrame {
-                background-color: rgba(0, 0, 0, 100);
-                border-radius: 10px;
-                border: 1px solid rgba(100, 200, 255, 100);
-                padding: 20px;
-                margin: 20px 0;
+            QFrame#QuestionCard {
+                background-color: rgba(10, 15, 25, 200);
+                border-radius: 12px;
+                border: 1px solid rgba(100, 200, 255, 40);
             }
         """)
         self.question_layout = QVBoxLayout(self.question_frame)
-        layout.addWidget(self.question_frame)
+        self.question_layout.setContentsMargins(28, 24, 28, 24)
+        self.question_layout.setSpacing(14)
+        layout.addWidget(self.question_frame, 1)
         
         # Navigation buttons
-        nav_layout = QHBoxLayout()
+        nav_frame = QFrame()
+        nav_frame.setStyleSheet("""
+            QFrame {
+                background-color: rgba(10, 15, 25, 150);
+                border-radius: 10px;
+                border: 1px solid rgba(100, 200, 255, 20);
+            }
+        """)
+        nav_layout = QHBoxLayout(nav_frame)
+        nav_layout.setContentsMargins(16, 10, 16, 10)
         
-        self.prev_button = QPushButton("⬅️ Previous")
+        self.prev_button = QPushButton("← Previous")
+        self.prev_button.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.prev_button.setStyleSheet("""
+            QPushButton {
+                background-color: rgba(50, 60, 80, 150);
+                color: #8899AA;
+                border: 1px solid rgba(100, 120, 150, 80);
+                border-radius: 8px;
+                padding: 10px 20px;
+                font-size: 10pt;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: rgba(70, 85, 110, 180);
+                color: #DCDCDC;
+                border-color: rgba(100, 200, 255, 80);
+            }
+            QPushButton:disabled {
+                background-color: rgba(30, 35, 50, 100);
+                color: #445566;
+                border-color: rgba(60, 70, 90, 50);
+            }
+        """)
         self.prev_button.clicked.connect(self.previous_question)
         self.prev_button.setEnabled(False)
         nav_layout.addWidget(self.prev_button)
         
         nav_layout.addStretch()
         
-        self.next_button = QPushButton("Next ➡️")
+        self.next_button = QPushButton("Next →")
+        self.next_button.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.next_button.setStyleSheet("""
+            QPushButton {
+                background-color: rgba(100, 200, 255, 30);
+                color: #64C8FF;
+                border: 1px solid rgba(100, 200, 255, 100);
+                border-radius: 8px;
+                padding: 10px 24px;
+                font-size: 10pt;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: rgba(100, 200, 255, 60);
+                color: white;
+            }
+        """)
         self.next_button.clicked.connect(self.next_question)
         nav_layout.addWidget(self.next_button)
         
-        layout.addLayout(nav_layout)
+        layout.addWidget(nav_frame)
     
     def load_opening_question(self, question_data: Dict):
         """Load the opening environment selection question"""
@@ -85,7 +174,7 @@ class QuestionnaireWidget(QWidget):
         
         # Question text
         question_label = QLabel(question_data['text'])
-        question_label.setStyleSheet("font-size: 14pt; font-weight: bold; color: white; margin-bottom: 15px;")
+        question_label.setStyleSheet("font-size: 14pt; font-weight: bold; color: white; margin-bottom: 12px;")
         question_label.setWordWrap(True)
         self.question_layout.addWidget(question_label)
         
@@ -93,15 +182,38 @@ class QuestionnaireWidget(QWidget):
         self.option_group = QButtonGroup()
         for i, option in enumerate(question_data['options']):
             radio = QRadioButton(option)
-            radio.setStyleSheet("font-size: 12pt; color: #DCDCDC; margin: 5px;")
+            radio.setStyleSheet("""
+                QRadioButton {
+                    font-size: 11pt; color: #DCDCDC; margin: 4px 0; padding: 10px 14px;
+                    spacing: 10px;
+                    background: rgba(50, 60, 80, 60);
+                    border: 1px solid transparent;
+                    border-radius: 6px;
+                }
+                QRadioButton:hover { 
+                    background: rgba(100, 200, 255, 15);
+                    color: #64C8FF; 
+                }
+                QRadioButton:checked {
+                    background: rgba(100, 200, 255, 25);
+                    border: 1px solid rgba(100, 200, 255, 150);
+                    color: #64C8FF;
+                    font-weight: bold;
+                }
+                QRadioButton::indicator {
+                    width: 16px; height: 16px;
+                }
+            """)
             self.option_group.addButton(radio, i)
             self.question_layout.addWidget(radio)
+        
+        self.question_layout.addStretch()
         
         self.option_group.buttonClicked.connect(self.on_environment_selected)
         
         # Update navigation
         self.prev_button.setEnabled(False)
-        self.next_button.setText("Start Questionnaire ➡️")
+        self.next_button.setText("Start Questionnaire →")
         self.next_button.setEnabled(False)
     
     def on_environment_selected(self, button):
@@ -134,16 +246,32 @@ class QuestionnaireWidget(QWidget):
         question = questions[self.current_question_index]
         self.clear_question_area()
         
-        # Category header
-        category_label = QLabel(f"📂 {self.current_category}")
-        category_label.setStyleSheet("font-size: 16pt; font-weight: bold; color: #87CEEB; margin-bottom: 10px;")
+        # Category header with icon
+        category_label = QLabel(f"📂  {self.current_category}")
+        category_label.setStyleSheet("""
+            font-size: 10pt; font-weight: bold; color: rgba(135, 206, 235, 180);
+            letter-spacing: 0.5px; padding-bottom: 4px;
+        """)
         self.question_layout.addWidget(category_label)
+        
+        # Update category badge in header
+        self.category_badge.setText(self.current_category)
+        self.category_badge.setVisible(True)
         
         # Question text
         question_label = QLabel(question['text'])
-        question_label.setStyleSheet("font-size: 14pt; color: white; margin-bottom: 15px;")
+        question_label.setStyleSheet("""
+            font-size: 13pt; color: white; font-weight: bold;
+            padding: 8px 0 12px 0;
+        """)
         question_label.setWordWrap(True)
         self.question_layout.addWidget(question_label)
+        
+        # Separator
+        sep = QFrame()
+        sep.setFrameShape(QFrame.Shape.HLine)
+        sep.setStyleSheet("background-color: rgba(100, 200, 255, 20); max-height: 1px;")
+        self.question_layout.addWidget(sep)
         
         # Store current question data for action handling
         self.current_question_data = question
@@ -159,6 +287,8 @@ class QuestionnaireWidget(QWidget):
             placeholder = question.get('placeholder', '')
             self.create_text_input_response(question['id'], placeholder)
         
+        self.question_layout.addStretch()
+        
         # Update navigation
         self.update_navigation()
     
@@ -166,11 +296,43 @@ class QuestionnaireWidget(QWidget):
         """Create boolean (Yes/No) response options"""
         self.response_group = QButtonGroup()
         
-        yes_radio = QRadioButton("Yes")
-        no_radio = QRadioButton("No")
+        yes_radio = QRadioButton("  Yes")
+        no_radio = QRadioButton("  No")
         
-        yes_radio.setStyleSheet("font-size: 12pt; color: #90EE90; margin: 5px;")
-        no_radio.setStyleSheet("font-size: 12pt; color: #FFB6C1; margin: 5px;")
+        yes_radio.setStyleSheet("""
+            QRadioButton {
+                font-size: 11pt; color: #90EE90; margin: 6px 0; padding: 10px 16px;
+                spacing: 10px;
+                background: rgba(46, 204, 113, 8);
+                border: 1px solid transparent;
+                border-radius: 6px;
+            }
+            QRadioButton:hover { background: rgba(46, 204, 113, 20); }
+            QRadioButton:checked {
+                background: rgba(46, 204, 113, 35);
+                border: 1px solid rgba(46, 204, 113, 180);
+                color: #2ECC71;
+                font-weight: bold;
+            }
+            QRadioButton::indicator { width: 16px; height: 16px; }
+        """)
+        no_radio.setStyleSheet("""
+            QRadioButton {
+                font-size: 11pt; color: #FFB6C1; margin: 6px 0; padding: 10px 16px;
+                spacing: 10px;
+                background: rgba(255, 100, 100, 8);
+                border: 1px solid transparent;
+                border-radius: 6px;
+            }
+            QRadioButton:hover { background: rgba(255, 100, 100, 20); }
+            QRadioButton:checked {
+                background: rgba(255, 100, 100, 30);
+                border: 1px solid rgba(255, 100, 100, 180);
+                color: #FF6B6B;
+                font-weight: bold;
+            }
+            QRadioButton::indicator { width: 16px; height: 16px; }
+        """)
         
         self.response_group.addButton(yes_radio, 1)
         self.response_group.addButton(no_radio, 0)
@@ -193,8 +355,27 @@ class QuestionnaireWidget(QWidget):
         self.response_group = QButtonGroup()
         
         for i, option in enumerate(options):
-            radio = QRadioButton(option)
-            radio.setStyleSheet("font-size: 12pt; color: #DCDCDC; margin: 5px;")
+            radio = QRadioButton(f"  {option}")
+            radio.setStyleSheet("""
+                QRadioButton {
+                    font-size: 11pt; color: #DCDCDC; margin: 3px 0; padding: 8px 14px;
+                    spacing: 10px;
+                    background: rgba(50, 60, 80, 60);
+                    border: 1px solid transparent;
+                    border-radius: 6px;
+                }
+                QRadioButton:hover { 
+                    background: rgba(100, 200, 255, 15); 
+                    color: #64C8FF;
+                }
+                QRadioButton:checked {
+                    background: rgba(100, 200, 255, 25);
+                    border: 1px solid rgba(100, 200, 255, 150);
+                    color: #64C8FF;
+                    font-weight: bold;
+                }
+                QRadioButton::indicator { width: 16px; height: 16px; }
+            """)
             self.response_group.addButton(radio, i)
             self.question_layout.addWidget(radio)
         
@@ -220,13 +401,17 @@ class QuestionnaireWidget(QWidget):
         self.text_input.setPlaceholderText(placeholder)
         self.text_input.setStyleSheet("""
             QLineEdit {
-                font-size: 12pt;
+                font-size: 11pt;
                 color: white;
-                background-color: rgba(50, 50, 50, 150);
-                border: 2px solid #64C8FF;
-                border-radius: 5px;
-                padding: 8px;
-                margin: 5px;
+                background-color: rgba(40, 50, 70, 200);
+                border: 2px solid rgba(100, 200, 255, 50);
+                border-radius: 8px;
+                padding: 12px 16px;
+                margin: 8px 0;
+            }
+            QLineEdit:focus {
+                border-color: #64C8FF;
+                background-color: rgba(50, 60, 80, 220);
             }
         """)
         
@@ -264,8 +449,27 @@ class QuestionnaireWidget(QWidget):
         self.checkboxes = []
         
         for option in options:
-            checkbox = QCheckBox(option)
-            checkbox.setStyleSheet("font-size: 12pt; color: #DCDCDC; margin: 5px;")
+            checkbox = QCheckBox(f"  {option}")
+            checkbox.setStyleSheet("""
+                QCheckBox {
+                    font-size: 11pt; color: #DCDCDC; margin: 3px 0; padding: 8px 14px;
+                    spacing: 10px;
+                    background: rgba(50, 60, 80, 60);
+                    border: 1px solid transparent;
+                    border-radius: 6px;
+                }
+                QCheckBox:hover { 
+                    background: rgba(100, 200, 255, 15);
+                    color: #64C8FF;
+                }
+                QCheckBox:checked {
+                    background: rgba(100, 200, 255, 25);
+                    border: 1px solid rgba(100, 200, 255, 150);
+                    color: #64C8FF;
+                    font-weight: bold;
+                }
+                QCheckBox::indicator { width: 16px; height: 16px; }
+            """)
             self.checkboxes.append(checkbox)
             self.question_layout.addWidget(checkbox)
             
@@ -277,7 +481,7 @@ class QuestionnaireWidget(QWidget):
         if question_id in self.responses:
             selected = self.responses[question_id]
             for checkbox in self.checkboxes:
-                if checkbox.text() in selected:
+                if checkbox.text().strip() in selected:
                     checkbox.setChecked(True)
     
     def save_response(self, question_id: str, response: Any):
@@ -287,12 +491,11 @@ class QuestionnaireWidget(QWidget):
     
     def save_multi_choice_response(self, question_id: str):
         """Save multi-choice response"""
-        selected = [cb.text() for cb in self.checkboxes if cb.isChecked()]
+        selected = [cb.text().strip() for cb in self.checkboxes if cb.isChecked()]
         self.handle_response_with_action(question_id, selected)
     
     def trigger_action(self, action: str, response: Any):
         """Trigger action based on questionnaire response"""
-        # Emit signal to parent to handle the action
         self.action_triggered.emit(action, response)
     
     def show_target_definition_dialog(self):
@@ -303,18 +506,30 @@ class QuestionnaireWidget(QWidget):
         dialog.setWindowTitle("🎯 Define New Target")
         dialog.setModal(True)
         dialog.resize(600, 500)
+        dialog.setStyleSheet("""
+            QDialog { background-color: #1A1F2E; }
+            QLabel { color: #DCDCDC; font-size: 10pt; }
+            QLineEdit, QTextEdit, QComboBox {
+                background-color: rgba(40, 50, 70, 200); color: white;
+                border: 1px solid rgba(100, 200, 255, 60); border-radius: 6px; padding: 8px; font-size: 10pt;
+            }
+            QLineEdit:focus, QTextEdit:focus { border-color: #64C8FF; }
+        """)
         
         layout = QVBoxLayout(dialog)
-        form_layout = QFormLayout()
+        layout.setContentsMargins(24, 24, 24, 24)
+        layout.setSpacing(16)
         
-        # Target fields
+        form_layout = QFormLayout()
+        form_layout.setSpacing(12)
+        
         self.target_name = QLineEdit()
         self.target_name.setPlaceholderText("e.g., Company XYZ Web Application")
         form_layout.addRow("Target Name:", self.target_name)
         
         self.target_url = QLineEdit()
         self.target_url.setPlaceholderText("e.g., https://example.com")
-        form_layout.addRow("Primary Target URL:", self.target_url)
+        form_layout.addRow("Primary URL:", self.target_url)
         
         self.target_scope = QTextEdit()
         self.target_scope.setPlaceholderText("List domains, IPs, or networks in scope...")
@@ -326,96 +541,300 @@ class QuestionnaireWidget(QWidget):
         form_layout.addRow("Engagement Type:", self.engagement_type)
         
         layout.addLayout(form_layout)
+        layout.addStretch()
         
         # Buttons
-        button_layout = QVBoxLayout()
-        save_btn = QPushButton("Save Target & Continue")
-        save_btn.clicked.connect(lambda: self.save_target_and_continue(dialog))
-        button_layout.addWidget(save_btn)
+        btn_layout = QHBoxLayout()
+        btn_layout.addStretch()
         
         cancel_btn = QPushButton("Cancel")
+        cancel_btn.setStyleSheet("""
+            QPushButton { background: rgba(50, 60, 80, 150); color: #8899AA;
+                border: 1px solid rgba(100, 120, 150, 60); border-radius: 6px; padding: 8px 20px; }
+            QPushButton:hover { background: rgba(70, 85, 110, 180); color: #DCDCDC; }
+        """)
         cancel_btn.clicked.connect(dialog.reject)
-        button_layout.addWidget(cancel_btn)
+        btn_layout.addWidget(cancel_btn)
         
-        layout.addLayout(button_layout)
+        save_btn = QPushButton("Save Target & Continue")
+        save_btn.setStyleSheet("""
+            QPushButton { background: rgba(100, 200, 255, 30); color: #64C8FF;
+                border: 1px solid rgba(100, 200, 255, 100); border-radius: 6px; padding: 8px 20px; font-weight: bold; }
+            QPushButton:hover { background: rgba(100, 200, 255, 60); color: white; }
+        """)
+        save_btn.clicked.connect(lambda: self.save_target_and_continue(dialog))
+        btn_layout.addWidget(save_btn)
+        
+        layout.addLayout(btn_layout)
         dialog.exec()
     
     def save_target_and_continue(self, dialog):
-        """Save target information and continue to next question"""
+        """Save target information to disk as a profile and continue to next question"""
+        import os
+        import json
+        
+        target_name = self.target_name.text().strip()
+        if not target_name:
+            from PyQt6.QtWidgets import QMessageBox
+            QMessageBox.warning(dialog, "Missing Name", "Please enter a target name.")
+            return
+        
         target_info = {
-            'name': self.target_name.text(),
+            'name': target_name,
             'url': self.target_url.text(),
             'scope': self.target_scope.toPlainText(),
             'engagement_type': self.engagement_type.currentText()
         }
         
+        # Save to the profiles/ directory in the same format as attack_chain_home
+        project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        profiles_dir = os.path.join(project_root, 'profiles')
+        os.makedirs(profiles_dir, exist_ok=True)
+        
+        profile_data = {
+            'target_name': target_name,
+            'primary_target': self.target_url.text() or self.target_scope.toPlainText(),
+            'scope': self.target_scope.toPlainText(),
+            'subdomains': '',
+            'cloud_assets': '',
+            'out_scope': '',
+            'restrictions': '',
+            'dos_allowed': False,
+            'social_eng_allowed': False,
+            'physical_allowed': False,
+            'credentials': {},
+        }
+        
+        profile_file = os.path.join(profiles_dir, f"{target_name}.json")
+        try:
+            with open(profile_file, 'w') as f:
+                json.dump(profile_data, f, indent=2)
+        except Exception as e:
+            from PyQt6.QtWidgets import QMessageBox
+            QMessageBox.warning(dialog, "Error", f"Failed to save profile: {str(e)}")
+            return
+        
+        # Activate the profile in the application
+        try:
+            from app.core.credential_manager import credential_manager
+            credential_manager.set_profile(target_name)
+        except Exception:
+            pass
+        
+        try:
+            from app.core.tenant_aware_updater import tenant_aware_updater
+            tenant_aware_updater.set_tenant(target_name)
+        except Exception:
+            pass
+        
         # Save target info to responses
         self.responses['target_definition'] = target_info
+        self.responses['selected_profile'] = target_name
+        
+        # Emit the response
+        self.response_submitted.emit(self.session_id, 'selected_profile', target_name)
         
         dialog.accept()
-        # Move to next question
         self.next_question()
     
     def show_load_profile_dialog(self):
-        """Show load profile dialog"""
-        from PyQt6.QtWidgets import QDialog, QVBoxLayout, QListWidget, QPushButton, QLabel
+        """Show load profile dialog with real saved profiles from disk"""
+        from PyQt6.QtWidgets import QDialog, QVBoxLayout, QListWidget, QPushButton, QLabel, QMessageBox
+        import os
+        import json
+        
+        # Resolve the profiles directory relative to the project root
+        project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        profiles_dir = os.path.join(project_root, 'profiles')
+        
+        if not os.path.exists(profiles_dir):
+            QMessageBox.information(self, "No Profiles", "No saved profiles found. Define a new target first.")
+            return
+        
+        # Scan for saved profile JSON files
+        profile_files = sorted([f for f in os.listdir(profiles_dir) if f.endswith('.json')])
+        if not profile_files:
+            QMessageBox.information(self, "No Profiles", "No saved profiles found. Define a new target first.")
+            return
+        
+        # Load profile metadata for display
+        profiles_data = {}
+        display_names = []
+        for filename in profile_files:
+            profile_path = os.path.join(profiles_dir, filename)
+            try:
+                with open(profile_path, 'r', encoding='utf-8-sig') as f:
+                    data = json.load(f)
+                profile_name = filename.replace('.json', '')
+                target = data.get('primary_target', '') or data.get('scope', '')
+                display = f"{data.get('target_name', profile_name)}"
+                if target:
+                    # Show first line of scope, truncated
+                    first_line = target.strip().splitlines()[0] if target.strip() else ''
+                    if len(first_line) > 50:
+                        first_line = first_line[:48] + '…'
+                    display += f"  —  {first_line}"
+                display_names.append(display)
+                profiles_data[display] = {'name': profile_name, 'path': profile_path, 'data': data}
+            except Exception:
+                continue
+        
+        if not display_names:
+            QMessageBox.information(self, "No Profiles", "No valid profiles found. Define a new target first.")
+            return
         
         dialog = QDialog(self)
         dialog.setWindowTitle("📁 Load Existing Target Profile")
         dialog.setModal(True)
-        dialog.resize(500, 400)
+        dialog.resize(550, 420)
+        dialog.setStyleSheet("""
+            QDialog { background-color: #1A1F2E; }
+            QLabel { color: #DCDCDC; font-size: 10pt; }
+            QListWidget {
+                background-color: rgba(40, 50, 70, 200); color: white;
+                border: 1px solid rgba(100, 200, 255, 60); border-radius: 6px;
+                padding: 8px; font-size: 10pt;
+            }
+            QListWidget::item { padding: 10px; border-radius: 4px; }
+            QListWidget::item:selected { background: rgba(100, 200, 255, 30); color: #64C8FF; }
+            QListWidget::item:hover { background: rgba(100, 200, 255, 15); }
+        """)
         
         layout = QVBoxLayout(dialog)
+        layout.setContentsMargins(24, 24, 24, 24)
+        layout.setSpacing(16)
         
-        # Instructions
-        label = QLabel("Select an existing target profile:")
+        label = QLabel(f"Select from {len(display_names)} saved profile(s):")
+        label.setStyleSheet("font-size: 11pt; color: #87CEEB;")
         layout.addWidget(label)
         
-        # Profile list (mock data for now)
         self.profile_list = QListWidget()
-        profiles = [
-            "Company ABC - Web Application (https://abc.com)",
-            "Internal Network - 192.168.1.0/24",
-            "Client XYZ - API Testing (api.xyz.com)",
-            "E-commerce Site - shop.example.com"
-        ]
-        self.profile_list.addItems(profiles)
+        self.profile_list.addItems(display_names)
+        self.profile_list.setCurrentRow(0)
+        self.profile_list.itemDoubleClicked.connect(lambda _: dialog.accept())
         layout.addWidget(self.profile_list)
         
+        # Profile detail preview
+        self.profile_detail_label = QLabel()
+        self.profile_detail_label.setStyleSheet("""
+            font-size: 9pt; color: #8899AA; 
+            background: rgba(30, 40, 60, 150); 
+            border-radius: 6px; padding: 10px;
+        """)
+        self.profile_detail_label.setWordWrap(True)
+        layout.addWidget(self.profile_detail_label)
+        
+        def update_detail():
+            selected = self.profile_list.currentItem()
+            if selected and selected.text() in profiles_data:
+                data = profiles_data[selected.text()]['data']
+                scope = data.get('primary_target', '') or data.get('scope', 'Not specified')
+                out_scope = data.get('out_scope', '') or 'None'
+                perms = []
+                if data.get('dos_allowed'): perms.append('DoS')
+                if data.get('social_eng_allowed'): perms.append('Social Eng')
+                if data.get('physical_allowed'): perms.append('Physical')
+                perm_str = ', '.join(perms) if perms else 'None'
+                self.profile_detail_label.setText(
+                    f"Scope: {scope}\nOut of Scope: {out_scope}\nPermissions: {perm_str}"
+                )
+        
+        self.profile_list.currentItemChanged.connect(lambda: update_detail())
+        update_detail()
+        
         # Buttons
-        button_layout = QVBoxLayout()
-        load_btn = QPushButton("Load Selected Profile & Continue")
-        load_btn.clicked.connect(lambda: self.load_profile_and_continue(dialog))
-        button_layout.addWidget(load_btn)
+        btn_layout = QHBoxLayout()
+        btn_layout.addStretch()
         
         cancel_btn = QPushButton("Cancel")
+        cancel_btn.setStyleSheet("""
+            QPushButton { background: rgba(50, 60, 80, 150); color: #8899AA;
+                border: 1px solid rgba(100, 120, 150, 60); border-radius: 6px; padding: 8px 20px; }
+            QPushButton:hover { background: rgba(70, 85, 110, 180); color: #DCDCDC; }
+        """)
         cancel_btn.clicked.connect(dialog.reject)
-        button_layout.addWidget(cancel_btn)
+        btn_layout.addWidget(cancel_btn)
         
-        layout.addLayout(button_layout)
-        dialog.exec()
-    
-    def load_profile_and_continue(self, dialog):
-        """Load selected profile and continue to next question"""
-        selected_items = self.profile_list.selectedItems()
-        if selected_items:
-            profile_name = selected_items[0].text()
-            
-            # Save selected profile to responses
-            self.responses['selected_profile'] = profile_name
-            
-            dialog.accept()
-            # Move to next question
-            self.next_question()
-        else:
-            # Show warning if no profile selected
-            from PyQt6.QtWidgets import QMessageBox
-            QMessageBox.warning(dialog, "No Selection", "Please select a profile to load.")
+        load_btn = QPushButton("Load & Continue")
+        load_btn.setStyleSheet("""
+            QPushButton { background: rgba(100, 200, 255, 30); color: #64C8FF;
+                border: 1px solid rgba(100, 200, 255, 100); border-radius: 6px; padding: 8px 20px; font-weight: bold; }
+            QPushButton:hover { background: rgba(100, 200, 255, 60); color: white; }
+        """)
+        load_btn.clicked.connect(lambda: dialog.accept())
+        btn_layout.addWidget(load_btn)
+        
+        layout.addLayout(btn_layout)
+        
+        if dialog.exec() != QDialog.DialogCode.Accepted:
+            return
+        
+        selected_item = self.profile_list.currentItem()
+        if not selected_item or selected_item.text() not in profiles_data:
+            return
+        
+        # Load the selected profile data
+        profile_info = profiles_data[selected_item.text()]
+        profile_data = profile_info['data']
+        profile_name = profile_info['name']
+        
+        # Store the loaded profile in responses
+        self.responses['selected_profile'] = profile_name
+        self.responses['target_definition'] = {
+            'name': profile_data.get('target_name', profile_name),
+            'url': profile_data.get('primary_target', '') or profile_data.get('scope', ''),
+            'scope': profile_data.get('primary_target', '') or profile_data.get('scope', ''),
+            'out_scope': profile_data.get('out_scope', ''),
+            'engagement_type': 'Loaded from profile',
+            'dos_allowed': profile_data.get('dos_allowed', False),
+            'social_eng_allowed': profile_data.get('social_eng_allowed', False),
+            'physical_allowed': profile_data.get('physical_allowed', False),
+        }
+        
+        # Pre-fill subsequent questionnaire responses from the loaded profile
+        scope_text = profile_data.get('primary_target', '') or profile_data.get('scope', '')
+        self.responses['target_scope'] = scope_text
+        
+        # Infer target type from the scope data
+        target_type = self._infer_target_type(scope_text)
+        self.responses['target_type'] = target_type
+        
+        # Mark the target_selection question as answered
+        self.responses['target_selection'] = 'Select Existing Target'
+        
+        # Activate the profile in the application
+        try:
+            from app.core.credential_manager import credential_manager
+            credential_manager.set_profile(profile_name)
+        except Exception:
+            pass
+        
+        try:
+            from app.core.tenant_aware_updater import tenant_aware_updater
+            tenant_aware_updater.set_tenant(profile_name)
+        except Exception:
+            pass
+        
+        # Emit the response
+        self.response_submitted.emit(self.session_id, 'selected_profile', profile_name)
+        
+        # Skip remaining Target Definition questions — they're answered by the profile.
+        # Jump to the next category (Reconnaissance).
+        if self.categories and self.current_category == self.categories[0]:
+            current_idx = self.categories.index(self.current_category)
+            if current_idx < len(self.categories) - 1:
+                self.current_category = self.categories[current_idx + 1]
+                self.current_question_index = 0
+                self.display_current_question()
+                self.update_progress()
+                return
+        
+        # Fallback: just advance to next question
+        self.next_question()
     
     def next_question(self):
         """Move to next question"""
         if not self.current_environment:
-            # This is the opening question
             return
         
         self.current_question_index += 1
@@ -447,7 +866,6 @@ class QuestionnaireWidget(QWidget):
             self.current_question_index = 0
             self.display_current_question()
         else:
-            # Questionnaire completed
             self.questionnaire_completed.emit(self.session_id, self.current_environment)
     
     def previous_category(self):
@@ -474,8 +892,38 @@ class QuestionnaireWidget(QWidget):
         
         if is_last_category and is_last_question:
             self.next_button.setText("Complete ✅")
+            self.next_button.setStyleSheet("""
+                QPushButton {
+                    background-color: rgba(46, 204, 113, 30);
+                    color: #2ECC71;
+                    border: 1px solid rgba(46, 204, 113, 100);
+                    border-radius: 8px;
+                    padding: 10px 24px;
+                    font-size: 10pt;
+                    font-weight: bold;
+                }
+                QPushButton:hover {
+                    background-color: rgba(46, 204, 113, 60);
+                    color: white;
+                }
+            """)
         else:
-            self.next_button.setText("Next ➡️")
+            self.next_button.setText("Next →")
+            self.next_button.setStyleSheet("""
+                QPushButton {
+                    background-color: rgba(100, 200, 255, 30);
+                    color: #64C8FF;
+                    border: 1px solid rgba(100, 200, 255, 100);
+                    border-radius: 8px;
+                    padding: 10px 24px;
+                    font-size: 10pt;
+                    font-weight: bold;
+                }
+                QPushButton:hover {
+                    background-color: rgba(100, 200, 255, 60);
+                    color: white;
+                }
+            """)
     
     def update_progress(self):
         """Update progress bar"""
@@ -493,7 +941,7 @@ class QuestionnaireWidget(QWidget):
         
         progress = int((current_position / total_questions) * 100) if total_questions > 0 else 0
         self.progress_bar.setValue(progress)
-        self.progress_bar.setFormat(f"{current_position + 1}/{total_questions} Questions")
+        self.progress_label.setText(f"{current_position + 1} / {total_questions}")
     
     def clear_question_area(self):
         """Clear the question display area"""
@@ -501,3 +949,41 @@ class QuestionnaireWidget(QWidget):
             child = self.question_layout.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
+    
+    def _infer_target_type(self, scope_text: str) -> str:
+        """Infer the target type from scope text for pre-filling questionnaire responses"""
+        import re
+        
+        if not scope_text:
+            return "Single Host"
+        
+        scope_lower = scope_text.lower().strip()
+        
+        # Check for URL patterns (web application)
+        if any(pattern in scope_lower for pattern in ['http://', 'https://', 'www.']):
+            return "Web Application"
+        
+        # Parse individual targets
+        targets = [t.strip() for t in scope_text.split(',') if t.strip()]
+        
+        has_cidr = any(re.search(r'\d+\.\d+\.\d+\.\d+/\d+', t) for t in targets)
+        has_ip = any(re.match(r'^\d+\.\d+\.\d+\.\d+$', t) for t in targets)
+        has_domain = any(re.match(r'^[a-zA-Z]', t) and '.' in t for t in targets)
+        
+        # Mix of IPs/CIDRs and domains → organization-wide scope
+        if (has_ip or has_cidr) and has_domain:
+            return "Domain/Organization"
+        
+        # CIDR notation or multiple IPs → network range
+        if has_cidr or (has_ip and len(targets) > 1):
+            return "Network Range"
+        
+        # Single IP
+        if has_ip:
+            return "Single Host"
+        
+        # Domain(s) only
+        if has_domain:
+            return "Domain/Organization"
+        
+        return "Single Host"

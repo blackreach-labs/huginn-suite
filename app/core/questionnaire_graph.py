@@ -8,9 +8,11 @@ from app.core.logger import logger
 class QuestionnaireGraph:
     def __init__(self):
         self.graph = nx.DiGraph()
-        self.questionnaire_path = "c:\\Users\\allie\\Coding Projects\\huginn\\resources\\mindmap"
+        # Resolve paths relative to the project root
+        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        self.questionnaire_path = os.path.join(base_dir, "resources", "mindmap")
         self.sessions = {}
-        self.db_file = "c:\\Users\\allie\\Coding Projects\\huginn\\resources\\questionnaire_graph.pkl"
+        self.db_file = os.path.join(base_dir, "resources", "questionnaire_graph.pkl")
         self.load_graph()
         
     def load_questionnaires(self):

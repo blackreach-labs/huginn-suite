@@ -13,7 +13,7 @@
 
 **[Screen: Huginn running, showing the Attack Chain home screen]**
 
-> "Hey everyone, welcome to the Huginn tutorial series. In this first video I'm going to give you a high-level overview of what Huginn actually is, what it's designed to do, and whether it's the right tool for you. If you're already sold and just want to get it installed, feel free to skip ahead to Video 2 — but I'd recommend watching this one first so you understand the philosophy behind the tool before you start using it."
+> Hey everyone, and welcome to the Huginn tutorial series. In this first video, I'll give you a high-level overview of what Huginn is, what it's designed to do, and who it's best suited for. By the end, you'll have a clear understanding of what Huginn can help you achieve and whether it's the right tool for your needs. Before we jump into installation and configuration, it's worth spending a few minutes exploring the concepts and design principles behind Huginn. Having that context will make the rest of the series much easier to follow and help you get more value out of the tool. If you're eager to get started and just want to install Huginn, feel free to skip ahead to Video 2. However, I recommend watching this introduction first so you have a solid foundation before diving into the setup process."
 
 ---
 
