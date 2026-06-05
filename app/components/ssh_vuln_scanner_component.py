@@ -178,11 +178,6 @@ class SSHVulnScannerComponent(QWidget):
     def setup_ui(self):
         layout = QVBoxLayout(self)
         
-        # Title
-        title = QLabel("SSH Vulnerability Scanner")
-        title.setStyleSheet("font-size: 18pt; font-weight: bold; color: #64C8FF; margin-bottom: 10px;")
-        layout.addWidget(title)
-        
         # Input section
         input_group = QGroupBox("Scan Configuration")
         input_group.setStyleSheet("""

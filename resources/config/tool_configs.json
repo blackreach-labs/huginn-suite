@@ -361,21 +361,9 @@
         ]
       },
       {
-        "label": "Tool:",
+        "label": "IPSec Config:",
         "controls": [
-          {"type": "label", "name": "tool_info", "text": "Requires ike-scan tool", "style": "color: #888; font-size: 10pt;"}
-        ]
-      },
-      {
-        "label": "IPSec Configuration Files:",
-        "controls": [
-          {"type": "label", "name": "config_label", "text": "", "style": "color: #87CEEB; font-weight: bold;"}
-        ]
-      },
-      {
-        "label": "",
-        "controls": [
-          {"type": "label", "name": "config_info", "text": "/etc/ipsec.conf, /etc/ipsec.secrets", "style": "color: #888; font-size: 9pt; margin-left: 20px;"}
+          {"type": "label", "name": "config_info", "text": "/etc/ipsec.conf, /etc/ipsec.secrets", "style": "color: #87CEEB; font-size: 10pt;"}
         ]
       }
     ]
@@ -392,36 +380,6 @@
         "label": "Port:",
         "controls": [
           {"type": "lineedit", "name": "av_port", "default": "80", "width": 100}
-        ]
-      },
-      {
-        "label": "Payload:",
-        "controls": [
-          {"type": "combobox", "name": "av_payload_type", "items": ["msfvenom", "shellter"], "width": 150, "visible": false}
-        ]
-      },
-      {
-        "label": "Tool Requirements:",
-        "controls": [
-          {"type": "label", "name": "tools_label", "text": "", "style": "color: #87CEEB; font-weight: bold;"}
-        ]
-      },
-      {
-        "label": "",
-        "controls": [
-          {"type": "label", "name": "tools_info", "text": "nmap (firewall detection), msfvenom (payload generation)", "style": "color: #888; font-size: 9pt; margin-left: 20px;"}
-        ]
-      },
-      {
-        "label": "Detection Methods:",
-        "controls": [
-          {"type": "label", "name": "methods_label", "text": "", "style": "color: #87CEEB; font-weight: bold;"}
-        ]
-      },
-      {
-        "label": "",
-        "controls": [
-          {"type": "label", "name": "methods_info", "text": "WAF: HTTP headers/responses, Firewall: nmap ACK/SYN scans", "style": "color: #888; font-size: 9pt; margin-left: 20px;"}
         ]
       }
     ]

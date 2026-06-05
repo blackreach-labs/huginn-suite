@@ -1,12 +1,197 @@
-2026-05-24 15:11:40 - huginn - ERROR - Unhandled exception:
+2026-06-05 18:16:27 - huginn - ERROR - Unhandled exception:
 Traceback (most recent call last):
-  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\cloud_assets_widget.py", line 205, in start_scan
-    proxy = stealth_config.get_proxy() if stealth_config.is_enabled() else None
-            ^^^^^^^^^^^^^^^^^^^^^^^^
-AttributeError: 'StealthConfig' object has no attribute 'get_proxy'
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\av_worker.py", line 112, in run
+    self._run_firewall_detection()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\av_worker.py", line 223, in _run_firewall_detection
+    worker.run()
+    ~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\firewall_detector.py", line 205, in run
+    fw_type = self.perform_ack_probe(fw_result.filtered_ports, resolved_target)
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\firewall_detector.py", line 399, in perform_ack_probe
+    self.signals.output.emit(
+    ^^^^^^^^^^^^^^^^^^^
+RuntimeError: wrapped C/C++ object of type AVFWWorkerSignals has been deleted
 
-2026-05-24 15:18:01 - huginn - ERROR - Unexpected error in DNS enumeration: 'charmap' codec can't decode byte 0x90 in position 37: character maps to <undefined>
-2026-05-24 15:20:29 - huginn - ERROR - Unexpected error in DNS enumeration: 'charmap' codec can't decode byte 0x90 in position 37: character maps to <undefined>
-2026-06-01 15:49:22 - huginn - ERROR - Unhandled exception:
-TypeError: unable to convert a C++ 'QSystemTrayIcon::ActivationReason' instance to a Python object
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\av_worker.py", line 129, in run
+    self.signals.error.emit(error_msg)
+    ^^^^^^^^^^^^^^^^^^
+RuntimeError: wrapped C/C++ object of type AVFirewallWorkerSignals has been deleted
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\av_worker.py", line 134, in run
+    self.signals.finished.emit()
+    ^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: wrapped C/C++ object of type AVFirewallWorkerSignals has been deleted
+
+2026-06-05 18:16:34 - huginn - ERROR - Unhandled exception:
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\av_worker.py", line 112, in run
+    self._run_firewall_detection()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\av_worker.py", line 223, in _run_firewall_detection
+    worker.run()
+    ~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\firewall_detector.py", line 205, in run
+    fw_type = self.perform_ack_probe(fw_result.filtered_ports, resolved_target)
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\firewall_detector.py", line 399, in perform_ack_probe
+    self.signals.output.emit(
+    ^^^^^^^^^^^^^^^^^^^
+RuntimeError: wrapped C/C++ object of type AVFWWorkerSignals has been deleted
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\av_worker.py", line 129, in run
+    self.signals.error.emit(error_msg)
+    ^^^^^^^^^^^^^^^^^^
+RuntimeError: wrapped C/C++ object of type AVFirewallWorkerSignals has been deleted
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\av_worker.py", line 134, in run
+    self.signals.finished.emit()
+    ^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: wrapped C/C++ object of type AVFirewallWorkerSignals has been deleted
+
+2026-06-05 18:16:39 - huginn - ERROR - Unhandled exception:
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\av_worker.py", line 112, in run
+    self._run_firewall_detection()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\av_worker.py", line 223, in _run_firewall_detection
+    worker.run()
+    ~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\firewall_detector.py", line 205, in run
+    fw_type = self.perform_ack_probe(fw_result.filtered_ports, resolved_target)
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\firewall_detector.py", line 399, in perform_ack_probe
+    self.signals.output.emit(
+    ^^^^^^^^^^^^^^^^^^^
+RuntimeError: wrapped C/C++ object of type AVFWWorkerSignals has been deleted
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\av_worker.py", line 129, in run
+    self.signals.error.emit(error_msg)
+    ^^^^^^^^^^^^^^^^^^
+RuntimeError: wrapped C/C++ object of type AVFirewallWorkerSignals has been deleted
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\av_worker.py", line 134, in run
+    self.signals.finished.emit()
+    ^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: wrapped C/C++ object of type AVFirewallWorkerSignals has been deleted
+
+2026-06-05 19:50:41 - huginn - ERROR - Unhandled exception:
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\recon_enumeration\service_scanners.py", line 747, in <lambda>
+    worker.signals.output.connect(lambda text: self.append_service_output(tool_key))
+                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+TypeError: ServiceScannersMixin.append_service_output() missing 1 required positional argument: 'text'
+
+2026-06-05 19:50:41 - huginn - ERROR - Unhandled exception:
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\recon_enumeration\service_scanners.py", line 747, in <lambda>
+    worker.signals.output.connect(lambda text: self.append_service_output(tool_key))
+                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+TypeError: ServiceScannersMixin.append_service_output() missing 1 required positional argument: 'text'
+
+2026-06-05 19:50:41 - huginn - ERROR - Unhandled exception:
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\recon_enumeration\service_scanners.py", line 747, in <lambda>
+    worker.signals.output.connect(lambda text: self.append_service_output(tool_key))
+                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+TypeError: ServiceScannersMixin.append_service_output() missing 1 required positional argument: 'text'
+
+2026-06-05 19:50:41 - huginn - ERROR - Unhandled exception:
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\recon_enumeration\service_scanners.py", line 747, in <lambda>
+    worker.signals.output.connect(lambda text: self.append_service_output(tool_key))
+                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+TypeError: ServiceScannersMixin.append_service_output() missing 1 required positional argument: 'text'
+
+2026-06-05 19:50:44 - huginn - ERROR - Unhandled exception:
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\recon_enumeration\service_scanners.py", line 747, in <lambda>
+    worker.signals.output.connect(lambda text: self.append_service_output(tool_key))
+                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+TypeError: ServiceScannersMixin.append_service_output() missing 1 required positional argument: 'text'
+
+2026-06-05 19:50:44 - huginn - ERROR - Unhandled exception:
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\recon_enumeration\service_scanners.py", line 747, in <lambda>
+    worker.signals.output.connect(lambda text: self.append_service_output(tool_key))
+                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+TypeError: ServiceScannersMixin.append_service_output() missing 1 required positional argument: 'text'
+
+2026-06-05 19:50:59 - huginn - ERROR - Unhandled exception:
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\av_worker.py", line 114, in run
+    self._run_firewall_detection()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\av_worker.py", line 228, in _run_firewall_detection
+    worker.run()
+    ~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\firewall_detector.py", line 207, in run
+    fw_type = self.perform_ack_probe(fw_result.filtered_ports, resolved_target)
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\firewall_detector.py", line 393, in perform_ack_probe
+    self.signals.progress_update.emit(
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: wrapped C/C++ object of type AVFWWorkerSignals has been deleted
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\av_worker.py", line 133, in run
+    self.signals.error.emit(error_msg)
+    ^^^^^^^^^^^^^^^^^^
+RuntimeError: wrapped C/C++ object of type AVFirewallWorkerSignals has been deleted
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\av_worker.py", line 138, in run
+    self.signals.finished.emit()
+    ^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: wrapped C/C++ object of type AVFirewallWorkerSignals has been deleted
+
+2026-06-05 19:54:50 - huginn - ERROR - Unhandled exception:
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\av_worker.py", line 116, in run
+    self._run_evasion_testing()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\av_worker.py", line 263, in _run_evasion_testing
+    worker.run()
+    ~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\evasion_profiler.py", line 180, in run
+    result = self.test_source_port_evasion(test_ports)
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\evasion_profiler.py", line 386, in test_source_port_evasion
+    self.signals.output.emit(
+    ^^^^^^^^^^^^^^^^^^^
+RuntimeError: wrapped C/C++ object of type AVFWWorkerSignals has been deleted
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\av_worker.py", line 133, in run
+    self.signals.error.emit(error_msg)
+    ^^^^^^^^^^^^^^^^^^
+RuntimeError: wrapped C/C++ object of type AVFirewallWorkerSignals has been deleted
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\av_worker.py", line 138, in run
+    self.signals.finished.emit()
+    ^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: wrapped C/C++ object of type AVFirewallWorkerSignals has been deleted
 

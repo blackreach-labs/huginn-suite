@@ -61,11 +61,6 @@ class WebScannerWidget(QWidget):
     def setup_ui(self):
         layout = QVBoxLayout(self)
         
-        # Header
-        header = QLabel("Web Application Security Scanner")
-        header.setStyleSheet("font-size: 16pt; font-weight: bold; color: #64C8FF;")
-        layout.addWidget(header)
-        
         # License warning
         self.license_warning = QLabel("⚠️ Web Scanner requires Professional license")
         self.license_warning.setStyleSheet("color: #FF6B6B; font-weight: bold; padding: 10px;")

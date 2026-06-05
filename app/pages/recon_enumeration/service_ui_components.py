@@ -485,6 +485,34 @@ class ServiceUIComponentsMixin:
             setattr(self, f"{tool_key}_tables", tables)
             setattr(self, f"{tool_key}_trees", trees)
             setattr(self, f"{tool_key}_current_scan_type", "Basic Info")
+        elif tool_key == "av_detect":
+            # AV/FW detection with separate terminals for each detection type
+            terminals = {}
+            tables = {}
+            detection_types = ["WAF Detection", "Firewall Detection", "Evasion Test", "AV Payload Gen", "Full Detection"]
+            
+            for det_type in detection_types:
+                # Text view (terminal) for this detection type
+                terminal = QTextEdit()
+                terminal.setReadOnly(True)
+                self.apply_terminal_theme_to_widget(terminal)
+                terminal.setPlaceholderText(f"{det_type} results will appear here...")
+                terminals[det_type] = terminal
+                
+                # Table view for this detection type
+                table = QTableWidget()
+                table.setColumnCount(4)
+                table.setHorizontalHeaderLabels(["Finding", "Status", "Confidence", "Details"])
+                tables[det_type] = table
+            
+            # Add default detection type views to stack
+            results_stack.addWidget(terminals["WAF Detection"])  # Text view
+            results_stack.addWidget(tables["WAF Detection"])     # Table view
+            
+            # Store references
+            setattr(self, f"{tool_key}_terminals", terminals)
+            setattr(self, f"{tool_key}_tables", tables)
+            setattr(self, f"{tool_key}_current_scan_type", "WAF Detection")
         else:
             # Regular single terminal for other tools
             terminal = QTextEdit()
@@ -933,15 +961,12 @@ class ServiceUIComponentsMixin:
             current_theme = getattr(self.main_window, 'current_theme', 'dark_blue')
             font_family = 'Share Tech Mono' if current_theme == 'matrix' else 'Neuropol X'
             
+            # Wrap in font-family div
             if not text.startswith('<div style="font-family:'):
                 text = f'<div style="font-family: {font_family}, monospace;">{text}</div>'
             
-            # Move cursor to end before inserting to prevent insertion at scroll position
-            cursor = terminal.textCursor()
-            cursor.movePosition(cursor.MoveOperation.End)
-            terminal.setTextCursor(cursor)
-            
-            terminal.insertHtml(text)
+            # Use append() which always starts on a new line in QTextEdit
+            terminal.append(text)
             
             from PyQt6.QtCore import QTimer
             QTimer.singleShot(10, lambda: terminal.verticalScrollBar().setValue(

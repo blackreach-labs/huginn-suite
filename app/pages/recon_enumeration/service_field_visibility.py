@@ -224,8 +224,11 @@ class ServiceFieldVisibilityMixin:
         try:
             visible_count = 0
             for row_label, row_widget in control_panel.row_widgets.items():
-                if row_widget is not None and row_widget.isVisible():
+                if row_widget is not None and not row_widget.isHidden():
                     visible_count += 1
+            # Ensure at least 1 row height if any rows exist (safety against 0-height collapse)
+            if visible_count == 0 and control_panel.row_widgets:
+                visible_count = 1
             needed_height = visible_count * 30 + 4
             control_panel.setFixedHeight(needed_height)
             control_panel.setMaximumHeight(needed_height)
@@ -1355,24 +1358,49 @@ class ServiceFieldVisibilityMixin:
         if not control_panel or not hasattr(control_panel, 'controls'):
             return
             
-        controls = control_panel.controls
-        show_payload = (detection_type == "AV Payload Gen")
+        # Port is only relevant for WAF Detection (target port) and AV Payload Gen (lport)
+        show_port = detection_type in ("WAF Detection", "AV Payload Gen")
         
-        if 'av_payload_type' in controls and controls['av_payload_type'] is not None:
-            try:
-                controls['av_payload_type'].setVisible(show_payload)
-            except RuntimeError as _exc:
-                pass
-                logger.debug("Suppressed exception", exc_info=True)
-        
-        # Hide/show rows if available
+        # Hide/show Port row
         if hasattr(control_panel, 'row_widgets'):
-            if 'Payload:' in control_panel.row_widgets and control_panel.row_widgets['Payload:'] is not None:
+            if 'Port:' in control_panel.row_widgets and control_panel.row_widgets['Port:'] is not None:
                 try:
-                    control_panel.row_widgets['Payload:'].setVisible(show_payload)
+                    row_widget = control_panel.row_widgets['Port:']
+                    row_widget.setVisible(show_port)
+                    if show_port:
+                        row_widget.setFixedHeight(26)
+                    else:
+                        row_widget.setMaximumHeight(0)
+                        row_widget.setMinimumHeight(0)
                 except RuntimeError as _exc:
                     pass
                     logger.debug("Suppressed exception", exc_info=True)
+        
+        # Recalculate panel height
+        self._recalculate_panel_height(tool_key)
+        
+        # Switch results stack to show terminal/table for this detection type
+        setattr(self, f"{tool_key}_current_scan_type", detection_type)
+        results_stack = getattr(self, f"{tool_key}_results_stack", None)
+        terminals = getattr(self, f"{tool_key}_terminals", {})
+        tables = getattr(self, f"{tool_key}_tables", {})
+        
+        if results_stack and detection_type in terminals:
+            # Remove current widgets from stack
+            while results_stack.count() > 0:
+                widget = results_stack.widget(0)
+                results_stack.removeWidget(widget)
+            
+            # Add the terminal and table for this detection type
+            results_stack.addWidget(terminals[detection_type])
+            results_stack.addWidget(tables[detection_type])
+            
+            # Set to text view by default
+            current_view = getattr(self, f"current_{tool_key}_view", "text")
+            if current_view == "text":
+                results_stack.setCurrentIndex(0)
+            else:
+                results_stack.setCurrentIndex(1)
     
     def toggle_snmp_fields(self, tool_key, version):
         """Toggle SNMP fields based on version selection"""

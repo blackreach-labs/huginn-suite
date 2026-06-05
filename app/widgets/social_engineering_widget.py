@@ -46,19 +46,9 @@ class SocialEngineeringWidget(QWidget):
     def setup_ui(self):
         layout = QVBoxLayout(self)
         
-        # Header
-        header = QLabel("Social Engineering Toolkit")
-        header.setStyleSheet("font-size: 16pt; font-weight: bold; color: #FF6B6B;")
-        layout.addWidget(header)
-        
-        # Warning
-        warning = QLabel("⚠️ FOR AUTHORIZED TESTING ONLY - ENTERPRISE LICENSE REQUIRED")
-        warning.setStyleSheet("color: #FF6B6B; font-weight: bold; padding: 10px; background: rgba(255,107,107,0.1);")
-        layout.addWidget(warning)
-        
-        # License warning
-        self.license_warning = QLabel("❌ Social Engineering requires Enterprise license")
-        self.license_warning.setStyleSheet("color: #FF6B6B; font-weight: bold; padding: 10px;")
+        # Warning (only shown when no Enterprise license)
+        self.license_warning = QLabel("⚠️ FOR AUTHORIZED USE ONLY - ENTERPRISE LICENSE REQUIRED")
+        self.license_warning.setStyleSheet("color: #FF6B6B; font-weight: bold; padding: 10px; background: rgba(255,107,107,0.1);")
         layout.addWidget(self.license_warning)
         
         # Tabs
@@ -260,10 +250,10 @@ class SocialEngineeringWidget(QWidget):
     def check_license(self):
         if license_manager.is_feature_enabled('social_engineering'):
             self.license_warning.hide()
-            self.setEnabled(True)
+            self.tabs.setEnabled(True)
         else:
             self.license_warning.show()
-            self.setEnabled(False)
+            self.tabs.setEnabled(False)
             
     def create_campaign(self):
         if not license_manager.is_feature_enabled('social_engineering'):

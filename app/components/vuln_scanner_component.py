@@ -240,11 +240,6 @@ class VulnScannerComponent(QWidget):
     def setup_ui(self):
         layout = QVBoxLayout(self)
         
-        # Title
-        title = QLabel("Network Vulnerability Scanner")
-        title.setStyleSheet("font-size: 18pt; font-weight: bold; color: #64C8FF; margin-bottom: 10px;")
-        layout.addWidget(title)
-        
         # Target Configuration
         target_group = QGroupBox("Target Configuration")
         target_group.setStyleSheet("""

@@ -725,8 +725,6 @@ class ServiceScannersMixin:
             from PyQt6.QtCore import QThreadPool
             from app.tools.av_worker import AVFirewallWorker
             
-            self.append_service_output(tool_key, f"<p style='color: #00BFFF;'>[AV DETECTION] Starting detection for {target}</p><br>")
-            
             control_panel = getattr(self, f"{tool_key}_control_panel", None)
             detection_type = "WAF Detection"
             port = "80"
@@ -735,6 +733,11 @@ class ServiceScannersMixin:
                 controls = control_panel.controls
                 detection_type = controls['av_detection_type'].currentText() if 'av_detection_type' in controls else "WAF Detection"
                 port = controls['av_port'].text() if 'av_port' in controls else "80"
+            
+            # Ensure output goes to the correct detection type terminal
+            setattr(self, f"{tool_key}_current_scan_type", detection_type)
+            
+            self.append_service_output(tool_key, f"<p style='color: #00BFFF;'>[AV DETECTION] Starting detection for {target}</p><br>")
             
             # Create AV/Firewall worker
             worker = AVFirewallWorker(
@@ -748,6 +751,16 @@ class ServiceScannersMixin:
             worker.signals.finished.connect(lambda: self.on_service_scan_finished(tool_key))
             worker.signals.results.connect(lambda results: self.store_service_results(tool_key, results))
             worker.signals.error.connect(lambda error: self.append_service_output(tool_key, f"<p style='color: #FF6B6B;'>[ERROR] {error}</p><br>"))
+            
+            # Connect progress signals to progress widget
+            progress_widget = getattr(self, f"{tool_key}_progress_widget", None)
+            if progress_widget:
+                worker.signals.progress_start.connect(
+                    lambda total: progress_widget.start_progress(total, "Scanning...")
+                )
+                worker.signals.progress_update.connect(
+                    lambda completed, findings: progress_widget.update_progress(completed, findings)
+                )
             
             # Store worker reference
             setattr(self, f"{tool_key}_worker", worker)
@@ -983,6 +996,138 @@ class ServiceScannersMixin:
         # Update table and tree views for database enumeration
         if tool_key == 'db_enum':
             self.update_db_table_view(tool_key, results)
+        
+        # Update table view for AV/Firewall detection
+        if tool_key == 'av_detect':
+            self.update_av_table_view(tool_key, results)
+    
+    def update_av_table_view(self, tool_key, results):
+        """Update AV/Firewall table view with detection results"""
+        if not results:
+            return
+        
+        try:
+            from PyQt6.QtWidgets import QTableWidgetItem
+            
+            # Get table for current detection type from tables dict
+            tables = getattr(self, f"{tool_key}_tables", {})
+            current_scan_type = getattr(self, f"{tool_key}_current_scan_type", "WAF Detection")
+            table = tables.get(current_scan_type)
+            if not table:
+                # Fallback to single table reference
+                table = getattr(self, f"{tool_key}_table", None)
+            if not table:
+                return
+            
+            # Clear existing data
+            table.setRowCount(0)
+            
+            detection_type = results.get('detection_type', 'Unknown')
+            scan_type = results.get('scan_type', '')
+            
+            # Configure columns based on detection type
+            if scan_type == 'firewall_detection' or detection_type == 'Firewall Detection':
+                table.setColumnCount(4)
+                table.setHorizontalHeaderLabels(["Finding", "Status", "Confidence", "Details"])
+                
+                row = 0
+                # Firewall status finding
+                fw_status = results.get('firewall_status', 'unknown')
+                fw_type = results.get('firewall_type', '') or ''
+                confidence = results.get('confidence_score', 0)
+                if isinstance(results.get('confidence_scores'), dict):
+                    confidence = results['confidence_scores'].get('firewall_detection', confidence)
+                
+                table.insertRow(row)
+                table.setItem(row, 0, QTableWidgetItem("Firewall Detection"))
+                table.setItem(row, 1, QTableWidgetItem(fw_status.upper()))
+                table.setItem(row, 2, QTableWidgetItem(f"{confidence}%"))
+                table.setItem(row, 3, QTableWidgetItem(f"Type: {fw_type}" if fw_type else ""))
+                row += 1
+                
+                # Open ports
+                open_ports = results.get('open_ports', [])
+                for port in open_ports:
+                    table.insertRow(row)
+                    table.setItem(row, 0, QTableWidgetItem(f"Port {port}/tcp"))
+                    table.setItem(row, 1, QTableWidgetItem("OPEN"))
+                    table.setItem(row, 2, QTableWidgetItem(""))
+                    table.setItem(row, 3, QTableWidgetItem(""))
+                    row += 1
+                
+                # Filtered ports
+                filtered_ports = results.get('filtered_ports', [])
+                for port in filtered_ports:
+                    port_str = str(port)
+                    table.insertRow(row)
+                    table.setItem(row, 0, QTableWidgetItem(f"Port {port_str}/tcp"))
+                    table.setItem(row, 1, QTableWidgetItem("FILTERED"))
+                    table.setItem(row, 2, QTableWidgetItem(""))
+                    table.setItem(row, 3, QTableWidgetItem("Blocked by firewall"))
+                    row += 1
+                
+            elif scan_type == 'waf_detection' or detection_type == 'WAF Detection':
+                table.setColumnCount(4)
+                table.setHorizontalHeaderLabels(["Finding", "Product", "Confidence", "Details"])
+                
+                row = 0
+                products = results.get('detected_security_products', [])
+                if products:
+                    for product in products:
+                        table.insertRow(row)
+                        table.setItem(row, 0, QTableWidgetItem(product.get('type', 'WAF').upper()))
+                        table.setItem(row, 1, QTableWidgetItem(product.get('name', 'Unknown')))
+                        conf = results.get('confidence_scores', {}).get('waf_detection', '')
+                        table.setItem(row, 2, QTableWidgetItem(f"{conf}%" if conf else ""))
+                        table.setItem(row, 3, QTableWidgetItem(""))
+                        row += 1
+                else:
+                    table.insertRow(row)
+                    table.setItem(row, 0, QTableWidgetItem("WAF Detection"))
+                    table.setItem(row, 1, QTableWidgetItem("None Detected"))
+                    table.setItem(row, 2, QTableWidgetItem(""))
+                    table.setItem(row, 3, QTableWidgetItem("No WAF signatures found"))
+                    row += 1
+            else:
+                # Generic fallback for other AV detection types
+                table.setColumnCount(3)
+                table.setHorizontalHeaderLabels(["Finding", "Status", "Details"])
+                
+                row = 0
+                products = results.get('detected_security_products', [])
+                if products:
+                    for product in products:
+                        table.insertRow(row)
+                        table.setItem(row, 0, QTableWidgetItem(product.get('type', 'Unknown')))
+                        table.setItem(row, 1, QTableWidgetItem(product.get('name', 'Unknown')))
+                        table.setItem(row, 2, QTableWidgetItem(""))
+                        row += 1
+                
+                # Add evasion techniques if available
+                evasion = results.get('successful_evasion_techniques', [])
+                for technique in evasion:
+                    table.insertRow(row)
+                    if isinstance(technique, dict):
+                        table.setItem(row, 0, QTableWidgetItem(technique.get('technique', '')))
+                        table.setItem(row, 1, QTableWidgetItem("Success"))
+                        table.setItem(row, 2, QTableWidgetItem(technique.get('details', '')))
+                    else:
+                        table.setItem(row, 0, QTableWidgetItem(str(technique)))
+                        table.setItem(row, 1, QTableWidgetItem("Success"))
+                        table.setItem(row, 2, QTableWidgetItem(""))
+                    row += 1
+                
+                # Show message if nothing to display
+                if row == 0:
+                    table.insertRow(0)
+                    table.setItem(0, 0, QTableWidgetItem("No findings"))
+                    table.setItem(0, 1, QTableWidgetItem(detection_type))
+                    table.setItem(0, 2, QTableWidgetItem("Scan completed with no detections"))
+            
+            table.resizeColumnsToContents()
+            
+        except Exception as e:
+            logger.debug(f"Error updating AV table view: {e}")
     
     def update_rpc_table_view(self, tool_key, table_data):
         """Update RPC table view with scan data"""
@@ -1119,8 +1264,8 @@ class ServiceScannersMixin:
         """Append text to service terminal output"""
         terminal = None
         
-        # Handle HTTP, RPC, SMB, SSH, and DB with multiple terminals (stored in dictionary)
-        if tool_key in ["http_enum", "rpc_enum", "smb_enum", "ssh_enum", "db_enum"]:
+        # Handle HTTP, RPC, SMB, SSH, DB, and AV with multiple terminals (stored in dictionary)
+        if tool_key in ["http_enum", "rpc_enum", "smb_enum", "ssh_enum", "db_enum", "av_detect"]:
             terminals = getattr(self, f"{tool_key}_terminals", {})
             if tool_key == "http_enum":
                 current_scan_type = getattr(self, f"{tool_key}_current_scan_type", "Fingerprinting")
@@ -1137,6 +1282,9 @@ class ServiceScannersMixin:
             elif tool_key == "db_enum":
                 current_scan_type = getattr(self, f"{tool_key}_current_scan_type", "Basic Info")
                 terminal = terminals.get(current_scan_type)
+            elif tool_key == "av_detect":
+                current_scan_type = getattr(self, f"{tool_key}_current_scan_type", "WAF Detection")
+                terminal = terminals.get(current_scan_type)
             
             # Fallback to any available terminal if current type not found
             if not terminal and terminals:
@@ -1145,7 +1293,7 @@ class ServiceScannersMixin:
             # Handle other services with single terminal
             terminal = getattr(self, f"{tool_key}_terminal", None)
         
-        if terminal and hasattr(terminal, 'insertHtml'):
+        if terminal:
             try:
                 # Apply theme-specific font styling
                 current_theme = getattr(self.main_window, 'current_theme', 'dark_blue')
@@ -1154,7 +1302,8 @@ class ServiceScannersMixin:
                 if not text.startswith('<div style="font-family:'):
                     text = f'<div style="font-family: {font_family}, monospace;">{text}</div>'
                 
-                terminal.insertHtml(text)
+                # Use append() which always starts a new block/line in QTextEdit
+                terminal.append(text)
                 terminal.verticalScrollBar().setValue(terminal.verticalScrollBar().maximum())
                 
             except Exception as e:

@@ -156,6 +156,85 @@ class ReconEnumerationPage(QWidget, ServiceScannersMixin, ServiceUIComponentsMix
                 self.tab_widget.setIconSize(QSize(24, 24))
                 return QIcon(icon_path)
         return QIcon()
+
+    def clear_terminal(self):
+        """Clear terminal output for the currently active sub-tab (View > Clear Output / Ctrl-L)"""
+        # Determine which main tab is active
+        current_main_tab = self.tab_widget.currentWidget()
+        current_tab_text = self.tab_widget.tabText(self.tab_widget.currentIndex())
+        
+        # Handle Service Enumeration tab
+        if "Service" in current_tab_text:
+            # Find the sub-tab widget within the service enumeration tab
+            from PyQt6.QtWidgets import QTabWidget
+            sub_tab_widget = None
+            for child in current_main_tab.findChildren(QTabWidget):
+                sub_tab_widget = child
+                break
+            
+            if sub_tab_widget:
+                current_index = sub_tab_widget.currentIndex()
+                
+                # Service enumeration tool keys in order
+                service_keys = [
+                    "http_enum", "rpc_enum", "smb_enum", "ssh_enum", "smtp_enum",
+                    "ldap_enum", "snmp_enum", "api_enum", "db_enum", "ike_enum", "av_detect"
+                ]
+                
+                if current_index < len(service_keys):
+                    tool_key = service_keys[current_index]
+                    # Handle tools with multiple terminals
+                    if tool_key in ["rpc_enum", "smb_enum", "http_enum", "ssh_enum", "db_enum", "av_detect"]:
+                        terminals = getattr(self, f"{tool_key}_terminals", {})
+                        current_scan_type = getattr(self, f"{tool_key}_current_scan_type", "")
+                        terminal = terminals.get(current_scan_type)
+                        if not terminal and terminals:
+                            terminal = next(iter(terminals.values()))
+                    else:
+                        terminal = getattr(self, f"{tool_key}_terminal", None)
+                    
+                    if terminal and hasattr(terminal, 'clear'):
+                        terminal.clear()
+                        return
+        
+        # Handle DNS tab
+        elif "DNS" in current_tab_text:
+            if hasattr(current_main_tab, 'clear_terminal'):
+                current_main_tab.clear_terminal()
+                return
+            if hasattr(self, 'dns_terminal'):
+                self.dns_terminal.clear()
+                return
+        
+        # Handle Network Scanning tab
+        elif "Network" in current_tab_text:
+            if hasattr(self, 'port_terminals'):
+                # Clear the active port scan terminal
+                from PyQt6.QtWidgets import QTabWidget
+                sub_tab_widget = None
+                for child in current_main_tab.findChildren(QTabWidget):
+                    sub_tab_widget = child
+                    break
+                if sub_tab_widget:
+                    scan_type = sub_tab_widget.tabText(sub_tab_widget.currentIndex())
+                    terminal = self.port_terminals.get(scan_type)
+                    if terminal and hasattr(terminal, 'clear'):
+                        terminal.clear()
+                        return
+            if hasattr(self, 'port_terminal') and self.port_terminal:
+                self.port_terminal.clear()
+                return
+        
+        # Fallback: delegate to sub-widget if it has clear_terminal
+        if hasattr(current_main_tab, 'clear_terminal'):
+            current_main_tab.clear_terminal()
+            return
+        
+        # Final fallback: try to find any terminal_output on the current widget
+        terminal = getattr(current_main_tab, 'terminal_output', None)
+        if terminal and hasattr(terminal, 'clear'):
+            terminal.clear()
+
         
     def create_network_scanning_tab(self):
         """Create network scanning tab with sub-tabs"""
@@ -384,7 +463,7 @@ class ReconEnumerationPage(QWidget, ServiceScannersMixin, ServiceUIComponentsMix
         """Create service enumeration tab"""
         tab = QWidget()
         layout = QVBoxLayout(tab)
-        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setContentsMargins(10, 10, 10, 10)
         layout.setSpacing(0)
         
         # Create sub-tab widget for different service types
@@ -477,7 +556,7 @@ class ReconEnumerationPage(QWidget, ServiceScannersMixin, ServiceUIComponentsMix
         """Create AWS penetration testing tab"""
         tab = QWidget()
         layout = QVBoxLayout(tab)
-        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setContentsMargins(10, 10, 10, 10)
         
         # AWS tools
         try:
@@ -510,7 +589,7 @@ class ReconEnumerationPage(QWidget, ServiceScannersMixin, ServiceUIComponentsMix
         """Create Azure penetration testing tab"""
         tab = QWidget()
         layout = QVBoxLayout(tab)
-        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setContentsMargins(10, 10, 10, 10)
         
         try:
             from app.widgets.azure_pentest_widget import AzurePentestWidget
@@ -524,9 +603,7 @@ class ReconEnumerationPage(QWidget, ServiceScannersMixin, ServiceUIComponentsMix
             info_layout = QVBoxLayout(info_frame)
             info_layout.setContentsMargins(20, 20, 20, 20)
             
-            info_label = QLabel("🔷 Azure Cloud Penetration Testing Suite")
-            info_label.setStyleSheet("color: #0078D4; font-size: 16pt; font-weight: bold;")
-            info_layout.addWidget(info_label)
+
             
             desc_label = QLabel(
                 "Comprehensive Azure enumeration and exploitation toolkit.\n"
@@ -558,7 +635,7 @@ class ReconEnumerationPage(QWidget, ServiceScannersMixin, ServiceUIComponentsMix
         """Create Active Directory enumeration tab"""
         tab = QWidget()
         layout = QVBoxLayout(tab)
-        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setContentsMargins(10, 10, 10, 10)
         
         # AD enumeration widget
         try:

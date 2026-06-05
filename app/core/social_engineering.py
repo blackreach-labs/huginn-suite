@@ -246,7 +246,7 @@ IT Support Team''',
         if template not in templates:
             return {'error': f'Unknown template: {template}'}
             
-        html_content = templates[template].format(target_url=target_url)
+        html_content = templates[template].replace('{target_url}', target_url)
         
         return {
             'success': True,
