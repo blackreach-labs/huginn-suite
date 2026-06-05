@@ -81,6 +81,7 @@ class EnhancedHelpPanel(QWidget):
             ("RPC Enumeration", "rpc"),
             ("LDAP Enumeration", "ldap"),
             ("Database Enumeration", "db"),
+            ("AV/Firewall Detection", "av_fw"),
             ("🔮 Runecraft Guide", "runecraft"),
             ("🚀 Huginn Scanner", "huginn_scanner")
         ]
@@ -505,6 +506,42 @@ class EnhancedHelpPanel(QWidget):
                     "Oracle SID brute-forcing can reveal hidden database instances",
                     "Use the Credential Manager to load saved credentials across multiple database targets",
                     "Full Scan combines fingerprinting and vulnerability checks for comprehensive assessment"
+                ]
+            },
+            "av_fw": {
+                "title": "AV/Firewall Detection",
+                "description": "Detect and profile network security devices (firewalls, WAFs, IDS/IPS) and generate AV evasion test payloads — all natively in Python with no external tools",
+                "features": [
+                    "<b>WAF Detection:</b> Identifies Web Application Firewalls by analyzing HTTP response headers and behaviors",
+                    "<b>Firewall Detection:</b> Classifies ports as open/closed/filtered via TCP probes, detects stateful vs packet-filter firewalls",
+                    "<b>Evasion Testing:</b> Tests 5 bypass techniques (source port, timing, window size, pattern, flag manipulation) against filtered ports",
+                    "<b>AV Payload Gen:</b> Generates encoded test payloads (reverse_tcp, bind_tcp, cmd_exec) in multiple formats (raw, EXE, DLL, PowerShell)",
+                    "<b>Full Detection:</b> Runs comprehensive firewall detection scan",
+                    "Independent results per detection type — switching preserves output",
+                    "Real-time progress bar with per-probe updates",
+                    "No external dependencies (no nmap, no msfvenom) — pure Python sockets and struct packing"
+                ],
+                "usage": [
+                    "Navigate to Service Enumeration → 🛡️ AV/FW tab",
+                    "Enter target IP or hostname",
+                    "Select detection type from the dropdown",
+                    "<b>WAF Detection:</b> Set port (default 80) — detects Cloudflare, AWS WAF, ModSecurity, etc.",
+                    "<b>Firewall Detection:</b> Port field hidden — automatically scans top 20 ports + ACK probe",
+                    "<b>Evasion Test:</b> Port field hidden — establishes baseline then tests 5 evasion techniques",
+                    "<b>AV Payload Gen:</b> Set port (LPORT for reverse shell) — generates encoded shellcode",
+                    "Click Run to start the scan",
+                    "Switch between Text and Table views for results"
+                ],
+                "tips": [
+                    "Run Firewall Detection first to identify filtered ports, then use Evasion Test on those results",
+                    "WAF Detection works best on port 80/443 where web applications are served",
+                    "Firewall Detection confidence: >50% filtered = DETECTED, 20-50% = LIKELY, <20% = not detected",
+                    "Stateful firewalls filter ephemeral ports too; packet-filters only block specific ports",
+                    "Evasion Test uses a 1-second timeout and tests top 5 filtered ports to keep scans fast",
+                    "AV Payload Gen uses the target IP as LHOST — set it to YOUR IP for reverse shells",
+                    "Each detection type has its own terminal — results are preserved when switching types",
+                    "Use Ctrl-L to clear only the current detection type's output",
+                    "Export results as JSON/CSV/XML/HTML for reporting"
                 ]
             }
         }

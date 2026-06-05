@@ -2510,3 +2510,65 @@ Traceback (most recent call last):
 AttributeError: 'WirelessSecurityWidget' object has no attribute 'generate_report_btn'. Did you mean: 'generate_report'?
 2026-06-05 20:23:01 - huginn - DEBUG - Memory monitoring stopped
 2026-06-05 20:23:01 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-05 20:27:02 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\db_attacks_page.py)
+2026-06-05 20:28:53 - huginn - DEBUG - Memory monitoring stopped
+2026-06-05 20:28:53 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-05 20:29:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-06-05 20:29:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-06-05 20:29:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-06-05 20:29:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-06-05 20:30:27 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-06-05 20:30:27 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-06-05 20:30:27 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-06-05 20:30:27 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-06-05 20:35:16 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\db_attacks_page.py)
+2026-06-05 20:37:59 - huginn - DEBUG - Memory monitoring stopped
+2026-06-05 20:37:59 - huginn - DEBUG - Connection pool closed all sessions
