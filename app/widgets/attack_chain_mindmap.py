@@ -187,20 +187,23 @@ class AttackChainMindmap(QWidget):
             if is_hovered:
                 hovered_phase_data = (phase_name, phase_data, pos)
             
-            # Circle size and effects
+            # Use activated icon when hovered or selected, default otherwise
             base_radius = 70
             radius = base_radius
-            if is_selected:
-                radius += 12
-            elif is_hovered:
-                radius += 10
             
-            # Draw phase icon as entire oblong background
-            icon_path = os.path.join("resources", "icons", f"{phase_name}.png")
+            if is_selected or is_hovered:
+                icon_path = os.path.join("resources", "icons", f"{phase_name}_ACTIVATED.png")
+            else:
+                icon_path = os.path.join("resources", "icons", f"{phase_name}.png")
+            
+            # Fallback to default icon if activated version doesn't exist
+            if not os.path.exists(icon_path):
+                icon_path = os.path.join("resources", "icons", f"{phase_name}.png")
+            
             if os.path.exists(icon_path):
                 pixmap = QPixmap(icon_path)
                 if not pixmap.isNull():
-                    # Scale icon to fill entire oblong
+                    # Scale icon to fill entire oblong (consistent size, no grow on hover)
                     width = radius * 2.5
                     height = radius * 1.2
                     scaled_pixmap = pixmap.scaled(int(width), int(height), Qt.AspectRatioMode.IgnoreAspectRatio, Qt.TransformationMode.SmoothTransformation)
@@ -214,9 +217,7 @@ class AttackChainMindmap(QWidget):
                 width = radius * 2.5
                 height = radius * 1.2
                 painter.drawEllipse(int(pos[0] - width/2), int(pos[1] - height/2), int(width), int(height))
-            
 
-        
         # Tooltip drawing removed
     
     def _draw_phase_tooltip(self, painter, phase_name, phase_data, pos):
