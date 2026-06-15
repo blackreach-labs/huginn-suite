@@ -216,7 +216,7 @@ class AdvancedReportingComponent(QWidget):
                 .replace(">", "&gt;")
             )
             self.preview_text.setHtml(
-                f"<pre style='color:#DCDCDC;font-family:Consolas,monospace;"
+                f"<pre style='color:#DCDCDC;font-family:Neuropol X;"
                 f"font-size:11pt;white-space:pre-wrap;'>{escaped}</pre>"
             )
 

@@ -116,7 +116,7 @@ class ThemeSelectionDialog(QDialog):
         
     def load_themes(self):
         """Load and display available themes"""
-        themes = self.theme_manager.get_all_themes()
+        themes = self.theme_manager.get_available_themes()
         
         # Handle both dict and list formats
         if isinstance(themes, list):
@@ -138,17 +138,6 @@ class ThemeSelectionDialog(QDialog):
             # Make clickable
             preview.mousePressEvent = lambda event, key=theme_key: self.select_theme(key)
             
-            # Add locked indicator for premium themes
-            if not self.theme_manager.is_theme_available(theme_key):
-                lock_label = QLabel("🔒")
-                lock_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-                lock_label.setStyleSheet("font-size: 24pt; color: #FFD700;")
-                lock_label.setParent(preview)
-                lock_label.move(preview.width() - 30, 5)
-                
-                # Dim the preview
-                preview.setStyleSheet(preview.styleSheet() + "opacity: 0.6;")
-            
             self.themes_layout.addWidget(preview, row, col)
             
             col += 1
@@ -158,17 +147,6 @@ class ThemeSelectionDialog(QDialog):
     
     def select_theme(self, theme_key):
         """Select a theme"""
-        if not self.theme_manager.is_theme_available(theme_key):
-            # Show upgrade dialog
-            theme_data = self.theme_manager.get_theme_colors(theme_key)
-            QMessageBox.information(
-                self,
-                "Professional Theme",
-                f"Theme '{theme_data.get('name', theme_key)}' requires a Professional license.\n\n"
-                "Upgrade to Professional license to unlock all premium themes."
-            )
-            return
-        
         # Clear previous selection
         for i in range(self.themes_layout.count()):
             widget = self.themes_layout.itemAt(i).widget()

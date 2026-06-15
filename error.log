@@ -200,3 +200,53 @@ Traceback (most recent call last):
     ^^^^^^^^^^^^^^^^^^^^^
 RuntimeError: wrapped C/C++ object of type AVFirewallWorkerSignals has been deleted
 
+2026-06-05 21:48:31 - ERROR - Unhandled exception:
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\main_window\main_window_refactored.py", line 444, in open_theme_selector
+    self.theme_manager.open_theme_selector()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\main_window\components\theme_manager.py", line 47, in open_theme_selector
+    dialog = ThemeSelectionDialog(self.theme_manager, self.main_window)
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\enhanced_theme_selector.py", line 71, in __init__
+    self.load_themes()
+    ~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\enhanced_theme_selector.py", line 119, in load_themes
+    themes = self.theme_manager.get_all_themes()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'UnifiedThemeManager' object has no attribute 'get_all_themes'. Did you mean: 'get_available_themes'?
+
+2026-06-05 21:51:45 - ERROR - Unhandled exception:
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\main_window\main_window_refactored.py", line 444, in open_theme_selector
+    self.theme_manager.open_theme_selector()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\main_window\components\theme_manager.py", line 47, in open_theme_selector
+    dialog = ThemeSelectionDialog(self.theme_manager, self.main_window)
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\enhanced_theme_selector.py", line 71, in __init__
+    self.load_themes()
+    ~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\enhanced_theme_selector.py", line 142, in load_themes
+    if not self.theme_manager.is_theme_available(theme_key):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'UnifiedThemeManager' object has no attribute 'is_theme_available'
+
+2026-06-05 21:53:01 - ERROR - Unhandled exception:
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\enhanced_theme_selector.py", line 139, in <lambda>
+    preview.mousePressEvent = lambda event, key=theme_key: self.select_theme(key)
+                                                           ~~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\enhanced_theme_selector.py", line 150, in select_theme
+    if not self.theme_manager.is_theme_available(theme_key):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'UnifiedThemeManager' object has no attribute 'is_theme_available'
+
+2026-06-05 21:53:06 - ERROR - Unhandled exception:
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\enhanced_theme_selector.py", line 139, in <lambda>
+    preview.mousePressEvent = lambda event, key=theme_key: self.select_theme(key)
+                                                           ~~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\enhanced_theme_selector.py", line 150, in select_theme
+    if not self.theme_manager.is_theme_available(theme_key):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'UnifiedThemeManager' object has no attribute 'is_theme_available'
+

@@ -16,6 +16,9 @@ import time
 import random
 import struct
 import logging
+import urllib3
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class AdvancedNSEScanner:
     def __init__(self, target, timeout=10, threads=10):

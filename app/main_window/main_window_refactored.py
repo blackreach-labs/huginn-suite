@@ -424,6 +424,25 @@ class MainWindow(QMainWindow):
         if page:
             self.stack.setCurrentWidget(page)
             self.status_bar.showMessage(f"Navigated to {page_name}")
+            # Update mindmap icon to activated state
+            if hasattr(self, 'mindmap'):
+                phase = self._page_to_phase(page_name)
+                if phase:
+                    self.mindmap.selected_phase = phase
+                    self.mindmap.update()
+
+    def _page_to_phase(self, page_name):
+        """Reverse lookup: map a page name back to its mindmap phase."""
+        # Preferred phase for each page (avoids duplicates like SCAN/VULN)
+        page_to_phase_map = {
+            "attack_chain_home": "SETUP",
+            "recon_enumeration": "RECON",
+            "vuln_scanning": "SCAN",
+            "web_exploits": "EXPLOIT",
+            "post_exploitation": "ELEVATE",
+            "findings": "REPORT",
+        }
+        return page_to_phase_map.get(page_name)
     
     def on_mindmap_phase_selected(self, phase_name, phase_data):
         """Handle mindmap phase selection."""

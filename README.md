@@ -42,6 +42,26 @@ python -m venv venv; .\venv\Scripts\Activate.ps1; python -m pip install -r requi
 python main.py
 ```
 
+## Installation (Linux)
+```bash
+mkdir ~/tools; cd ~/tools
+git clone https://github.com/blackreach-labs/huginn-suite.git
+cd huginn-suite
+```
+
+### 3. Create a virtual environment and install dependencies
+
+```bash
+python -m venv venv; source /venv/bin/activate; pip install -r requirements.txt
+```
+
+### 4. Launch the application
+
+```bash
+sudo python main.py
+```
+
+
 ---
 
 ## UI Overview

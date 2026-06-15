@@ -5,11 +5,14 @@ import ssl
 import threading
 import time
 import random
+import urllib3
 from typing import Dict, List, Callable, Optional
 from urllib.parse import urljoin, urlparse
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 from app.core.logger import logger
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class AdvancedVulnerabilityScanner:
     """Professional-grade vulnerability scanner with exploit correlation and evasion"""

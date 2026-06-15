@@ -1,0 +1,1438 @@
+2026-06-07 19:37:30 - huginn - INFO - License saved successfully
+2026-06-07 19:37:30 - huginn - INFO - License loaded and validated successfully
+2026-06-07 19:37:30 - huginn - INFO - Application starting...
+2026-06-07 19:37:30 - huginn - INFO - Font loaded successfully
+2026-06-07 19:37:30 - huginn - INFO - Stylesheet loaded successfully
+2026-06-07 19:37:30 - huginn - INFO - Creating main window...
+2026-06-07 19:37:30 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-06-07 19:37:30 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-06-07 19:37:30 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\db_attacks_page.py)
+2026-06-07 19:37:43 - huginn - DEBUG - Memory monitoring stopped
+2026-06-07 19:37:43 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-07 19:37:44 - huginn - INFO - Update manager stopped during cleanup
+2026-06-07 19:37:54 - huginn - INFO - License saved successfully
+2026-06-07 19:37:54 - huginn - INFO - License loaded and validated successfully
+2026-06-07 19:37:55 - huginn - INFO - Application starting...
+2026-06-07 19:37:55 - huginn - INFO - Font loaded successfully
+2026-06-07 19:37:55 - huginn - INFO - Stylesheet loaded successfully
+2026-06-07 19:37:55 - huginn - INFO - Creating main window...
+2026-06-07 19:37:55 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-06-07 19:37:55 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-06-07 19:37:55 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\db_attacks_page.py)
+2026-06-07 19:38:04 - huginn - DEBUG - Memory monitoring stopped
+2026-06-07 19:38:04 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-07 19:38:04 - huginn - INFO - Update manager stopped during cleanup
+2026-06-07 19:38:17 - huginn - INFO - License saved successfully
+2026-06-07 19:38:17 - huginn - INFO - License loaded and validated successfully
+2026-06-07 19:38:17 - huginn - INFO - Application starting...
+2026-06-07 19:38:17 - huginn - INFO - Font loaded successfully
+2026-06-07 19:38:17 - huginn - INFO - Stylesheet loaded successfully
+2026-06-07 19:38:17 - huginn - INFO - Creating main window...
+2026-06-07 19:38:17 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-06-07 19:38:18 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-06-07 19:38:18 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\db_attacks_page.py)
+2026-06-07 19:38:56 - huginn - DEBUG - Memory monitoring stopped
+2026-06-07 19:38:56 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-07 19:38:56 - huginn - INFO - Update manager stopped during cleanup
+2026-06-07 21:02:37 - huginn - INFO - License saved successfully
+2026-06-07 21:02:37 - huginn - INFO - License loaded and validated successfully
+2026-06-07 21:02:37 - huginn - INFO - Application starting...
+2026-06-07 21:02:37 - huginn - INFO - Font loaded successfully
+2026-06-07 21:02:37 - huginn - INFO - Stylesheet loaded successfully
+2026-06-07 21:02:37 - huginn - INFO - Creating main window...
+2026-06-07 21:02:37 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-06-07 21:02:37 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-06-07 21:02:37 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\db_attacks_page.py)
+2026-06-07 21:02:44 - huginn - DEBUG - Session token generated
+2026-06-07 21:02:48 - huginn - DEBUG - Memory monitoring stopped
+2026-06-07 21:02:48 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-07 21:02:48 - huginn - INFO - Update manager stopped during cleanup
+2026-06-07 22:43:52 - huginn - INFO - License saved successfully
+2026-06-07 22:43:52 - huginn - INFO - License loaded and validated successfully
+2026-06-07 22:43:52 - huginn - INFO - Application starting...
+2026-06-07 22:43:52 - huginn - INFO - Font loaded successfully
+2026-06-07 22:43:52 - huginn - INFO - Stylesheet loaded successfully
+2026-06-07 22:43:52 - huginn - INFO - Creating main window...
+2026-06-07 22:43:52 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-06-07 22:43:52 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-06-07 22:43:52 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\db_attacks_page.py)
+2026-06-07 22:44:13 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'blackreachlabs.com'
+2026-06-07 22:44:13 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'blackreachlabs.com'
+2026-06-07 22:44:16 - huginn - DEBUG - Wireless security tab unavailable
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\recon_enumeration_page.py", line 99, in setup_ui
+    wireless_tab = WirelessSecurityWidget(self)
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\wireless_security_widget.py", line 52, in __init__
+    self.connect_signals()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\wireless_security_widget.py", line 303, in connect_signals
+    self.generate_report_btn.clicked.connect(self.generate_report)
+    ^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'WirelessSecurityWidget' object has no attribute 'generate_report_btn'. Did you mean: 'generate_report'?
+2026-06-07 22:44:19 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-06-07 22:44:19 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-06-07 22:44:19 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-06-07 22:44:19 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-06-07 22:44:23 - huginn - DEBUG - Session token generated
+2026-06-07 22:46:20 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 's'
+2026-06-07 22:46:20 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'si'
+2026-06-07 22:46:20 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'sil'
+2026-06-07 22:46:21 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'sile'
+2026-06-07 22:46:22 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silen'
+2026-06-07 22:46:22 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silent'
+2026-06-07 22:46:23 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silenti'
+2026-06-07 22:46:23 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentiu'
+2026-06-07 22:46:24 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium'
+2026-06-07 22:46:24 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.'
+2026-06-07 22:46:25 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.h'
+2026-06-07 22:46:25 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.ht'
+2026-06-07 22:46:25 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-06-07 22:46:43 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-06-07 22:47:49 - huginn - INFO - VPN connection terminated
+2026-06-07 22:47:49 - huginn - INFO - OpenVPN connection started with config: C:/Users/allie/Downloads/machines_au-1.ovpn
+2026-06-07 22:47:49 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:49 Note: --data-ciphers-fallback with cipher 'AES-128-CBC' disables data channel offload.
+2026-06-07 22:47:49 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:49 OpenVPN 2.6.14 [git:none/0169b4ad2bb35d2c] Windows [SSL (OpenSSL)] [LZO] [LZ4] [PKCS11] [AEAD] [DCO] built on Jun 19 2025
+2026-06-07 22:47:49 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:49 Windows version 10.0 (Windows 10 or greater), amd64 executable
+2026-06-07 22:47:49 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:49 library versions: OpenSSL 3.5.0 8 Apr 2025, LZO 2.10
+2026-06-07 22:47:49 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:49 DCO version: N/A
+2026-06-07 22:47:49 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:49 TCP/UDP: Preserving recently used remote address: [AF_INET]206.148.40.161:1337
+2026-06-07 22:47:49 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:49 Socket Buffers: R=[65536->65536] S=[65536->65536]
+2026-06-07 22:47:49 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:49 UDPv4 link local: (not bound)
+2026-06-07 22:47:49 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:49 UDPv4 link remote: [AF_INET]206.148.40.161:1337
+2026-06-07 22:47:49 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:49 TLS: Initial packet from [AF_INET]206.148.40.161:1337, sid=1e46a34f d4371540
+2026-06-07 22:47:49 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:49 VERIFY OK: depth=2, C=GR, O=Hack The Box, OU=Systems, CN=HTB VPN: Root Certificate Authority
+2026-06-07 22:47:49 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:49 VERIFY OK: depth=1, C=GR, O=Hack The Box, OU=Systems, CN=HTB VPN: au-free-1 Issuing CA
+2026-06-07 22:47:49 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:49 VERIFY KU OK
+2026-06-07 22:47:49 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:49 Validating certificate extended key usage
+2026-06-07 22:47:49 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:49 ++ Certificate has EKU (str) TLS Web Client Authentication, expects TLS Web Server Authentication
+2026-06-07 22:47:49 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:49 ++ Certificate has EKU (oid) 1.3.6.1.5.5.7.3.2, expects TLS Web Server Authentication
+2026-06-07 22:47:49 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:49 ++ Certificate has EKU (str) TLS Web Server Authentication, expects TLS Web Server Authentication
+2026-06-07 22:47:49 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:49 VERIFY EKU OK
+2026-06-07 22:47:49 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:49 VERIFY OK: depth=0, C=GR, O=Hack The Box, OU=Systems, CN=au-free-1
+2026-06-07 22:47:50 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:50 Control Channel: TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM_SHA384, peer certificate: 256 bits ED25519, signature: ED25519, peer temporary key: 253 bits X25519
+2026-06-07 22:47:50 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:50 [au-free-1] Peer Connection Initiated with [AF_INET]206.148.40.161:1337
+2026-06-07 22:47:50 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:50 TLS: move_session: dest=TM_ACTIVE src=TM_INITIAL reinit_src=1
+2026-06-07 22:47:50 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:50 TLS: tls_multi_process: initial untrusted session promoted to trusted
+2026-06-07 22:47:50 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:51 SENT CONTROL [au-free-1]: 'PUSH_REQUEST' (status=1)
+2026-06-07 22:47:50 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:51 PUSH: Received control message: 'PUSH_REPLY,route 10.10.8.0 255.255.252.0,route 10.129.0.0 255.255.0.0,route-ipv6 dead:beef::/64,explicit-exit-notify,tun-ipv6,route-gateway 10.10.14.1,topology subnet,ping 10,ping-restart 120,ifconfig-ipv6 dead:beef:2::100d/64 dead:beef:2::1,ifconfig 10.10.14.15 255.255.254.0,peer-id 16,cipher AES-256-CBC,protocol-flags cc-exit tls-ekm dyn-tls-crypt,tun-mtu 1500'
+2026-06-07 22:47:50 - huginn - INFO - VPN IP address assigned: 10.10.14.15
+2026-06-07 22:47:50 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:51 OPTIONS IMPORT: --ifconfig/up options modified
+2026-06-07 22:47:50 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:51 OPTIONS IMPORT: route options modified
+2026-06-07 22:47:50 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:51 OPTIONS IMPORT: route-related options modified
+2026-06-07 22:47:50 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:51 OPTIONS IMPORT: tun-mtu set to 1500
+2026-06-07 22:47:50 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:51 interactive service msg_channel=0
+2026-06-07 22:47:50 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:51 ROUTE_GATEWAY 192.168.1.1/255.255.255.0 I=23 HWADDR=88:d8:2e:79:0c:48
+2026-06-07 22:47:50 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:51 GDG6: remote_host_ipv6=n/a
+2026-06-07 22:47:50 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:51 NOTE: GetBestInterfaceEx returned error: Element not found.   (code=1168)
+2026-06-07 22:47:50 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:51 ROUTE6: default_gateway=UNDEF
+2026-06-07 22:47:50 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:51 open_tun
+2026-06-07 22:47:50 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:51 tap-windows6 device [OpenVPN TAP-Windows6] opened
+2026-06-07 22:47:50 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:51 TAP-Windows Driver Version 9.27
+2026-06-07 22:47:50 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:51 Set TAP-Windows TUN subnet mode network/local/netmask = 10.10.14.0/10.10.14.15/255.255.254.0 [SUCCEEDED]
+2026-06-07 22:47:50 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:51 Notified TAP-Windows driver to set a DHCP IP/netmask of 10.10.14.15/255.255.254.0 on interface {9624926F-3F6E-402F-BBEF-68BB8BB5B777} [DHCP-serv: 10.10.14.0, lease-time: 31536000]
+2026-06-07 22:47:50 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:51 Successful ARP Flush on interface [18] {9624926F-3F6E-402F-BBEF-68BB8BB5B777}
+2026-06-07 22:47:50 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:51 IPv4 MTU set to 1500 on interface 18 using SetIpInterfaceEntry()
+2026-06-07 22:47:50 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:51 NETSH: C:\WINDOWS\system32\netsh.exe interface ipv6 set address 18 dead:beef:2::100d/128 store=active
+2026-06-07 22:47:50 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:51 add_route_ipv6(dead:beef:2::/64 -> dead:beef:2::100d metric 0) IF 18
+2026-06-07 22:47:50 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:51 IPv6 route added using ipapi
+2026-06-07 22:47:50 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:51 NETSH: C:\WINDOWS\system32\netsh.exe interface ipv6 delete dns 18 all
+2026-06-07 22:47:50 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:51 IPv6 MTU set to 1500 on interface 18 using SetIpInterfaceEntry()
+2026-06-07 22:47:50 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:51 Data Channel: cipher 'AES-256-CBC', auth 'SHA256', peer-id: 16, compression: 'lzo'
+2026-06-07 22:47:50 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:51 Timers: ping 10, ping-restart 120
+2026-06-07 22:47:50 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:51 Protocol options: explicit-exit-notify 1, protocol-flags cc-exit tls-ekm dyn-tls-crypt
+2026-06-07 22:47:56 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:56 TEST ROUTES: 2/2 succeeded len=2 ret=1 a=0 u/d=up
+2026-06-07 22:47:56 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:56 C:\WINDOWS\system32\route.exe ADD 10.10.8.0 MASK 255.255.252.0 10.10.14.1
+2026-06-07 22:47:56 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:56 ROUTE: CreateIpForwardEntry succeeded with dwForwardMetric1=25 and dwForwardType=4
+2026-06-07 22:47:56 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:56 Route addition via ipapi [adaptive] succeeded
+2026-06-07 22:47:56 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:56 C:\WINDOWS\system32\route.exe ADD 10.129.0.0 MASK 255.255.0.0 10.10.14.1
+2026-06-07 22:47:56 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:56 ROUTE: CreateIpForwardEntry succeeded with dwForwardMetric1=25 and dwForwardType=4
+2026-06-07 22:47:56 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:56 Route addition via ipapi [adaptive] succeeded
+2026-06-07 22:47:56 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:56 add_route_ipv6(dead:beef::/64 -> dead:beef:2::1 metric -1) IF 18
+2026-06-07 22:47:56 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:56 IPv6 route added using ipapi
+2026-06-07 22:47:56 - huginn - DEBUG - OpenVPN: 2026-06-07 22:47:56 Initialization Sequence Completed
+2026-06-07 22:48:09 - huginn - INFO - DNS server changed to: LocalDNS
+2026-06-07 22:48:11 - huginn - INFO - Local DNS server started on port 53530
+2026-06-07 22:48:42 - huginn - INFO - Added DNS record: silentium.htb A 10.129.101.175
+2026-06-07 22:49:09 - huginn - INFO - Added DNS record: staging.silentium.htb A 10.129.101.175
+2026-06-07 22:53:24 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\dns_resolver.py", line 14, in resolve_hostname
+    ipaddress.ip_address(hostname)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 54, in ip_address
+    raise ValueError(f'{address!r} does not appear to be an IPv4 or IPv6 address')
+ValueError: 'staging.silentium.htb' does not appear to be an IPv4 or IPv6 address
+2026-06-07 22:53:31 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\dns_resolver.py", line 14, in resolve_hostname
+    ipaddress.ip_address(hostname)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 54, in ip_address
+    raise ValueError(f'{address!r} does not appear to be an IPv4 or IPv6 address')
+ValueError: 'staging.silentium.htb' does not appear to be an IPv4 or IPv6 address
+2026-06-07 22:53:45 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\dns_resolver.py", line 14, in resolve_hostname
+    ipaddress.ip_address(hostname)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 54, in ip_address
+    raise ValueError(f'{address!r} does not appear to be an IPv4 or IPv6 address')
+ValueError: 'staging.silentium.htb' does not appear to be an IPv4 or IPv6 address
+2026-06-07 22:55:31 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'blackreachlabs.com'
+2026-06-07 22:55:31 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'blackreachlabs.com'
+2026-06-07 22:55:43 - huginn - INFO - Local DNS server stopped
+2026-06-07 22:55:43 - huginn - INFO - local_dns_server stopped
+2026-06-07 22:55:43 - huginn - INFO - VPN connection terminated
+2026-06-07 22:55:43 - huginn - INFO - vpn_manager disconnected
+2026-06-07 22:55:43 - huginn - DEBUG - Memory monitoring stopped
+2026-06-07 22:55:43 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-07 22:55:43 - huginn - INFO - Update manager stopped during cleanup
+2026-06-07 22:55:48 - huginn - INFO - License saved successfully
+2026-06-07 22:55:48 - huginn - INFO - License loaded and validated successfully
+2026-06-07 22:55:49 - huginn - INFO - Application starting...
+2026-06-07 22:55:49 - huginn - INFO - Font loaded successfully
+2026-06-07 22:55:49 - huginn - INFO - Stylesheet loaded successfully
+2026-06-07 22:55:49 - huginn - INFO - Creating main window...
+2026-06-07 22:55:49 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-06-07 22:55:49 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-06-07 22:55:49 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\db_attacks_page.py)
+2026-06-07 22:55:53 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-06-07 22:55:53 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-06-07 22:56:03 - huginn - INFO - VPN connection terminated
+2026-06-07 22:56:03 - huginn - INFO - OpenVPN connection started with config: C:/Users/allie/Downloads/machines_au-1.ovpn
+2026-06-07 22:56:03 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:03 Note: --data-ciphers-fallback with cipher 'AES-128-CBC' disables data channel offload.
+2026-06-07 22:56:03 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:03 OpenVPN 2.6.14 [git:none/0169b4ad2bb35d2c] Windows [SSL (OpenSSL)] [LZO] [LZ4] [PKCS11] [AEAD] [DCO] built on Jun 19 2025
+2026-06-07 22:56:03 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:03 Windows version 10.0 (Windows 10 or greater), amd64 executable
+2026-06-07 22:56:03 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:03 library versions: OpenSSL 3.5.0 8 Apr 2025, LZO 2.10
+2026-06-07 22:56:03 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:03 DCO version: N/A
+2026-06-07 22:56:03 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:03 TCP/UDP: Preserving recently used remote address: [AF_INET]206.148.40.161:1337
+2026-06-07 22:56:03 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:03 Socket Buffers: R=[65536->65536] S=[65536->65536]
+2026-06-07 22:56:03 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:03 UDPv4 link local: (not bound)
+2026-06-07 22:56:03 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:03 UDPv4 link remote: [AF_INET]206.148.40.161:1337
+2026-06-07 22:56:03 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:03 TLS: Initial packet from [AF_INET]206.148.40.161:1337, sid=e6112d1e a4c6e5fe
+2026-06-07 22:56:03 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:03 VERIFY OK: depth=2, C=GR, O=Hack The Box, OU=Systems, CN=HTB VPN: Root Certificate Authority
+2026-06-07 22:56:03 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:03 VERIFY OK: depth=1, C=GR, O=Hack The Box, OU=Systems, CN=HTB VPN: au-free-1 Issuing CA
+2026-06-07 22:56:03 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:03 VERIFY KU OK
+2026-06-07 22:56:03 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:03 Validating certificate extended key usage
+2026-06-07 22:56:03 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:03 ++ Certificate has EKU (str) TLS Web Client Authentication, expects TLS Web Server Authentication
+2026-06-07 22:56:03 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:03 ++ Certificate has EKU (oid) 1.3.6.1.5.5.7.3.2, expects TLS Web Server Authentication
+2026-06-07 22:56:03 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:03 ++ Certificate has EKU (str) TLS Web Server Authentication, expects TLS Web Server Authentication
+2026-06-07 22:56:03 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:03 VERIFY EKU OK
+2026-06-07 22:56:03 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:03 VERIFY OK: depth=0, C=GR, O=Hack The Box, OU=Systems, CN=au-free-1
+2026-06-07 22:56:04 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:04 Control Channel: TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM_SHA384, peer certificate: 256 bits ED25519, signature: ED25519, peer temporary key: 253 bits X25519
+2026-06-07 22:56:04 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:04 [au-free-1] Peer Connection Initiated with [AF_INET]206.148.40.161:1337
+2026-06-07 22:56:04 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:04 TLS: move_session: dest=TM_ACTIVE src=TM_INITIAL reinit_src=1
+2026-06-07 22:56:04 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:04 TLS: tls_multi_process: initial untrusted session promoted to trusted
+2026-06-07 22:56:05 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:05 SENT CONTROL [au-free-1]: 'PUSH_REQUEST' (status=1)
+2026-06-07 22:56:05 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:05 PUSH: Received control message: 'PUSH_REPLY,route 10.10.8.0 255.255.252.0,route 10.129.0.0 255.255.0.0,route-ipv6 dead:beef::/64,explicit-exit-notify,tun-ipv6,route-gateway 10.10.14.1,topology subnet,ping 10,ping-restart 120,ifconfig-ipv6 dead:beef:2::100d/64 dead:beef:2::1,ifconfig 10.10.14.15 255.255.254.0,peer-id 11,cipher AES-256-CBC,protocol-flags cc-exit tls-ekm dyn-tls-crypt,tun-mtu 1500'
+2026-06-07 22:56:05 - huginn - INFO - VPN IP address assigned: 10.10.14.15
+2026-06-07 22:56:05 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:05 OPTIONS IMPORT: --ifconfig/up options modified
+2026-06-07 22:56:05 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:05 OPTIONS IMPORT: route options modified
+2026-06-07 22:56:05 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:05 OPTIONS IMPORT: route-related options modified
+2026-06-07 22:56:05 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:05 OPTIONS IMPORT: tun-mtu set to 1500
+2026-06-07 22:56:05 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:05 interactive service msg_channel=0
+2026-06-07 22:56:05 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:05 ROUTE_GATEWAY 192.168.1.1/255.255.255.0 I=23 HWADDR=88:d8:2e:79:0c:48
+2026-06-07 22:56:05 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:05 GDG6: remote_host_ipv6=n/a
+2026-06-07 22:56:05 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:05 NOTE: GetBestInterfaceEx returned error: Element not found.   (code=1168)
+2026-06-07 22:56:05 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:05 ROUTE6: default_gateway=UNDEF
+2026-06-07 22:56:05 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:05 open_tun
+2026-06-07 22:56:05 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:05 tap-windows6 device [OpenVPN TAP-Windows6] opened
+2026-06-07 22:56:05 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:05 TAP-Windows Driver Version 9.27
+2026-06-07 22:56:05 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:05 Set TAP-Windows TUN subnet mode network/local/netmask = 10.10.14.0/10.10.14.15/255.255.254.0 [SUCCEEDED]
+2026-06-07 22:56:05 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:05 Notified TAP-Windows driver to set a DHCP IP/netmask of 10.10.14.15/255.255.254.0 on interface {9624926F-3F6E-402F-BBEF-68BB8BB5B777} [DHCP-serv: 10.10.14.0, lease-time: 31536000]
+2026-06-07 22:56:05 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:05 Successful ARP Flush on interface [18] {9624926F-3F6E-402F-BBEF-68BB8BB5B777}
+2026-06-07 22:56:05 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:05 IPv4 MTU set to 1500 on interface 18 using SetIpInterfaceEntry()
+2026-06-07 22:56:05 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:05 NETSH: C:\WINDOWS\system32\netsh.exe interface ipv6 set address 18 dead:beef:2::100d/128 store=active
+2026-06-07 22:56:05 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:05 add_route_ipv6(dead:beef:2::/64 -> dead:beef:2::100d metric 0) IF 18
+2026-06-07 22:56:05 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:05 IPv6 route addition using ipapi failed because route exists
+2026-06-07 22:56:05 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:05 NETSH: C:\WINDOWS\system32\netsh.exe interface ipv6 delete dns 18 all
+2026-06-07 22:56:05 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:05 IPv6 MTU set to 1500 on interface 18 using SetIpInterfaceEntry()
+2026-06-07 22:56:05 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:05 Data Channel: cipher 'AES-256-CBC', auth 'SHA256', peer-id: 11, compression: 'lzo'
+2026-06-07 22:56:05 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:05 Timers: ping 10, ping-restart 120
+2026-06-07 22:56:05 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:05 Protocol options: explicit-exit-notify 1, protocol-flags cc-exit tls-ekm dyn-tls-crypt
+2026-06-07 22:56:09 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:10 TEST ROUTES: 2/2 succeeded len=2 ret=1 a=0 u/d=up
+2026-06-07 22:56:09 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:10 C:\WINDOWS\system32\route.exe ADD 10.10.8.0 MASK 255.255.252.0 10.10.14.1
+2026-06-07 22:56:09 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:10 Route addition via ipapi [adaptive] failed because route exists
+2026-06-07 22:56:09 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:10 C:\WINDOWS\system32\route.exe ADD 10.129.0.0 MASK 255.255.0.0 10.10.14.1
+2026-06-07 22:56:09 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:10 Route addition via ipapi [adaptive] failed because route exists
+2026-06-07 22:56:09 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:10 add_route_ipv6(dead:beef::/64 -> dead:beef:2::1 metric -1) IF 18
+2026-06-07 22:56:09 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:10 IPv6 route addition using ipapi failed because route exists
+2026-06-07 22:56:09 - huginn - DEBUG - OpenVPN: 2026-06-07 22:56:10 Initialization Sequence Completed
+2026-06-07 22:56:15 - huginn - INFO - DNS server changed to: LocalDNS
+2026-06-07 22:56:16 - huginn - INFO - Local DNS server started on port 53530
+2026-06-07 22:56:22 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'blackreachlabs.com'
+2026-06-07 22:56:22 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'blackreachlabs.com'
+2026-06-07 22:56:23 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-06-07 22:56:23 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-06-07 22:56:25 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'blackreachlabs.com'
+2026-06-07 22:56:25 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'blackreachlabs.com'
+2026-06-07 22:56:31 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-06-07 22:56:31 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-06-07 22:56:31 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-06-07 22:56:31 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-06-07 22:56:34 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-06-07 22:56:34 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-06-07 22:57:45 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\dns_resolver.py", line 14, in resolve_hostname
+    ipaddress.ip_address(hostname)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 54, in ip_address
+    raise ValueError(f'{address!r} does not appear to be an IPv4 or IPv6 address')
+ValueError: 'staging.silentium.htb' does not appear to be an IPv4 or IPv6 address
+2026-06-07 22:58:16 - huginn - INFO - Local DNS server stopped
+2026-06-07 22:58:16 - huginn - INFO - local_dns_server stopped
+2026-06-07 22:58:16 - huginn - INFO - VPN connection terminated
+2026-06-07 22:58:16 - huginn - INFO - vpn_manager disconnected
+2026-06-07 22:58:16 - huginn - DEBUG - Memory monitoring stopped
+2026-06-07 22:58:16 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-07 22:58:16 - huginn - INFO - Update manager stopped during cleanup
+2026-06-07 22:59:44 - huginn - INFO - License saved successfully
+2026-06-07 22:59:44 - huginn - INFO - License loaded and validated successfully
+2026-06-07 22:59:44 - huginn - INFO - Application starting...
+2026-06-07 22:59:44 - huginn - INFO - Font loaded successfully
+2026-06-07 22:59:44 - huginn - INFO - Stylesheet loaded successfully
+2026-06-07 22:59:44 - huginn - INFO - Creating main window...
+2026-06-07 22:59:44 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-06-07 22:59:44 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-06-07 22:59:44 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\db_attacks_page.py)
+2026-06-07 22:59:48 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-06-07 22:59:48 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-06-07 22:59:57 - huginn - INFO - VPN connection terminated
+2026-06-07 22:59:57 - huginn - INFO - OpenVPN connection started with config: C:/Users/allie/Downloads/machines_au-1.ovpn
+2026-06-07 22:59:57 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:57 Note: --data-ciphers-fallback with cipher 'AES-128-CBC' disables data channel offload.
+2026-06-07 22:59:57 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:57 OpenVPN 2.6.14 [git:none/0169b4ad2bb35d2c] Windows [SSL (OpenSSL)] [LZO] [LZ4] [PKCS11] [AEAD] [DCO] built on Jun 19 2025
+2026-06-07 22:59:57 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:57 Windows version 10.0 (Windows 10 or greater), amd64 executable
+2026-06-07 22:59:57 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:57 library versions: OpenSSL 3.5.0 8 Apr 2025, LZO 2.10
+2026-06-07 22:59:57 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:57 DCO version: N/A
+2026-06-07 22:59:57 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:57 TCP/UDP: Preserving recently used remote address: [AF_INET]206.148.40.161:1337
+2026-06-07 22:59:57 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:57 Socket Buffers: R=[65536->65536] S=[65536->65536]
+2026-06-07 22:59:57 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:57 UDPv4 link local: (not bound)
+2026-06-07 22:59:57 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:57 UDPv4 link remote: [AF_INET]206.148.40.161:1337
+2026-06-07 22:59:57 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:57 TLS: Initial packet from [AF_INET]206.148.40.161:1337, sid=adf33f56 a17bcad0
+2026-06-07 22:59:57 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:57 VERIFY OK: depth=2, C=GR, O=Hack The Box, OU=Systems, CN=HTB VPN: Root Certificate Authority
+2026-06-07 22:59:57 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:57 VERIFY OK: depth=1, C=GR, O=Hack The Box, OU=Systems, CN=HTB VPN: au-free-1 Issuing CA
+2026-06-07 22:59:57 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:57 VERIFY KU OK
+2026-06-07 22:59:57 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:57 Validating certificate extended key usage
+2026-06-07 22:59:57 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:57 ++ Certificate has EKU (str) TLS Web Client Authentication, expects TLS Web Server Authentication
+2026-06-07 22:59:57 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:57 ++ Certificate has EKU (oid) 1.3.6.1.5.5.7.3.2, expects TLS Web Server Authentication
+2026-06-07 22:59:57 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:57 ++ Certificate has EKU (str) TLS Web Server Authentication, expects TLS Web Server Authentication
+2026-06-07 22:59:57 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:57 VERIFY EKU OK
+2026-06-07 22:59:57 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:57 VERIFY OK: depth=0, C=GR, O=Hack The Box, OU=Systems, CN=au-free-1
+2026-06-07 22:59:58 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:58 Control Channel: TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM_SHA384, peer certificate: 256 bits ED25519, signature: ED25519, peer temporary key: 253 bits X25519
+2026-06-07 22:59:58 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:58 [au-free-1] Peer Connection Initiated with [AF_INET]206.148.40.161:1337
+2026-06-07 22:59:58 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:58 TLS: move_session: dest=TM_ACTIVE src=TM_INITIAL reinit_src=1
+2026-06-07 22:59:58 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:58 TLS: tls_multi_process: initial untrusted session promoted to trusted
+2026-06-07 22:59:59 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:59 SENT CONTROL [au-free-1]: 'PUSH_REQUEST' (status=1)
+2026-06-07 22:59:59 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:59 PUSH: Received control message: 'PUSH_REPLY,route 10.10.8.0 255.255.252.0,route 10.129.0.0 255.255.0.0,route-ipv6 dead:beef::/64,explicit-exit-notify,tun-ipv6,route-gateway 10.10.14.1,topology subnet,ping 10,ping-restart 120,ifconfig-ipv6 dead:beef:2::100d/64 dead:beef:2::1,ifconfig 10.10.14.15 255.255.254.0,peer-id 7,cipher AES-256-CBC,protocol-flags cc-exit tls-ekm dyn-tls-crypt,tun-mtu 1500'
+2026-06-07 22:59:59 - huginn - INFO - VPN IP address assigned: 10.10.14.15
+2026-06-07 22:59:59 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:59 OPTIONS IMPORT: --ifconfig/up options modified
+2026-06-07 22:59:59 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:59 OPTIONS IMPORT: route options modified
+2026-06-07 22:59:59 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:59 OPTIONS IMPORT: route-related options modified
+2026-06-07 22:59:59 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:59 OPTIONS IMPORT: tun-mtu set to 1500
+2026-06-07 22:59:59 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:59 interactive service msg_channel=0
+2026-06-07 22:59:59 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:59 ROUTE_GATEWAY 192.168.1.1/255.255.255.0 I=23 HWADDR=88:d8:2e:79:0c:48
+2026-06-07 22:59:59 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:59 GDG6: remote_host_ipv6=n/a
+2026-06-07 22:59:59 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:59 NOTE: GetBestInterfaceEx returned error: Element not found.   (code=1168)
+2026-06-07 22:59:59 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:59 ROUTE6: default_gateway=UNDEF
+2026-06-07 22:59:59 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:59 open_tun
+2026-06-07 22:59:59 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:59 tap-windows6 device [OpenVPN TAP-Windows6] opened
+2026-06-07 22:59:59 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:59 TAP-Windows Driver Version 9.27
+2026-06-07 22:59:59 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:59 Set TAP-Windows TUN subnet mode network/local/netmask = 10.10.14.0/10.10.14.15/255.255.254.0 [SUCCEEDED]
+2026-06-07 22:59:59 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:59 Notified TAP-Windows driver to set a DHCP IP/netmask of 10.10.14.15/255.255.254.0 on interface {9624926F-3F6E-402F-BBEF-68BB8BB5B777} [DHCP-serv: 10.10.14.0, lease-time: 31536000]
+2026-06-07 22:59:59 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:59 Successful ARP Flush on interface [18] {9624926F-3F6E-402F-BBEF-68BB8BB5B777}
+2026-06-07 22:59:59 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:59 IPv4 MTU set to 1500 on interface 18 using SetIpInterfaceEntry()
+2026-06-07 22:59:59 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:59 NETSH: C:\WINDOWS\system32\netsh.exe interface ipv6 set address 18 dead:beef:2::100d/128 store=active
+2026-06-07 22:59:59 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:59 add_route_ipv6(dead:beef:2::/64 -> dead:beef:2::100d metric 0) IF 18
+2026-06-07 22:59:59 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:59 IPv6 route addition using ipapi failed because route exists
+2026-06-07 22:59:59 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:59 NETSH: C:\WINDOWS\system32\netsh.exe interface ipv6 delete dns 18 all
+2026-06-07 22:59:59 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:59 IPv6 MTU set to 1500 on interface 18 using SetIpInterfaceEntry()
+2026-06-07 22:59:59 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:59 Data Channel: cipher 'AES-256-CBC', auth 'SHA256', peer-id: 7, compression: 'lzo'
+2026-06-07 22:59:59 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:59 Timers: ping 10, ping-restart 120
+2026-06-07 22:59:59 - huginn - DEBUG - OpenVPN: 2026-06-07 22:59:59 Protocol options: explicit-exit-notify 1, protocol-flags cc-exit tls-ekm dyn-tls-crypt
+2026-06-07 23:00:03 - huginn - DEBUG - OpenVPN: 2026-06-07 23:00:04 TEST ROUTES: 2/2 succeeded len=2 ret=1 a=0 u/d=up
+2026-06-07 23:00:03 - huginn - DEBUG - OpenVPN: 2026-06-07 23:00:04 C:\WINDOWS\system32\route.exe ADD 10.10.8.0 MASK 255.255.252.0 10.10.14.1
+2026-06-07 23:00:03 - huginn - DEBUG - OpenVPN: 2026-06-07 23:00:04 Route addition via ipapi [adaptive] failed because route exists
+2026-06-07 23:00:03 - huginn - DEBUG - OpenVPN: 2026-06-07 23:00:04 C:\WINDOWS\system32\route.exe ADD 10.129.0.0 MASK 255.255.0.0 10.10.14.1
+2026-06-07 23:00:03 - huginn - DEBUG - OpenVPN: 2026-06-07 23:00:04 Route addition via ipapi [adaptive] failed because route exists
+2026-06-07 23:00:03 - huginn - DEBUG - OpenVPN: 2026-06-07 23:00:04 add_route_ipv6(dead:beef::/64 -> dead:beef:2::1 metric -1) IF 18
+2026-06-07 23:00:03 - huginn - DEBUG - OpenVPN: 2026-06-07 23:00:04 IPv6 route addition using ipapi failed because route exists
+2026-06-07 23:00:03 - huginn - DEBUG - OpenVPN: 2026-06-07 23:00:04 Initialization Sequence Completed
+2026-06-07 23:00:06 - huginn - INFO - DNS server changed to: LocalDNS
+2026-06-07 23:00:07 - huginn - INFO - Local DNS server started on port 53530
+2026-06-07 23:01:05 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\dns_resolver.py", line 14, in resolve_hostname
+    ipaddress.ip_address(hostname)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 54, in ip_address
+    raise ValueError(f'{address!r} does not appear to be an IPv4 or IPv6 address')
+ValueError: 'staging.silentium.htb' does not appear to be an IPv4 or IPv6 address
+2026-06-07 23:01:24 - huginn - INFO - Local DNS server stopped
+2026-06-07 23:01:24 - huginn - INFO - local_dns_server stopped
+2026-06-07 23:01:24 - huginn - INFO - VPN connection terminated
+2026-06-07 23:01:24 - huginn - INFO - vpn_manager disconnected
+2026-06-07 23:01:24 - huginn - DEBUG - Memory monitoring stopped
+2026-06-07 23:01:24 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-07 23:01:24 - huginn - INFO - Update manager stopped during cleanup
+2026-06-07 23:03:19 - huginn - INFO - License saved successfully
+2026-06-07 23:03:19 - huginn - INFO - License loaded and validated successfully
+2026-06-07 23:03:19 - huginn - INFO - Application starting...
+2026-06-07 23:03:19 - huginn - INFO - Font loaded successfully
+2026-06-07 23:03:19 - huginn - INFO - Stylesheet loaded successfully
+2026-06-07 23:03:19 - huginn - INFO - Creating main window...
+2026-06-07 23:03:19 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-06-07 23:03:19 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-06-07 23:03:19 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\db_attacks_page.py)
+2026-06-07 23:03:23 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-06-07 23:03:23 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-06-07 23:03:26 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-06-07 23:03:26 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-06-07 23:03:26 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-06-07 23:03:26 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-06-07 23:03:42 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-06-07 23:03:53 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'blackreachlabs.com'
+2026-06-07 23:03:53 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'blackreachlabs.com'
+2026-06-07 23:03:56 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-06-07 23:03:56 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-06-07 23:04:06 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-06-07 23:04:07 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-06-07 23:04:12 - huginn - DEBUG - Wireless security tab unavailable
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\recon_enumeration_page.py", line 99, in setup_ui
+    wireless_tab = WirelessSecurityWidget(self)
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\wireless_security_widget.py", line 52, in __init__
+    self.connect_signals()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\wireless_security_widget.py", line 303, in connect_signals
+    self.generate_report_btn.clicked.connect(self.generate_report)
+    ^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'WirelessSecurityWidget' object has no attribute 'generate_report_btn'. Did you mean: 'generate_report'?
+2026-06-07 23:04:57 - huginn - DEBUG - Memory monitoring stopped
+2026-06-07 23:04:57 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-07 23:04:57 - huginn - INFO - Update manager stopped during cleanup
+2026-06-07 23:05:03 - huginn - INFO - License saved successfully
+2026-06-07 23:05:03 - huginn - INFO - License loaded and validated successfully
+2026-06-07 23:05:03 - huginn - INFO - Application starting...
+2026-06-07 23:05:03 - huginn - INFO - Font loaded successfully
+2026-06-07 23:05:03 - huginn - INFO - Stylesheet loaded successfully
+2026-06-07 23:05:03 - huginn - INFO - Creating main window...
+2026-06-07 23:05:03 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-06-07 23:05:03 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-06-07 23:05:03 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\db_attacks_page.py)
+2026-06-07 23:05:11 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-06-07 23:05:11 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-06-07 23:05:23 - huginn - INFO - VPN connection terminated
+2026-06-07 23:05:23 - huginn - INFO - OpenVPN connection started with config: C:/Users/allie/Downloads/machines_au-1.ovpn
+2026-06-07 23:05:23 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:23 Note: --data-ciphers-fallback with cipher 'AES-128-CBC' disables data channel offload.
+2026-06-07 23:05:23 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:23 OpenVPN 2.6.14 [git:none/0169b4ad2bb35d2c] Windows [SSL (OpenSSL)] [LZO] [LZ4] [PKCS11] [AEAD] [DCO] built on Jun 19 2025
+2026-06-07 23:05:23 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:23 Windows version 10.0 (Windows 10 or greater), amd64 executable
+2026-06-07 23:05:23 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:23 library versions: OpenSSL 3.5.0 8 Apr 2025, LZO 2.10
+2026-06-07 23:05:23 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:23 DCO version: N/A
+2026-06-07 23:05:23 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:24 TCP/UDP: Preserving recently used remote address: [AF_INET]206.148.40.161:1337
+2026-06-07 23:05:23 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:24 Socket Buffers: R=[65536->65536] S=[65536->65536]
+2026-06-07 23:05:23 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:24 UDPv4 link local: (not bound)
+2026-06-07 23:05:23 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:24 UDPv4 link remote: [AF_INET]206.148.40.161:1337
+2026-06-07 23:05:23 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:24 TLS: Initial packet from [AF_INET]206.148.40.161:1337, sid=15d3d3c5 f8f1c2d2
+2026-06-07 23:05:23 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:24 VERIFY OK: depth=2, C=GR, O=Hack The Box, OU=Systems, CN=HTB VPN: Root Certificate Authority
+2026-06-07 23:05:23 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:24 VERIFY OK: depth=1, C=GR, O=Hack The Box, OU=Systems, CN=HTB VPN: au-free-1 Issuing CA
+2026-06-07 23:05:23 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:24 VERIFY KU OK
+2026-06-07 23:05:23 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:24 Validating certificate extended key usage
+2026-06-07 23:05:23 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:24 ++ Certificate has EKU (str) TLS Web Client Authentication, expects TLS Web Server Authentication
+2026-06-07 23:05:23 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:24 ++ Certificate has EKU (oid) 1.3.6.1.5.5.7.3.2, expects TLS Web Server Authentication
+2026-06-07 23:05:23 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:24 ++ Certificate has EKU (str) TLS Web Server Authentication, expects TLS Web Server Authentication
+2026-06-07 23:05:23 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:24 VERIFY EKU OK
+2026-06-07 23:05:23 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:24 VERIFY OK: depth=0, C=GR, O=Hack The Box, OU=Systems, CN=au-free-1
+2026-06-07 23:05:24 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:24 Control Channel: TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM_SHA384, peer certificate: 256 bits ED25519, signature: ED25519, peer temporary key: 253 bits X25519
+2026-06-07 23:05:24 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:24 [au-free-1] Peer Connection Initiated with [AF_INET]206.148.40.161:1337
+2026-06-07 23:05:24 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:24 TLS: move_session: dest=TM_ACTIVE src=TM_INITIAL reinit_src=1
+2026-06-07 23:05:24 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:24 TLS: tls_multi_process: initial untrusted session promoted to trusted
+2026-06-07 23:05:24 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:25 SENT CONTROL [au-free-1]: 'PUSH_REQUEST' (status=1)
+2026-06-07 23:05:24 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:25 PUSH: Received control message: 'PUSH_REPLY,route 10.10.8.0 255.255.252.0,route 10.129.0.0 255.255.0.0,route-ipv6 dead:beef::/64,explicit-exit-notify,tun-ipv6,route-gateway 10.10.14.1,topology subnet,ping 10,ping-restart 120,ifconfig-ipv6 dead:beef:2::100d/64 dead:beef:2::1,ifconfig 10.10.14.15 255.255.254.0,peer-id 7,cipher AES-256-CBC,protocol-flags cc-exit tls-ekm dyn-tls-crypt,tun-mtu 1500'
+2026-06-07 23:05:24 - huginn - INFO - VPN IP address assigned: 10.10.14.15
+2026-06-07 23:05:24 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:25 OPTIONS IMPORT: --ifconfig/up options modified
+2026-06-07 23:05:24 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:25 OPTIONS IMPORT: route options modified
+2026-06-07 23:05:24 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:25 OPTIONS IMPORT: route-related options modified
+2026-06-07 23:05:24 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:25 OPTIONS IMPORT: tun-mtu set to 1500
+2026-06-07 23:05:24 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:25 interactive service msg_channel=0
+2026-06-07 23:05:24 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:25 ROUTE_GATEWAY 192.168.1.1/255.255.255.0 I=23 HWADDR=88:d8:2e:79:0c:48
+2026-06-07 23:05:24 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:25 GDG6: remote_host_ipv6=n/a
+2026-06-07 23:05:24 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:25 NOTE: GetBestInterfaceEx returned error: Element not found.   (code=1168)
+2026-06-07 23:05:24 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:25 ROUTE6: default_gateway=UNDEF
+2026-06-07 23:05:24 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:25 open_tun
+2026-06-07 23:05:24 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:25 tap-windows6 device [OpenVPN TAP-Windows6] opened
+2026-06-07 23:05:24 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:25 TAP-Windows Driver Version 9.27
+2026-06-07 23:05:24 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:25 Set TAP-Windows TUN subnet mode network/local/netmask = 10.10.14.0/10.10.14.15/255.255.254.0 [SUCCEEDED]
+2026-06-07 23:05:24 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:25 Notified TAP-Windows driver to set a DHCP IP/netmask of 10.10.14.15/255.255.254.0 on interface {9624926F-3F6E-402F-BBEF-68BB8BB5B777} [DHCP-serv: 10.10.14.0, lease-time: 31536000]
+2026-06-07 23:05:24 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:25 Successful ARP Flush on interface [18] {9624926F-3F6E-402F-BBEF-68BB8BB5B777}
+2026-06-07 23:05:24 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:25 IPv4 MTU set to 1500 on interface 18 using SetIpInterfaceEntry()
+2026-06-07 23:05:24 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:25 NETSH: C:\WINDOWS\system32\netsh.exe interface ipv6 set address 18 dead:beef:2::100d/128 store=active
+2026-06-07 23:05:24 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:25 add_route_ipv6(dead:beef:2::/64 -> dead:beef:2::100d metric 0) IF 18
+2026-06-07 23:05:24 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:25 IPv6 route addition using ipapi failed because route exists
+2026-06-07 23:05:24 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:25 NETSH: C:\WINDOWS\system32\netsh.exe interface ipv6 delete dns 18 all
+2026-06-07 23:05:24 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:25 IPv6 MTU set to 1500 on interface 18 using SetIpInterfaceEntry()
+2026-06-07 23:05:24 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:25 Data Channel: cipher 'AES-256-CBC', auth 'SHA256', peer-id: 7, compression: 'lzo'
+2026-06-07 23:05:24 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:25 Timers: ping 10, ping-restart 120
+2026-06-07 23:05:24 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:25 Protocol options: explicit-exit-notify 1, protocol-flags cc-exit tls-ekm dyn-tls-crypt
+2026-06-07 23:05:29 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:30 TEST ROUTES: 2/2 succeeded len=2 ret=1 a=0 u/d=up
+2026-06-07 23:05:29 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:30 C:\WINDOWS\system32\route.exe ADD 10.10.8.0 MASK 255.255.252.0 10.10.14.1
+2026-06-07 23:05:29 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:30 Route addition via ipapi [adaptive] failed because route exists
+2026-06-07 23:05:29 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:30 C:\WINDOWS\system32\route.exe ADD 10.129.0.0 MASK 255.255.0.0 10.10.14.1
+2026-06-07 23:05:29 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:30 Route addition via ipapi [adaptive] failed because route exists
+2026-06-07 23:05:29 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:30 add_route_ipv6(dead:beef::/64 -> dead:beef:2::1 metric -1) IF 18
+2026-06-07 23:05:29 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:30 IPv6 route addition using ipapi failed because route exists
+2026-06-07 23:05:29 - huginn - DEBUG - OpenVPN: 2026-06-07 23:05:30 Initialization Sequence Completed
+2026-06-07 23:05:30 - huginn - INFO - DNS server changed to: LocalDNS
+2026-06-07 23:05:31 - huginn - INFO - Local DNS server started on port 53530
+2026-06-07 23:05:38 - huginn - DEBUG - Wireless security tab unavailable
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\recon_enumeration_page.py", line 99, in setup_ui
+    wireless_tab = WirelessSecurityWidget(self)
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\wireless_security_widget.py", line 52, in __init__
+    self.connect_signals()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\wireless_security_widget.py", line 303, in connect_signals
+    self.generate_report_btn.clicked.connect(self.generate_report)
+    ^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'WirelessSecurityWidget' object has no attribute 'generate_report_btn'. Did you mean: 'generate_report'?
+2026-06-07 23:05:41 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-06-07 23:05:41 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-06-07 23:05:41 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-06-07 23:05:41 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-06-07 23:05:53 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-06-07 23:05:54 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-06-07 23:06:45 - huginn - INFO - Local DNS server stopped
+2026-06-07 23:06:45 - huginn - INFO - local_dns_server stopped
+2026-06-07 23:06:45 - huginn - INFO - VPN connection terminated
+2026-06-07 23:06:45 - huginn - INFO - vpn_manager disconnected
+2026-06-07 23:06:45 - huginn - DEBUG - Memory monitoring stopped
+2026-06-07 23:06:45 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-07 23:06:45 - huginn - INFO - Update manager stopped during cleanup
+2026-06-07 23:12:35 - huginn - INFO - License saved successfully
+2026-06-07 23:12:35 - huginn - INFO - License loaded and validated successfully
+2026-06-07 23:12:35 - huginn - INFO - Application starting...
+2026-06-07 23:12:35 - huginn - INFO - Font loaded successfully
+2026-06-07 23:12:35 - huginn - INFO - Stylesheet loaded successfully
+2026-06-07 23:12:35 - huginn - INFO - Creating main window...
+2026-06-07 23:12:35 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-06-07 23:12:35 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-06-07 23:12:35 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\db_attacks_page.py)
+2026-06-07 23:12:41 - huginn - DEBUG - Wireless security tab unavailable
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\recon_enumeration_page.py", line 99, in setup_ui
+    wireless_tab = WirelessSecurityWidget(self)
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\wireless_security_widget.py", line 52, in __init__
+    self.connect_signals()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\wireless_security_widget.py", line 303, in connect_signals
+    self.generate_report_btn.clicked.connect(self.generate_report)
+    ^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'WirelessSecurityWidget' object has no attribute 'generate_report_btn'. Did you mean: 'generate_report'?
+2026-06-07 23:12:42 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-06-07 23:12:42 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-06-07 23:12:42 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-06-07 23:12:42 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-06-07 23:12:44 - huginn - DEBUG - Session token generated
+2026-06-07 23:12:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-06-07 23:12:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-06-07 23:17:50 - huginn - DEBUG - Memory monitoring stopped
+2026-06-07 23:17:50 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-07 23:17:50 - huginn - INFO - Update manager stopped during cleanup
+2026-06-07 23:18:35 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-06-07 23:18:35 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-06-07 23:18:35 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-06-07 23:18:35 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-06-07 23:18:35 - huginn - INFO - Using default configuration
+2026-06-07 23:18:37 - huginn - INFO - License saved successfully
+2026-06-07 23:18:37 - huginn - INFO - License loaded and validated successfully
+2026-06-07 23:18:47 - huginn - INFO - License saved successfully
+2026-06-07 23:18:47 - huginn - INFO - License loaded and validated successfully
+2026-06-07 23:18:47 - huginn - INFO - Application starting...
+2026-06-07 23:18:47 - huginn - INFO - Font loaded successfully
+2026-06-07 23:18:47 - huginn - INFO - Stylesheet loaded successfully
+2026-06-07 23:18:47 - huginn - INFO - Creating main window...
+2026-06-07 23:18:47 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-06-07 23:18:47 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-06-07 23:18:47 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\db_attacks_page.py)
+2026-06-07 23:18:51 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-06-07 23:18:51 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-06-07 23:21:46 - huginn - DEBUG - Wireless security tab unavailable
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\recon_enumeration_page.py", line 99, in setup_ui
+    wireless_tab = WirelessSecurityWidget(self)
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\wireless_security_widget.py", line 52, in __init__
+    self.connect_signals()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\wireless_security_widget.py", line 303, in connect_signals
+    self.generate_report_btn.clicked.connect(self.generate_report)
+    ^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'WirelessSecurityWidget' object has no attribute 'generate_report_btn'. Did you mean: 'generate_report'?
+2026-06-07 23:21:48 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-06-07 23:21:48 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-06-07 23:21:48 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-06-07 23:21:48 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-06-07 23:22:06 - huginn - DEBUG - Session token generated
+2026-06-07 23:27:02 - huginn - DEBUG - Memory monitoring stopped
+2026-06-07 23:27:02 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-07 23:27:02 - huginn - INFO - Update manager stopped during cleanup
+2026-06-07 23:27:39 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-06-07 23:27:39 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-06-07 23:27:39 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-06-07 23:27:39 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-06-07 23:27:40 - huginn - INFO - Using default configuration
+2026-06-07 23:27:42 - huginn - INFO - License saved successfully
+2026-06-07 23:27:42 - huginn - INFO - License loaded and validated successfully
+2026-06-07 23:28:12 - huginn - INFO - License saved successfully
+2026-06-07 23:28:12 - huginn - INFO - License loaded and validated successfully
+2026-06-07 23:28:12 - huginn - INFO - Application starting...
+2026-06-07 23:28:12 - huginn - INFO - Font loaded successfully
+2026-06-07 23:28:12 - huginn - INFO - Stylesheet loaded successfully
+2026-06-07 23:28:12 - huginn - INFO - Creating main window...
+2026-06-07 23:28:12 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-06-07 23:28:13 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-06-07 23:28:13 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\db_attacks_page.py)
+2026-06-07 23:28:16 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-06-07 23:28:16 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-06-07 23:29:43 - huginn - DEBUG - Memory monitoring stopped
+2026-06-07 23:29:43 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-07 23:29:43 - huginn - INFO - Update manager stopped during cleanup
+2026-06-07 23:29:46 - huginn - INFO - License saved successfully
+2026-06-07 23:29:46 - huginn - INFO - License loaded and validated successfully
+2026-06-07 23:29:47 - huginn - INFO - Application starting...
+2026-06-07 23:29:47 - huginn - INFO - Font loaded successfully
+2026-06-07 23:29:47 - huginn - INFO - Stylesheet loaded successfully
+2026-06-07 23:29:47 - huginn - INFO - Creating main window...
+2026-06-07 23:29:47 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-06-07 23:29:47 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-06-07 23:29:47 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\db_attacks_page.py)
+2026-06-07 23:29:51 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-06-07 23:29:51 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'silentium.htb'
+2026-06-07 23:30:46 - huginn - DEBUG - Memory monitoring stopped
+2026-06-07 23:30:46 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-07 23:30:46 - huginn - INFO - Update manager stopped during cleanup
+2026-06-07 23:33:16 - huginn - INFO - License saved successfully
+2026-06-07 23:33:16 - huginn - INFO - License loaded and validated successfully
+2026-06-07 23:33:16 - huginn - INFO - Application starting...
+2026-06-07 23:33:16 - huginn - INFO - Font loaded successfully
+2026-06-07 23:33:16 - huginn - INFO - Stylesheet loaded successfully
+2026-06-07 23:33:16 - huginn - INFO - Creating main window...
+2026-06-07 23:33:16 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-06-07 23:33:16 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-06-07 23:33:16 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\db_attacks_page.py)
+2026-06-07 23:33:36 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-06-07 23:33:36 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-06-07 23:33:36 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-06-07 23:33:36 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-06-07 23:33:54 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\dns_resolver.py", line 14, in resolve_hostname
+    ipaddress.ip_address(hostname)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 54, in ip_address
+    raise ValueError(f'{address!r} does not appear to be an IPv4 or IPv6 address')
+ValueError: 'blackreachlabs.com' does not appear to be an IPv4 or IPv6 address
+2026-06-07 23:34:19 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\dns_resolver.py", line 14, in resolve_hostname
+    ipaddress.ip_address(hostname)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 54, in ip_address
+    raise ValueError(f'{address!r} does not appear to be an IPv4 or IPv6 address')
+ValueError: 'blackreachlabs.com' does not appear to be an IPv4 or IPv6 address
+2026-06-07 23:34:50 - huginn - DEBUG - Memory monitoring stopped
+2026-06-07 23:34:50 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-07 23:34:50 - huginn - INFO - Update manager stopped during cleanup
+2026-06-07 23:34:52 - huginn - INFO - License saved successfully
+2026-06-07 23:34:52 - huginn - INFO - License loaded and validated successfully
+2026-06-07 23:34:52 - huginn - INFO - Application starting...
+2026-06-07 23:34:52 - huginn - INFO - Font loaded successfully
+2026-06-07 23:34:52 - huginn - INFO - Stylesheet loaded successfully
+2026-06-07 23:34:52 - huginn - INFO - Creating main window...
+2026-06-07 23:34:52 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-06-07 23:34:52 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-06-07 23:34:52 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\db_attacks_page.py)
+2026-06-07 23:34:56 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-06-07 23:34:56 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-06-07 23:34:56 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-06-07 23:34:56 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-06-07 23:35:32 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\dns_resolver.py", line 14, in resolve_hostname
+    ipaddress.ip_address(hostname)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 54, in ip_address
+    raise ValueError(f'{address!r} does not appear to be an IPv4 or IPv6 address')
+ValueError: 'blackreachlabs.com' does not appear to be an IPv4 or IPv6 address
+2026-06-07 23:44:27 - huginn - DEBUG - Memory monitoring stopped
+2026-06-07 23:44:27 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-07 23:44:27 - huginn - INFO - Update manager stopped during cleanup

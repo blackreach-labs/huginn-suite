@@ -2,7 +2,7 @@
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
                             QComboBox, QPushButton, QTextEdit, QGroupBox,
                             QTableWidget, QTableWidgetItem, QHeaderView,
-                            QTabWidget, QLineEdit, QCheckBox, QSplitter,
+                            QTabWidget, QLineEdit, QCheckBox,
                             QFileDialog, QFrame, QScrollArea)
 from PyQt6.QtCore import Qt, QThread, pyqtSignal
 from PyQt6.QtGui import QColor, QFont
@@ -55,11 +55,6 @@ class WirelessSecurityWidget(QWidget):
     def setup_ui(self):
         layout = QVBoxLayout(self)
         
-        # Header
-        header = QLabel("Wireless Security Testing Framework")
-        header.setStyleSheet("font-size: 16pt; font-weight: bold; color: #64C8FF;")
-        layout.addWidget(header)
-        
         # License warning
         self.license_warning = QLabel("⚠️ Wireless Security requires Enterprise license")
         self.license_warning.setStyleSheet("color: #FF6B6B; font-weight: bold; padding: 10px;")
@@ -76,6 +71,10 @@ class WirelessSecurityWidget(QWidget):
         self.bluetooth_tab = self.create_bluetooth_tab()
         self.wireless_tabs.addTab(self.bluetooth_tab, "Bluetooth Security")
         
+        # Reports Tab
+        self.reports_tab = self.create_reports_tab()
+        self.wireless_tabs.addTab(self.reports_tab, "📊 Reports")
+        
         layout.addWidget(self.wireless_tabs)
         
         # Status
@@ -86,10 +85,7 @@ class WirelessSecurityWidget(QWidget):
         
     def create_wifi_tab(self):
         widget = QWidget()
-        outer_layout = QVBoxLayout(widget)
-        outer_layout.setContentsMargins(4, 4, 4, 4)
-
-        splitter = QSplitter(Qt.Orientation.Vertical)
+        layout = QVBoxLayout(widget)
 
         # ── Top: Discovery ────────────────────────────────────────────────
         discovery_group = QGroupBox("WiFi Network Discovery")
@@ -119,7 +115,7 @@ class WirelessSecurityWidget(QWidget):
         self.wifi_networks_table.setMinimumHeight(140)
         discovery_layout.addWidget(self.wifi_networks_table)
 
-        splitter.addWidget(discovery_group)
+        layout.addWidget(discovery_group)
 
         # ── Middle: Attack Configuration ──────────────────────────────────
         attacks_group = QGroupBox("WiFi Security Testing")
@@ -189,40 +185,30 @@ class WirelessSecurityWidget(QWidget):
         launch_row.addStretch()
         attacks_layout.addLayout(launch_row)
 
-        splitter.addWidget(attacks_group)
+        layout.addWidget(attacks_group)
 
         # ── Bottom: Detection & Mitigation reference panel ────────────────
-        info_splitter = QSplitter(Qt.Orientation.Horizontal)
+        info_row = QHBoxLayout()
 
         detection_group = QGroupBox("Detection Indicators")
         detection_layout = QVBoxLayout(detection_group)
         self.detection_text = QTextEdit()
         self.detection_text.setReadOnly(True)
+        self.detection_text.setMaximumHeight(180)
         self.detection_text.setStyleSheet("font-size: 10pt; background-color: #1a1a2e;")
         detection_layout.addWidget(self.detection_text)
-        info_splitter.addWidget(detection_group)
+        info_row.addWidget(detection_group)
 
         mitigation_group = QGroupBox("Mitigations")
         mitigation_layout = QVBoxLayout(mitigation_group)
         self.mitigation_text = QTextEdit()
         self.mitigation_text.setReadOnly(True)
+        self.mitigation_text.setMaximumHeight(180)
         self.mitigation_text.setStyleSheet("font-size: 10pt; background-color: #1a1a2e;")
         mitigation_layout.addWidget(self.mitigation_text)
-        info_splitter.addWidget(mitigation_group)
+        info_row.addWidget(mitigation_group)
 
-        info_splitter.setSizes([500, 500])
-        info_splitter.setStretchFactor(0, 1)
-        info_splitter.setStretchFactor(1, 1)
-
-        info_container = QWidget()
-        info_container.setMaximumHeight(180)
-        info_container_layout = QVBoxLayout(info_container)
-        info_container_layout.setContentsMargins(0, 0, 0, 0)
-        info_container_layout.addWidget(info_splitter)
-        splitter.addWidget(info_container)
-
-        splitter.setSizes([200, 180, 180])
-        outer_layout.addWidget(splitter)
+        layout.addLayout(info_row)
 
         # Populate detection/mitigation on load
         self._update_wifi_attack_info(self.wifi_attack_type.currentText())

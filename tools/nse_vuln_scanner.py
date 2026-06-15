@@ -8,6 +8,9 @@ from concurrent.futures import ThreadPoolExecutor
 import struct
 import time
 import logging
+import urllib3
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class VulnScanner:
     def __init__(self, target, timeout=10):

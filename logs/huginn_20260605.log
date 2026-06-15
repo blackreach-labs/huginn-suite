@@ -2752,3 +2752,367 @@ sqlite3.OperationalError: duplicate column name: notes
 2026-06-05 21:13:30 - huginn - DEBUG - Memory monitoring stopped
 2026-06-05 21:13:30 - huginn - DEBUG - Connection pool closed all sessions
 2026-06-05 21:13:30 - huginn - INFO - Update manager stopped during cleanup
+2026-06-05 21:40:53 - huginn - INFO - License saved successfully
+2026-06-05 21:40:53 - huginn - INFO - License loaded and validated successfully
+2026-06-05 21:40:53 - huginn - INFO - Application starting...
+2026-06-05 21:40:53 - huginn - INFO - Font loaded successfully
+2026-06-05 21:40:53 - huginn - INFO - Stylesheet loaded successfully
+2026-06-05 21:40:53 - huginn - INFO - Creating main window...
+2026-06-05 21:40:53 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-06-05 21:40:53 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-06-05 21:40:53 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\db_attacks_page.py)
+2026-06-05 21:41:03 - huginn - DEBUG - Memory monitoring stopped
+2026-06-05 21:41:03 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-05 21:41:03 - huginn - INFO - Update manager stopped during cleanup
+2026-06-05 21:48:02 - huginn - INFO - License saved successfully
+2026-06-05 21:48:02 - huginn - INFO - License loaded and validated successfully
+2026-06-05 21:48:02 - huginn - INFO - Application starting...
+2026-06-05 21:48:02 - huginn - INFO - Font loaded successfully
+2026-06-05 21:48:02 - huginn - INFO - Stylesheet loaded successfully
+2026-06-05 21:48:02 - huginn - INFO - Creating main window...
+2026-06-05 21:48:02 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-06-05 21:48:02 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-06-05 21:48:02 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\db_attacks_page.py)
+2026-06-05 21:48:31 - huginn - ERROR - Unhandled exception:
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\main_window\main_window_refactored.py", line 444, in open_theme_selector
+    self.theme_manager.open_theme_selector()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\main_window\components\theme_manager.py", line 47, in open_theme_selector
+    dialog = ThemeSelectionDialog(self.theme_manager, self.main_window)
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\enhanced_theme_selector.py", line 71, in __init__
+    self.load_themes()
+    ~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\enhanced_theme_selector.py", line 119, in load_themes
+    themes = self.theme_manager.get_all_themes()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'UnifiedThemeManager' object has no attribute 'get_all_themes'. Did you mean: 'get_available_themes'?
+
+2026-06-05 21:49:36 - huginn - DEBUG - Memory monitoring stopped
+2026-06-05 21:49:36 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-05 21:49:36 - huginn - INFO - Update manager stopped during cleanup
+2026-06-05 21:49:43 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-06-05 21:49:43 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-06-05 21:49:43 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-06-05 21:49:43 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-06-05 21:49:43 - huginn - INFO - Using default configuration
+2026-06-05 21:49:46 - huginn - INFO - License saved successfully
+2026-06-05 21:49:46 - huginn - INFO - License loaded and validated successfully
+2026-06-05 21:51:40 - huginn - INFO - License saved successfully
+2026-06-05 21:51:40 - huginn - INFO - License loaded and validated successfully
+2026-06-05 21:51:40 - huginn - INFO - Application starting...
+2026-06-05 21:51:40 - huginn - INFO - Font loaded successfully
+2026-06-05 21:51:40 - huginn - INFO - Stylesheet loaded successfully
+2026-06-05 21:51:40 - huginn - INFO - Creating main window...
+2026-06-05 21:51:40 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-06-05 21:51:40 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-06-05 21:51:40 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\db_attacks_page.py)
+2026-06-05 21:51:45 - huginn - ERROR - Unhandled exception:
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\main_window\main_window_refactored.py", line 444, in open_theme_selector
+    self.theme_manager.open_theme_selector()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\main_window\components\theme_manager.py", line 47, in open_theme_selector
+    dialog = ThemeSelectionDialog(self.theme_manager, self.main_window)
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\enhanced_theme_selector.py", line 71, in __init__
+    self.load_themes()
+    ~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\enhanced_theme_selector.py", line 142, in load_themes
+    if not self.theme_manager.is_theme_available(theme_key):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'UnifiedThemeManager' object has no attribute 'is_theme_available'
+
+2026-06-05 21:51:59 - huginn - DEBUG - Memory monitoring stopped
+2026-06-05 21:51:59 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-05 21:51:59 - huginn - INFO - Update manager stopped during cleanup
+2026-06-05 21:52:20 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-06-05 21:52:20 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-06-05 21:52:20 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-06-05 21:52:20 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-06-05 21:52:20 - huginn - INFO - Using default configuration
+2026-06-05 21:52:22 - huginn - INFO - License saved successfully
+2026-06-05 21:52:22 - huginn - INFO - License loaded and validated successfully
+2026-06-05 21:52:44 - huginn - INFO - License saved successfully
+2026-06-05 21:52:44 - huginn - INFO - License loaded and validated successfully
+2026-06-05 21:52:45 - huginn - INFO - Application starting...
+2026-06-05 21:52:45 - huginn - INFO - Font loaded successfully
+2026-06-05 21:52:45 - huginn - INFO - Stylesheet loaded successfully
+2026-06-05 21:52:45 - huginn - INFO - Creating main window...
+2026-06-05 21:52:45 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-06-05 21:52:45 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-06-05 21:52:45 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\db_attacks_page.py)
+2026-06-05 21:53:01 - huginn - ERROR - Unhandled exception:
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\enhanced_theme_selector.py", line 139, in <lambda>
+    preview.mousePressEvent = lambda event, key=theme_key: self.select_theme(key)
+                                                           ~~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\enhanced_theme_selector.py", line 150, in select_theme
+    if not self.theme_manager.is_theme_available(theme_key):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'UnifiedThemeManager' object has no attribute 'is_theme_available'
+
+2026-06-05 21:53:06 - huginn - ERROR - Unhandled exception:
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\enhanced_theme_selector.py", line 139, in <lambda>
+    preview.mousePressEvent = lambda event, key=theme_key: self.select_theme(key)
+                                                           ~~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\enhanced_theme_selector.py", line 150, in select_theme
+    if not self.theme_manager.is_theme_available(theme_key):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'UnifiedThemeManager' object has no attribute 'is_theme_available'
+
+2026-06-05 21:53:45 - huginn - DEBUG - Memory monitoring stopped
+2026-06-05 21:53:45 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-05 21:53:45 - huginn - INFO - Update manager stopped during cleanup
+2026-06-05 21:53:57 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-06-05 21:53:57 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-06-05 21:53:57 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-06-05 21:53:57 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-06-05 21:53:57 - huginn - INFO - Using default configuration
+2026-06-05 21:53:59 - huginn - INFO - License saved successfully
+2026-06-05 21:53:59 - huginn - INFO - License loaded and validated successfully
+2026-06-05 21:54:10 - huginn - INFO - License saved successfully
+2026-06-05 21:54:10 - huginn - INFO - License loaded and validated successfully
+2026-06-05 21:54:11 - huginn - INFO - Application starting...
+2026-06-05 21:54:11 - huginn - INFO - Font loaded successfully
+2026-06-05 21:54:11 - huginn - INFO - Stylesheet loaded successfully
+2026-06-05 21:54:11 - huginn - INFO - Creating main window...
+2026-06-05 21:54:11 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-06-05 21:54:11 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-06-05 21:54:11 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\db_attacks_page.py)
+2026-06-05 21:55:44 - huginn - DEBUG - Wireless security tab unavailable
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\recon_enumeration_page.py", line 99, in setup_ui
+    wireless_tab = WirelessSecurityWidget(self)
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\wireless_security_widget.py", line 52, in __init__
+    self.connect_signals()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\wireless_security_widget.py", line 303, in connect_signals
+    self.generate_report_btn.clicked.connect(self.generate_report)
+    ^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'WirelessSecurityWidget' object has no attribute 'generate_report_btn'. Did you mean: 'generate_report'?
+2026-06-05 21:55:45 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-06-05 21:55:45 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-06-05 21:55:45 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-06-05 21:55:45 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-06-05 21:55:50 - huginn - DEBUG - Session token generated
+2026-06-05 21:55:58 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'blackreachlabs.com'
+2026-06-05 21:55:58 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 62, in _parse_scope_text
+    ipaddress.IPv4Address(item)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1319, in __init__
+    self._ip = self._ip_int_from_string(addr_str)
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1206, in _ip_int_from_string
+    raise AddressValueError("Expected 4 octets in %r" % ip_str)
+ipaddress.AddressValueError: Expected 4 octets in 'blackreachlabs.com'
+2026-06-05 22:01:29 - huginn - DEBUG - Memory monitoring stopped
+2026-06-05 22:01:29 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-05 22:01:29 - huginn - INFO - Update manager stopped during cleanup
+2026-06-05 22:03:08 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-06-05 22:03:08 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-06-05 22:03:08 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-06-05 22:03:08 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "c:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-06-05 22:03:08 - huginn - INFO - Using default configuration
+2026-06-05 22:03:10 - huginn - INFO - License saved successfully
+2026-06-05 22:03:10 - huginn - INFO - License loaded and validated successfully
+2026-06-05 22:06:54 - huginn - INFO - License saved successfully
+2026-06-05 22:06:54 - huginn - INFO - License loaded and validated successfully
+2026-06-05 22:06:54 - huginn - INFO - Application starting...
+2026-06-05 22:06:54 - huginn - INFO - Font loaded successfully
+2026-06-05 22:06:54 - huginn - INFO - Stylesheet loaded successfully
+2026-06-05 22:06:54 - huginn - INFO - Creating main window...
+2026-06-05 22:06:54 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-06-05 22:06:54 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-06-05 22:06:54 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\db_attacks_page.py)
+2026-06-05 22:07:21 - huginn - DEBUG - Session token generated
+2026-06-05 22:07:33 - huginn - DEBUG - Wireless security tab unavailable
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\recon_enumeration_page.py", line 99, in setup_ui
+    wireless_tab = WirelessSecurityWidget(self)
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\wireless_security_widget.py", line 52, in __init__
+    self.connect_signals()
+    ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\widgets\wireless_security_widget.py", line 303, in connect_signals
+    self.generate_report_btn.clicked.connect(self.generate_report)
+    ^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'WirelessSecurityWidget' object has no attribute 'generate_report_btn'. Did you mean: 'generate_report'?
+2026-06-05 22:07:35 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 101, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: fqdn
+2026-06-05 22:07:35 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 108, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: mac_address
+2026-06-05 22:07:35 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 115, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: vendor
+2026-06-05 22:07:35 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 122, in init_database
+    conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: duplicate column name: notes
+2026-06-05 22:08:31 - huginn - DEBUG - Memory monitoring stopped
+2026-06-05 22:08:31 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-05 22:08:31 - huginn - INFO - Update manager stopped during cleanup
+2026-06-05 22:08:33 - huginn - INFO - License saved successfully
+2026-06-05 22:08:33 - huginn - INFO - License loaded and validated successfully
+2026-06-05 22:08:33 - huginn - INFO - Application starting...
+2026-06-05 22:08:33 - huginn - INFO - Font loaded successfully
+2026-06-05 22:08:33 - huginn - INFO - Stylesheet loaded successfully
+2026-06-05 22:08:33 - huginn - INFO - Creating main window...
+2026-06-05 22:08:33 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-06-05 22:08:33 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-06-05 22:08:33 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\page_registry.py", line 45, in register_all_pages
+    from app.pages.db_attacks_page import DBAttacksPage
+ImportError: cannot import name 'DBAttacksPage' from 'app.pages.db_attacks_page' (C:\Users\allie\Coding Projects\huggin_suite\huginn\app\pages\db_attacks_page.py)
+2026-06-05 22:08:45 - huginn - DEBUG - Memory monitoring stopped
+2026-06-05 22:08:45 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-05 22:08:45 - huginn - INFO - Update manager stopped during cleanup

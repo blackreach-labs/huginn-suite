@@ -68,7 +68,7 @@ pip install huginn-framework
 
 ```powershell
 # Clone the repository
-git clone https://github.com/huginn-framework/huginn.git
+git clone https://github.com/blackreach-labs/huginn-suite.git
 cd huginn
 
 # Create and activate virtual environment

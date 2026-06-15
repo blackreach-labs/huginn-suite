@@ -134,7 +134,7 @@ https://npcap.com/dist/npcap-1.88.exe
 ```bash
 mkdir ~\tools
 cd ~\tools
-git clone https://github.com/whiteborr/huginn-suite.git
+git clone https://github.com/blackreach-labs/huginn-suite.git
 cd huginn-suite
 ```
 
