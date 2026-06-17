@@ -107,6 +107,7 @@ PyJWT>=2.4.0
 
 # Graph Database
 networkx>=2.8.0
+matplotlib>=3.7.0
 
 # Database Connectors
 mysql-connector-python>=9.0.0

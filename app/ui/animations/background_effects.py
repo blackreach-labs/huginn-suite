@@ -378,6 +378,9 @@ class BackgroundEffectManager:
         
         if effect_type in effect_map:
             self.current_effect = effect_map[effect_type](self.parent_widget)
+            self.current_effect.setAttribute(
+                Qt.WidgetAttribute.WA_TransparentForMouseEvents, True
+            )
             self.current_effect.resize(self.parent_widget.size())
             self.current_effect.show()
             self.current_effect.lower()  # Send to back

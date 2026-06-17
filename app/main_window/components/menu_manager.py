@@ -28,30 +28,34 @@ class MenuManager:
         """Apply styling to the menu bar."""
         self.menubar.setStyleSheet("""
             QMenuBar {
-                background-color: rgba(20, 30, 40, 200);
+                background-color: rgb(20, 30, 40);
                 color: #DCDCDC;
                 border-bottom: 1px solid rgba(100, 200, 255, 100);
                 font-size: 11pt;
             }
             QMenuBar::item {
                 background-color: transparent;
-                padding: 4px 8px;
+                padding: 6px 10px;
             }
             QMenuBar::item:selected {
                 background-color: rgba(100, 200, 255, 100);
-                border-radius: 4px;
             }
             QMenu {
-                background-color: rgba(30, 40, 50, 240);
+                background-color: rgb(30, 40, 50);
                 color: #DCDCDC;
                 border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 4px;
+                padding: 4px 0px;
             }
             QMenu::item {
-                padding: 6px 12px;
+                padding: 6px 24px 6px 12px;
             }
             QMenu::item:selected {
                 background-color: rgba(100, 200, 255, 150);
+            }
+            QMenu::separator {
+                height: 1px;
+                background-color: rgba(100, 200, 255, 60);
+                margin: 4px 8px;
             }
         """)
     

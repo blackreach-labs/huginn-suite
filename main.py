@@ -1,4 +1,4 @@
-﻿from sys import argv, exit
+﻿from sys import argv, exit, stderr
 from os.path import dirname, abspath, join, exists
 import atexit
 from signal import signal, SIGINT, SIGTERM
@@ -7,9 +7,10 @@ from PyQt6.QtGui import QFontDatabase
 from app.main_window import MainWindow
 from app.core.logger import logger
 from app.core.error_handler import setup_global_error_handling
+from app.core.version import get_version, VersionError
 from app.core.local_dns_server import local_dns_server
 from app.core.vpn_manager import vpn_manager
-from app.core.update_manager import update_manager
+
 
 def _load_font(project_root):
     """Load application font with error handling"""
@@ -50,19 +51,10 @@ def _cleanup_vpn():
     except Exception as e:
         logger.error(f"Error disconnecting VPN: {e}")
 
-def _cleanup_update_manager():
-    """Stop update manager"""
-    try:
-        update_manager.stop_auto_check()
-        logger.info("Update manager stopped during cleanup")
-    except Exception as e:
-        logger.error(f"Error stopping update manager: {e}")
-
 def cleanup_on_exit():
     """Cleanup function called when application exits"""
     _cleanup_dns_server()
     _cleanup_vpn()
-    _cleanup_update_manager()
 
 def signal_handler(signum, frame):
     """Handle system signals for graceful shutdown"""
@@ -93,6 +85,15 @@ def main():
     
     logger.info("Application starting...")
     
+    # Validate VERSION file at startup
+    try:
+        app_version = get_version()
+        logger.info(f"Huginn version {app_version}")
+    except VersionError as e:
+        logger.critical(f"Failed to read application version: {e}")
+        print(f"Error: {e}", file=stderr)
+        exit(1)
+    
     # Load resources with error handling
     _load_font(project_root)
     _load_stylesheet(project_root, app)
@@ -101,7 +102,13 @@ def main():
     logger.info("Creating main window...")
     window = MainWindow(project_root=project_root)
     
-
+    # Integrate new platform features (engagement management, reporting, etc.)
+    try:
+        from app.core.feature_gap_integration import FeatureGapIntegration
+        FeatureGapIntegration.integrate(window)
+        logger.info("Feature gap integration completed successfully")
+    except Exception as e:
+        logger.warning(f"Feature gap integration failed (non-fatal): {e}")
     
     window.show()
 

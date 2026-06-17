@@ -97,32 +97,17 @@ class AssetManager:
             """)
             
                 # Add fqdn column if it doesn't exist
-            try:
-                conn.execute("ALTER TABLE assets ADD COLUMN fqdn TEXT DEFAULT ''")
-            except sqlite3.OperationalError as _exc:
-                pass  # Column already exists
-                logger.debug("Suppressed exception", exc_info=True)
-            
-            # Add mac_address column if it doesn't exist
-            try:
-                conn.execute("ALTER TABLE assets ADD COLUMN mac_address TEXT DEFAULT ''")
-            except sqlite3.OperationalError as _exc:
-                pass  # Column already exists
-                logger.debug("Suppressed exception", exc_info=True)
-            
-            # Add vendor column if it doesn't exist
-            try:
-                conn.execute("ALTER TABLE assets ADD COLUMN vendor TEXT DEFAULT ''")
-            except sqlite3.OperationalError as _exc:
-                pass  # Column already exists
-                logger.debug("Suppressed exception", exc_info=True)
-            
-            # Add notes column if it doesn't exist
-            try:
-                conn.execute("ALTER TABLE assets ADD COLUMN notes TEXT DEFAULT ''")
-            except sqlite3.OperationalError as _exc:
-                pass  # Column already exists
-                logger.debug("Suppressed exception", exc_info=True)
+            existing_cols = {
+                row[1] for row in conn.execute("PRAGMA table_info(assets)").fetchall()
+            }
+            for col_name, col_def in [
+                ("fqdn", "TEXT DEFAULT ''"),
+                ("mac_address", "TEXT DEFAULT ''"),
+                ("vendor", "TEXT DEFAULT ''"),
+                ("notes", "TEXT DEFAULT ''"),
+            ]:
+                if col_name not in existing_cols:
+                    conn.execute(f"ALTER TABLE assets ADD COLUMN {col_name} {col_def}")
             
             # Create indexes for performance
             indexes = [

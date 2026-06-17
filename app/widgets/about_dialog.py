@@ -1,41 +1,106 @@
-﻿from PyQt6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QTextEdit, QProgressBar
+import tempfile
+from pathlib import Path
+
+from PyQt6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QTextEdit, QProgressBar
 from PyQt6.QtCore import QThread, pyqtSignal, Qt
 from PyQt6.QtGui import QFont
-from ..core.update_manager import update_manager
+from ..core.github_updater import GitHubReleaseChecker, ReleaseDownloader, ReleaseInfo
+from ..core.integrity_verifier import IntegrityVerifier
+from ..core.update_installer import UpdateInstaller
+from ..core.version import get_version
 import socket
 import psutil
 
+GITHUB_OWNER = "Cinnamon-Mug"
+GITHUB_REPO = "huginn"
+
+
 class UpdateCheckWorker(QThread):
-    update_found = pyqtSignal(dict)
+    """Background thread for checking GitHub releases."""
+
+    update_available = pyqtSignal(object)  # ReleaseInfo
     no_update = pyqtSignal()
     error = pyqtSignal(str)
-    
+
+    def __init__(self, owner: str = GITHUB_OWNER, repo: str = GITHUB_REPO, parent=None):
+        super().__init__(parent)
+        self.owner = owner
+        self.repo = repo
+
     def run(self):
         try:
-            manifest = update_manager.check_now()
-            if manifest:
-                self.update_found.emit(manifest)
+            checker = GitHubReleaseChecker(self.owner, self.repo)
+            release_info = checker.check_for_update()
+            if release_info is not None:
+                self.update_available.emit(release_info)
             else:
                 self.no_update.emit()
         except Exception as e:
             self.error.emit(str(e))
 
+
 class UpdateInstallWorker(QThread):
-    progress = pyqtSignal(str)
-    finished = pyqtSignal(bool)
-    
-    def __init__(self, manifest):
-        super().__init__()
-        self.manifest = manifest
-        
+    """Background thread for downloading and installing updates."""
+
+    progress = pyqtSignal(int, int)  # bytes_received, total_bytes
+    status = pyqtSignal(str)  # status message
+    finished = pyqtSignal(bool, str)  # success, message
+
+    def __init__(self, release_info: ReleaseInfo, parent=None):
+        super().__init__(parent)
+        self.release_info = release_info
+
     def run(self):
+        temp_dir = Path(tempfile.mkdtemp(prefix="huginn_update_"))
+        zip_path = temp_dir / f"huginn-{self.release_info.version}.zip"
+        checksum_path = temp_dir / f"huginn-{self.release_info.version}.zip.sha256"
+
         try:
-            self.progress.emit("Downloading update...")
-            success = update_manager.install_update(self.manifest)
-            self.finished.emit(success)
+            # Step 1: Download the zip archive
+            self.status.emit("Downloading update archive...")
+            downloader = ReleaseDownloader()
+            downloader.download(
+                self.release_info.zip_url,
+                zip_path,
+                progress_callback=self._on_progress,
+            )
+
+            # Step 2: Download the checksum file
+            self.status.emit("Downloading checksum...")
+            downloader.download(self.release_info.checksum_url, checksum_path)
+
+            # Step 3: Verify integrity
+            self.status.emit("Verifying integrity...")
+            verifier = IntegrityVerifier()
+            verifier.verify(zip_path, checksum_path)
+
+            # Step 4: Install the update
+            self.status.emit("Installing update...")
+            app_root = Path(__file__).parent.parent.parent
+            installer = UpdateInstaller(app_root)
+            installer.install(zip_path, self.release_info.version)
+
+            # Step 5: Clean up temp files on success
+            self._cleanup_temp(temp_dir)
+
+            self.finished.emit(True, "Update installed successfully. Please restart the application.")
+
         except Exception as e:
-            self.progress.emit(f"Error: {e}")
-            self.finished.emit(False)
+            # Clean up downloaded temp files on failure
+            self._cleanup_temp(temp_dir)
+            self.finished.emit(False, str(e))
+
+    def _on_progress(self, bytes_received: int, total_bytes: int):
+        self.progress.emit(bytes_received, total_bytes)
+
+    def _cleanup_temp(self, temp_dir: Path):
+        """Remove the temporary download directory and its contents."""
+        try:
+            import shutil
+            if temp_dir.exists():
+                shutil.rmtree(temp_dir)
+        except OSError:
+            pass
 
 class AboutDialog(QDialog):
     def __init__(self, parent=None):
@@ -55,7 +120,7 @@ class AboutDialog(QDialog):
         
         # Version info
         version_text = f"""
-        <p><b>Version:</b> {update_manager.updater.current_version}</p>
+        <p><b>Version:</b> {get_version()}</p>
         <p><b>Description:</b> Comprehensive cybersecurity toolkit with AI-powered vulnerability assessment</p>
         
         <p><b>Key Features:</b></p>
@@ -177,34 +242,38 @@ class AboutDialog(QDialog):
         
     def check_for_updates(self):
         self.check_btn.setEnabled(False)
+        self.install_btn.setEnabled(False)
         self.update_status.setText("Checking for updates...")
         self.progress_bar.setVisible(True)
         self.progress_bar.setRange(0, 0)  # Indeterminate
         
         self.check_worker = UpdateCheckWorker()
-        self.check_worker.update_found.connect(self.on_update_found)
+        self.check_worker.update_available.connect(self.on_update_available)
         self.check_worker.no_update.connect(self.on_no_update)
         self.check_worker.error.connect(self.on_check_error)
         self.check_worker.start()
         
-    def on_update_found(self, manifest):
+    def on_update_available(self, release_info):
         self.progress_bar.setVisible(False)
-        self.update_status.setText(f"Update available: Version {manifest['version']}")
+        self.update_status.setText(f"Update available: Version {release_info.version}")
         self.install_btn.setVisible(True)
         self.check_btn.setEnabled(True)
-        self.pending_manifest = manifest
+        self.install_btn.setEnabled(True)
+        self.pending_release_info = release_info
         
     def on_no_update(self):
         self.progress_bar.setVisible(False)
-        self.update_status.setText("You have the latest version")
+        self.update_status.setText("You're up to date!")
         self.check_btn.setEnabled(True)
+        self.install_btn.setEnabled(False)
         
     def on_check_error(self, error):
         self.progress_bar.setVisible(False)
         self.update_status.setText(f"Update check failed: {error}")
         self.update_log.setVisible(True)
-        self.update_log.setText(f"Error details: {error}")
+        self.update_log.append(f"Error: {error}")
         self.check_btn.setEnabled(True)
+        self.install_btn.setEnabled(False)
         
     def install_update(self):
         self.install_btn.setEnabled(False)
@@ -214,23 +283,28 @@ class AboutDialog(QDialog):
         self.update_log.setVisible(True)
         self.update_log.clear()
         
-        self.install_worker = UpdateInstallWorker(self.pending_manifest)
-        self.install_worker.progress.connect(self.on_install_progress)
+        self.install_worker = UpdateInstallWorker(self.pending_release_info)
+        self.install_worker.progress.connect(self.on_download_progress)
+        self.install_worker.status.connect(self.on_install_status)
         self.install_worker.finished.connect(self.on_install_finished)
         self.install_worker.start()
         
-    def on_install_progress(self, message):
+    def on_download_progress(self, bytes_received, total_bytes):
+        self.progress_bar.setRange(0, 100)
+        if total_bytes > 0:
+            percentage = int(bytes_received * 100 / total_bytes)
+            self.progress_bar.setValue(percentage)
+        
+    def on_install_status(self, message):
         self.update_log.append(message)
         
-    def on_install_finished(self, success):
+    def on_install_finished(self, success, message):
         self.progress_bar.setVisible(False)
         if success:
-            self.update_log.append("Update completed! Application will restart.")
-            self.update_status.setText("Update installed successfully")
-            # Close dialog and restart will happen automatically
-            self.accept()
+            self.update_log.append(message)
+            self.update_status.setText("Update installed successfully. Please restart the application.")
         else:
-            self.update_log.append("Update installation failed!")
+            self.update_log.append(f"Error: {message}")
             self.update_status.setText("Update failed")
             self.check_btn.setEnabled(True)
             self.install_btn.setEnabled(True)
