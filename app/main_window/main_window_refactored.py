@@ -46,6 +46,7 @@ class MainWindow(QMainWindow):
         """Initialize instance attributes."""
         self.project_root = project_root
         self.current_profile_name = None
+        self.current_engagement_id = None
         self.session_info_window = None
         self._current_home_style = 'attack_chain'
         self.startup_optimizer = StartupOptimizer()
@@ -1013,46 +1014,64 @@ class MainWindow(QMainWindow):
         return self.page_manager.get_page('attack_chain_home')
 
     def new_profile(self):
-        """Navigate to Target Profiles and create a new blank profile."""
+        """Navigate to Engagement Setup and create a new engagement."""
         try:
             self.navigate_to("attack_chain_home")
             page = self._get_attack_chain_home()
             if page:
                 page.new_profile()
             else:
-                self.status_bar.showMessage("Profile management not available")
+                self.status_bar.showMessage("Engagement management not available")
         except Exception as e:
             logger.error(f"Unexpected error in new_profile: {e}")
-            self.status_bar.showMessage("Failed to create new profile")
+            self.status_bar.showMessage("Failed to create new engagement")
 
     def load_profile(self):
-        """Navigate to Target Profiles and show the load-profile dialog."""
+        """Navigate to Engagement Setup and show the load-engagement dialog."""
         try:
             self.navigate_to("attack_chain_home")
             page = self._get_attack_chain_home()
             if page:
                 page.load_profile()
             else:
-                self.status_bar.showMessage("Profile management not available")
+                self.status_bar.showMessage("Engagement management not available")
         except Exception as e:
             logger.error(f"Unexpected error in load_profile: {e}")
-            self.status_bar.showMessage("Failed to load profile")
+            self.status_bar.showMessage("Failed to load engagement")
 
     def delete_profile(self):
-        """Show a list of profiles and delete the selected one."""
+        """Show a list of engagements and delete the selected one."""
         try:
             page = self._get_attack_chain_home()
             if page:
                 page.delete_profile_dialog()
             else:
-                self.status_bar.showMessage("Profile management not available")
+                self.status_bar.showMessage("Engagement management not available")
         except Exception as e:
             logger.error(f"Unexpected error in delete_profile: {e}")
-            self.status_bar.showMessage("Failed to delete profile")
+            self.status_bar.showMessage("Failed to delete engagement")
     
     def open_database_management(self):
         """Open database management page"""
         self.navigate_to("database_management")
+
+    def open_import_export(self):
+        """Open Import/Export dialog for findings."""
+        try:
+            from app.core.feature_gap_integration import FeatureGapIntegration
+            FeatureGapIntegration._open_import_export()
+        except Exception as e:
+            logger.error(f"Failed to open Import/Export: {e}")
+            self.status_bar.showMessage("Import/Export not available")
+
+    def open_team_collaboration(self):
+        """Open Team Collaboration dialog."""
+        try:
+            from app.core.feature_gap_integration import FeatureGapIntegration
+            FeatureGapIntegration._open_collaboration()
+        except Exception as e:
+            logger.error(f"Failed to open Team Collaboration: {e}")
+            self.status_bar.showMessage("Team Collaboration not available")
     
     def open_global_settings(self):
         """Open global settings page"""

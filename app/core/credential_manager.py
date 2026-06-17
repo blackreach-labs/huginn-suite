@@ -5,20 +5,11 @@ Kerberos tickets, etc. discovered or used during an engagement).
 
 Storage
 -------
-Credentials are persisted per-profile in the ``profiles/`` directory.
+Credentials are persisted per-engagement inside the engagement directory:
+``resources/engagements/<engagement_id>/credentials.enc``
+
 Files are Fernet-encrypted using the same key as SecureCredentialManager —
 **no plaintext passwords are ever written to disk**.
-
-File layout
-~~~~~~~~~~~
-``profiles/<profile>_credentials.enc``
-    Fernet-encrypted JSON blob (same schema as the old plaintext JSON).
-
-Migration
-~~~~~~~~~
-On first load, if a legacy plaintext ``<profile>_credentials.json`` is found
-it is automatically encrypted, the plaintext file is deleted, and a warning
-is logged.
 """
 
 from __future__ import annotations
@@ -185,45 +176,54 @@ class CredentialManager:
         for cred_data in data.get('credentials', []):
             self.credentials.append(Credential.from_dict(cred_data))
 
-    def set_profile(self, profile_name: str):
-        """Switch to a different profile — load only, never saves.
+    def set_profile(self, engagement_id: str):
+        """Switch to a different engagement — load only, never saves.
 
         Saving happens exclusively via add_credential(), remove_credential(),
-        and save_to_profile_json(). Profile switching must never overwrite
-        the target profile's file with stale in-memory data.
+        and save_to_profile_json(). Engagement switching must never overwrite
+        the target engagement's file with stale in-memory data.
         """
-        self.current_profile = profile_name
-        self._explicit_profile = profile_name
-        self._persist_explicit_profile(profile_name)
+        self.current_profile = engagement_id
+        self._explicit_profile = engagement_id
+        self._persist_explicit_profile(engagement_id)
         self.credentials.clear()
         self._load_profile_credentials()
 
-    def _persist_explicit_profile(self, profile_name: str):
-        """Write the explicit profile name to disk so it survives restarts."""
+    def _persist_explicit_profile(self, engagement_id: str):
+        """Write the active engagement ID to disk so it survives restarts."""
         try:
             import os as _os
             path = _os.path.join(
                 _os.path.dirname(_os.path.dirname(_os.path.dirname(__file__))),
-                "resources", "config", "last_profile.json"
+                "resources", "config", "last_engagement.json"
             )
             _os.makedirs(_os.path.dirname(path), exist_ok=True)
             with open(path, 'w') as f:
                 import json as _json
-                _json.dump({"explicit_profile": profile_name}, f)
+                _json.dump({"engagement_id": engagement_id}, f)
         except Exception as exc:
-            logger.debug(f"Could not persist explicit profile: {exc}")
+            logger.debug(f"Could not persist active engagement: {exc}")
 
     @staticmethod
     def _load_explicit_profile() -> Optional[str]:
-        """Return the last explicitly selected profile name, or None."""
+        """Return the last active engagement ID, or None."""
         try:
             import os as _os, json as _json
+            # Try new format first
             path = _os.path.join(
+                _os.path.dirname(_os.path.dirname(_os.path.dirname(__file__))),
+                "resources", "config", "last_engagement.json"
+            )
+            if _os.path.exists(path):
+                data = _json.load(open(path))
+                return data.get("engagement_id") or data.get("explicit_profile")
+            # Fallback to legacy format
+            legacy_path = _os.path.join(
                 _os.path.dirname(_os.path.dirname(_os.path.dirname(__file__))),
                 "resources", "config", "last_profile.json"
             )
-            if _os.path.exists(path):
-                return _json.load(open(path)).get("explicit_profile")
+            if _os.path.exists(legacy_path):
+                return _json.load(open(legacy_path)).get("explicit_profile")
         except Exception:
             pass
         return None
@@ -286,18 +286,16 @@ class CredentialManager:
     # ------------------------------------------------------------------
 
     def _get_enc_file_path(self) -> Path:
-        """Return the path to the encrypted credential file for the current profile."""
-        project_root = Path(__file__).parent.parent.parent
-        profiles_dir = project_root / "profiles"
-        profiles_dir.mkdir(exist_ok=True)
-        profile_name = self.current_profile or "default"
-        return profiles_dir / f"{profile_name}_credentials.enc"
+        """Return the path to the encrypted credential file for the current engagement.
 
-    def _get_legacy_json_path(self) -> Path:
-        """Return the path to the old plaintext credential file (for migration)."""
+        Credentials are stored inside the engagement directory:
+        resources/engagements/<engagement_id>/credentials.enc
+        """
+        engagement_id = self.current_profile or "default"
         project_root = Path(__file__).parent.parent.parent
-        profile_name = self.current_profile or "default"
-        return project_root / "profiles" / f"{profile_name}_credentials.json"
+        eng_dir = project_root / "resources" / "engagements" / engagement_id
+        eng_dir.mkdir(parents=True, exist_ok=True)
+        return eng_dir / "credentials.enc"
 
     def _get_fernet(self):
         """Return the Fernet cipher from SecureCredentialManager."""
@@ -333,19 +331,11 @@ class CredentialManager:
             )
 
     def _load_profile_credentials(self):
-        """Load and decrypt credentials for the current profile.
-
-        Automatically migrates legacy plaintext JSON files on first load.
-        """
+        """Load and decrypt credentials for the current engagement."""
         if not self.current_profile:
             return
 
         enc_path = self._get_enc_file_path()
-        legacy_path = self._get_legacy_json_path()
-
-        # --- Migration: plaintext → encrypted ---
-        if not enc_path.exists() and legacy_path.exists():
-            self._migrate_plaintext_file(legacy_path, enc_path)
 
         if not enc_path.exists():
             return
@@ -357,11 +347,11 @@ class CredentialManager:
             data = json.loads(decrypted.decode('utf-8'))
             self.from_dict(data)
             logger.debug(
-                f"Credentials loaded for profile '{self.current_profile}'"
+                f"Credentials loaded for engagement '{self.current_profile}'"
             )
         except InvalidToken:
             logger.error(
-                f"Failed to decrypt credentials for profile "
+                f"Failed to decrypt credentials for engagement "
                 f"'{self.current_profile}' — wrong key or corrupted file."
             )
         except Exception as e:
@@ -371,53 +361,16 @@ class CredentialManager:
                 exc_info=True,
             )
 
-    def _migrate_plaintext_file(self, legacy_path: Path, enc_path: Path):
-        """Encrypt a legacy plaintext credential file and delete the original."""
-        logger.warning(
-            f"Migrating plaintext credential file '{legacy_path.name}' to "
-            f"encrypted format. The plaintext file will be deleted."
-        )
-        try:
-            with open(legacy_path, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-
-            scm = self._get_fernet()
-            json_bytes = json.dumps(data).encode('utf-8')
-            encrypted = scm.encrypt_data(json_bytes)
-            enc_path.write_bytes(encrypted)
-
-            # Securely delete the plaintext file
-            # Overwrite with zeros before unlinking so the data is not
-            # trivially recoverable from the filesystem.
-            try:
-                size = legacy_path.stat().st_size
-                with open(legacy_path, 'r+b') as f:
-                    f.write(b'\x00' * size)
-            except Exception as _exc:
-                pass  # Best-effort overwrite; deletion still proceeds
-                logger.debug("Suppressed exception", exc_info=True)
-            legacy_path.unlink()
-
-            logger.info(
-                f"Migration complete: '{legacy_path.name}' → '{enc_path.name}'"
-            )
-        except Exception as e:
-            logger.error(
-                f"Migration failed for '{legacy_path}': {e}. "
-                f"Plaintext file left in place.",
-                exc_info=True,
-            )
-
     # ------------------------------------------------------------------
     # Profile auto-detection
     # ------------------------------------------------------------------
 
     def _resolve_current_profile(self) -> str:
-        """Return the profile name that should be active right now.
+        """Return the engagement ID that should be active right now.
 
         Priority:
-        1. Explicit named profile set by the user via set_profile() from the UI
-           (e.g. "LAB", "HTB-Code") — this always wins.
+        1. Explicit engagement ID set by the user via set_profile() from the UI
+           — this always wins.
         2. Active session ID from the session manager (for session-scoped saves).
         3. self.current_profile as set at init time.
         4. "default" fallback.

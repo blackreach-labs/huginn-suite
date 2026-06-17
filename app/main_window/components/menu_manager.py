@@ -1,5 +1,6 @@
 ﻿"""Menu management for the main window."""
 from PyQt6.QtWidgets import QMenuBar, QMenu
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction, QKeySequence
 
 
@@ -63,14 +64,15 @@ class MenuManager:
         """Create the File menu — file operations only."""
         file_menu = self.menubar.addMenu('&File')
         
-        # Profiles submenu
-        profiles_menu = file_menu.addMenu('&Profiles')
-        self._add_action(profiles_menu, '&New Profile', 'Ctrl+N', 'Create a new engagement profile', self.main_window.new_profile)
-        self._add_action(profiles_menu, '&Load Profile...', 'Ctrl+O', 'Load an existing engagement profile', self.main_window.load_profile)
-        self._add_action(profiles_menu, '&Delete Profile...', None, 'Delete an engagement profile', self.main_window.delete_profile)
+        # Engagements submenu
+        engagements_menu = file_menu.addMenu('&Engagements')
+        self._add_action(engagements_menu, '&New Engagement', 'Ctrl+N', 'Create a new engagement', self.main_window.new_profile)
+        self._add_action(engagements_menu, '&Load Engagement...', 'Ctrl+O', 'Load an existing engagement', self.main_window.load_profile)
+        self._add_action(engagements_menu, '&Delete Engagement...', None, 'Delete an engagement', self.main_window.delete_profile)
         
         file_menu.addSeparator()
-        self._add_action(file_menu, '&Export Results', 'Ctrl+E', 'Export scan results', self.main_window.export_current_results)
+        self._add_action(file_menu, '&Import/Export...', 'Ctrl+Shift+E', 'Import or export findings in various formats', self.main_window.open_import_export)
+        self._add_action(file_menu, '&Team Collaboration...', None, 'Share engagements with teammates via encrypted packages', self.main_window.open_team_collaboration)
         
         file_menu.addSeparator()
         self._add_action(file_menu, 'E&xit', 'Ctrl+Q', 'Exit application', self.main_window.close)
@@ -90,10 +92,16 @@ class MenuManager:
         nav_menu.addSeparator()
         
         # Standalone pages
-        self._add_action(nav_menu, '&Inventory', 'Ctrl+Shift+I', 'View and manage discovered assets', lambda: self.main_window.navigate_to('inventory'))
-        self._add_action(nav_menu, 'V&PN Connection', None, 'Manage VPN connections', self.main_window.navigate_to_vpn)
-        self._add_action(nav_menu, '&Running Scans', 'Ctrl+Shift+R', 'Monitor and control active scans', self.main_window.show_running_scans)
-        self._add_action(nav_menu, '&Sessions', 'Ctrl+Shift+S', 'Session management and information', self.main_window.show_session_info)
+        self._add_action(nav_menu, '&Inventory', 'F3', 'View and manage discovered assets', lambda: self.main_window.navigate_to('inventory'))
+        self._add_action(nav_menu, '&Running Scans', 'F4', 'Monitor and control active scans', self.main_window.show_running_scans)
+        self._add_action(nav_menu, '&Sessions', 'F6', 'Session management and information', self.main_window.show_session_info)
+        
+        nav_menu.addSeparator()
+
+        self._add_action(nav_menu, 'V&PN Connection', 'F7', 'Manage VPN connections', self.main_window.navigate_to_vpn)
+        self._add_action(nav_menu, '&Databases', 'F8', 'Database management and SQL queries', self.main_window.open_database_management)
+        self._add_action(nav_menu, '&Global Settings', 'F9', 'Configure API keys and global settings', self.main_window.open_global_settings)
+        self._add_action(nav_menu, '&License Manager', 'F10', 'Manage professional license', self.main_window.open_license_manager)
 
     def _create_tools_menu(self):
         """Create the Tools menu — configuration and utility tools."""
@@ -101,13 +109,6 @@ class MenuManager:
         
         self._add_action(tools_menu, '&Stealth Mode', None, 'Configure stealth and evasion settings', self.main_window.open_stealth_config)
         self._add_action(tools_menu, 'Script &Editor', None, 'Write and save scripts or wordlists', self.main_window.open_script_editor)
-        
-        tools_menu.addSeparator()
-        
-        self._add_action(tools_menu, '&Cracking', None, 'Password cracking and SSH key parsing tools', lambda: self.main_window.navigate_to_cracking())
-        self._add_action(tools_menu, '&Databases', 'Ctrl+D', 'Database management and SQL queries', self.main_window.open_database_management)
-        self._add_action(tools_menu, '&Global Settings', 'Ctrl+,', 'Configure API keys and global settings', self.main_window.open_global_settings)
-        self._add_action(tools_menu, '&License Manager', None, 'Manage professional license', self.main_window.open_license_manager)
     
     def _create_view_menu(self):
         """Create the View menu — visual/UI preferences only."""
@@ -152,6 +153,7 @@ class MenuManager:
         action = QAction(text, self.main_window)
         if shortcut:
             action.setShortcut(QKeySequence(shortcut))
+            action.setShortcutContext(Qt.ShortcutContext.WindowShortcut)
         if status_tip:
             action.setStatusTip(status_tip)
         action.triggered.connect(callback)

@@ -49,7 +49,7 @@ class InfrastructureOSINTComponent(QWidget):
         layout.addWidget(target_group)
         
         # Professional enumeration configuration
-        config_group = QGroupBox("⚙️ Professional Enumeration Config")
+        config_group = QGroupBox("⚙️ Enumeration Config")
         config_layout = QVBoxLayout(config_group)
         
         # Source selection with status indicators
@@ -100,7 +100,7 @@ class InfrastructureOSINTComponent(QWidget):
         self.filter_wildcards_cb = QCheckBox("🚫 Wildcard Filtering")
         self.filter_wildcards_cb.setChecked(True)
         self.filter_wildcards_cb.setToolTip("Filter out wildcard DNS entries")
-        advanced_layout.addWidget(self.filter_wildcards_cb, 0, 1)
+        advanced_layout.addWidget(self.filter_wildcards_cb, 1, 0)
         
         # Rate Limiting
         rate_layout = QHBoxLayout()
@@ -112,7 +112,7 @@ class InfrastructureOSINTComponent(QWidget):
         self.rate_limit_spin.setToolTip("Global rate limit for API requests")
         rate_layout.addWidget(self.rate_limit_spin)
         rate_layout.addStretch()
-        advanced_layout.addLayout(rate_layout, 1, 0, 1, 2)
+        advanced_layout.addLayout(rate_layout, 2, 0, 1, 2)
         
         config_layout.addLayout(advanced_layout)
         layout.addWidget(config_group)
@@ -897,7 +897,6 @@ class InfrastructureOSINTComponent(QWidget):
                 color: #DCDCDC;
                 font-weight: bold;
                 padding: 8px;
-                font-size: 11px;
             }
             QPushButton:hover {
                 background-color: rgba(50, 70, 90, 200);
@@ -912,7 +911,6 @@ class InfrastructureOSINTComponent(QWidget):
                 border-radius: 5px;
                 color: #DCDCDC;
                 padding: 5px;
-                font-size: 11px;
             }
             QLineEdit:focus {
                 border: 2px solid #64C8FF;
@@ -923,12 +921,10 @@ class InfrastructureOSINTComponent(QWidget):
                 border-radius: 5px;
                 color: #DCDCDC;
                 font-family: 'Neuropol X', monospace;
-                font-size: 11px;
             }
             QLabel {
                 color: #64C8FF;
                 font-weight: bold;
-                font-size: 11px;
             }
             QGroupBox {
                 font-weight: bold;
@@ -936,7 +932,6 @@ class InfrastructureOSINTComponent(QWidget):
                 border-radius: 5px;
                 margin-top: 10px;
                 color: #64C8FF;
-                font-size: 12px;
             }
             QGroupBox::title {
                 subcontrol-origin: margin;
@@ -945,7 +940,6 @@ class InfrastructureOSINTComponent(QWidget):
             }
             QCheckBox {
                 color: #DCDCDC;
-                font-size: 10px;
                 spacing: 5px;
             }
             QCheckBox::indicator {
@@ -981,7 +975,6 @@ class InfrastructureOSINTComponent(QWidget):
                 border-radius: 5px;
                 color: #DCDCDC;
                 padding: 5px;
-                font-size: 11px;
             }
             QComboBox:hover {
                 border: 2px solid #64C8FF;

@@ -69,6 +69,7 @@ CREATE TABLE IF NOT EXISTS engagements (
     start_date TEXT,
     end_date TEXT,
     db_path TEXT NOT NULL,
+    scope_data TEXT,
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL
 );
@@ -169,6 +170,13 @@ class EngagementManager(QObject):
             with self._master_pool.get_connection() as conn:
                 conn.executescript(MASTER_INDEX_SCHEMA)
                 conn.commit()
+                # Migration: add scope_data column if missing (existing DBs)
+                try:
+                    conn.execute("SELECT scope_data FROM engagements LIMIT 1")
+                except sqlite3.OperationalError:
+                    conn.execute("ALTER TABLE engagements ADD COLUMN scope_data TEXT")
+                    conn.commit()
+                    logger.info("Migrated master index: added scope_data column.")
             logger.info("Master index schema initialized.")
         except sqlite3.Error as e:
             logger.error(f"Failed to initialize master index schema: {e}")
@@ -185,6 +193,7 @@ class EngagementManager(QObject):
         engagement_type: str,
         start_date: Optional[str] = None,
         end_date: Optional[str] = None,
+        scope_data: Optional[Dict] = None,
     ) -> str:
         """Create a new engagement with an isolated database.
 
@@ -194,6 +203,8 @@ class EngagementManager(QObject):
             engagement_type: Type (internal, external, web, mobile, physical, cloud).
             start_date: ISO date string for planned start.
             end_date: ISO date string for planned end.
+            scope_data: Optional dict with scope/target info (primary_target,
+                out_scope, subdomains, cloud_assets, restrictions, permissions).
 
         Returns:
             The generated engagement UUID.
@@ -217,13 +228,15 @@ class EngagementManager(QObject):
         eng_db.create_schema()
         eng_db.close()
 
+        scope_json = json.dumps(scope_data) if scope_data else None
+
         # Record in master index
         with self._master_pool.get_connection() as conn:
             conn.execute(
                 """INSERT INTO engagements
                    (id, name, client_name, engagement_type, status,
-                    start_date, end_date, db_path, created_at, updated_at)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                    start_date, end_date, db_path, scope_data, created_at, updated_at)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                 (
                     engagement_id,
                     name,
@@ -233,6 +246,7 @@ class EngagementManager(QObject):
                     start_date,
                     end_date,
                     relative_db_path,
+                    scope_json,
                     now,
                     now,
                 ),
@@ -242,6 +256,147 @@ class EngagementManager(QObject):
         logger.info(f"Engagement created: {engagement_id} ({name})")
         self.engagement_created.emit(engagement_id)
         return engagement_id
+
+    def create_from_profile(self, profile_data: Dict) -> str:
+        """Create an engagement from profile/target setup data.
+
+        This bridges the legacy profile JSON format into the engagement
+        system. The profile_data dict matches what the Target Profiles UI
+        saves to disk.
+
+        Args:
+            profile_data: Dict with keys like target_name, primary_target,
+                out_scope, subdomains, cloud_assets, restrictions,
+                dos_allowed, social_eng_allowed, physical_allowed.
+
+        Returns:
+            The generated engagement UUID.
+        """
+        name = profile_data.get("target_name", "Untitled Engagement")
+        client_name = name  # Use target name as client for legacy profiles
+
+        # Derive engagement type from scope data heuristics
+        engagement_type = "external"  # default
+        primary_target = profile_data.get("primary_target", "")
+        if primary_target:
+            lower_target = primary_target.lower()
+            if any(kw in lower_target for kw in ("10.", "192.168.", "172.16.")):
+                engagement_type = "internal"
+            elif any(kw in lower_target for kw in ("api.", "/api")):
+                engagement_type = "web"
+
+        scope_data = {
+            "primary_target": profile_data.get("primary_target", ""),
+            "out_scope": profile_data.get("out_scope", ""),
+            "subdomains": profile_data.get("subdomains", ""),
+            "cloud_assets": profile_data.get("cloud_assets", ""),
+            "restrictions": profile_data.get("restrictions", ""),
+            "dos_allowed": profile_data.get("dos_allowed", False),
+            "social_eng_allowed": profile_data.get("social_eng_allowed", False),
+            "physical_allowed": profile_data.get("physical_allowed", False),
+        }
+
+        return self.create_engagement(
+            name=name,
+            client_name=client_name,
+            engagement_type=engagement_type,
+            scope_data=scope_data,
+        )
+
+    def find_by_name(self, name: str) -> Optional[Dict]:
+        """Find an engagement by its name.
+
+        Args:
+            name: The engagement name to search for.
+
+        Returns:
+            Engagement metadata dict or None if not found.
+        """
+        rows = self._master_pool.execute_query(
+            """SELECT id, name, client_name, engagement_type, status,
+                      start_date, end_date, db_path, scope_data, created_at, updated_at
+               FROM engagements WHERE name = ? ORDER BY updated_at DESC LIMIT 1""",
+            (name,),
+        )
+        if not rows:
+            return None
+        row = rows[0]
+        return {
+            "id": row[0],
+            "name": row[1],
+            "client_name": row[2],
+            "engagement_type": row[3],
+            "status": row[4],
+            "start_date": row[5],
+            "end_date": row[6],
+            "db_path": row[7],
+            "scope_data": json.loads(row[8]) if row[8] else None,
+            "created_at": row[9],
+            "updated_at": row[10],
+        }
+
+    def update_scope_data(self, engagement_id: str, scope_data: Dict) -> bool:
+        """Update the scope data for an engagement.
+
+        Args:
+            engagement_id: UUID of the engagement.
+            scope_data: New scope data dict.
+
+        Returns:
+            True if the update was applied.
+        """
+        now = datetime.now(timezone.utc).isoformat()
+        scope_json = json.dumps(scope_data)
+        with self._master_pool.get_connection() as conn:
+            cursor = conn.execute(
+                "UPDATE engagements SET scope_data = ?, updated_at = ? WHERE id = ?",
+                (scope_json, now, engagement_id),
+            )
+            conn.commit()
+            return cursor.rowcount > 0
+
+    def delete_engagement(self, engagement_id: str) -> bool:
+        """Delete an engagement and its isolated database.
+
+        Args:
+            engagement_id: UUID of the engagement to delete.
+
+        Returns:
+            True if the engagement was deleted.
+        """
+        import shutil
+
+        # Close if this is the active engagement
+        if self.active_engagement_id == engagement_id:
+            self.close_engagement()
+
+        # Look up DB path
+        rows = self._master_pool.execute_query(
+            "SELECT db_path FROM engagements WHERE id = ?", (engagement_id,)
+        )
+        if not rows:
+            return False
+
+        relative_db_path = rows[0][0]
+        # The engagement dir is the parent of the db file
+        eng_dir = Path(self._master_db_path).parent / Path(relative_db_path).parent
+
+        # Remove from master index
+        with self._master_pool.get_connection() as conn:
+            conn.execute("DELETE FROM engagement_state_transitions WHERE engagement_id = ?", (engagement_id,))
+            conn.execute("DELETE FROM scheduled_scans WHERE engagement_id = ?", (engagement_id,))
+            conn.execute("DELETE FROM engagements WHERE id = ?", (engagement_id,))
+            conn.commit()
+
+        # Remove engagement directory from disk
+        if eng_dir.exists():
+            try:
+                shutil.rmtree(str(eng_dir))
+            except Exception as e:
+                logger.warning(f"Failed to remove engagement directory {eng_dir}: {e}")
+
+        logger.info(f"Engagement deleted: {engagement_id}")
+        return True
 
     def open_engagement(self, engagement_id: str) -> bool:
         """Open an engagement and connect to its isolated database.
@@ -300,7 +455,7 @@ class EngagementManager(QObject):
         """
         rows = self._master_pool.execute_query(
             """SELECT id, name, client_name, engagement_type, status,
-                      start_date, end_date, db_path, created_at, updated_at
+                      start_date, end_date, db_path, scope_data, created_at, updated_at
                FROM engagements WHERE id = ?""",
             (engagement_id,),
         )
@@ -316,8 +471,9 @@ class EngagementManager(QObject):
             "start_date": row[5],
             "end_date": row[6],
             "db_path": row[7],
-            "created_at": row[8],
-            "updated_at": row[9],
+            "scope_data": json.loads(row[8]) if row[8] else None,
+            "created_at": row[9],
+            "updated_at": row[10],
         }
 
     def list_engagements(
@@ -335,7 +491,7 @@ class EngagementManager(QObject):
             List of engagement metadata dicts.
         """
         query = """SELECT id, name, client_name, engagement_type, status,
-                          start_date, end_date, db_path, created_at, updated_at
+                          start_date, end_date, db_path, scope_data, created_at, updated_at
                    FROM engagements WHERE 1=1"""
         params: list = []
 
@@ -363,8 +519,9 @@ class EngagementManager(QObject):
                 "start_date": row[5],
                 "end_date": row[6],
                 "db_path": row[7],
-                "created_at": row[8],
-                "updated_at": row[9],
+                "scope_data": json.loads(row[8]) if row[8] else None,
+                "created_at": row[9],
+                "updated_at": row[10],
             })
         return results
 

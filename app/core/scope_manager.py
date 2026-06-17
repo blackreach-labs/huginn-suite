@@ -57,17 +57,17 @@ class ScopeManager:
                     pass
                     logger.debug("Suppressed exception", exc_info=True)
             
-            # Check if it's an IP address
-            try:
-                ipaddress.IPv4Address(item)
-                if is_in_scope:
-                    self.in_scope_ips.add(item)
-                else:
-                    self.out_of_scope_ips.add(item)
-                continue
-            except Exception as _exc:
-                pass
-                logger.debug("Suppressed exception", exc_info=True)
+            # Check if it's an IP address (only attempt if it looks like one)
+            if re.match(r'^\d{1,3}(\.\d{1,3}){3}$', item):
+                try:
+                    ipaddress.IPv4Address(item)
+                    if is_in_scope:
+                        self.in_scope_ips.add(item)
+                    else:
+                        self.out_of_scope_ips.add(item)
+                    continue
+                except ValueError:
+                    logger.debug(f"Invalid IPv4 address format: {item}")
             
             # Treat as domain
             if is_in_scope:

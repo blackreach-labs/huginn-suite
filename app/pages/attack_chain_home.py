@@ -9,19 +9,31 @@ from app.pages.components.base_page import BasePage
 from app.widgets.attack_chain_mindmap import AttackChainMindmap
 import os
 from app.core.logger import logger
+from app.core.engagement_manager import EngagementManager
 
-# Resolve the profiles directory relative to this file so it works regardless
-# of the working directory the app is launched from.
+# Resolve the project root relative to this file.
 _PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-_PROFILES_DIR = os.path.join(_PROJECT_ROOT, 'profiles')
 
 class AttackChainHomePage(BasePage):
     """Attack chain home page with Setup, Mindmap, and Correlations tabs"""
     
     def __init__(self, parent=None):
+        self._engagement_mgr = None
+        self.main_window = parent
         super().__init__(parent)
         self.setObjectName("AttackChainHomePage")
-        self.main_window = parent
+
+    @property
+    def engagement_manager(self) -> EngagementManager:
+        """Lazily get the EngagementManager from the feature gap integration engines."""
+        if self._engagement_mgr is None:
+            try:
+                from app.core.feature_gap_integration import FeatureGapIntegration
+                self._engagement_mgr = FeatureGapIntegration.engines.engagement_manager
+            except Exception:
+                # Fallback: create a standalone instance
+                self._engagement_mgr = EngagementManager()
+        return self._engagement_mgr
     
     def setup_ui(self):
         """Setup the UI - required by BasePage"""
@@ -58,7 +70,7 @@ class AttackChainHomePage(BasePage):
         
         # Target Profiles subtab
         target_profiles_tab = self.create_target_profiles_tab()
-        setup_subtabs.addTab(target_profiles_tab, "🎯 Target Profiles")
+        setup_subtabs.addTab(target_profiles_tab, "🎯 Engagements")
         
         # Credential Management subtab
         credential_mgmt_tab = self.create_credential_management_tab()
@@ -200,7 +212,7 @@ class AttackChainHomePage(BasePage):
         btn_layout = QHBoxLayout()
         btn_layout.setSpacing(8)
 
-        add_btn = QPushButton("💾 Save Profile")
+        add_btn = QPushButton("💾 Save Engagement")
         add_btn.setStyleSheet(self.get_button_style("#64C8FF", "#000000"))
         add_btn.clicked.connect(self.save_current_profile)
         btn_layout.addWidget(add_btn)
@@ -213,15 +225,15 @@ class AttackChainHomePage(BasePage):
         btn_layout.addStretch()
         layout.addLayout(btn_layout)
 
-        # ── Profiles summary table ────────────────────────────────────────────
-        list_label = QLabel("📋 Profiles:")
+        # ── Engagements summary table ────────────────────────────────────────────
+        list_label = QLabel("📋 Engagements:")
         list_label.setStyleSheet("font-weight: bold; color: #64C8FF; margin-top: 4px;")
         layout.addWidget(list_label)
 
         self.target_table = QTableWidget()
         self.target_table.setColumnCount(5)
         self.target_table.setHorizontalHeaderLabels(
-            ["Profile Name", "In-Scope Targets", "Credentials", "Permissions", "Status"])
+            ["Engagement Name", "In-Scope Targets", "Credentials", "Permissions", "Status"])
         self.target_table.setMinimumHeight(300)
         self.target_table.setStyleSheet("""
             QTableWidget {
@@ -412,7 +424,7 @@ class AttackChainHomePage(BasePage):
         """Create the Correlations tab"""
         try:
             from app.widgets.correlation_dashboard_widget import CorrelationDashboardWidget
-            tenant_id = getattr(self.main_window, 'current_profile_name', 'default')
+            tenant_id = getattr(self.main_window, 'current_engagement_id', None) or getattr(self.main_window, 'current_profile_name', 'default')
             return CorrelationDashboardWidget(tenant_id)
         except ImportError:
             placeholder = QLabel("🔗 Cross-Scan Correlations Dashboard\n(Vulnerability correlation and analysis)")
@@ -428,7 +440,7 @@ class AttackChainHomePage(BasePage):
         # Try to create remediation widget
         try:
             from app.widgets.remediation_widget import RemediationWidget
-            tenant_id = getattr(self.main_window, 'current_profile_name', 'default')
+            tenant_id = getattr(self.main_window, 'current_engagement_id', None) or getattr(self.main_window, 'current_profile_name', 'default')
             remediation_widget = RemediationWidget(tenant_id)
             layout.addWidget(remediation_widget)
         except ImportError:
@@ -448,7 +460,7 @@ class AttackChainHomePage(BasePage):
         # Try to create centralized dashboard
         try:
             from app.pages.centralized_dashboard_page import create_centralized_dashboard
-            tenant_id = getattr(self.main_window, 'current_profile_name', 'default')
+            tenant_id = getattr(self.main_window, 'current_engagement_id', None) or getattr(self.main_window, 'current_profile_name', 'default')
             centralized_dashboard = create_centralized_dashboard(tenant_id)
             layout.addWidget(centralized_dashboard)
         except ImportError:
@@ -468,7 +480,7 @@ class AttackChainHomePage(BasePage):
         # Try to create advanced analytics widget
         try:
             from app.widgets.advanced_analytics_widget import create_advanced_analytics_widget
-            tenant_id = getattr(self.main_window, 'current_profile_name', 'default')
+            tenant_id = getattr(self.main_window, 'current_engagement_id', None) or getattr(self.main_window, 'current_profile_name', 'default')
             advanced_analytics = create_advanced_analytics_widget(tenant_id)
             layout.addWidget(advanced_analytics)
         except ImportError:
@@ -680,50 +692,62 @@ class AttackChainHomePage(BasePage):
                 field.setVisible(True)
     
     def save_current_profile(self):
-        """Save the current form data into the selected profile (or create a new one if none selected)."""
-        import os
-        import json
-
+        """Save the current form data into the engagement (create or update)."""
         name = self.target_name.text().strip()
         target = self.primary_target.text().strip()
 
         if not name:
-            from PyQt6.QtWidgets import QMessageBox
-            QMessageBox.warning(self, "No Profile Name", "Please enter a Target Name before saving.")
+            QMessageBox.warning(self, "No Engagement Name", "Please enter a Target Name before saving.")
             return
 
-        profiles_dir = _PROFILES_DIR
-        os.makedirs(profiles_dir, exist_ok=True)
-
-        profile_data = {
-            'target_name': name,
+        scope_data = {
             'primary_target': target,
-            'scope': target,
+            'out_scope': self.out_scope.text(),
             'subdomains': self.subdomains.text(),
             'cloud_assets': self.cloud_assets.text(),
-            'out_scope': self.out_scope.text(),
             'restrictions': self.restrictions.text(),
             'dos_allowed': self.dos_allowed.isChecked(),
             'social_eng_allowed': self.social_eng_allowed.isChecked(),
             'physical_allowed': self.physical_allowed.isChecked(),
-            'credentials': self.get_credentials_for_save(),
         }
 
-        profile_file = os.path.join(profiles_dir, f"{name}.json")
-        try:
-            tmp_file = profile_file + ".tmp"
-            with open(tmp_file, 'w') as f:
-                json.dump(profile_data, f, indent=2)
-            os.replace(tmp_file, profile_file)
-        except Exception as e:
-            from PyQt6.QtWidgets import QMessageBox
-            QMessageBox.warning(self, 'Error', f'Failed to save profile: {str(e)}')
-            return
+        mgr = self.engagement_manager
 
-        # Refresh the table so the row reflects the latest data
+        # Check if this engagement already exists
+        existing = mgr.find_by_name(name)
+        if existing:
+            # Update existing engagement's scope data
+            mgr.update_scope_data(existing["id"], scope_data)
+            engagement_id = existing["id"]
+        else:
+            # Create a new engagement
+            profile_data = dict(scope_data)
+            profile_data['target_name'] = name
+            engagement_id = mgr.create_from_profile(profile_data)
+
+        # Open the engagement so its DB is active
+        mgr.open_engagement(engagement_id)
+
+        # Update main window state
+        if hasattr(self.main_window, 'current_engagement_id'):
+            self.main_window.current_engagement_id = engagement_id
+        else:
+            setattr(self.main_window, 'current_engagement_id', engagement_id)
+        # Keep legacy attribute in sync
+        self.main_window.current_profile_name = name
+
+        # Save credentials for this engagement
+        try:
+            from app.core.credential_manager import credential_manager
+            credential_manager.set_profile(engagement_id)
+            credential_manager.save_to_profile_json()
+        except Exception as e:
+            logger.debug(f"Credential save during engagement save: {e}")
+
+        # Refresh the table
         self.load_existing_profiles()
 
-        # Re-select the saved profile row
+        # Re-select the saved engagement row
         for row in range(self.target_table.rowCount()):
             item = self.target_table.item(row, 0)
             if item and item.text() == name:
@@ -731,147 +755,105 @@ class AttackChainHomePage(BasePage):
                 break
     
     def on_profile_selected(self):
-        """Handle profile selection from table"""
+        """Handle engagement selection from table — opens the engagement."""
         current_row = self.target_table.currentRow()
         if current_row >= 0:
-            # Get profile data from table
             name_item = self.target_table.item(current_row, 0)
-            target_item = self.target_table.item(current_row, 2)
-            
+
             if name_item:
-                profile_name = name_item.text()
-                
+                engagement_name = name_item.text()
+
                 # Suppress autosave while we populate the form
                 self._loading_profile = True
                 try:
-                    # Set current profile name for tenant ID
-                    if hasattr(self.main_window, 'current_profile_name'):
-                        self.main_window.current_profile_name = profile_name
+                    mgr = self.engagement_manager
+                    engagement = mgr.find_by_name(engagement_name)
+                    if not engagement:
+                        # Engagement not found — might be legacy; just set the name
+                        self.target_name.setText(engagement_name)
+                        self.update_scope_validation()
+                        return
+
+                    engagement_id = engagement["id"]
+
+                    # Open the engagement (connects its isolated DB)
+                    mgr.open_engagement(engagement_id)
+
+                    # Update main window state
+                    self.main_window.current_profile_name = engagement_name
+                    if hasattr(self.main_window, 'current_engagement_id'):
+                        self.main_window.current_engagement_id = engagement_id
                     else:
-                        setattr(self.main_window, 'current_profile_name', profile_name)
-                    
-                    # Switch credential manager to this profile
+                        setattr(self.main_window, 'current_engagement_id', engagement_id)
+
+                    # Switch credential manager to this engagement
                     try:
                         from app.core.credential_manager import credential_manager
-                        credential_manager.set_profile(profile_name)
-                    except ImportError as _exc:
-                        pass
-                        logger.debug("Suppressed exception", exc_info=True)
-                    
+                        credential_manager.set_profile(engagement_id)
+                    except Exception as _exc:
+                        logger.debug(f"Credential switch on engagement select: {_exc}")
+
                     # Trigger tenant change via tenant-aware updater
                     try:
                         from app.core.tenant_aware_updater import tenant_aware_updater
-                        tenant_aware_updater.set_tenant(profile_name)
+                        tenant_aware_updater.set_tenant(engagement_id)
                     except ImportError:
-                        # Fallback to old method
-                        self.trigger_tenant_change_updates(profile_name)
-                    
-                    # Load profile data from disk if exists
-                    import os
-                    import json
-                    profiles_dir = _PROFILES_DIR
-                    profile_file = os.path.join(profiles_dir, f"{profile_name}.json")
-                    
-                    if os.path.exists(profile_file):
-                        try:
-                            with open(profile_file, 'r', encoding='utf-8-sig') as f:
-                                profile_data = json.load(f)
-                            
-                            # Load target information fields
-                            self.target_name.setText(profile_data.get('target_name', profile_name))
-                            target_text = profile_data.get('primary_target', '') or profile_data.get('scope', '')
-                            self.primary_target.setText(target_text)
-                            self.subdomains.setText(profile_data.get('subdomains', ''))
-                            self.cloud_assets.setText(profile_data.get('cloud_assets', ''))
-                            self.out_scope.setText(profile_data.get('out_scope', ''))
-                            self.restrictions.setText(profile_data.get('restrictions', ''))
-                            self.dos_allowed.setChecked(profile_data.get('dos_allowed', False))
-                            self.social_eng_allowed.setChecked(profile_data.get('social_eng_allowed', False))
-                            self.physical_allowed.setChecked(profile_data.get('physical_allowed', False))
-                            
-                            # Load credentials
-                            self.load_credentials_from_profile(profile_data.get('credentials', {}))
-                            
-                            # Update inventory with profile assets
-                            self.update_inventory_with_profile_data(profile_data)
-                            
-                        except Exception as e:
-                            # If file load fails, just load basic data from table
-                            self.target_name.setText(profile_name)
-                            if target_item:
-                                self.primary_target.setText(target_item.text())
-                    else:
-                        # No saved file, load basic data from table
-                        self.target_name.setText(profile_name)
-                        if target_item:
-                            self.primary_target.setText(target_item.text())
-                    
+                        pass
+
+                    # Populate form from engagement scope_data
+                    scope = engagement.get("scope_data") or {}
+                    self.target_name.setText(engagement.get("name", engagement_name))
+                    self.primary_target.setText(scope.get("primary_target", ""))
+                    self.subdomains.setText(scope.get("subdomains", ""))
+                    self.cloud_assets.setText(scope.get("cloud_assets", ""))
+                    self.out_scope.setText(scope.get("out_scope", ""))
+                    self.restrictions.setText(scope.get("restrictions", ""))
+                    self.dos_allowed.setChecked(scope.get("dos_allowed", False))
+                    self.social_eng_allowed.setChecked(scope.get("social_eng_allowed", False))
+                    self.physical_allowed.setChecked(scope.get("physical_allowed", False))
+
                     # Refresh credential display
                     self.refresh_credential_display()
-                    
+
                     # Update scope validation
                     self.update_scope_validation()
                 finally:
                     self._loading_profile = False
     
     def save_profile(self):
-        """Save current engagement profile"""
-        from PyQt6.QtWidgets import QInputDialog, QMessageBox
-        import json
-        import os
-        
-        profile_name, ok = QInputDialog.getText(self, 'Save Profile', 'Enter profile name:')
+        """Save current engagement — alias for save_current_profile with a name prompt."""
+        from PyQt6.QtWidgets import QInputDialog
+
+        profile_name, ok = QInputDialog.getText(self, 'Save Engagement', 'Enter engagement name:')
         if not ok or not profile_name.strip():
             return
-            
-        profile_data = {
-            'target_name': self.target_name.text(),
-            'primary_target': self.primary_target.text(),
-            'scope': self.primary_target.text(),
-            'subdomains': self.subdomains.text(),
-            'cloud_assets': self.cloud_assets.text(),
-            'out_scope': self.out_scope.text(),
-            'restrictions': self.restrictions.text(),
-            'dos_allowed': self.dos_allowed.isChecked(),
-            'social_eng_allowed': self.social_eng_allowed.isChecked(),
-            'physical_allowed': self.physical_allowed.isChecked(),
-            'credentials': self.get_credentials_for_save()
-        }
-        
-        profiles_dir = _PROFILES_DIR
-        os.makedirs(profiles_dir, exist_ok=True)
-        
-        profile_file = os.path.join(profiles_dir, f"{profile_name}.json")
+
+        # Set the name in the form and delegate to save_current_profile
+        self._loading_profile = True
         try:
-            tmp_file = profile_file + ".tmp"
-            with open(tmp_file, 'w') as f:
-                json.dump(profile_data, f, indent=2)
-            os.replace(tmp_file, profile_file)
-            
-            QMessageBox.information(self, 'Success', f'Profile "{profile_name}" saved successfully!')
-            self.load_existing_profiles()
-        except Exception as e:
-            QMessageBox.warning(self, 'Error', f'Failed to save profile: {str(e)}')
-    
+            self.target_name.setText(profile_name.strip())
+        finally:
+            self._loading_profile = False
+        self.save_current_profile()
+
     def new_profile(self):
-        """Create a new blank profile entry"""
-        from PyQt6.QtWidgets import QInputDialog, QMessageBox
-        
-        profile_name, ok = QInputDialog.getText(self, 'New Profile', 'Enter new profile name:')
-        if not ok or not profile_name.strip():
+        """Create a new blank engagement."""
+        from PyQt6.QtWidgets import QInputDialog
+
+        engagement_name, ok = QInputDialog.getText(self, 'New Engagement', 'Enter new engagement name:')
+        if not ok or not engagement_name.strip():
             return
-        
-        profile_name = profile_name.strip()
-        
-        # Check if profile already exists
-        for row in range(self.target_table.rowCount()):
-            name_item = self.target_table.item(row, 0)
-            if name_item and name_item.text() == profile_name:
-                QMessageBox.warning(self, "Profile Exists", f"Profile '{profile_name}' already exists.")
-                return
-        
-        # Suppress autosave while clearing the form — otherwise textChanged
-        # fires and overwrites the previously active profile with empty data.
+
+        engagement_name = engagement_name.strip()
+
+        # Check if engagement already exists
+        mgr = self.engagement_manager
+        existing = mgr.find_by_name(engagement_name)
+        if existing:
+            QMessageBox.warning(self, "Engagement Exists", f"Engagement '{engagement_name}' already exists.")
+            return
+
+        # Suppress autosave while clearing the form
         self._loading_profile = True
         try:
             self.target_name.clear()
@@ -885,71 +867,66 @@ class AttackChainHomePage(BasePage):
             self.physical_allowed.setChecked(False)
         finally:
             self._loading_profile = False
-        
-        # Set new profile in credential manager and clear credentials
+
+        # Create engagement in the DB
+        engagement_id = mgr.create_from_profile({'target_name': engagement_name})
+        mgr.open_engagement(engagement_id)
+
+        # Set credential manager to new engagement
         try:
             from app.core.credential_manager import credential_manager
-            credential_manager.set_profile(profile_name)
+            credential_manager.set_profile(engagement_id)
             self.refresh_credential_display()
-        except ImportError as _exc:
-            pass
-            logger.debug("Suppressed exception", exc_info=True)
-        
-        # Add blank entry to target table
-        row = self.target_table.rowCount()
-        self.target_table.insertRow(row)
-        self.target_table.setItem(row, 0, QTableWidgetItem(profile_name))
-        self.target_table.setItem(row, 1, QTableWidgetItem("New"))
-        self.target_table.setItem(row, 2, QTableWidgetItem(""))
-        self.target_table.setItem(row, 3, QTableWidgetItem("High"))
-        self.target_table.setItem(row, 4, QTableWidgetItem("Active"))
-        
-        # Select the new row
-        self.target_table.selectRow(row)
-        
-        # Set as current profile and trigger tenant change
-        if hasattr(self.main_window, 'current_profile_name'):
-            self.main_window.current_profile_name = profile_name
+        except Exception as _exc:
+            logger.debug(f"Credential switch on new engagement: {_exc}")
+
+        # Refresh table and select the new engagement
+        self.load_existing_profiles()
+        for row in range(self.target_table.rowCount()):
+            item = self.target_table.item(row, 0)
+            if item and item.text() == engagement_name:
+                self.target_table.selectRow(row)
+                break
+
+        # Set as current engagement
+        self.main_window.current_profile_name = engagement_name
+        if hasattr(self.main_window, 'current_engagement_id'):
+            self.main_window.current_engagement_id = engagement_id
         else:
-            setattr(self.main_window, 'current_profile_name', profile_name)
-        
+            setattr(self.main_window, 'current_engagement_id', engagement_id)
+
         # Trigger tenant change
         try:
             from app.core.tenant_aware_updater import tenant_aware_updater
-            tenant_aware_updater.set_tenant(profile_name)
-        except ImportError as _exc:
+            tenant_aware_updater.set_tenant(engagement_id)
+        except Exception:
             pass
-            logger.debug("Suppressed exception", exc_info=True)
-        
+
         self.update_scope_validation()
     
     def load_profile(self):
-        """Show a list of saved profiles and load the selected one."""
-        from PyQt6.QtWidgets import QDialog, QVBoxLayout, QListWidget, QDialogButtonBox, QLabel, QMessageBox
-        import json
-        import os
+        """Show a list of engagements and open the selected one."""
+        from PyQt6.QtWidgets import QDialog, QVBoxLayout, QListWidget, QDialogButtonBox, QLabel
 
-        profiles_dir = _PROFILES_DIR
-        if not os.path.exists(profiles_dir):
-            QMessageBox.information(self, 'No Profiles', 'No saved profiles found.')
-            return
+        mgr = self.engagement_manager
+        engagements = mgr.list_engagements()
 
-        profile_names = [f.replace('.json', '') for f in os.listdir(profiles_dir) if f.endswith('.json')]
-        if not profile_names:
-            QMessageBox.information(self, 'No Profiles', 'No saved profiles found.')
+        if not engagements:
+            QMessageBox.information(self, 'No Engagements', 'No saved engagements found.')
             return
 
         # Build a simple list-picker dialog
         dialog = QDialog(self)
-        dialog.setWindowTitle('📁 Load Profile')
+        dialog.setWindowTitle('📁 Load Engagement')
         dialog.setModal(True)
         dialog.resize(400, 300)
         dlg_layout = QVBoxLayout(dialog)
 
-        dlg_layout.addWidget(QLabel('Select a profile to load:'))
+        dlg_layout.addWidget(QLabel('Select an engagement to load:'))
 
         list_widget = QListWidget()
-        list_widget.addItems(sorted(profile_names))
+        for eng in engagements:
+            list_widget.addItem(eng["name"])
         list_widget.setCurrentRow(0)
         dlg_layout.addWidget(list_widget)
 
@@ -958,7 +935,6 @@ class AttackChainHomePage(BasePage):
         buttons.rejected.connect(dialog.reject)
         dlg_layout.addWidget(buttons)
 
-        # Double-click also accepts
         list_widget.itemDoubleClicked.connect(lambda _: dialog.accept())
 
         if dialog.exec() != QDialog.DialogCode.Accepted:
@@ -968,155 +944,123 @@ class AttackChainHomePage(BasePage):
         if not selected:
             return
 
-        profile_name = selected.text()
-        profile_file = os.path.join(profiles_dir, f"{profile_name}.json")
-
-        try:
-            with open(profile_file, 'r', encoding='utf-8-sig') as f:
-                content = f.read()
-            if not content.strip():
-                raise ValueError(f"Profile file '{profile_name}.json' is empty.")
-            profile_data = json.loads(content)
-        except Exception as e:
-            logger.error(f"Failed to read profile file '{profile_file}': {e}", exc_info=True)
-            QMessageBox.warning(self, 'Error', f'Failed to load profile: {str(e)}')
+        engagement_name = selected.text()
+        engagement = mgr.find_by_name(engagement_name)
+        if not engagement:
+            QMessageBox.warning(self, 'Error', f'Engagement "{engagement_name}" not found in database.')
             return
 
-        # Guard autosave while we rebuild the table and populate the form
+        engagement_id = engagement["id"]
+
+        # Guard autosave while we populate the form
         self._loading_profile = True
         try:
-            # Populate form fields directly from the loaded data (avoids
-            # triggering on_profile_selected via selectRow, which can raise
-            # unrelated exceptions that mask the real error).
-            self.target_name.setText(profile_data.get('target_name', profile_name))
-            target_text = profile_data.get('primary_target', '') or profile_data.get('scope', '')
-            self.primary_target.setText(target_text)
-            self.subdomains.setText(profile_data.get('subdomains', ''))
-            self.cloud_assets.setText(profile_data.get('cloud_assets', ''))
-            self.out_scope.setText(profile_data.get('out_scope', ''))
-            self.restrictions.setText(profile_data.get('restrictions', ''))
-            self.dos_allowed.setChecked(profile_data.get('dos_allowed', False))
-            self.social_eng_allowed.setChecked(profile_data.get('social_eng_allowed', False))
-            self.physical_allowed.setChecked(profile_data.get('physical_allowed', False))
+            # Open engagement
+            mgr.open_engagement(engagement_id)
 
-            # Switch credential manager to this profile
+            # Populate form from scope_data
+            scope = engagement.get("scope_data") or {}
+            self.target_name.setText(engagement.get("name", engagement_name))
+            self.primary_target.setText(scope.get("primary_target", ""))
+            self.subdomains.setText(scope.get("subdomains", ""))
+            self.cloud_assets.setText(scope.get("cloud_assets", ""))
+            self.out_scope.setText(scope.get("out_scope", ""))
+            self.restrictions.setText(scope.get("restrictions", ""))
+            self.dos_allowed.setChecked(scope.get("dos_allowed", False))
+            self.social_eng_allowed.setChecked(scope.get("social_eng_allowed", False))
+            self.physical_allowed.setChecked(scope.get("physical_allowed", False))
+
+            # Switch credential manager
             try:
                 from app.core.credential_manager import credential_manager
-                credential_manager.set_profile(profile_name)
-                self.load_credentials_from_profile(profile_data.get('credentials', {}))
+                credential_manager.set_profile(engagement_id)
             except Exception as cred_err:
-                logger.warning(f"Could not load credentials for profile '{profile_name}': {cred_err}")
+                logger.warning(f"Could not load credentials for engagement '{engagement_name}': {cred_err}")
 
-            # Rebuild the table and select the matching row (without
-            # re-triggering on_profile_selected via selectRow).
+            # Rebuild table and select matching row
             self.load_existing_profiles()
             for row in range(self.target_table.rowCount()):
                 item = self.target_table.item(row, 0)
-                if item and item.text() == profile_name:
-                    # Block signals so selectRow doesn't fire on_profile_selected
+                if item and item.text() == engagement_name:
                     self.target_table.blockSignals(True)
                     self.target_table.selectRow(row)
                     self.target_table.blockSignals(False)
                     break
 
-            # Update tenant and UI
+            # Update tenant
             try:
                 from app.core.tenant_aware_updater import tenant_aware_updater
-                tenant_aware_updater.set_tenant(profile_name)
+                tenant_aware_updater.set_tenant(engagement_id)
             except Exception:
                 pass
 
-            if hasattr(self.main_window, 'current_profile_name'):
-                self.main_window.current_profile_name = profile_name
+            self.main_window.current_profile_name = engagement_name
+            if hasattr(self.main_window, 'current_engagement_id'):
+                self.main_window.current_engagement_id = engagement_id
             else:
-                setattr(self.main_window, 'current_profile_name', profile_name)
+                setattr(self.main_window, 'current_engagement_id', engagement_id)
 
             self.refresh_credential_display()
             self.update_scope_validation()
-            self.update_inventory_with_profile_data(profile_data)
 
         except Exception as e:
-            logger.error(f"Unexpected error while applying profile '{profile_name}': {e}", exc_info=True)
-            QMessageBox.warning(self, 'Error', f'Failed to load profile: {str(e)}')
+            logger.error(f"Unexpected error while opening engagement '{engagement_name}': {e}", exc_info=True)
+            QMessageBox.warning(self, 'Error', f'Failed to load engagement: {str(e)}')
         finally:
             self._loading_profile = False
 
     def _autosave_current_profile(self):
-        """Silently save the currently selected profile whenever a form field changes."""
+        """Silently save scope data to the active engagement whenever a form field changes."""
         if getattr(self, '_loading_profile', False):
             return
 
-        import os
-        import json
-
-        # Determine the active profile name from the selected table row
+        # Determine the active engagement from the selected table row
         current_row = self.target_table.currentRow()
         if current_row < 0:
             return
         name_item = self.target_table.item(current_row, 0)
         if not name_item:
             return
-        profile_name = name_item.text().strip()
-        if not profile_name:
+        engagement_name = name_item.text().strip()
+        if not engagement_name:
             return
 
-        profiles_dir = _PROFILES_DIR
-        os.makedirs(profiles_dir, exist_ok=True)
+        mgr = self.engagement_manager
+        engagement = mgr.find_by_name(engagement_name)
+        if not engagement:
+            return
 
-        profile_data = {
-            'target_name': self.target_name.text(),
+        scope_data = {
             'primary_target': self.primary_target.text(),
-            'scope': self.primary_target.text(),
+            'out_scope': self.out_scope.text(),
             'subdomains': self.subdomains.text(),
             'cloud_assets': self.cloud_assets.text(),
-            'out_scope': self.out_scope.text(),
             'restrictions': self.restrictions.text(),
             'dos_allowed': self.dos_allowed.isChecked(),
             'social_eng_allowed': self.social_eng_allowed.isChecked(),
             'physical_allowed': self.physical_allowed.isChecked(),
-            'credentials': self.get_credentials_for_save(),
         }
 
-        profile_file = os.path.join(profiles_dir, f"{profile_name}.json")
         try:
-            # Write to a temp file first, then atomically replace to avoid
-            # leaving an empty/corrupt file if something goes wrong mid-write.
-            tmp_file = profile_file + ".tmp"
-            with open(tmp_file, 'w') as f:
-                json.dump(profile_data, f, indent=2)
-            os.replace(tmp_file, profile_file)
+            mgr.update_scope_data(engagement["id"], scope_data)
         except Exception as e:
-            logger.debug(f"Autosave failed for profile '{profile_name}': {e}")
+            logger.debug(f"Autosave failed for engagement '{engagement_name}': {e}")
     
-    def _delete_profile_files(self, profile_name: str):
-        """Delete the profile JSON and its associated credentials file."""
-        import os
-        from pathlib import Path
+    def _delete_engagement_by_name(self, engagement_name: str):
+        """Delete an engagement and its associated data by name."""
+        mgr = self.engagement_manager
+        engagement = mgr.find_by_name(engagement_name)
+        if engagement:
+            engagement_id = engagement["id"]
+            # delete_engagement() removes the entire engagement directory
+            # (including credentials.enc) and the master index entry
+            mgr.delete_engagement(engagement_id)
 
-        profiles_dir = _PROFILES_DIR
-        project_root = Path(__file__).parent.parent.parent
-
-        # Delete profile JSON
-        profile_file = os.path.join(profiles_dir, f"{profile_name}.json")
-        try:
-            if os.path.exists(profile_file):
-                os.remove(profile_file)
-        except Exception as e:
-            logger.warning(f"Failed to delete profile JSON for '{profile_name}': {e}")
-
-        # Delete encrypted credentials file
-        enc_file = project_root / "profiles" / f"{profile_name}_credentials.enc"
-        try:
-            if enc_file.exists():
-                enc_file.unlink()
-                logger.info(f"Deleted credentials file for profile '{profile_name}'")
-        except Exception as e:
-            logger.warning(f"Failed to delete credentials file for '{profile_name}': {e}")
-
-        # Clear from credential manager if this was the active profile
+        # Clear from credential manager if this was the active engagement
         try:
             from app.core.credential_manager import credential_manager
-            if credential_manager.current_profile == profile_name:
+            active_id = getattr(self.main_window, 'current_engagement_id', None)
+            if engagement and active_id == engagement.get("id"):
                 credential_manager.credentials.clear()
                 credential_manager.current_profile = "default"
                 credential_manager._explicit_profile = None
@@ -1124,54 +1068,45 @@ class AttackChainHomePage(BasePage):
             pass
 
     def delete_selected_profile(self):
-        """Delete the selected profile from table and disk"""
-        from PyQt6.QtWidgets import QMessageBox
-        import os
-        
+        """Delete the selected engagement from table and database."""
         current_row = self.target_table.currentRow()
         if current_row >= 0:
             name_item = self.target_table.item(current_row, 0)
             if name_item:
-                profile_name = name_item.text()
-                reply = QMessageBox.question(self, "Delete Profile", 
-                                           f"Delete profile '{profile_name}' permanently?\n\nThis will remove the profile file from disk.",
-                                           QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+                engagement_name = name_item.text()
+                reply = QMessageBox.question(
+                    self, "Delete Engagement",
+                    f"Delete engagement '{engagement_name}' permanently?\n\nThis will remove all associated data.",
+                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                )
                 if reply == QMessageBox.StandardButton.Yes:
-                    # Remove from table
                     self.target_table.removeRow(current_row)
-                    # Delete JSON and credentials files
-                    self._delete_profile_files(profile_name)
+                    self._delete_engagement_by_name(engagement_name)
         else:
-            QMessageBox.information(self, "No Selection", "Please select a profile to delete")
+            QMessageBox.information(self, "No Selection", "Please select an engagement to delete.")
 
     def delete_profile_dialog(self):
-        """Show a list of all saved profiles and delete the one the user selects."""
-        from PyQt6.QtWidgets import (QDialog, QVBoxLayout, QListWidget,
-                                     QDialogButtonBox, QLabel, QMessageBox)
-        import os
+        """Show a list of all engagements and delete the one the user selects."""
+        from PyQt6.QtWidgets import QDialog, QVBoxLayout, QListWidget, QDialogButtonBox, QLabel
 
-        profiles_dir = _PROFILES_DIR
-        if not os.path.exists(profiles_dir):
-            QMessageBox.information(self, 'No Profiles', 'No saved profiles found.')
-            return
+        mgr = self.engagement_manager
+        engagements = mgr.list_engagements()
 
-        profile_names = sorted(
-            f.replace('.json', '') for f in os.listdir(profiles_dir) if f.endswith('.json')
-        )
-        if not profile_names:
-            QMessageBox.information(self, 'No Profiles', 'No saved profiles found.')
+        if not engagements:
+            QMessageBox.information(self, 'No Engagements', 'No saved engagements found.')
             return
 
         dialog = QDialog(self)
-        dialog.setWindowTitle('🗑 Delete Profile')
+        dialog.setWindowTitle('🗑 Delete Engagement')
         dialog.setModal(True)
         dialog.resize(400, 300)
         dlg_layout = QVBoxLayout(dialog)
 
-        dlg_layout.addWidget(QLabel('Select a profile to delete:'))
+        dlg_layout.addWidget(QLabel('Select an engagement to delete:'))
 
         list_widget = QListWidget()
-        list_widget.addItems(profile_names)
+        for eng in engagements:
+            list_widget.addItem(eng["name"])
         list_widget.setCurrentRow(0)
         dlg_layout.addWidget(list_widget)
 
@@ -1190,33 +1125,30 @@ class AttackChainHomePage(BasePage):
         if not selected:
             return
 
-        profile_name = selected.text()
+        engagement_name = selected.text()
         reply = QMessageBox.question(
             self, 'Confirm Delete',
-            f"Delete profile '{profile_name}' permanently?\n\nThis cannot be undone.",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+            f"Delete engagement '{engagement_name}' permanently?\n\nThis cannot be undone.",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
         )
         if reply != QMessageBox.StandardButton.Yes:
             return
 
-        # Remove from disk
-        try:
-            self._delete_profile_files(profile_name)
-        except Exception as e:
-            QMessageBox.warning(self, 'Error', f'Failed to delete profile: {str(e)}')
-            return
+        self._delete_engagement_by_name(engagement_name)
 
         # Remove from the table if present
         for row in range(self.target_table.rowCount()):
             item = self.target_table.item(row, 0)
-            if item and item.text() == profile_name:
+            if item and item.text() == engagement_name:
                 self.target_table.removeRow(row)
                 break
 
-        # Clear the form if the deleted profile was active
+        # Clear the form if the deleted engagement was active
         active = getattr(self.main_window, 'current_profile_name', None)
-        if active == profile_name:
+        if active == engagement_name:
             self.main_window.current_profile_name = None
+            if hasattr(self.main_window, 'current_engagement_id'):
+                self.main_window.current_engagement_id = None
             self._loading_profile = True
             try:
                 self.target_name.clear()
@@ -1232,87 +1164,65 @@ class AttackChainHomePage(BasePage):
                 self._loading_profile = False
     
     def load_existing_profiles(self):
-        """Load existing profiles from the profiles directory"""
-        import json
-        import os
-        
-        profiles_dir = _PROFILES_DIR
-        if not os.path.exists(profiles_dir):
-            return
-        
+        """Load existing engagements from the engagement database into the table."""
+        mgr = self.engagement_manager
+        engagements = mgr.list_engagements()
+
         # Block signals so inserting rows doesn't fire on_profile_selected
-        # (which would call credential_manager.set_profile and overwrite the
-        # profile that was already restored from last_profile.json at startup).
         self.target_table.blockSignals(True)
         try:
-            # Clear existing table
             self.target_table.setRowCount(0)
-            
-            # Load all JSON files from profiles directory
-            for filename in sorted(os.listdir(profiles_dir)):
-                if filename.endswith('.json'):
-                    try:
-                        profile_path = os.path.join(profiles_dir, filename)
-                        with open(profile_path, 'r', encoding='utf-8-sig') as f:
-                            profile_data = json.load(f)
-                        
-                        profile_name = filename.replace('.json', '')
 
-                        # In-Scope Targets — first line only, truncated
-                        target = profile_data.get('primary_target', '') or profile_data.get('scope', '')
-                        first_line = target.strip().splitlines()[0] if target.strip() else '—'
-                        if len(first_line) > 40:
-                            first_line = first_line[:38] + '…'
+            for eng in engagements:
+                scope = eng.get("scope_data") or {}
 
-                        # Credentials count
-                        creds = profile_data.get('credentials', {})
-                        cred_list = creds.get('credentials', []) if isinstance(creds, dict) else []
-                        cred_count = f"{len(cred_list)} saved" if cred_list else "None"
+                # In-Scope Targets — first line only, truncated
+                target = scope.get("primary_target", "")
+                first_line = target.strip().splitlines()[0] if target.strip() else "—"
+                if len(first_line) > 40:
+                    first_line = first_line[:38] + "…"
 
-                        # Permissions
-                        perms = []
-                        if profile_data.get('dos_allowed'):
-                            perms.append('DoS')
-                        if profile_data.get('social_eng_allowed'):
-                            perms.append('Social')
-                        if profile_data.get('physical_allowed'):
-                            perms.append('Physical')
-                        permissions = ', '.join(perms) if perms else '—'
+                # Credentials count (not stored in engagement DB; show "—")
+                cred_count = "—"
 
-                        # Add to table
-                        row = self.target_table.rowCount()
-                        self.target_table.insertRow(row)
-                        self.target_table.setItem(row, 0, QTableWidgetItem(profile_name))
-                        self.target_table.setItem(row, 1, QTableWidgetItem(first_line))
-                        self.target_table.setItem(row, 2, QTableWidgetItem(cred_count))
-                        self.target_table.setItem(row, 3, QTableWidgetItem(permissions))
-                        self.target_table.setItem(row, 4, QTableWidgetItem("Active"))
-                        
-                    except Exception:
-                        continue
+                # Permissions
+                perms = []
+                if scope.get("dos_allowed"):
+                    perms.append("DoS")
+                if scope.get("social_eng_allowed"):
+                    perms.append("Social")
+                if scope.get("physical_allowed"):
+                    perms.append("Physical")
+                permissions = ", ".join(perms) if perms else "—"
+
+                # Status from engagement state
+                status = eng.get("status", "draft").capitalize()
+
+                row = self.target_table.rowCount()
+                self.target_table.insertRow(row)
+                self.target_table.setItem(row, 0, QTableWidgetItem(eng["name"]))
+                self.target_table.setItem(row, 1, QTableWidgetItem(first_line))
+                self.target_table.setItem(row, 2, QTableWidgetItem(cred_count))
+                self.target_table.setItem(row, 3, QTableWidgetItem(permissions))
+                self.target_table.setItem(row, 4, QTableWidgetItem(status))
         finally:
             self.target_table.blockSignals(False)
 
-        # Restore the last selected profile row without firing on_profile_selected
-        # (the credential manager already has the right profile loaded at startup).
-        try:
-            from app.core.credential_manager import credential_manager
-            active_profile = credential_manager.current_profile
-            if active_profile:
+        # Restore the last active engagement row
+        active_id = getattr(self.main_window, 'current_engagement_id', None)
+        if active_id:
+            active_eng = mgr.get_engagement(active_id)
+            if active_eng:
                 for row in range(self.target_table.rowCount()):
                     item = self.target_table.item(row, 0)
-                    if item and item.text() == active_profile:
+                    if item and item.text() == active_eng["name"]:
                         self.target_table.blockSignals(True)
                         self.target_table.selectRow(row)
                         self.target_table.blockSignals(False)
                         break
-        except Exception:
-            pass
     
     def add_profile_to_table(self, profile_name, profile_data):
-        """Add loaded profile to target table if not already present."""
-        # If already in the table just select it; otherwise refresh so the
-        # new columns are populated correctly via load_existing_profiles.
+        """Add or select an engagement in the table by name."""
         for row in range(self.target_table.rowCount()):
             name_item = self.target_table.item(row, 0)
             if name_item and name_item.text() == profile_name:

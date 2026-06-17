@@ -27,6 +27,9 @@ class RunningScansPage(BasePage):
 
     def setup_page(self):
         """Setup page layout and components"""
+        # Create the main content layout for this page
+        self.content_layout = QVBoxLayout(self)
+
         # Control buttons
         control_layout = QHBoxLayout()
         

@@ -275,6 +275,9 @@ class FeatureGapIntegration:
         # 4. Add floating Notes dock widget
         cls._add_notes_dock(main_window)
 
+        # 5. Wire engagement lifecycle → inject DB into modules on open
+        cls._wire_engagement_context()
+
         logger.info("[FeatureGapIntegration] All new modules integrated successfully.")
 
     # ------------------------------------------------------------------
@@ -356,12 +359,7 @@ class FeatureGapIntegration:
         if tools_menu:
             tools_menu.addSeparator()
             cls._add_action(
-                tools_menu, mw, "&Import/Export...", "Ctrl+Shift+E",
-                "Import or export findings in various formats",
-                cls._open_import_export,
-            )
-            cls._add_action(
-                tools_menu, mw, "Scan &Scheduler", None,
+                tools_menu, mw, "Scan &Scheduler", "F5",
                 "Configure recurring and scheduled scans",
                 cls._open_scan_scheduler,
             )
@@ -369,26 +367,20 @@ class FeatureGapIntegration:
         # --- Help menu additions ---
         help_menu = cls._find_menu(menubar, "&Help")
         if help_menu:
-            cls._add_action(
-                help_menu, mw, "&Knowledge Base", "Ctrl+Shift+K",
-                "Browse and manage knowledge base articles",
-                cls._open_knowledge_base,
-            )
+            # Insert Knowledge Base directly after "Tool Help" (first action)
+            actions = help_menu.actions()
+            kb_action = QAction("&Knowledge Base", mw)
+            kb_action.setShortcut(QKeySequence("F2"))
+            kb_action.setShortcutContext(Qt.ShortcutContext.WindowShortcut)
+            kb_action.setStatusTip("Browse and manage knowledge base articles")
+            kb_action.triggered.connect(cls._open_knowledge_base)
+            if len(actions) > 1:
+                help_menu.insertAction(actions[1], kb_action)
+            else:
+                help_menu.addAction(kb_action)
 
         # --- File menu additions (before Exit) ---
-        if file_menu:
-            # Insert before the last separator/Exit action
-            file_menu.addSeparator()
-            cls._add_action(
-                file_menu, mw, "Collaboration &Export...", None,
-                "Export engagement as encrypted package for team sharing",
-                cls._open_collaboration_export,
-            )
-            cls._add_action(
-                file_menu, mw, "Collaboration &Import...", None,
-                "Import an encrypted engagement package from a team member",
-                cls._open_collaboration_import,
-            )
+        # (Team Collaboration is now in menu_manager.py directly)
 
     # --- Menu action callbacks ---
 
@@ -428,39 +420,41 @@ class FeatureGapIntegration:
     def _open_scan_scheduler(cls):
         try:
             from app.components.scan_scheduler_component import ScanSchedulerComponent
-            engine = cls.engines.scheduling_engine
-            dlg = ScanSchedulerComponent(engine, cls._main_window)
-            dlg.setWindowTitle("Scan Scheduler")
-            dlg.setWindowFlags(Qt.WindowType.Window)
-            dlg.resize(900, 650)
-            dlg.setMinimumSize(700, 500)
-            dlg.show()
-            dlg.raise_()
+            mw = cls._main_window
+
+            # Register the scan scheduler page if not already done
+            if not hasattr(mw, '_scan_scheduler_page') or mw._scan_scheduler_page is None:
+                engine = cls.engines.scheduling_engine
+                mw._scan_scheduler_page = ScanSchedulerComponent(engine, mw)
+                mw.stack.addWidget(mw._scan_scheduler_page)
+
+            mw.stack.setCurrentWidget(mw._scan_scheduler_page)
+            mw.status_bar.showMessage("Scan Scheduler")
         except (ImportError, Exception) as exc:
             logger.warning(f"[FeatureGapIntegration] scan_scheduler unavailable: {exc}")
 
     @classmethod
-    def _open_collaboration_export(cls):
+    def _open_collaboration(cls):
         try:
             from app.components.collaboration_component import CollaborationComponent
             collab = cls.engines.collaboration_manager
             dlg = CollaborationComponent(collab, cls._main_window)
-            dlg.setWindowTitle("Collaboration Export")
-            dlg.setWindowFlags(Qt.WindowType.Window)
-            dlg.resize(800, 600)
-            dlg.setMinimumSize(600, 400)
-            dlg.show()
-            dlg.raise_()
-        except (ImportError, Exception) as exc:
-            logger.warning(f"[FeatureGapIntegration] collaboration unavailable: {exc}")
 
-    @classmethod
-    def _open_collaboration_import(cls):
-        try:
-            from app.components.collaboration_component import CollaborationComponent
-            collab = cls.engines.collaboration_manager
-            dlg = CollaborationComponent(collab, cls._main_window)
-            dlg.setWindowTitle("Collaboration Import")
+            # Inject active engagement context
+            eng_mgr = cls.engines.engagement_manager
+            if eng_mgr.active_engagement_id:
+                from pathlib import Path
+                eng_data = eng_mgr.get_engagement(eng_mgr.active_engagement_id)
+                if eng_data:
+                    base_path = str(
+                        Path(eng_mgr.master_db_path).parent / Path(eng_data["db_path"]).parent
+                    )
+                    dlg.set_engagement_context(
+                        engagement_id=eng_mgr.active_engagement_id,
+                        engagement_base_path=base_path,
+                    )
+
+            dlg.setWindowTitle("Team Collaboration")
             dlg.setWindowFlags(Qt.WindowType.Window)
             dlg.resize(800, 600)
             dlg.setMinimumSize(600, 400)
@@ -623,6 +617,96 @@ class FeatureGapIntegration:
             logger.warning(f"[FeatureGapIntegration] Notes panel unavailable: {exc}")
 
     # ------------------------------------------------------------------
+    # 5. Engagement context wiring
+    # ------------------------------------------------------------------
+
+    @classmethod
+    def _wire_engagement_context(cls) -> None:
+        """Wire engagement lifecycle signals to inject the active DB into modules.
+
+        Connects to both:
+        - engagement_manager.engagement_opened (formal engagement workflow)
+        - tenant_aware_updater.tenant_changed (profile selection workflow)
+        """
+        # 1. Wire formal engagement_opened signal
+        try:
+            from app.core.engagement_context_wiring import wire_engagement_context
+
+            engagement_manager = cls.engines.engagement_manager
+            modules_dict = {
+                "evidence_manager": cls.engines.evidence_manager,
+                "note_system": cls.engines.note_system,
+                "timeline_logger": cls.engines.timeline_logger,
+                "retest_workflow": cls.engines.retest_workflow,
+                "attack_mapper": cls.engines.attack_mapper,
+                "attack_surface_mapper": cls.engines.attack_surface_mapper,
+                "physical_security_engine": cls.engines.physical_security_engine,
+                "mobile_testing_engine": cls.engines.mobile_testing_engine,
+            }
+            wire_engagement_context(engagement_manager, modules_dict)
+        except Exception as exc:
+            logger.warning(f"[FeatureGapIntegration] Engagement context wiring failed: {exc}")
+
+        # 2. Wire tenant/profile change to open the engagement via EngagementManager.
+        # When the tenant changes (i.e., user selects an engagement), the
+        # engagement_manager.open_engagement() call in the UI already emits
+        # engagement_opened which injects the DB into all modules via step 1.
+        # This handler is a safety net for cases where tenant_changed fires
+        # without an explicit open_engagement() call (e.g., startup restore).
+        try:
+            from app.core.tenant_aware_updater import tenant_aware_updater
+
+            engagement_manager = cls.engines.engagement_manager
+
+            def _on_tenant_changed(_old_tenant: str, new_tenant: str) -> None:
+                """Ensure the engagement is opened when tenant changes."""
+                if not new_tenant or new_tenant == "default":
+                    return
+
+                # If the engagement is already open, nothing to do
+                if engagement_manager.active_engagement_id == new_tenant:
+                    return
+
+                # new_tenant may be an engagement_id (UUID) — try opening directly
+                try:
+                    eng = engagement_manager.get_engagement(new_tenant)
+                    if eng:
+                        engagement_manager.open_engagement(new_tenant)
+                        logger.info(
+                            f"[FeatureGapIntegration] Engagement opened via tenant change: {new_tenant}"
+                        )
+                        return
+                except Exception:
+                    pass
+
+                # Fallback: try finding by name
+                try:
+                    eng = engagement_manager.find_by_name(new_tenant)
+                    if eng:
+                        engagement_manager.open_engagement(eng["id"])
+                        logger.info(
+                            f"[FeatureGapIntegration] Engagement opened by name via tenant change: {new_tenant}"
+                        )
+                except Exception as e:
+                    logger.debug(
+                        f"[FeatureGapIntegration] Could not open engagement "
+                        f"for tenant '{new_tenant}': {e}"
+                    )
+
+            tenant_aware_updater.tenant_changed.connect(_on_tenant_changed)
+
+            # If a tenant is already active, initialize immediately
+            current = tenant_aware_updater.get_current_tenant()
+            if current and current != "default":
+                _on_tenant_changed("", current)
+
+            logger.debug("[FeatureGapIntegration] Tenant→Engagement wiring connected.")
+        except Exception as exc:
+            logger.warning(
+                f"[FeatureGapIntegration] Tenant→Engagement wiring failed: {exc}"
+            )
+
+    # ------------------------------------------------------------------
     # Utility helpers
     # ------------------------------------------------------------------
 
@@ -641,6 +725,7 @@ class FeatureGapIntegration:
         action = QAction(text, parent)
         if shortcut:
             action.setShortcut(QKeySequence(shortcut))
+            action.setShortcutContext(Qt.ShortcutContext.WindowShortcut)
         action.setStatusTip(status_tip)
         action.triggered.connect(callback)
         menu.addAction(action)

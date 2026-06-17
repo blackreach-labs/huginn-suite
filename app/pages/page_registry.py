@@ -42,8 +42,8 @@ def register_all_pages():
         logger.debug("Suppressed exception", exc_info=True)
     
     try:
-        from app.pages.db_attacks_page import DBAttacksPage
-        PageFactory.register_page("databases", DBAttacksPage)
+        from app.pages.db_attacks_page import DbAttacksPage
+        PageFactory.register_page("databases", DbAttacksPage)
     except ImportError as _exc:
         pass
         logger.debug("Suppressed exception", exc_info=True)

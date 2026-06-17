@@ -86,7 +86,7 @@ class NoteListItemWidget(QWidget):
         self.scope_badge.setStyleSheet(
             f"background-color: {badge_color}; color: #FFFFFF; "
             f"border-radius: 3px; font-size: 10px; font-weight: bold; "
-            f"padding: 2px 4px;"
+            f"padding: 2px 4px; font-family: 'Neuropol X';"
         )
         layout.addWidget(self.scope_badge)
 
@@ -101,13 +101,13 @@ class NoteListItemWidget(QWidget):
             content_preview += "…"
 
         self.content_label = QLabel(content_preview)
-        self.content_label.setStyleSheet("color: #E0E0E0; font-size: 12px;")
+        self.content_label.setStyleSheet("color: #E0E0E0; font-size: 12px; font-family: 'Neuropol X';")
         info_layout.addWidget(self.content_label)
 
         # Timestamp and scope info
         meta_text = f"{scope_type}:{note['scope_id']} • {note['created_at'][:16]}"
         self.meta_label = QLabel(meta_text)
-        self.meta_label.setStyleSheet("color: #808080; font-size: 10px;")
+        self.meta_label.setStyleSheet("color: #808080; font-size: 10px; font-family: 'Neuropol X';")
         info_layout.addWidget(self.meta_label)
 
         layout.addLayout(info_layout, 1)
@@ -150,10 +150,16 @@ class NotesPanelComponent(QWidget):
         self.note_system = note_system
         self._current_note_id: Optional[int] = None
         self._editing = False
+        self._scope_id = 1
 
         self._setup_ui()
         self._apply_theme()
         self._connect_signals()
+
+    def showEvent(self, event):
+        """Reload notes for the current scope each time the panel is shown."""
+        super().showEvent(event)
+        self._load_notes_for_current_scope(silent=True)
 
     # ------------------------------------------------------------------
     # UI Setup
@@ -167,12 +173,6 @@ class NotesPanelComponent(QWidget):
 
         # Header
         header_layout = QHBoxLayout()
-        title_label = QLabel("Notes")
-        title_label.setObjectName("panelTitle")
-        title_label.setStyleSheet(
-            "font-size: 16px; font-weight: bold; color: #00E5FF;"
-        )
-        header_layout.addWidget(title_label)
         header_layout.addStretch()
 
         self.new_note_btn = QPushButton("+ New Note")
@@ -210,17 +210,6 @@ class NotesPanelComponent(QWidget):
         self.scope_type_combo.addItems(["target", "service", "vulnerability"])
         scope_layout.addWidget(self.scope_type_combo)
 
-        scope_layout.addWidget(QLabel("ID:"))
-        self.scope_id_input = QLineEdit()
-        self.scope_id_input.setPlaceholderText("Scope ID")
-        self.scope_id_input.setFixedWidth(80)
-        scope_layout.addWidget(self.scope_id_input)
-
-        self.load_scope_btn = QPushButton("Load")
-        self.load_scope_btn.setMinimumHeight(28)
-        self.load_scope_btn.setToolTip("Load notes for selected scope")
-        scope_layout.addWidget(self.load_scope_btn)
-
         scope_layout.addStretch()
         main_layout.addWidget(scope_frame)
 
@@ -232,13 +221,13 @@ class NotesPanelComponent(QWidget):
         self.note_list.setMinimumHeight(120)
         self.splitter.addWidget(self.note_list)
 
-        # Bottom panel: editor/preview + revision history
+        # Bottom panel: revision history + create form
         bottom_widget = QWidget()
         bottom_layout = QVBoxLayout(bottom_widget)
         bottom_layout.setContentsMargins(0, 0, 0, 0)
         bottom_layout.setSpacing(4)
 
-        # Editor toolbar
+        # Editor toolbar (shown when a note is selected)
         editor_toolbar = QHBoxLayout()
         self.edit_btn = QPushButton("Edit")
         self.edit_btn.setMinimumHeight(28)
@@ -248,11 +237,13 @@ class NotesPanelComponent(QWidget):
         self.save_btn = QPushButton("Save")
         self.save_btn.setMinimumHeight(28)
         self.save_btn.setEnabled(False)
+        self.save_btn.setVisible(False)
         editor_toolbar.addWidget(self.save_btn)
 
         self.cancel_btn = QPushButton("Cancel")
         self.cancel_btn.setMinimumHeight(28)
         self.cancel_btn.setEnabled(False)
+        self.cancel_btn.setVisible(False)
         editor_toolbar.addWidget(self.cancel_btn)
 
         self.delete_btn = QPushButton("Delete")
@@ -273,40 +264,41 @@ class NotesPanelComponent(QWidget):
         editor_toolbar.addStretch()
         bottom_layout.addLayout(editor_toolbar)
 
-        # Content editor (markdown)
-        self.content_editor = QTextEdit()
-        self.content_editor.setPlaceholderText(
-            "Write your note here (Markdown supported)..."
-        )
-        self.content_editor.setReadOnly(True)
-        self.content_editor.setMinimumHeight(100)
-        bottom_layout.addWidget(self.content_editor)
+        # Note content viewer (read-only, shown when a note is selected)
+        self.content_viewer = QTextEdit()
+        self.content_viewer.setReadOnly(True)
+        self.content_viewer.setPlaceholderText("Select a note to view its contents...")
+        self.content_viewer.setMinimumHeight(80)
+        bottom_layout.addWidget(self.content_viewer)
 
         # Revision history panel (hidden by default)
         self.revision_frame = QFrame()
         self.revision_frame.setObjectName("revisionFrame")
         self.revision_frame.setVisible(False)
         revision_layout = QVBoxLayout(self.revision_frame)
-        revision_layout.setContentsMargins(4, 4, 4, 4)
+        revision_layout.setContentsMargins(6, 6, 6, 6)
+        revision_layout.setSpacing(4)
 
         rev_header = QHBoxLayout()
-        rev_header.addWidget(QLabel("Revision History"))
+        rev_title = QLabel("Revision History")
+        rev_title.setStyleSheet("font-weight: bold; color: #00E5FF; font-family: 'Neuropol X';")
+        rev_header.addWidget(rev_title)
+        rev_header.addStretch()
         self.close_history_btn = QPushButton("✕")
         self.close_history_btn.setFixedSize(24, 24)
         self.close_history_btn.setToolTip("Close history")
-        rev_header.addStretch()
         rev_header.addWidget(self.close_history_btn)
         revision_layout.addLayout(rev_header)
 
         self.revision_list = QListWidget()
-        self.revision_list.setMaximumHeight(100)
-        revision_layout.addWidget(self.revision_list)
+        self.revision_list.setMinimumHeight(60)
+        revision_layout.addWidget(self.revision_list, 1)
 
         self.revision_content = QTextEdit()
         self.revision_content.setReadOnly(True)
-        self.revision_content.setMaximumHeight(120)
+        self.revision_content.setMinimumHeight(80)
         self.revision_content.setPlaceholderText("Select a revision to view...")
-        revision_layout.addWidget(self.revision_content)
+        revision_layout.addWidget(self.revision_content, 2)
 
         bottom_layout.addWidget(self.revision_frame)
 
@@ -318,17 +310,13 @@ class NotesPanelComponent(QWidget):
         create_layout.setContentsMargins(4, 4, 4, 4)
 
         create_header = QLabel("Create New Note")
-        create_header.setStyleSheet("font-weight: bold; color: #00E5FF;")
+        create_header.setStyleSheet("font-weight: bold; color: #00E5FF; font-family: 'Neuropol X';")
         create_layout.addWidget(create_header)
 
         create_form = QFormLayout()
         self.create_scope_type = QComboBox()
         self.create_scope_type.addItems(["target", "service", "vulnerability"])
         create_form.addRow("Scope Type:", self.create_scope_type)
-
-        self.create_scope_id = QLineEdit()
-        self.create_scope_id.setPlaceholderText("Entity ID")
-        create_form.addRow("Scope ID:", self.create_scope_id)
 
         self.create_author = QLineEdit()
         self.create_author.setPlaceholderText("Author (optional)")
@@ -373,7 +361,7 @@ class NotesPanelComponent(QWidget):
             QWidget {
                 background-color: #1E1E2E;
                 color: #DCDCDC;
-                font-family: "Segoe UI", sans-serif;
+                font-family: "Neuropol X", sans-serif;
             }
             QLineEdit, QTextEdit, QComboBox {
                 background-color: #2A2A3E;
@@ -434,8 +422,8 @@ class NotesPanelComponent(QWidget):
         self.search_input.returnPressed.connect(self._on_search)
         self.clear_search_btn.clicked.connect(self._on_clear_search)
 
-        # Scope loading
-        self.load_scope_btn.clicked.connect(self._on_load_scope)
+        # Scope loading — auto-load when dropdown changes
+        self.scope_type_combo.currentTextChanged.connect(self._on_scope_changed)
 
         # Note list
         self.note_list.currentRowChanged.connect(self._on_note_selected)
@@ -470,12 +458,12 @@ class NotesPanelComponent(QWidget):
 
         Args:
             scope_type: One of 'target', 'service', 'vulnerability'.
-            scope_id: The entity ID.
+            scope_id: The entity ID (used internally).
         """
         idx = self.scope_type_combo.findText(scope_type)
         if idx >= 0:
             self.scope_type_combo.setCurrentIndex(idx)
-        self.scope_id_input.setText(str(scope_id))
+        self._scope_id = scope_id
         self._load_notes_for_current_scope()
 
     def refresh(self) -> None:
@@ -507,30 +495,25 @@ class NotesPanelComponent(QWidget):
     # Handlers: Scope
     # ------------------------------------------------------------------
 
-    def _on_load_scope(self):
-        """Load notes for the selected scope."""
+    def _on_scope_changed(self, _text: str = ""):
+        """Auto-load notes when scope dropdown changes."""
         self._load_notes_for_current_scope()
 
-    def _load_notes_for_current_scope(self):
-        """Load notes from NoteSystem for the current scope selector values."""
+    def _load_notes_for_current_scope(self, silent: bool = False):
+        """Load notes from NoteSystem for the current scope selector values.
+
+        Args:
+            silent: If True, suppress error dialogs (used during init).
+        """
         scope_type = self.scope_type_combo.currentText()
-        scope_id_text = self.scope_id_input.text().strip()
-
-        if not scope_id_text:
-            self.note_list.clear()
-            return
-
-        try:
-            scope_id = int(scope_id_text)
-        except ValueError:
-            self._show_error("Scope ID must be a valid integer.")
-            return
+        scope_id = getattr(self, "_scope_id", 1)
 
         try:
             notes = self.note_system.get_notes_for_scope(scope_type, scope_id)
             self._populate_note_list(notes)
         except Exception as e:
-            self._show_error(f"Failed to load notes: {e}")
+            if not silent:
+                self._show_error(f"Failed to load notes: {e}")
 
     # ------------------------------------------------------------------
     # Handlers: Note Selection
@@ -540,7 +523,7 @@ class NotesPanelComponent(QWidget):
         """Handle note selection in the list."""
         if row < 0:
             self._current_note_id = None
-            self.content_editor.clear()
+            self.content_viewer.clear()
             self._set_editor_controls(False)
             return
 
@@ -553,66 +536,52 @@ class NotesPanelComponent(QWidget):
             return
 
         self._current_note_id = note_id
-        self._load_note_content(note_id)
         self._set_editor_controls(True)
-        self.note_selected.emit(note_id)
 
-    def _load_note_content(self, note_id: int):
-        """Load note content into the editor."""
+        # Load and display note content
         try:
             note = self.note_system.get_note(note_id)
             if note:
-                self.content_editor.setPlainText(note["content"])
-                self.content_editor.setReadOnly(True)
-                self._editing = False
+                self.content_viewer.setPlainText(note["content"])
         except Exception as e:
-            self._show_error(f"Failed to load note: {e}")
+            self.content_viewer.setPlainText(f"(Error loading note: {e})")
+
+        self.note_selected.emit(note_id)
+
+
 
     # ------------------------------------------------------------------
     # Handlers: Editor Controls
     # ------------------------------------------------------------------
 
     def _on_edit(self):
-        """Enter edit mode for the current note."""
+        """Enter edit mode for the current note — open content in create form for editing."""
         if self._current_note_id is None:
             return
-        self._editing = True
-        self.content_editor.setReadOnly(False)
-        self.content_editor.setFocus()
-        self.save_btn.setEnabled(True)
-        self.cancel_btn.setEnabled(True)
-        self.edit_btn.setEnabled(False)
+        try:
+            note = self.note_system.get_note(self._current_note_id)
+            if note:
+                self._editing = True
+                self.create_content.setPlainText(note["content"])
+                idx = self.create_scope_type.findText(note["scope_type"])
+                if idx >= 0:
+                    self.create_scope_type.setCurrentIndex(idx)
+                self.create_frame.setVisible(True)
+                self.create_content.setFocus()
+                # Change button text to indicate save-edit mode
+                self.submit_create_btn.setText("Save Changes")
+        except Exception as e:
+            self._show_error(f"Failed to load note for editing: {e}")
 
     def _on_save(self):
-        """Save edited note content."""
-        if self._current_note_id is None:
-            return
-
-        new_content = self.content_editor.toPlainText()
-        if not new_content.strip():
-            self._show_error("Note content cannot be empty.")
-            return
-
-        try:
-            self.note_system.edit_note(self._current_note_id, new_content)
-            self._editing = False
-            self.content_editor.setReadOnly(True)
-            self.save_btn.setEnabled(False)
-            self.cancel_btn.setEnabled(False)
-            self.edit_btn.setEnabled(True)
-            self._load_notes_for_current_scope()
-        except Exception as e:
-            self._show_error(f"Failed to save note: {e}")
+        """Save edited note content (delegates to the create form submit)."""
+        self._on_submit_create()
 
     def _on_cancel_edit(self):
-        """Cancel editing and restore original content."""
-        if self._current_note_id is not None:
-            self._load_note_content(self._current_note_id)
+        """Cancel editing."""
         self._editing = False
-        self.content_editor.setReadOnly(True)
-        self.save_btn.setEnabled(False)
-        self.cancel_btn.setEnabled(False)
-        self.edit_btn.setEnabled(True)
+        self.create_frame.setVisible(False)
+        self.submit_create_btn.setText("Create Note")
 
     def _on_delete(self):
         """Delete the selected note."""
@@ -631,7 +600,6 @@ class NotesPanelComponent(QWidget):
             try:
                 self.note_system.delete_note(self._current_note_id)
                 self._current_note_id = None
-                self.content_editor.clear()
                 self._set_editor_controls(False)
                 self._load_notes_for_current_scope()
             except Exception as e:
@@ -645,53 +613,54 @@ class NotesPanelComponent(QWidget):
         """Show the note creation form."""
         # Pre-fill scope from current selector
         scope_type = self.scope_type_combo.currentText()
-        scope_id_text = self.scope_id_input.text().strip()
 
         idx = self.create_scope_type.findText(scope_type)
         if idx >= 0:
             self.create_scope_type.setCurrentIndex(idx)
-        self.create_scope_id.setText(scope_id_text)
+        self._editing = False
+        self._current_note_id = None
+        self.submit_create_btn.setText("Create Note")
         self.create_content.clear()
         self.create_frame.setVisible(True)
         self.create_content.setFocus()
 
     def _on_submit_create(self):
-        """Submit the new note creation form."""
+        """Submit the new note creation form, or save edits to existing note."""
         scope_type = self.create_scope_type.currentText()
-        scope_id_text = self.create_scope_id.text().strip()
         content = self.create_content.toPlainText().strip()
         author = self.create_author.text().strip() or None
 
-        if not scope_id_text:
-            self._show_error("Scope ID is required.")
-            return
         if not content:
             self._show_error("Note content cannot be empty.")
             return
 
-        try:
-            scope_id = int(scope_id_text)
-        except ValueError:
-            self._show_error("Scope ID must be a valid integer.")
-            return
+        scope_id = getattr(self, "_scope_id", 1)
 
         try:
-            self.note_system.create_note(
-                scope_type=scope_type,
-                scope_id=scope_id,
-                content=content,
-                author=author,
-            )
+            if self._editing and self._current_note_id is not None:
+                # Editing an existing note
+                self.note_system.edit_note(self._current_note_id, content)
+                self._editing = False
+            else:
+                # Creating a new note
+                self.note_system.create_note(
+                    scope_type=scope_type,
+                    scope_id=scope_id,
+                    content=content,
+                    author=author,
+                )
             self.create_frame.setVisible(False)
-            # Sync scope selectors and reload
+            self.submit_create_btn.setText("Create Note")
+            # Sync scope selector and reload
             self.scope_type_combo.setCurrentText(scope_type)
-            self.scope_id_input.setText(scope_id_text)
             self._load_notes_for_current_scope()
         except Exception as e:
-            self._show_error(f"Failed to create note: {e}")
+            self._show_error(f"Failed to save note: {e}")
 
     def _on_cancel_create(self):
         """Hide the note creation form."""
+        self._editing = False
+        self.submit_create_btn.setText("Create Note")
         self.create_frame.setVisible(False)
 
     # ------------------------------------------------------------------
@@ -732,6 +701,7 @@ class NotesPanelComponent(QWidget):
                     item.setData(Qt.ItemDataRole.UserRole + 1, rev["content"])
                     self.revision_list.addItem(item)
 
+            self.content_viewer.setVisible(False)
             self.revision_frame.setVisible(True)
         except Exception as e:
             self._show_error(f"Failed to load revisions: {e}")
@@ -739,6 +709,7 @@ class NotesPanelComponent(QWidget):
     def _on_close_history(self):
         """Hide the revision history panel."""
         self.revision_frame.setVisible(False)
+        self.content_viewer.setVisible(True)
 
     def _on_revision_selected(self, row: int):
         """Show the content of a selected revision."""
@@ -777,7 +748,7 @@ class NotesPanelComponent(QWidget):
         """
         self.note_list.clear()
         self._current_note_id = None
-        self.content_editor.clear()
+        self.content_viewer.clear()
         self._set_editor_controls(False)
 
         for note in notes:
@@ -820,8 +791,20 @@ class NotesPanelComponent(QWidget):
         self.cancel_btn.setEnabled(False)
 
     def _show_error(self, message: str):
-        """Show an error message dialog."""
-        QMessageBox.warning(self, "Notes Panel", message)
+        """Show an error message dialog.
+
+        If the error is due to no database being attached, show a friendly
+        prompt asking the user to select an engagement first.
+        """
+        if "No database attached" in message or "set_database()" in message:
+            QMessageBox.information(
+                self,
+                "Notes Panel",
+                "No engagement is currently open.\n\n"
+                "Please select and open an engagement before using Notes.",
+            )
+        else:
+            QMessageBox.warning(self, "Notes Panel", message)
 
 
 class NotesDockWidget(QDockWidget):
@@ -858,6 +841,7 @@ class NotesDockWidget(QDockWidget):
             QDockWidget {
                 color: #00E5FF;
                 font-weight: bold;
+                font-family: "Neuropol X", sans-serif;
             }
             QDockWidget::title {
                 background-color: #1A1A2A;

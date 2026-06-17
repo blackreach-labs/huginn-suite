@@ -549,7 +549,7 @@ class ScanSchedulerComponent(QWidget):
         self.config_editor.setPlaceholderText(
             '{\n    "scan_type": "full",\n    "ports": "1-1000",\n    "intensity": "normal"\n}'
         )
-        self.config_editor.setFont(QFont("Consolas", 10))
+        self.config_editor.setFont(QFont("Neuropol X", 10))
         self.config_editor.setMaximumHeight(120)
         form_layout.addRow(config_label, self.config_editor)
 
@@ -671,7 +671,7 @@ class ScanSchedulerComponent(QWidget):
         config_layout = QVBoxLayout(config_group)
         self.detail_config_view = QTextEdit()
         self.detail_config_view.setReadOnly(True)
-        self.detail_config_view.setFont(QFont("Consolas", 10))
+        self.detail_config_view.setFont(QFont("Neuropol X", 10))
         self.detail_config_view.setMaximumHeight(100)
         config_layout.addWidget(self.detail_config_view)
         layout.addWidget(config_group)
@@ -687,7 +687,7 @@ class ScanSchedulerComponent(QWidget):
         fail_layout = QVBoxLayout(fail_group)
         self.failure_log_view = QTextEdit()
         self.failure_log_view.setReadOnly(True)
-        self.failure_log_view.setFont(QFont("Consolas", 10))
+        self.failure_log_view.setFont(QFont("Neuropol X", 10))
         self.failure_log_view.setMaximumHeight(120)
         self.failure_log_view.setPlaceholderText("No failures recorded.")
         fail_layout.addWidget(self.failure_log_view)
@@ -729,7 +729,7 @@ class ScanSchedulerComponent(QWidget):
             QWidget {
                 background-color: #1E1E2E;
                 color: #DCDCDC;
-                font-family: "Segoe UI", sans-serif;
+                font-family: "Neuropol X", sans-serif;
             }
             QLineEdit, QTextEdit, QComboBox {
                 background-color: #2A2A3E;
