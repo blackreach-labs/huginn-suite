@@ -109,6 +109,10 @@ class ManifestUpdater:
         Fetches the remote manifest and compares each file's SHA256 hash
         against the local copy on disk.
 
+        On first run (no local manifest), if all files already match the
+        remote manifest, the local manifest is seeded automatically so
+        subsequent checks report the correct installed version.
+
         Args:
             license_key: Optional license key for future authenticated
                          update provisioning. Currently passed as a query
@@ -125,6 +129,7 @@ class ManifestUpdater:
         remote_version = remote_manifest.get("latest_version", "0.0.0")
         local_version = self.get_local_version()
         release_notes = remote_manifest.get("release_notes", "")
+        first_run = not self._local_manifest_path.exists()
         files_to_update: list[dict] = []
 
         for file_entry in remote_manifest.get("files", []):
@@ -141,6 +146,12 @@ class ManifestUpdater:
             files_to_update.append(file_entry)
 
         has_update = len(files_to_update) > 0
+
+        # First run: if everything already matches, seed the local manifest
+        # so the app reports the correct version going forward.
+        if first_run and not has_update:
+            self._write_local_manifest(remote_manifest)
+            local_version = remote_version
 
         return UpdateCheckResult(
             has_update=has_update,

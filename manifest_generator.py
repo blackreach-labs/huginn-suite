@@ -59,6 +59,8 @@ EXCLUDE_FILES = {
     ".gitignore",
     ".update_manifest.json",
     "manifest_generator.py",  # Don't update the generator itself via the updater
+    "huginn_install.py",  # Installer script, not part of app updates
+    "huginn.lic",  # License file is per-user, not part of updates
 }
 
 # Only include these extensions (empty set means include all)
