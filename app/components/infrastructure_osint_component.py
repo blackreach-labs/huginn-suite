@@ -6,6 +6,7 @@ from PyQt6.QtCore import pyqtSignal, QTimer, Qt
 from PyQt6.QtGui import QFont
 from app.core.professional_subdomain_worker import professional_subdomain_controller
 from app.core.logger import logger
+import json
 
 class InfrastructureOSINTComponent(QWidget):
     osint_started = pyqtSignal(str, str)
@@ -172,7 +173,7 @@ class InfrastructureOSINTComponent(QWidget):
             btn = QPushButton(text)
             btn.clicked.connect(method)
             btn.setMinimumHeight(35)
-            button_layout.addWidget(btn, (i // 2) + 1, i % 2)
+            button_layout.addWidget(btn, i + 1, 0, 1, 2)
         
         layout.addLayout(button_layout)
         
@@ -379,6 +380,32 @@ class InfrastructureOSINTComponent(QWidget):
 
         if results.get("zone_transfer"):
             self.output_text.append("<p style='color: #FF6B6B; font-weight: bold;'>⚠ ZONE TRANSFER ALLOWED — Critical vulnerability!</p>")
+        
+        # Persist results
+        target = self.target_input.text().strip()
+        total = results.get('total_records', 0)
+        self._persist_osint_result(
+            'dns_analysis', target, results,
+            f"DNS analysis for {target}: {total} records found"
+        )
+        
+        # Also add any resolved IPs to asset inventory
+        try:
+            from app.core.asset_manager import asset_manager
+            from app.core.inventory_integration import get_current_tenant
+            tenant_id = get_current_tenant()
+            
+            for rtype, records in results.get("records", {}).items():
+                if rtype == 'A':
+                    for ip in records:
+                        asset_manager.add_or_update_asset(
+                            tenant_id=tenant_id, ip_address=ip.strip(),
+                            hostname=target, fqdn=target,
+                            status='DISCOVERED', confidence=70,
+                            metadata={'discovery_method': 'dns_analysis', 'record_type': 'A'}
+                        )
+        except Exception:
+            pass
 
     def run_tech_stack(self):
         """Run real technology stack detection"""
@@ -424,6 +451,13 @@ class InfrastructureOSINTComponent(QWidget):
             self.output_text.append(f"<p style='color: #FFD93D; font-weight: bold;'>{h(cat)}:</p>")
             for name in names:
                 self.output_text.append(f"<p style='color: #DCDCDC; margin-left: 20px;'>• {h(name)}</p>")
+        
+        # Persist results
+        target = self.target_input.text().strip()
+        self._persist_osint_result(
+            'tech_stack', target, results,
+            f"Tech stack detection for {target}: {len(techs)} technologies identified"
+        )
 
     def run_asn_lookup(self):
         """Run real ASN lookup"""
@@ -462,6 +496,13 @@ class InfrastructureOSINTComponent(QWidget):
         self.output_text.append(f"<p style='color: #DCDCDC;'>Country: <span style='color: #FF69B4;'>{results.get('country', 'N/A')}</span></p>")
         self.output_text.append(f"<p style='color: #DCDCDC;'>Registry: {results.get('registry', 'N/A')}</p>")
         self.output_text.append(f"<p style='color: #DCDCDC;'>Allocated: {results.get('allocated', 'N/A')}</p>")
+        
+        # Persist results
+        target = self.target_input.text().strip()
+        self._persist_osint_result(
+            'asn_lookup', target, results,
+            f"ASN lookup for {target}: AS{results.get('asn', 'N/A')} ({results.get('asn_name', '')})"
+        )
 
     def run_whois_current(self):
         """Run real WHOIS lookup"""
@@ -525,6 +566,14 @@ class InfrastructureOSINTComponent(QWidget):
                 line = line.strip()
                 if line:
                     self.output_text.append(f"<p style='color: #888888; margin-left: 10px; font-size: 9px;'>{h(line)}</p>")
+        
+        # Persist results (exclude raw to keep storage reasonable)
+        target = self.target_input.text().strip()
+        persist_data = {k: v for k, v in results.items() if k != 'raw'}
+        self._persist_osint_result(
+            'whois', target, persist_data,
+            f"WHOIS lookup for {target}: registrar={results.get('registrar', 'N/A')}"
+        )
 
     def run_whois_historical(self):
         """Run historical WHOIS lookup"""
@@ -577,6 +626,14 @@ class InfrastructureOSINTComponent(QWidget):
                 self.output_text.append(f"<p style='color: #DCDCDC; margin-left: 20px;'>• {h(domain)}</p>")
             if len(domains) > 50:
                 self.output_text.append(f"<p style='color: #DCDCDC; margin-left: 20px;'>... and {len(domains) - 50} more</p>")
+        
+        # Persist results
+        target = self.target_input.text().strip()
+        self._persist_osint_result(
+            'cert_transparency', target,
+            {'total_certs': total, 'unique_domains': domains[:200]},
+            f"Certificate search for {target}: {total} certs, {len(domains)} unique domains"
+        )
 
     def run_port_discovery(self):
         """Run real port discovery scan"""
@@ -622,6 +679,34 @@ class InfrastructureOSINTComponent(QWidget):
                 )
         else:
             self.output_text.append("<p style='color: #FFD93D;'>No open ports found on common ports.</p>")
+        
+        # Persist results and add to asset inventory
+        target = self.target_input.text().strip()
+        self._persist_osint_result(
+            'port_discovery', target, results,
+            f"Port scan for {target}: {len(open_ports)} open ports"
+        )
+        
+        # Add to asset inventory with port data
+        if open_ports:
+            try:
+                from app.core.asset_manager import asset_manager
+                from app.core.inventory_integration import get_current_tenant
+                tenant_id = get_current_tenant()
+                
+                ip = results.get('ip', target)
+                asset_manager.add_or_update_asset(
+                    tenant_id=tenant_id, ip_address=ip,
+                    hostname=target, fqdn=target,
+                    status='IDENTIFIED', confidence=80,
+                    open_ports=open_ports,
+                    services=[{'port': p['port'], 'service': p['service'],
+                               'protocol': 'tcp', 'banner': p.get('banner', '')}
+                              for p in open_ports],
+                    metadata={'discovery_method': 'port_discovery'}
+                )
+            except Exception:
+                pass
 
     def run_service_detection(self):
         """Run service detection"""
@@ -750,7 +835,11 @@ class InfrastructureOSINTComponent(QWidget):
         """)
         
         # Populate results table
+        # Populate results table
         self._populate_results_table(subdomain_results)
+        
+        # Persist results to asset inventory and scan data for reporting
+        self._persist_enumeration_results(domain, subdomain_results, statistics)
         
         # Update statistics tab
         self._update_statistics_tab(statistics)
@@ -761,6 +850,184 @@ class InfrastructureOSINTComponent(QWidget):
         # Emit completion signal
         self.osint_completed.emit(results)
     
+    def _persist_enumeration_results(self, domain: str, subdomain_results: list, statistics: dict):
+        """Persist subdomain enumeration results to asset inventory and scan data.
+        
+        This ensures results are available in the Inventory page and for reporting.
+        """
+        import uuid
+        from datetime import datetime
+        
+        try:
+            from app.core.inventory_integration import get_current_tenant
+            tenant_id = get_current_tenant()
+        except Exception:
+            tenant_id = 'default'
+        
+        # --- 1. Store each resolved subdomain in the asset inventory ---
+        stored_count = 0
+        try:
+            from app.core.asset_manager import asset_manager
+            
+            for result in subdomain_results:
+                host = result.get('host', '')
+                ip = result.get('ip', '')
+                status = result.get('status', 'discovered')
+                source = result.get('source', 'osint')
+                
+                if not host:
+                    continue
+                
+                # Use the IP if resolved, otherwise use the hostname as identifier
+                identifier = ip if ip and ip != 'N/A' else host
+                
+                asset_manager.add_or_update_asset(
+                    tenant_id=tenant_id,
+                    ip_address=identifier,
+                    hostname=host,
+                    fqdn=host,
+                    status='DISCOVERED',
+                    confidence=60 if status == 'resolved' else 30,
+                    metadata={
+                        'discovery_method': 'subdomain_enumeration',
+                        'source': source,
+                        'parent_domain': domain,
+                        'dns_status': status,
+                    }
+                )
+                stored_count += 1
+            
+            if stored_count > 0:
+                self.output_text.append(
+                    f"<p style='color: #64C8FF;'>📦 Stored {stored_count} assets in inventory</p>"
+                )
+        except Exception as e:
+            logger.error(f"Failed to persist to asset inventory: {e}")
+        
+        # --- 2. Store in centralized scan data for reporting ---
+        try:
+            from app.core.centralized_scan_data import centralized_scan_data
+            
+            scan_id = str(uuid.uuid4())
+            
+            for result in subdomain_results:
+                host = result.get('host', '')
+                if not host:
+                    continue
+                
+                centralized_scan_data.add_scan_result(
+                    scan_id=scan_id,
+                    tenant_id=tenant_id,
+                    scan_type='subdomain_enumeration',
+                    target=domain,
+                    scanner='professional_subdomain_engine',
+                    result_data={
+                        'subdomain': host,
+                        'ip': result.get('ip', ''),
+                        'status': result.get('status', 'unknown'),
+                        'source': result.get('source', ''),
+                        'first_seen': result.get('first_seen', ''),
+                        'last_seen': result.get('last_seen', ''),
+                    }
+                )
+            
+            # Mark scan as complete
+            centralized_scan_data.complete_scan(
+                scan_id=scan_id,
+                total_results=len(subdomain_results)
+            )
+        except Exception as e:
+            logger.error(f"Failed to persist to centralized scan data: {e}")
+        
+        # --- 3. Log timeline entry in active engagement ---
+        try:
+            from app.core.feature_gap_integration import FeatureGapIntegration
+            eng_manager = FeatureGapIntegration.engines.engagement_manager
+            
+            if eng_manager.active_engagement_id and eng_manager.active_db:
+                eng_manager.active_db.execute_write(
+                    """INSERT INTO timeline_entries 
+                       (action_type, actor, affected_entity_type, description, metadata, timestamp)
+                       VALUES (?, ?, ?, ?, ?, ?)""",
+                    (
+                        'scan_completed',
+                        'osint_engine',
+                        'subdomain',
+                        f"Subdomain enumeration completed for {domain}: "
+                        f"{statistics.get('total_subdomains', 0)} subdomains found, "
+                        f"{statistics.get('resolved_count', 0)} resolved",
+                        json.dumps({
+                            'domain': domain,
+                            'total': statistics.get('total_subdomains', 0),
+                            'resolved': statistics.get('resolved_count', 0),
+                            'unique_ips': statistics.get('unique_ips', 0),
+                            'sources': statistics.get('source_breakdown', {}),
+                            'scan_id': scan_id if 'scan_id' in dir() else None,
+                        }),
+                        datetime.now().isoformat(),
+                    )
+                )
+        except Exception as e:
+            logger.debug(f"Timeline entry not stored (no active engagement): {e}")
+
+    def _persist_osint_result(self, scan_type: str, target: str, result_data: dict, description: str = ""):
+        """Persist a single OSINT scan result to centralized data and engagement timeline.
+        
+        Args:
+            scan_type: Type identifier (e.g. 'dns_analysis', 'tech_stack', 'whois')
+            target: The target domain/IP scanned
+            result_data: Dict of result data to store
+            description: Human-readable description for the timeline
+        """
+        import uuid
+        from datetime import datetime
+        
+        try:
+            from app.core.inventory_integration import get_current_tenant
+            tenant_id = get_current_tenant()
+        except Exception:
+            tenant_id = 'default'
+        
+        # Store in centralized scan data for reporting
+        try:
+            from app.core.centralized_scan_data import centralized_scan_data
+            
+            scan_id = str(uuid.uuid4())
+            centralized_scan_data.add_scan_result(
+                scan_id=scan_id,
+                tenant_id=tenant_id,
+                scan_type=scan_type,
+                target=target,
+                scanner='osint_infrastructure',
+                result_data=result_data
+            )
+            centralized_scan_data.complete_scan(scan_id=scan_id, total_results=1)
+        except Exception as e:
+            logger.debug(f"Failed to persist {scan_type} to scan data: {e}")
+        
+        # Log timeline entry in active engagement
+        if description:
+            try:
+                from app.core.feature_gap_integration import FeatureGapIntegration
+                eng_manager = FeatureGapIntegration.engines.engagement_manager
+                
+                if eng_manager.active_engagement_id and eng_manager.active_db:
+                    eng_manager.active_db.execute_write(
+                        """INSERT INTO timeline_entries 
+                           (action_type, actor, affected_entity_type, description, metadata, timestamp)
+                           VALUES (?, ?, ?, ?, ?, ?)""",
+                        (
+                            'scan_completed',
+                            'osint_engine',
+                            scan_type,
+                            description,
+                            json.dumps(result_data),
+                            datetime.now().isoformat(),
+                        )
+                    )
+            except Exception:
+                pass
+
     def _populate_results_table(self, results: list):
         """Populate the results table with subdomain data"""
         self.results_table.setRowCount(len(results))

@@ -189,6 +189,29 @@ def main():
         license_path.write_text(args.license_key, encoding="utf-8")
         print(f"  License key written to: {license_path}")
 
+    # Install Python dependencies
+    requirements_file = install_dir / "requirements.txt"
+    if requirements_file.exists():
+        print("  Installing Python dependencies...")
+        import subprocess
+        result = subprocess.run(
+            [sys.executable, "-m", "pip", "install", "-r", str(requirements_file)],
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode != 0:
+            print(f"  WARNING: pip install failed:")
+            # Show last few lines of error output
+            error_lines = result.stderr.strip().splitlines()
+            for line in error_lines[-5:]:
+                print(f"    {line}")
+            print()
+            print("  You may need to install dependencies manually:")
+            print(f"    pip install -r {requirements_file}")
+        else:
+            print("  Dependencies installed successfully.")
+    print()
+
     # Summary
     if failed:
         print(f"  WARNING: {len(failed)} file(s) failed to download:")
@@ -205,7 +228,6 @@ def main():
     print()
     print("  To run Huginn:")
     print(f"    cd {install_dir}")
-    print(f"    pip install -r requirements.txt")
     print(f"    python main.py")
     print()
 

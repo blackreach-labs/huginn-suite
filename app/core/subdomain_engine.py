@@ -109,38 +109,61 @@ class CrtShPlugin(SourcePlugin):
                   api_keys: Dict[str, str] = None) -> List[SubdomainResult]:
         results = []
         
-        try:
-            await self._rate_limit()
-            
-            url = f"https://crt.sh/?q=%.{domain}&output=json"
-            
-            async with session.get(url, timeout=30) as response:
-                if response.status == 200:
-                    data = await response.json()
-                    
-                    seen_subdomains = set()
-                    for cert in data[:1000]:  # Limit to prevent memory issues
-                        name_value = cert.get('name_value', '')
-                        if name_value:
-                            # Parse certificate names
-                            names = name_value.replace('\\n', '\n').split('\n')
-                            for name in names:
-                                name = name.strip().lower()
-                                if self._is_valid_subdomain(name, domain) and name not in seen_subdomains:
-                                    seen_subdomains.add(name)
-                                    results.append(SubdomainResult(
-                                        host=name,
-                                        source=self.name,
-                                        raw_data={
-                                            'cert_id': cert.get('id'),
-                                            'issuer': cert.get('issuer_name'),
-                                            'not_before': cert.get('not_before'),
-                                            'not_after': cert.get('not_after')
-                                        }
-                                    ))
+        url = f"https://crt.sh/?q=%.{domain}&output=json"
+        max_retries = 2
         
-        except Exception as e:
-            logger.error(f"CrtSh plugin error: {e}")
+        for attempt in range(max_retries + 1):
+            try:
+                await self._rate_limit()
+                
+                async with session.get(url, timeout=aiohttp.ClientTimeout(total=45)) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        
+                        seen_subdomains = set()
+                        for cert in data[:1000]:  # Limit to prevent memory issues
+                            name_value = cert.get('name_value', '')
+                            if name_value:
+                                # Parse certificate names
+                                names = name_value.replace('\\n', '\n').split('\n')
+                                for name in names:
+                                    name = name.strip().lower()
+                                    if self._is_valid_subdomain(name, domain) and name not in seen_subdomains:
+                                        seen_subdomains.add(name)
+                                        results.append(SubdomainResult(
+                                            host=name,
+                                            source=self.name,
+                                            raw_data={
+                                                'cert_id': cert.get('id'),
+                                                'issuer': cert.get('issuer_name'),
+                                                'not_before': cert.get('not_before'),
+                                                'not_after': cert.get('not_after')
+                                            }
+                                        ))
+                        break  # Success, no need to retry
+                    
+                    elif response.status == 429:
+                        # Rate limited — wait and retry
+                        logger.warning(f"CrtSh rate limited (attempt {attempt + 1}), waiting before retry...")
+                        if attempt < max_retries:
+                            await asyncio.sleep(3 * (attempt + 1))
+                        continue
+                    else:
+                        logger.warning(f"CrtSh returned status {response.status} (attempt {attempt + 1})")
+                        if attempt < max_retries:
+                            await asyncio.sleep(2)
+                        continue
+            
+            except asyncio.TimeoutError:
+                logger.warning(f"CrtSh timeout (attempt {attempt + 1})")
+                if attempt < max_retries:
+                    await asyncio.sleep(2)
+                continue
+            except Exception as e:
+                logger.error(f"CrtSh plugin error (attempt {attempt + 1}): {e}")
+                if attempt < max_retries:
+                    await asyncio.sleep(1)
+                continue
         
         return results
     
@@ -719,14 +742,17 @@ class SubdomainEnumerationEngine:
         # Run plugins concurrently
         all_results = []
         
+        # Use per-request timeout rather than total session timeout
+        # to prevent one slow plugin from killing the entire session
         async with aiohttp.ClientSession(
-            timeout=aiohttp.ClientTimeout(total=options.timeout),
-            connector=aiohttp.TCPConnector(limit=options.max_concurrent)
+            timeout=aiohttp.ClientTimeout(total=None, sock_connect=15, sock_read=options.timeout),
+            connector=aiohttp.TCPConnector(limit=options.max_concurrent, force_close=True)
         ) as session:
             
+            # Run plugins concurrently using asyncio.gather for true parallelism
             tasks = []
             for name, plugin in active_plugins.items():
-                task = self._run_plugin_safe(plugin, domain, session, self.api_keys)
+                task = asyncio.ensure_future(self._run_plugin_safe(plugin, domain, session, self.api_keys))
                 tasks.append((name, task))
             
             # Collect results from all plugins

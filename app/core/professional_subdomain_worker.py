@@ -62,6 +62,11 @@ class ProfessionalSubdomainWorker(QThread):
         try:
             self.progress_updated.emit(f"🚀 Starting professional subdomain enumeration for {self.domain}")
             
+            # On Windows, use SelectorEventLoop for better aiohttp compatibility
+            import sys
+            if sys.platform == 'win32':
+                asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+            
             # Create new event loop for this thread
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
@@ -74,6 +79,16 @@ class ProfessionalSubdomainWorker(QThread):
                     self.enumeration_completed.emit(result)
                 
             finally:
+                # Properly shut down the event loop
+                try:
+                    # Cancel all pending tasks
+                    pending = asyncio.all_tasks(loop)
+                    for task in pending:
+                        task.cancel()
+                    if pending:
+                        loop.run_until_complete(asyncio.gather(*pending, return_exceptions=True))
+                except Exception:
+                    pass
                 loop.close()
         
         except Exception as e:

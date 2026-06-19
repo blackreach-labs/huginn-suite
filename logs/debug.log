@@ -37,3 +37,412 @@
 2026-06-18 20:56:35 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
 2026-06-18 20:56:46 - huginn - DEBUG - Memory monitoring stopped
 2026-06-18 20:56:46 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-18 22:23:28 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-06-18 22:29:38 - huginn - DEBUG - Memory monitoring stopped
+2026-06-18 22:29:39 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-19 07:41:37 - huginn - DEBUG - Document added: scope.pdf (type=scope)
+2026-06-19 07:41:37 - huginn - DEBUG - Document added: test.bin (type=other)
+2026-06-19 07:41:37 - huginn - DEBUG - Document added: scope.pdf (type=scope)
+2026-06-19 07:41:37 - huginn - DEBUG - Document added: nda.pdf (type=nda)
+2026-06-19 07:41:37 - huginn - DEBUG - Document added: del.pdf (type=other)
+2026-06-19 07:41:37 - huginn - DEBUG - Contact added: John Doe (CTO)
+2026-06-19 07:41:37 - huginn - DEBUG - Contact added: Jane (PM)
+2026-06-19 07:41:37 - huginn - DEBUG - Contact added: Delete Me (None)
+2026-06-19 07:41:38 - huginn - DEBUG - Milestone added: Kickoff (planned_start)
+2026-06-19 07:41:38 - huginn - DEBUG - Milestone added: End (planned_end)
+2026-06-19 07:41:38 - huginn - DEBUG - Milestone added: Start (planned_start)
+2026-06-19 07:41:38 - huginn - DEBUG - Milestone added: Mid (checkpoint)
+2026-06-19 07:41:38 - huginn - DEBUG - Milestone added: Old Name (checkpoint)
+2026-06-19 07:41:38 - huginn - DEBUG - Milestone added: Remove (checkpoint)
+2026-06-19 07:42:40 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-06-19 07:42:45 - huginn - DEBUG - Memory monitoring stopped
+2026-06-19 07:42:45 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-19 07:42:48 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-06-19 07:47:48 - huginn - DEBUG - Memory monitoring stopped
+2026-06-19 07:47:48 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-19 07:53:37 - huginn - DEBUG - Document added: scope.pdf (type=scope)
+2026-06-19 07:53:37 - huginn - DEBUG - Document added: test.bin (type=other)
+2026-06-19 07:53:37 - huginn - DEBUG - Document added: scope.pdf (type=scope)
+2026-06-19 07:53:37 - huginn - DEBUG - Document added: nda.pdf (type=nda)
+2026-06-19 07:53:37 - huginn - DEBUG - Document added: del.pdf (type=other)
+2026-06-19 07:53:37 - huginn - DEBUG - Contact added: John Doe (CTO)
+2026-06-19 07:53:37 - huginn - DEBUG - Contact added: Jane (PM)
+2026-06-19 07:53:37 - huginn - DEBUG - Contact added: Delete Me (None)
+2026-06-19 07:53:38 - huginn - DEBUG - Milestone added: Kickoff (planned_start)
+2026-06-19 07:53:38 - huginn - DEBUG - Milestone added: End (planned_end)
+2026-06-19 07:53:38 - huginn - DEBUG - Milestone added: Start (planned_start)
+2026-06-19 07:53:38 - huginn - DEBUG - Milestone added: Mid (checkpoint)
+2026-06-19 07:53:38 - huginn - DEBUG - Milestone added: Old Name (checkpoint)
+2026-06-19 07:53:38 - huginn - DEBUG - Milestone added: Remove (checkpoint)
+2026-06-19 18:33:06 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-06-19 18:41:46 - huginn - DEBUG - Memory monitoring stopped
+2026-06-19 18:41:46 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-19 18:49:56 - huginn - DEBUG - Document added: scope.pdf (type=scope)
+2026-06-19 18:49:56 - huginn - DEBUG - Document added: test.bin (type=other)
+2026-06-19 18:49:56 - huginn - DEBUG - Document added: scope.pdf (type=scope)
+2026-06-19 18:49:56 - huginn - DEBUG - Document added: nda.pdf (type=nda)
+2026-06-19 18:49:56 - huginn - DEBUG - Document added: del.pdf (type=other)
+2026-06-19 18:49:56 - huginn - DEBUG - Contact added: John Doe (CTO)
+2026-06-19 18:49:56 - huginn - DEBUG - Contact added: Jane (PM)
+2026-06-19 18:49:56 - huginn - DEBUG - Contact added: Delete Me (None)
+2026-06-19 18:49:56 - huginn - DEBUG - Milestone added: Kickoff (planned_start)
+2026-06-19 18:49:56 - huginn - DEBUG - Milestone added: End (planned_end)
+2026-06-19 18:49:56 - huginn - DEBUG - Milestone added: Start (planned_start)
+2026-06-19 18:49:56 - huginn - DEBUG - Milestone added: Mid (checkpoint)
+2026-06-19 18:49:56 - huginn - DEBUG - Milestone added: Old Name (checkpoint)
+2026-06-19 18:49:56 - huginn - DEBUG - Milestone added: Remove (checkpoint)
+2026-06-19 18:50:09 - huginn - DEBUG - Session token generated
+2026-06-19 18:56:04 - huginn - DEBUG - Document added: scope.pdf (type=scope)
+2026-06-19 18:56:04 - huginn - DEBUG - Document added: test.bin (type=other)
+2026-06-19 18:56:04 - huginn - DEBUG - Document added: scope.pdf (type=scope)
+2026-06-19 18:56:04 - huginn - DEBUG - Document added: nda.pdf (type=nda)
+2026-06-19 18:56:04 - huginn - DEBUG - Document added: del.pdf (type=other)
+2026-06-19 18:56:04 - huginn - DEBUG - Contact added: John Doe (CTO)
+2026-06-19 18:56:04 - huginn - DEBUG - Contact added: Jane (PM)
+2026-06-19 18:56:04 - huginn - DEBUG - Contact added: Delete Me (None)
+2026-06-19 18:56:05 - huginn - DEBUG - Milestone added: Kickoff (planned_start)
+2026-06-19 18:56:05 - huginn - DEBUG - Milestone added: End (planned_end)
+2026-06-19 18:56:05 - huginn - DEBUG - Milestone added: Start (planned_start)
+2026-06-19 18:56:05 - huginn - DEBUG - Milestone added: Mid (checkpoint)
+2026-06-19 18:56:05 - huginn - DEBUG - Milestone added: Old Name (checkpoint)
+2026-06-19 18:56:05 - huginn - DEBUG - Milestone added: Remove (checkpoint)
+2026-06-19 18:57:53 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-06-19 19:08:39 - huginn - DEBUG - Session token generated
+2026-06-19 19:09:44 - huginn - DEBUG - Memory monitoring stopped
+2026-06-19 19:09:44 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-19 19:09:54 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-06-19 19:10:44 - huginn - DEBUG - Memory monitoring stopped
+2026-06-19 19:10:44 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-19 19:13:35 - huginn - DEBUG - Document added: scope.pdf (type=scope)
+2026-06-19 19:13:35 - huginn - DEBUG - Document added: test.bin (type=other)
+2026-06-19 19:13:35 - huginn - DEBUG - Document added: scope.pdf (type=scope)
+2026-06-19 19:13:35 - huginn - DEBUG - Document added: nda.pdf (type=nda)
+2026-06-19 19:13:35 - huginn - DEBUG - Document added: del.pdf (type=other)
+2026-06-19 19:13:35 - huginn - DEBUG - Contact added: John Doe (CTO)
+2026-06-19 19:13:35 - huginn - DEBUG - Contact added: Jane (PM)
+2026-06-19 19:13:35 - huginn - DEBUG - Contact added: Delete Me (None)
+2026-06-19 19:13:35 - huginn - DEBUG - Milestone added: Kickoff (planned_start)
+2026-06-19 19:13:35 - huginn - DEBUG - Milestone added: End (planned_end)
+2026-06-19 19:13:35 - huginn - DEBUG - Milestone added: Start (planned_start)
+2026-06-19 19:13:35 - huginn - DEBUG - Milestone added: Mid (checkpoint)
+2026-06-19 19:13:35 - huginn - DEBUG - Milestone added: Old Name (checkpoint)
+2026-06-19 19:13:35 - huginn - DEBUG - Milestone added: Remove (checkpoint)
+2026-06-19 19:14:59 - huginn - DEBUG - Document added: scope.pdf (type=scope)
+2026-06-19 19:14:59 - huginn - DEBUG - Document added: test.bin (type=other)
+2026-06-19 19:14:59 - huginn - DEBUG - Document added: scope.pdf (type=scope)
+2026-06-19 19:14:59 - huginn - DEBUG - Document added: nda.pdf (type=nda)
+2026-06-19 19:14:59 - huginn - DEBUG - Document added: del.pdf (type=other)
+2026-06-19 19:14:59 - huginn - DEBUG - Contact added: John Doe (CTO)
+2026-06-19 19:14:59 - huginn - DEBUG - Contact added: Jane (PM)
+2026-06-19 19:14:59 - huginn - DEBUG - Contact added: Delete Me (None)
+2026-06-19 19:14:59 - huginn - DEBUG - Milestone added: Kickoff (planned_start)
+2026-06-19 19:14:59 - huginn - DEBUG - Milestone added: End (planned_end)
+2026-06-19 19:14:59 - huginn - DEBUG - Milestone added: Start (planned_start)
+2026-06-19 19:14:59 - huginn - DEBUG - Milestone added: Mid (checkpoint)
+2026-06-19 19:15:00 - huginn - DEBUG - Milestone added: Old Name (checkpoint)
+2026-06-19 19:15:00 - huginn - DEBUG - Milestone added: Remove (checkpoint)
+2026-06-19 20:31:41 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-06-19 20:35:30 - huginn - DEBUG - Memory monitoring stopped
+2026-06-19 20:35:30 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-19 20:38:36 - huginn - DEBUG - Document added: scope.pdf (type=scope)
+2026-06-19 20:38:36 - huginn - DEBUG - Document added: test.bin (type=other)
+2026-06-19 20:38:36 - huginn - DEBUG - Document added: scope.pdf (type=scope)
+2026-06-19 20:38:36 - huginn - DEBUG - Document added: nda.pdf (type=nda)
+2026-06-19 20:38:36 - huginn - DEBUG - Document added: del.pdf (type=other)
+2026-06-19 20:38:36 - huginn - DEBUG - Contact added: John Doe (CTO)
+2026-06-19 20:38:36 - huginn - DEBUG - Contact added: Jane (PM)
+2026-06-19 20:38:36 - huginn - DEBUG - Contact added: Delete Me (None)
+2026-06-19 20:38:36 - huginn - DEBUG - Milestone added: Kickoff (planned_start)
+2026-06-19 20:38:36 - huginn - DEBUG - Milestone added: End (planned_end)
+2026-06-19 20:38:36 - huginn - DEBUG - Milestone added: Start (planned_start)
+2026-06-19 20:38:36 - huginn - DEBUG - Milestone added: Mid (checkpoint)
+2026-06-19 20:38:36 - huginn - DEBUG - Milestone added: Old Name (checkpoint)
+2026-06-19 20:38:36 - huginn - DEBUG - Milestone added: Remove (checkpoint)
+2026-06-19 20:39:26 - huginn - DEBUG - Document added: scope.pdf (type=scope)
+2026-06-19 20:39:26 - huginn - DEBUG - Document added: test.bin (type=other)
+2026-06-19 20:39:26 - huginn - DEBUG - Document added: scope.pdf (type=scope)
+2026-06-19 20:39:26 - huginn - DEBUG - Document added: nda.pdf (type=nda)
+2026-06-19 20:39:26 - huginn - DEBUG - Document added: del.pdf (type=other)
+2026-06-19 20:39:26 - huginn - DEBUG - Contact added: John Doe (CTO)
+2026-06-19 20:39:26 - huginn - DEBUG - Contact added: Jane (PM)
+2026-06-19 20:39:26 - huginn - DEBUG - Contact added: Delete Me (None)
+2026-06-19 20:39:26 - huginn - DEBUG - Milestone added: Kickoff (planned_start)
+2026-06-19 20:39:26 - huginn - DEBUG - Milestone added: End (planned_end)
+2026-06-19 20:39:26 - huginn - DEBUG - Milestone added: Start (planned_start)
+2026-06-19 20:39:26 - huginn - DEBUG - Milestone added: Mid (checkpoint)
+2026-06-19 20:39:26 - huginn - DEBUG - Milestone added: Old Name (checkpoint)
+2026-06-19 20:39:26 - huginn - DEBUG - Milestone added: Remove (checkpoint)
+2026-06-19 20:39:26 - huginn - DEBUG - EngagementDatabase already connected: C:\Users\allie\AppData\Local\Temp\pytest-of-allie\pytest-41\test_connect_idempotent0\engagement.db
+2026-06-19 20:57:27 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-06-19 21:04:25 - huginn - DEBUG - Memory monitoring stopped
+2026-06-19 21:04:25 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-19 21:09:27 - huginn - DEBUG - Document added: scope.pdf (type=scope)
+2026-06-19 21:09:27 - huginn - DEBUG - Document added: test.bin (type=other)
+2026-06-19 21:09:28 - huginn - DEBUG - Document added: scope.pdf (type=scope)
+2026-06-19 21:09:28 - huginn - DEBUG - Document added: nda.pdf (type=nda)
+2026-06-19 21:09:28 - huginn - DEBUG - Document added: del.pdf (type=other)
+2026-06-19 21:09:28 - huginn - DEBUG - Contact added: John Doe (CTO)
+2026-06-19 21:09:28 - huginn - DEBUG - Contact added: Jane (PM)
+2026-06-19 21:09:28 - huginn - DEBUG - Contact added: Delete Me (None)
+2026-06-19 21:09:28 - huginn - DEBUG - Milestone added: Kickoff (planned_start)
+2026-06-19 21:09:28 - huginn - DEBUG - Milestone added: End (planned_end)
+2026-06-19 21:09:28 - huginn - DEBUG - Milestone added: Start (planned_start)
+2026-06-19 21:09:28 - huginn - DEBUG - Milestone added: Mid (checkpoint)
+2026-06-19 21:09:28 - huginn - DEBUG - Milestone added: Old Name (checkpoint)
+2026-06-19 21:09:28 - huginn - DEBUG - Milestone added: Remove (checkpoint)
+2026-06-19 21:09:28 - huginn - DEBUG - EngagementDatabase already connected: C:\Users\allie\AppData\Local\Temp\pytest-of-allie\pytest-42\test_connect_idempotent0\engagement.db
+2026-06-19 21:34:31 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-06-19 21:40:40 - huginn - DEBUG - Memory monitoring stopped
+2026-06-19 21:40:40 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-19 22:07:52 - huginn - DEBUG - Document added: scope.pdf (type=scope)
+2026-06-19 22:07:52 - huginn - DEBUG - Document added: test.bin (type=other)
+2026-06-19 22:07:52 - huginn - DEBUG - Document added: scope.pdf (type=scope)
+2026-06-19 22:07:52 - huginn - DEBUG - Document added: nda.pdf (type=nda)
+2026-06-19 22:07:52 - huginn - DEBUG - Document added: del.pdf (type=other)
+2026-06-19 22:07:52 - huginn - DEBUG - Contact added: John Doe (CTO)
+2026-06-19 22:07:52 - huginn - DEBUG - Contact added: Jane (PM)
+2026-06-19 22:07:52 - huginn - DEBUG - Contact added: Delete Me (None)
+2026-06-19 22:07:52 - huginn - DEBUG - Milestone added: Kickoff (planned_start)
+2026-06-19 22:07:52 - huginn - DEBUG - Milestone added: End (planned_end)
+2026-06-19 22:07:52 - huginn - DEBUG - Milestone added: Start (planned_start)
+2026-06-19 22:07:52 - huginn - DEBUG - Milestone added: Mid (checkpoint)
+2026-06-19 22:07:52 - huginn - DEBUG - Milestone added: Old Name (checkpoint)
+2026-06-19 22:07:52 - huginn - DEBUG - Milestone added: Remove (checkpoint)
+2026-06-19 22:07:53 - huginn - DEBUG - EngagementDatabase already connected: C:\Users\allie\AppData\Local\Temp\pytest-of-allie\pytest-43\test_connect_idempotent0\engagement.db
+2026-06-19 22:08:48 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-06-19 22:09:53 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:53 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:53 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:53 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:53 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:53 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:53 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:53 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:53 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:53 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:53 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:53 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:53 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:53 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:53 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:53 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:53 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:53 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:53 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:53 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:53 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:54 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:54 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:54 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:54 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:54 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:54 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:54 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:54 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:54 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:54 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:54 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:54 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:54 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:54 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:54 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:09:54 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-06-19 22:14:10 - huginn - DEBUG - Memory monitoring stopped
+2026-06-19 22:14:10 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-19 22:16:38 - huginn - DEBUG - Document added: scope.pdf (type=scope)
+2026-06-19 22:16:38 - huginn - DEBUG - Document added: test.bin (type=other)
+2026-06-19 22:16:38 - huginn - DEBUG - Document added: scope.pdf (type=scope)
+2026-06-19 22:16:38 - huginn - DEBUG - Document added: nda.pdf (type=nda)
+2026-06-19 22:16:38 - huginn - DEBUG - Document added: del.pdf (type=other)
+2026-06-19 22:16:38 - huginn - DEBUG - Contact added: John Doe (CTO)
+2026-06-19 22:16:38 - huginn - DEBUG - Contact added: Jane (PM)
+2026-06-19 22:16:38 - huginn - DEBUG - Contact added: Delete Me (None)
+2026-06-19 22:16:38 - huginn - DEBUG - Milestone added: Kickoff (planned_start)
+2026-06-19 22:16:38 - huginn - DEBUG - Milestone added: End (planned_end)
+2026-06-19 22:16:38 - huginn - DEBUG - Milestone added: Start (planned_start)
+2026-06-19 22:16:38 - huginn - DEBUG - Milestone added: Mid (checkpoint)
+2026-06-19 22:16:38 - huginn - DEBUG - Milestone added: Old Name (checkpoint)
+2026-06-19 22:16:38 - huginn - DEBUG - Milestone added: Remove (checkpoint)
+2026-06-19 22:17:32 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-06-19 22:23:36 - huginn - DEBUG - Memory monitoring stopped
+2026-06-19 22:23:36 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-19 22:26:38 - huginn - DEBUG - Document added: scope.pdf (type=scope)
+2026-06-19 22:26:38 - huginn - DEBUG - Document added: test.bin (type=other)
+2026-06-19 22:26:38 - huginn - DEBUG - Document added: scope.pdf (type=scope)
+2026-06-19 22:26:38 - huginn - DEBUG - Document added: nda.pdf (type=nda)
+2026-06-19 22:26:38 - huginn - DEBUG - Document added: del.pdf (type=other)
+2026-06-19 22:26:38 - huginn - DEBUG - Contact added: John Doe (CTO)
+2026-06-19 22:26:38 - huginn - DEBUG - Contact added: Jane (PM)
+2026-06-19 22:26:38 - huginn - DEBUG - Contact added: Delete Me (None)
+2026-06-19 22:26:38 - huginn - DEBUG - Milestone added: Kickoff (planned_start)
+2026-06-19 22:26:38 - huginn - DEBUG - Milestone added: End (planned_end)
+2026-06-19 22:26:38 - huginn - DEBUG - Milestone added: Start (planned_start)
+2026-06-19 22:26:38 - huginn - DEBUG - Milestone added: Mid (checkpoint)
+2026-06-19 22:26:38 - huginn - DEBUG - Milestone added: Old Name (checkpoint)
+2026-06-19 22:26:38 - huginn - DEBUG - Milestone added: Remove (checkpoint)
+2026-06-19 22:27:30 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-06-19 22:39:04 - huginn - DEBUG - Memory monitoring stopped
+2026-06-19 22:39:04 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-19 22:39:11 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-06-19 22:40:12 - huginn - DEBUG - Memory monitoring stopped
+2026-06-19 22:40:12 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-19 22:41:25 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-06-19 22:43:12 - huginn - DEBUG - Memory monitoring stopped
+2026-06-19 22:43:12 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-19 22:43:18 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-06-19 22:49:12 - huginn - DEBUG - Memory monitoring stopped
+2026-06-19 22:49:12 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-19 22:52:46 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-06-19 22:54:15 - huginn - DEBUG - Memory monitoring stopped
+2026-06-19 22:54:15 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-19 22:54:20 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-06-19 23:00:36 - huginn - DEBUG - Memory monitoring stopped
+2026-06-19 23:00:36 - huginn - DEBUG - Connection pool closed all sessions

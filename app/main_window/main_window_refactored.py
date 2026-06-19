@@ -49,6 +49,9 @@ class MainWindow(QMainWindow):
         self.current_engagement_id = None
         self.session_info_window = None
         self._current_home_style = 'attack_chain'
+        self._guided_workflow_active = False
+        self._guided_workflow_step = 0
+        self._guided_return_btn = None
         self.startup_optimizer = StartupOptimizer()
     
     def _initialize_components(self):
@@ -190,6 +193,10 @@ class MainWindow(QMainWindow):
         self.page_manager.register_page('vpn', lambda: self._create_vpn())
         self.page_manager.register_page('script_editor', lambda: self._create_script_editor())
         self.page_manager.register_page('cracking', lambda: self._create_cracking())
+        self.page_manager.register_page('osint', lambda: self._create_osint())
+        self.page_manager.register_page('huginn_scanner', lambda: self._create_huginn_scanner())
+        self.page_manager.register_page('shell_management', lambda: self._create_shell_management())
+        self.page_manager.register_page('network_discovery', lambda: self._create_network_discovery())
         # Add other pages as needed
         
 
@@ -327,6 +334,46 @@ class MainWindow(QMainWindow):
             logger.error(f"Failed to create cracking page: {e}")
             return None
     
+    def _create_osint(self):
+        try:
+            from app.pages.osint_page import OSINTPage
+            page = OSINTPage(self)
+            self._connect_page_signals(page)
+            return page
+        except Exception as e:
+            logger.error(f"Failed to create OSINT page: {e}")
+            return None
+    
+    def _create_huginn_scanner(self):
+        try:
+            from app.pages.huginn_scanner_page import HuginnScannerPage
+            page = HuginnScannerPage(self)
+            self._connect_page_signals(page)
+            return page
+        except Exception as e:
+            logger.error(f"Failed to create Huginn scanner page: {e}")
+            return None
+    
+    def _create_shell_management(self):
+        try:
+            from app.pages.shell_management_page import ShellManagementPage
+            page = ShellManagementPage(self)
+            self._connect_page_signals(page)
+            return page
+        except Exception as e:
+            logger.error(f"Failed to create shell management page: {e}")
+            return None
+    
+    def _create_network_discovery(self):
+        try:
+            from app.pages.network_discovery_page import NetworkDiscoveryPage
+            page = NetworkDiscoveryPage(self)
+            self._connect_page_signals(page)
+            return page
+        except Exception as e:
+            logger.error(f"Failed to create network discovery page: {e}")
+            return None
+    
     def _connect_page_signals(self, page):
         """Connect signals for a specific page when it's created."""
         if hasattr(page, 'navigate_signal'):
@@ -420,7 +467,11 @@ class MainWindow(QMainWindow):
     
     # Delegate methods to managers
     def navigate_to(self, page_name):
-        """Navigate to a specific page (lazy loaded)."""
+        """Navigate to a specific page (lazy loaded).
+        
+        Tries the LazyPageManager first. If the page isn't registered there,
+        falls back to the NavigationManager which has a richer set of pages.
+        """
         page = self.page_manager.get_page(page_name)
         if page:
             self.stack.setCurrentWidget(page)
@@ -431,6 +482,23 @@ class MainWindow(QMainWindow):
                 if phase:
                     self.mindmap.selected_phase = phase
                     self.mindmap.update()
+            
+            # Show/hide guided workflow return button
+            if self._guided_workflow_active and page_name != 'guided_workflow':
+                self._show_guided_return_button()
+            elif page_name == 'guided_workflow':
+                self._hide_guided_return_button()
+        else:
+            # Fallback to NavigationManager which handles pages not in LazyPageManager
+            if hasattr(self, 'navigation_manager'):
+                self.navigation_manager.navigate_to(page_name)
+                # Show guided return button if in guided mode
+                if self._guided_workflow_active and page_name != 'guided_workflow':
+                    self._show_guided_return_button()
+                elif page_name == 'guided_workflow':
+                    self._hide_guided_return_button()
+            else:
+                self.status_bar.showMessage(f"Unknown page: {page_name}")
 
     def _page_to_phase(self, page_name):
         """Reverse lookup: map a page name back to its mindmap phase."""
@@ -444,6 +512,95 @@ class MainWindow(QMainWindow):
             "findings": "REPORT",
         }
         return page_to_phase_map.get(page_name)
+    
+    def _show_guided_return_button(self):
+        """Show a floating 'Return to Guided Workflow' button over the main content."""
+        from PyQt6.QtWidgets import QPushButton
+        from PyQt6.QtCore import QPropertyAnimation, QEasingCurve
+        
+        if self._guided_return_btn is not None:
+            self._guided_return_btn.show()
+            self._guided_return_btn.raise_()
+            return
+        
+        btn = QPushButton("🧭 Return to Guided Workflow", self)
+        btn.setObjectName("GuidedReturnButton")
+        btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn.setStyleSheet("""
+            QPushButton#GuidedReturnButton {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                    stop:0 rgba(46, 204, 113, 200), stop:1 rgba(100, 200, 255, 200));
+                color: white;
+                border: 1px solid rgba(255, 255, 255, 120);
+                border-radius: 20px;
+                padding: 10px 24px;
+                font-size: 11pt;
+                font-weight: bold;
+            }
+            QPushButton#GuidedReturnButton:hover {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                    stop:0 rgba(46, 204, 113, 255), stop:1 rgba(100, 200, 255, 255));
+                border: 1px solid rgba(255, 255, 255, 200);
+            }
+            QPushButton#GuidedReturnButton:pressed {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                    stop:0 rgba(39, 174, 96, 255), stop:1 rgba(80, 160, 220, 255));
+            }
+        """)
+        btn.setFixedHeight(40)
+        btn.adjustSize()
+        btn.clicked.connect(self._return_to_guided_workflow)
+        
+        # Position at top-right of the stack area
+        self._guided_return_btn = btn
+        self._reposition_guided_return_button()
+        btn.show()
+        btn.raise_()
+    
+    def _hide_guided_return_button(self):
+        """Hide the guided workflow return button."""
+        if self._guided_return_btn is not None:
+            self._guided_return_btn.hide()
+    
+    def _return_to_guided_workflow(self):
+        """Navigate back to the guided workflow page."""
+        self._guided_workflow_active = False
+        self._hide_guided_return_button()
+        self.navigate_to('guided_workflow')
+        self.status_bar.showMessage(
+            f"Guided Workflow — Step {self._guided_workflow_step + 1}"
+        )
+    
+    def _reposition_guided_return_button(self):
+        """Reposition the floating return button to bottom-right of the window."""
+        if self._guided_return_btn is None:
+            return
+        btn = self._guided_return_btn
+        margin_right = 20
+        margin_bottom = 60  # above the status bar
+        x = self.width() - btn.width() - margin_right
+        y = self.height() - btn.height() - margin_bottom
+        btn.move(x, y)
+    
+    def resizeEvent(self, event):
+        """Handle window resize to reposition floating elements."""
+        super().resizeEvent(event)
+        self._reposition_guided_return_button()
+        if event and hasattr(self, 'background_effects'):
+            self.background_effects.resize_effect(event.size())
+    
+    def _switch_to_guided_mode(self):
+        """Switch to guided workflow mode from the menu."""
+        self._guided_workflow_active = True
+        self._hide_guided_return_button()
+        self.navigate_to('guided_workflow')
+    
+    def _switch_to_advanced_mode(self):
+        """Switch to advanced mode from the menu."""
+        self._guided_workflow_active = False
+        self._hide_guided_return_button()
+        self.set_home_style('attack_chain')
+        self.navigate_to('attack_chain_home')
     
     def on_mindmap_phase_selected(self, phase_name, phase_data):
         """Handle mindmap phase selection."""
@@ -472,12 +629,6 @@ class MainWindow(QMainWindow):
         self.status_bar.showMessage(message)
     
     # Event handlers
-    def resizeEvent(self, event):
-        """Handle window resize events."""
-        super().resizeEvent(event)
-        if event and hasattr(self, 'background_effects'):
-            self.background_effects.resize_effect(event.size())
-    
     def changeEvent(self, event):
         """Handle window state changes."""
         if hasattr(self, 'tray_manager') and self.tray_manager is not None:
@@ -647,6 +798,7 @@ class MainWindow(QMainWindow):
                 logger.warning(f"Failed to save mode preference: {e}")
             
             if mode == "guided":
+                self._guided_workflow_active = True
                 page = self.page_manager.get_page('guided_workflow')
                 if page:
                     self.stack.setCurrentWidget(page)

@@ -1,12 +1,11 @@
 from PyQt6.QtWidgets import (
     QVBoxLayout, QHBoxLayout, QSplitter, QLabel, QFrame,
-    QPushButton, QComboBox, QTableWidget, QTableWidgetItem,
-    QHeaderView, QMenu, QMessageBox, QGroupBox, QWidget,
-    QTextEdit, QDialog
+    QPushButton, QComboBox, QHeaderView, QMenu, QMessageBox,
+    QGroupBox, QWidget, QTextEdit, QDialog, QTreeWidget, QTreeWidgetItem
 )
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal
-from PyQt6.QtGui import QAction, QFont
-from app.widgets.asset_graphics_widget import AssetGraphicsWidget, AssetDetailsWidget
+from PyQt6.QtGui import QAction, QFont, QColor, QBrush
+from app.widgets.asset_graphics_widget import AssetDetailsWidget
 from app.core.asset_manager import asset_manager
 from app.core.logger import logger
 
@@ -46,56 +45,31 @@ class InventoryPage(QWidget):
         # ── Stats bar ─────────────────────────────────────────────────────
         layout.addWidget(self._build_stats_bar())
 
-        # ── Main splitter: graphics (left) | table+details (right) ────────
+        # ── Toolbar (filters + refresh) ───────────────────────────────────
+        layout.addWidget(self._build_toolbar())
+
+        # ── Main splitter: tree (left) | details (right) ──────────────────
         h_split = QSplitter(Qt.Orientation.Horizontal)
 
-        # Left — network graph (fixed width, secondary surface)
+        # Left — hierarchical asset tree view
         self._left_frame = self._framed()
         left_layout = QVBoxLayout(self._left_frame)
         left_layout.setContentsMargins(10, 10, 10, 10)
         left_layout.setSpacing(6)
         left_layout.addWidget(QLabel("Asset Overview", styleSheet=
             "font-size: 12pt; font-weight: bold; color: #64C8FF;"))
-        self.asset_graphics = AssetGraphicsWidget()
-        self.asset_graphics.asset_selected.connect(self._on_asset_selected)
-        self.asset_graphics.asset_context_menu.connect(self._show_asset_context_menu)
-        left_layout.addWidget(self.asset_graphics)
+        self.asset_tree = self._build_asset_tree()
+        left_layout.addWidget(self.asset_tree)
         h_split.addWidget(self._left_frame)
 
-        # Right — toolbar + vertical splitter (table / details)
-        right_container = QWidget()
-        right_layout = QVBoxLayout(right_container)
-        right_layout.setContentsMargins(0, 0, 0, 0)
-        right_layout.setSpacing(6)
-
-        right_layout.addWidget(self._build_toolbar())
-
-        v_split = QSplitter(Qt.Orientation.Vertical)
-
-        # Table frame
-        table_frame = self._framed()
-        tf_layout = QVBoxLayout(table_frame)
-        tf_layout.setContentsMargins(8, 8, 8, 8)
-        self.asset_table = self._build_table()
-        tf_layout.addWidget(self.asset_table)
-        v_split.addWidget(table_frame)
-
-        # Details frame (always visible, populated on selection)
-        details_frame = self._framed()
-        df_layout = QVBoxLayout(details_frame)
-        df_layout.setContentsMargins(8, 8, 8, 8)
+        # Right — asset details panel
         self.asset_details = AssetDetailsWidget()
-        # Hide the built-in back button — we no longer need show/hide toggling
+
         if hasattr(self.asset_details, 'back_button'):
             self.asset_details.back_button.setVisible(False)
-        df_layout.addWidget(self.asset_details)
-        v_split.addWidget(details_frame)
+        h_split.addWidget(self.asset_details)    
 
-        v_split.setSizes([340, 220])
-        right_layout.addWidget(v_split, 1)
-
-        h_split.addWidget(right_container)
-        h_split.setSizes([350, 750])
+        h_split.setSizes([380, 650])
 
         layout.addWidget(h_split, 1)
 
@@ -193,47 +167,215 @@ class InventoryPage(QWidget):
 
         return bar
 
-    # ---- table -------------------------------------------------------- #
+    # ---- asset tree ----------------------------------------------------- #
 
-    def _build_table(self):
-        table = QTableWidget()
-        table.setColumnCount(8)
-        table.setHorizontalHeaderLabels([
-            "IP Address", "Hostname", "OS / Type", "Status",
-            "Ports", "Services", "Shares / Web", "Vulnerabilities"
-        ])
-
-        hdr = table.horizontalHeader()
-        # Hostname and OS/Type stretch to fill remaining space
-        hdr.setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
-        hdr.setSectionResizeMode(2, QHeaderView.ResizeMode.Stretch)
-        # All other columns size to their content automatically
-        for col in (0, 3, 4, 5, 6, 7):
-            hdr.setSectionResizeMode(col, QHeaderView.ResizeMode.ResizeToContents)
-
-        hdr.setMinimumSectionSize(50)
-
-        table.setStyleSheet("""
-            QTableWidget {
-                background-color: rgba(0, 0, 0, 100);
+    def _build_asset_tree(self):
+        """Build the hierarchical tree widget for asset overview."""
+        tree = QTreeWidget()
+        tree.setHeaderLabels(["Name", "Details"])
+        tree.setColumnCount(2)
+        tree.header().setStretchLastSection(True)
+        tree.header().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
+        tree.setAlternatingRowColors(False)
+        tree.setAnimated(True)
+        tree.setIndentation(20)
+        tree.setStyleSheet("""
+            QTreeWidget {
+                background-color: rgba(0, 0, 0, 80);
                 color: #DCDCDC;
                 border: none;
-                gridline-color: rgba(100, 200, 255, 40);
+                font-size: 10pt;
             }
-            QTableWidget::item {
-                padding: 6px;
-                border-bottom: 1px solid rgba(100, 200, 255, 25);
+            QTreeWidget::item {
+                padding: 4px 2px;
+                border-bottom: 1px solid rgba(100, 200, 255, 15);
             }
-            QTableWidget::item:selected {
+            QTreeWidget::item:selected {
                 background-color: rgba(100, 200, 255, 80);
                 color: #FFFFFF;
             }
+            QTreeWidget::item:hover {
+                background-color: rgba(100, 200, 255, 30);
+            }
+            QTreeWidget::branch {
+                background: transparent;
+            }
+            QHeaderView::section {
+                background-color: rgba(20, 30, 50, 200);
+                color: #64C8FF;
+                border: 1px solid rgba(100, 200, 255, 40);
+                padding: 4px 8px;
+                font-weight: bold;
+            }
         """)
 
-        table.itemSelectionChanged.connect(self._on_table_selection)
-        table.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-        table.customContextMenuRequested.connect(self._show_table_context_menu)
-        return table
+        tree.itemClicked.connect(self._on_tree_item_clicked)
+        tree.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        tree.customContextMenuRequested.connect(self._show_tree_context_menu)
+        return tree
+
+    def _populate_tree(self, assets):
+        """Populate the tree with assets organized into categories."""
+        self.asset_tree.clear()
+
+        # Categorize assets
+        hosts = []         # Assets with hostname and IP resolved
+        ip_only = []       # Assets with IP but no meaningful hostname
+        domains = []       # Assets that are domains/subdomains (FQDN, no direct IP)
+
+        for asset in assets:
+            ip = asset.get('ip_address', '')
+            hostname = asset.get('hostname', '')
+            fqdn = asset.get('fqdn', '')
+            meta = asset.get('metadata', {})
+            discovery = meta.get('discovery_method', '')
+
+            # Determine category
+            is_domain_discovery = discovery in (
+                'subdomain_enumeration', 'dns_analysis', 'cert_transparency'
+            )
+            is_ip_like = bool(ip) and self._is_ip_address(ip)
+
+            if is_domain_discovery and not is_ip_like:
+                domains.append(asset)
+            elif is_ip_like and hostname and hostname != ip:
+                hosts.append(asset)
+            elif is_ip_like:
+                ip_only.append(asset)
+            elif fqdn or hostname:
+                domains.append(asset)
+            else:
+                ip_only.append(asset)
+
+        # ── HOSTS category ─────────────────────────────────────────────
+        if hosts:
+            hosts_root = QTreeWidgetItem(self.asset_tree)
+            hosts_root.setText(0, f"🖥️  HOSTS ({len(hosts)})")
+            hosts_root.setFont(0, self._category_font())
+            hosts_root.setForeground(0, QBrush(QColor("#64C8FF")))
+            hosts_root.setExpanded(True)
+
+            for asset in sorted(hosts, key=lambda a: a.get('hostname', '')):
+                item = QTreeWidgetItem(hosts_root)
+                item.setText(0, asset.get('hostname', asset['ip_address']))
+                item.setText(1, f"{asset['ip_address']} — {asset.get('status', '')}")
+                item.setData(0, Qt.ItemDataRole.UserRole, asset['asset_id'])
+                self._style_asset_item(item, asset)
+
+        # ── IP ADDRESSES category ─────────────────────────────────────
+        if ip_only:
+            ip_root = QTreeWidgetItem(self.asset_tree)
+            ip_root.setText(0, f"🌐  IP ADDRESSES ({len(ip_only)})")
+            ip_root.setFont(0, self._category_font())
+            ip_root.setForeground(0, QBrush(QColor("#00FF41")))
+            ip_root.setExpanded(True)
+
+            for asset in sorted(ip_only, key=lambda a: a.get('ip_address', '')):
+                item = QTreeWidgetItem(ip_root)
+                item.setText(0, asset['ip_address'])
+                ports = asset.get('open_ports', [])
+                detail = f"{len(ports)} ports" if ports else asset.get('status', '')
+                item.setText(1, detail)
+                item.setData(0, Qt.ItemDataRole.UserRole, asset['asset_id'])
+                self._style_asset_item(item, asset)
+
+        # ── DOMAINS category ──────────────────────────────────────────
+        if domains:
+            domains_root = QTreeWidgetItem(self.asset_tree)
+            domains_root.setText(0, f"🔗  DOMAINS ({len(domains)})")
+            domains_root.setFont(0, self._category_font())
+            domains_root.setForeground(0, QBrush(QColor("#FFD93D")))
+            domains_root.setExpanded(True)
+
+            # Group domains by parent domain
+            parent_groups = {}
+            for asset in domains:
+                fqdn = asset.get('fqdn', '') or asset.get('hostname', '') or asset.get('ip_address', '')
+                parent = self._get_parent_domain(fqdn, asset)
+                parent_groups.setdefault(parent, []).append(asset)
+
+            for parent, group in sorted(parent_groups.items()):
+                if len(group) == 1 and (group[0].get('fqdn', '') or group[0].get('hostname', '')) == parent:
+                    # Single domain, no nesting needed
+                    asset = group[0]
+                    item = QTreeWidgetItem(domains_root)
+                    item.setText(0, parent)
+                    item.setText(1, asset.get('status', ''))
+                    item.setData(0, Qt.ItemDataRole.UserRole, asset['asset_id'])
+                    self._style_asset_item(item, asset)
+                else:
+                    # Parent domain with children
+                    parent_item = QTreeWidgetItem(domains_root)
+                    parent_item.setText(0, f"{parent} ({len(group)})")
+                    parent_item.setForeground(0, QBrush(QColor("#87CEEB")))
+                    parent_item.setExpanded(False)
+
+                    for asset in sorted(group, key=lambda a: a.get('fqdn', '') or a.get('hostname', '')):
+                        child = QTreeWidgetItem(parent_item)
+                        name = asset.get('fqdn', '') or asset.get('hostname', '') or asset.get('ip_address', '')
+                        child.setText(0, name)
+                        ip = asset.get('ip_address', '')
+                        resolved_ip = ip if self._is_ip_address(ip) else ''
+                        child.setText(1, resolved_ip or asset.get('status', ''))
+                        child.setData(0, Qt.ItemDataRole.UserRole, asset['asset_id'])
+                        self._style_asset_item(child, asset)
+
+    def _style_asset_item(self, item, asset):
+        """Apply color styling based on asset status."""
+        status = asset.get('status', 'DISCOVERED')
+        if status == 'IDENTIFIED':
+            item.setForeground(0, QBrush(QColor("#00FF41")))
+        elif status == 'KNOWN':
+            item.setForeground(0, QBrush(QColor("#64C8FF")))
+        else:
+            item.setForeground(0, QBrush(QColor("#DCDCDC")))
+
+    def _get_parent_domain(self, fqdn, asset):
+        """Extract parent domain from an FQDN or asset metadata."""
+        meta = asset.get('metadata', {})
+        parent = meta.get('parent_domain', '')
+        if parent:
+            return parent
+        # Derive from FQDN: take last two segments
+        parts = fqdn.rsplit('.', 2)
+        if len(parts) >= 2:
+            return '.'.join(parts[-2:])
+        return fqdn
+
+    @staticmethod
+    def _is_ip_address(text):
+        """Check if text looks like an IP address."""
+        import re
+        return bool(re.match(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$', text))
+
+    @staticmethod
+    def _category_font():
+        f = QFont()
+        f.setBold(True)
+        f.setPointSize(11)
+        return f
+
+    def _on_tree_item_clicked(self, item, column):
+        """Handle tree item selection — show details for leaf assets."""
+        asset_id = item.data(0, Qt.ItemDataRole.UserRole)
+        if not asset_id:
+            return  # Category header clicked, ignore
+        asset = next((a for a in self.current_assets
+                      if a['asset_id'] == asset_id), None)
+        if asset:
+            self.asset_details.update_asset(asset)
+            self.status_updated.emit(f"Selected: {asset.get('hostname') or asset['ip_address']}")
+
+    def _show_tree_context_menu(self, position):
+        """Context menu for tree items."""
+        item = self.asset_tree.itemAt(position)
+        if not item:
+            return
+        asset_id = item.data(0, Qt.ItemDataRole.UserRole)
+        if not asset_id:
+            return
+        self._show_asset_context_menu(
+            asset_id, self.asset_tree.mapToGlobal(position))
 
     # ---- helpers ------------------------------------------------------ #
 
@@ -269,8 +411,7 @@ class InventoryPage(QWidget):
             self._last_known_tenant = current
             self.tenant_id = current
             self.current_assets = []
-            self.asset_graphics.update_assets([])
-            self._populate_table([])
+            self.asset_tree.clear()
             self.load_assets()
 
     # ------------------------------------------------------------------ #
@@ -292,13 +433,11 @@ class InventoryPage(QWidget):
             self.tenant_id = self._get_tenant()
             if old != self.tenant_id:
                 self.current_assets = []
-                self.asset_graphics.update_assets([])
-                self._populate_table([])
+                self.asset_tree.clear()
 
             assets = asset_manager.get_assets(self.tenant_id)
             self.current_assets = assets
-            self.asset_graphics.update_assets(assets)
-            self._populate_table(assets)
+            self._populate_tree(assets)
             self._update_stats()
             self._update_os_filter()
             self.status_updated.emit(
@@ -334,8 +473,7 @@ class InventoryPage(QWidget):
             if (sf == "All" or a.get('status') == sf)
             and (of == "All OS" or a.get('os_type') == of)
         ]
-        self.asset_graphics.update_assets(filtered)
-        self._populate_table(filtered)
+        self._populate_tree(filtered)
         self.status_updated.emit(
             f"Showing {len(filtered)} of {len(self.current_assets)} assets")
 
@@ -358,78 +496,6 @@ class InventoryPage(QWidget):
         self.os_filter.setMinimumContentsLength(max(16, max_len))
 
     # ------------------------------------------------------------------ #
-    #  Table population                                                    #
-    # ------------------------------------------------------------------ #
-
-    def _populate_table(self, assets):
-        self.asset_table.setRowCount(len(assets))
-        for row, asset in enumerate(assets):
-            # IP
-            self._cell(self.asset_table, row, 0, asset['ip_address'])
-
-            # Hostname
-            hostname = asset.get('hostname', '')
-            ip = asset['ip_address']
-            display = f"{ip} ({hostname})" if hostname and hostname != ip else hostname
-            self._cell(self.asset_table, row, 1, display)
-
-            # OS / server type
-            meta = asset.get('metadata', {})
-            os_display = meta.get('server_type') or asset.get('os_type', 'Unknown')
-            os_item = self._cell(self.asset_table, row, 2, os_display)
-            if 'Domain Controller' in os_display:
-                os_item.setBackground(Qt.GlobalColor.darkBlue)
-                os_item.setForeground(Qt.GlobalColor.yellow)
-            elif 'Windows Server' in os_display:
-                os_item.setBackground(Qt.GlobalColor.blue)
-                os_item.setForeground(Qt.GlobalColor.white)
-
-            # Status
-            status = asset.get('status', 'DISCOVERED')
-            s_item = self._cell(self.asset_table, row, 3, status)
-            if status == 'DISCOVERED':
-                s_item.setBackground(Qt.GlobalColor.yellow)
-                s_item.setForeground(Qt.GlobalColor.black)
-            elif status == 'IDENTIFIED':
-                s_item.setBackground(Qt.GlobalColor.darkYellow)
-                s_item.setForeground(Qt.GlobalColor.white)
-            elif status == 'KNOWN':
-                s_item.setBackground(Qt.GlobalColor.green)
-                s_item.setForeground(Qt.GlobalColor.white)
-
-            # Ports / Services
-            self._cell(self.asset_table, row, 4,
-                       str(len(asset.get('open_ports', []))))
-            self._cell(self.asset_table, row, 5,
-                       str(len(asset.get('services', []))))
-
-            # Shares / Web
-            shares_web = ""
-            if meta.get('shares_found'):
-                shares_web = f"{meta['shares_found']} shares"
-            elif meta.get('server_type') == 'web_server':
-                parts = []
-                if meta.get('directories_found'):
-                    parts.append(f"{meta['directories_found']} dirs")
-                if meta.get('files_found'):
-                    parts.append(f"{meta['files_found']} files")
-                shares_web = ", ".join(parts) if parts else "Web server"
-            self._cell(self.asset_table, row, 6, shares_web)
-
-            # Vulnerabilities
-            vc = len(asset.get('vulnerabilities', []))
-            v_item = self._cell(self.asset_table, row, 7, str(vc))
-            if vc > 0:
-                v_item.setBackground(Qt.GlobalColor.red)
-                v_item.setForeground(Qt.GlobalColor.white)
-
-    @staticmethod
-    def _cell(table, row, col, text):
-        item = QTableWidgetItem(text)
-        item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
-        table.setItem(row, col, item)
-        return item
-
     # ------------------------------------------------------------------ #
     #  Selection                                                           #
     # ------------------------------------------------------------------ #
@@ -441,36 +507,9 @@ class InventoryPage(QWidget):
             self.asset_details.update_asset(asset)
             self.status_updated.emit(f"Selected: {asset['ip_address']}")
 
-    def _on_table_selection(self):
-        row = self.asset_table.currentRow()
-        if row < 0:
-            return
-        ip_item = self.asset_table.item(row, 0)
-        if not ip_item:
-            return
-        asset = next((a for a in self.current_assets
-                      if a['ip_address'] == ip_item.text()), None)
-        if asset:
-            self.asset_details.update_asset(asset)
-            self.status_updated.emit(f"Selected: {asset['ip_address']}")
-
     # ------------------------------------------------------------------ #
     #  Context menus                                                       #
     # ------------------------------------------------------------------ #
-
-    def _show_table_context_menu(self, position):
-        item = self.asset_table.itemAt(position)
-        if not item:
-            return
-        ip_item = self.asset_table.item(item.row(), 0)
-        if not ip_item:
-            return
-        asset = next((a for a in self.current_assets
-                      if a['ip_address'] == ip_item.text()), None)
-        if asset:
-            self._show_asset_context_menu(
-                asset['asset_id'],
-                self.asset_table.mapToGlobal(position))
 
     def _show_asset_context_menu(self, asset_id, position):
         asset = next((a for a in self.current_assets

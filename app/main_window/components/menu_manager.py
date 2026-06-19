@@ -116,8 +116,8 @@ class MenuManager:
         
         # Navigation Style submenu
         nav_menu = view_menu.addMenu('&Navigation Style')
-        self._add_action(nav_menu, '&Advanced Mode', None, 'Switch to advanced methodology navigation', lambda: self.main_window.set_home_style('attack_chain'))
-        self._add_action(nav_menu, '&Guided Mode', None, 'Step-by-step penetration testing methodology', lambda: self.main_window.navigate_to('guided_workflow'))
+        self._add_action(nav_menu, '&Advanced Mode', None, 'Switch to advanced methodology navigation', lambda: self.main_window._switch_to_advanced_mode())
+        self._add_action(nav_menu, '&Guided Mode', None, 'Step-by-step penetration testing methodology', lambda: self.main_window._switch_to_guided_mode())
         
         # Theme submenu
         self._create_theme_menu(view_menu)

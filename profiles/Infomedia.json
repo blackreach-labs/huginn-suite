@@ -1,0 +1,13 @@
+{
+  "target_name": "Infomedia",
+  "primary_target": "infomedia.com.au",
+  "scope": "203.8.183.1",
+  "subdomains": "",
+  "cloud_assets": "",
+  "out_scope": "",
+  "restrictions": "",
+  "dos_allowed": false,
+  "social_eng_allowed": false,
+  "physical_allowed": false,
+  "credentials": {}
+}

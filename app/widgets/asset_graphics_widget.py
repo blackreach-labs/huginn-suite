@@ -406,7 +406,7 @@ class AssetDetailsWidget(QFrame):
         header_layout.addWidget(self.back_button)
         
         self.title_label = QLabel("Asset Details")
-        self.title_label.setStyleSheet("font-size: 14pt; font-weight: bold; color: #64C8FF; margin-bottom: 5px;")
+        self.title_label.setStyleSheet("font-size: 12pt; font-weight: bold; color: #64C8FF; margin-bottom: 0px;")
         header_layout.addWidget(self.title_label)
         
         header_layout.addStretch()
@@ -681,7 +681,7 @@ class AssetDetailsWidget(QFrame):
             
             label_widget = QLabel(f"{label}:")
             label_widget.setStyleSheet("color: #87CEEB; font-weight: bold;")
-            label_widget.setFixedWidth(80)
+            label_widget.setFixedWidth(180)
             
             value_widget = QLabel(str(value))
             value_widget.setStyleSheet(f"color: {color};")

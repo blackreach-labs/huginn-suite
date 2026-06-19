@@ -688,7 +688,12 @@ class GuidedWorkflowPage(QWidget):
             self.status_updated.emit(f"Jumped to step {index + 1}: {self.workflow_steps[index].name}")
     
     def launch_tool(self, tool_name):
-        """Launch the appropriate tool or show question dialog"""
+        """Launch the appropriate tool or show question dialog.
+        
+        For Step 1 tools, opens inline dialogs. For other steps, navigates
+        to the target page (selecting the correct tab) and activates the
+        'Return to Guided Workflow' overlay on the main window.
+        """
         # For Step 1 tools, show question dialogs instead of redirecting
         if self.current_step == 0:
             if tool_name == "Target Profiles":
@@ -699,29 +704,93 @@ class GuidedWorkflowPage(QWidget):
                 self.show_credential_questions()
             return
         
-        # For other steps, use normal tool mapping
+        # Tool mapping: (page_name, tab_index, sub_tab_index)
+        # Recon enumeration tabs: 0=OSINT, 1=Network Scanning, 2=DNS, 3=Service Enumeration
+        # Service Enumeration sub-tabs: 0=HTTP, 1=RPC, 2=SMB, 3=SSH, 4=SMTP, 5=LDAP, 6=SNMP, 7=API
+        # Vuln scanning tabs: 0=Vulnerability Scanner, 1=Web Application Scanner
         tool_mapping = {
-            "OSINT Collection": "osint",
-            "DNS Records": "recon_enumeration",
-            "Port Scanning": "recon_enumeration", 
-            "Huginn Advanced Scanner": "huginn_scanner",
-            "HTTP": "recon_enumeration",
-            "RPC": "recon_enumeration",
-            "SMB": "recon_enumeration",
-            "SMTP": "recon_enumeration",
-            "SNMP": "recon_enumeration",
-            "LDAP": "recon_enumeration",
-            "API": "recon_enumeration",
-            "AV/FW": "recon_enumeration",
-            "Shell Management": "shell_management",
+            "OSINT Collection": ("osint", None, None),
+            "DNS Records": ("recon_enumeration", 2, None),              # DNS tab
+            "Certificate Transparency": ("osint", None, None),
+            "Port Scanning": ("recon_enumeration", 1, None),            # Network Scanning tab
+            "Huginn Advanced Scanner": ("huginn_scanner", None, None),
+            "HTTP": ("recon_enumeration", 3, 0),                        # Service Enum > HTTP
+            "RPC": ("recon_enumeration", 3, 1),                         # Service Enum > RPC
+            "SMB": ("recon_enumeration", 3, 2),                         # Service Enum > SMB
+            "SMTP": ("recon_enumeration", 3, 4),                        # Service Enum > SMTP
+            "SNMP": ("recon_enumeration", 3, 6),                        # Service Enum > SNMP
+            "LDAP": ("recon_enumeration", 3, 5),                        # Service Enum > LDAP
+            "API": ("recon_enumeration", 3, 7),                         # Service Enum > API
+            "AV/FW": ("recon_enumeration", 3, 10),                      # Service Enum > AV/FW
+            "Shell Management": ("shell_management", None, None),
+            "Web Vulnerability Scanner": ("vuln_scanning", 1, None),    # Web Application Scanner
+            "Parameter Fuzzing": ("web_exploits", None, None),
+            "Authentication Testing": ("web_exploits", None, None),
+            "Business Logic Testing": ("web_exploits", None, None),
+            "Payload Generation": ("web_exploits", None, None),
+            "Exploit Testing": ("web_exploits", None, None),
+            "Proof of Concept": ("web_exploits", None, None),
+            "Access Validation": ("shell_management", None, None),
+            "Persistence Setup": ("post_exploitation", None, None),
+            "Local Enumeration": ("post_exploitation", None, None),
+            "Privilege Escalation": ("post_exploitation", None, None),
+            "Credential Harvesting": ("post_exploitation", None, None),
+            "Network Pivoting": ("post_exploitation", None, None),
+            "Credential Reuse": ("post_exploitation", None, None),
+            "Service Exploitation": ("post_exploitation", None, None),
+            "Screenshot Capture": ("findings", None, None),
+            "Log Collection": ("findings", None, None),
+            "Proof Documentation": ("findings", None, None),
+            "Executive Summary": ("findings", None, None),
+            "Technical Report": ("findings", None, None),
+            "Remediation Guide": ("findings", None, None),
         }
         
-        page = tool_mapping.get(tool_name, "home")
-        self.navigate_signal.emit(page)
-        self.status_updated.emit(f"🚀 Launched {tool_name}")
+        mapping = tool_mapping.get(tool_name)
+        if mapping:
+            page_name, tab_index, sub_tab_index = mapping
+        else:
+            page_name, tab_index, sub_tab_index = ("home", None, None)
+        
+        # Set guided mode flag on main window so return button appears
+        if self.main_window:
+            self.main_window._guided_workflow_active = True
+            self.main_window._guided_workflow_step = self.current_step
+            # Show the return-to-guided-workflow overlay
+            if hasattr(self.main_window, '_show_guided_return_button'):
+                self.main_window._show_guided_return_button()
+        
+        # Navigate to the tool page
+        self.navigate_signal.emit(page_name)
+        
+        # Select the correct tab if specified
+        if tab_index is not None:
+            QTimer.singleShot(100, lambda: self._select_page_tab(page_name, tab_index, sub_tab_index))
+        
+        self.status_updated.emit(f"🚀 Launched {tool_name} — use 'Return to Guided Workflow' to come back")
         
         # Mark tool as used
         self.workflow_steps[self.current_step].results[f"tool_used_{tool_name}"] = True
+    
+    def _select_page_tab(self, page_name, tab_index, sub_tab_index=None):
+        """Select a specific tab (and sub-tab) on the target page after navigation."""
+        try:
+            if not self.main_window:
+                return
+            page = self.main_window.page_manager.get_page(page_name)
+            if page and hasattr(page, 'tab_widget'):
+                if tab_index < page.tab_widget.count():
+                    page.tab_widget.setCurrentIndex(tab_index)
+                    # Select sub-tab if specified
+                    if sub_tab_index is not None:
+                        tab_content = page.tab_widget.widget(tab_index)
+                        if tab_content:
+                            from PyQt6.QtWidgets import QTabWidget
+                            sub_tab_widget = tab_content.findChild(QTabWidget)
+                            if sub_tab_widget and sub_tab_index < sub_tab_widget.count():
+                                sub_tab_widget.setCurrentIndex(sub_tab_index)
+        except Exception as e:
+            self.status_updated.emit(f"⚠️ Could not select tab: {e}")
     
     def previous_step(self):
         """Go to previous step"""
@@ -873,29 +942,101 @@ class GuidedWorkflowPage(QWidget):
     
     @pyqtSlot(str, object)
     def handle_questionnaire_action(self, action: str, response):
-        """Handle actions triggered by questionnaire responses"""
-        action_mapping = {
-            'launch_osint': 'osint',
-            'launch_dns_enum': 'recon_enumeration',
-            'launch_port_scan': 'network_discovery',
-            'launch_http_enum': 'recon_enumeration',
-            'launch_smb_enum': 'recon_enumeration', 
-            'launch_rpc_enum': 'recon_enumeration',
-            'launch_huginn_scanner': 'huginn_scanner',
-            'shell_management': 'shell_management',
-            'generate_report': 'reporting'
+        """Handle actions triggered by questionnaire responses.
+        
+        When a user answers 'Yes' to a tool-related question, this navigates
+        to the appropriate tool page with the correct tab selected, and shows
+        the 'Return to Guided Workflow' button so they can come back.
+        
+        Non-navigation actions (set_, enable_, document_, etc.) are noted in
+        the status bar without navigating away.
+        """
+        # Full mapping: action → (page_name, tab_index, sub_tab_index)
+        # Recon enumeration tabs: 0=OSINT, 1=Network Scanning, 2=DNS, 3=Service Enumeration
+        # Service Enumeration sub-tabs: 0=HTTP, 1=RPC, 2=SMB, 3=SSH, 4=SMTP, 5=LDAP, 6=SNMP, 7=API
+        # Vuln scanning tabs: 0=Vulnerability Scanner, 1=Web Application Scanner
+        navigation_actions = {
+            'launch_osint': ('osint', None, None),
+            'launch_dns_enum': ('recon_enumeration', 2, None),          # DNS tab
+            'launch_cert_search': ('osint', None, None),                # Cert transparency in OSINT
+            'launch_port_scan': ('recon_enumeration', 1, None),         # Network Scanning tab
+            'launch_http_enum': ('recon_enumeration', 3, 0),            # Service Enum > HTTP
+            'launch_smb_enum': ('recon_enumeration', 3, 2),             # Service Enum > SMB
+            'launch_rpc_enum': ('recon_enumeration', 3, 1),             # Service Enum > RPC
+            'launch_service_enum': ('recon_enumeration', 3, None),      # Service Enumeration tab
+            'launch_huginn_scanner': ('vuln_scanning', 0, None),          # Vulnerability Scanner
+            'launch_web_testing': ('vuln_scanning', 1, None),           # Web Application Scanner
+            'launch_auth_testing': ('web_exploits', None, None),
+            'launch_exploitation': ('web_exploits', None, None),
+            'shell_management': ('shell_management', None, None),
+            'launch_privesc': ('post_exploitation', None, None),
+            'launch_lateral_movement': ('post_exploitation', None, None),
+            'launch_data_collection': ('post_exploitation', None, None),
+            'launch_persistence': ('post_exploitation', None, None),
+            'capture_screenshots': ('findings', None, None),
+            'collect_logs': ('findings', None, None),
+            'create_poc': ('findings', None, None),
+            'generate_report': ('findings', None, None),
+            'add_executive_summary': ('findings', None, None),
+            'add_remediation_guide': ('findings', None, None),
         }
         
-        if action in action_mapping:
-            page = action_mapping[action]
-            self.navigate_signal.emit(page)
-            self.status_updated.emit(f"🚀 Launched {action.replace('launch_', '').replace('_', ' ').title()}")
+        if action in navigation_actions:
+            page_name, tab_index, sub_tab_index = navigation_actions[action]
+            
+            # Set guided mode flag so return button appears
+            if self.main_window:
+                self.main_window._guided_workflow_active = True
+                if hasattr(self.main_window, '_show_guided_return_button'):
+                    self.main_window._show_guided_return_button()
+            
+            # Navigate to the tool page
+            self.navigate_signal.emit(page_name)
+            
+            # Select the correct tab (and sub-tab) after a short delay
+            if tab_index is not None:
+                from PyQt6.QtCore import QTimer
+                QTimer.singleShot(100, lambda: self._select_target_tab(page_name, tab_index, sub_tab_index))
+            
+            tool_label = action.replace('launch_', '').replace('_', ' ').title()
+            self.status_updated.emit(f"🚀 Launched {tool_label} — use 'Return to Guided Workflow' to come back")
+            
+            # Auto-advance questionnaire to next question so user doesn't see
+            # the same question when they return
+            if self.questionnaire_widget:
+                self.questionnaire_widget.next_question()
+        
         elif action == 'target_management':
-            self.status_updated.emit("🎯 Target management - Configure in Settings")
+            self.status_updated.emit("🎯 Target management - use Target Profiles in Step 1")
         elif action.startswith('set_') or action.startswith('enable_') or action.startswith('document_'):
-            self.status_updated.emit(f"⚙️ {action.replace('_', ' ').title()}: {response}")
+            # Configuration actions — just note them, don't navigate
+            self.status_updated.emit(f"✅ {action.replace('_', ' ').title()}: {response}")
+        elif action.startswith('cleanup_') or action.startswith('restore_') or action.startswith('clear_'):
+            # Cleanup actions — note them as completed
+            self.status_updated.emit(f"✅ {action.replace('_', ' ').title()}: Noted")
         else:
-            self.status_updated.emit(f"📝 Action: {action} - {response}")
+            self.status_updated.emit(f"📝 {action.replace('_', ' ').title()}: {response}")
+    
+    def _select_target_tab(self, page_name, tab_index, sub_tab_index=None):
+        """Select a specific tab (and optional sub-tab) on the navigated-to page."""
+        try:
+            if not self.main_window:
+                return
+            page = self.main_window.page_manager.get_page(page_name)
+            if page and hasattr(page, 'tab_widget'):
+                if tab_index < page.tab_widget.count():
+                    page.tab_widget.setCurrentIndex(tab_index)
+                    # Select sub-tab if specified (e.g., Service Enumeration > HTTP)
+                    if sub_tab_index is not None:
+                        tab_content = page.tab_widget.widget(tab_index)
+                        if tab_content:
+                            # Find the QTabWidget inside the tab content
+                            from PyQt6.QtWidgets import QTabWidget
+                            sub_tab_widget = tab_content.findChild(QTabWidget)
+                            if sub_tab_widget and sub_tab_index < sub_tab_widget.count():
+                                sub_tab_widget.setCurrentIndex(sub_tab_index)
+        except Exception:
+            pass
     
     def show_target_profiles_questions(self):
         """Show target profile questions dialog"""
@@ -1159,7 +1300,7 @@ class GuidedWorkflowPage(QWidget):
         dialog.exec()
     
     def save_target_info(self, dialog, name, url, in_scope, out_scope, eng_type, dos, social, physical):
-        """Save target profile and scope information to disk"""
+        """Save target profile, create engagement, and persist to disk"""
         import os
         import json
         
@@ -1207,18 +1348,50 @@ class GuidedWorkflowPage(QWidget):
         except Exception as e:
             self.status_updated.emit(f"⚠️ Could not save profile to disk: {e}")
         
-        # Activate the profile
+        # Create and activate engagement in the shared engagement manager
+        engagement_id = None
+        try:
+            from app.core.feature_gap_integration import FeatureGapIntegration
+            eng_manager = FeatureGapIntegration.engines.engagement_manager
+        except Exception:
+            from app.core.engagement_manager import EngagementManager
+            eng_manager = EngagementManager()
+        
+        try:
+            engagement_id = eng_manager.create_from_profile(profile_data)
+            eng_manager.open_engagement(engagement_id)
+            self.workflow_steps[0].results['engagement_id'] = engagement_id
+            
+            # Update main window state so scan tools know the active engagement
+            if self.main_window:
+                self.main_window.current_engagement_id = engagement_id
+                self.main_window.current_profile_name = name.strip()
+            
+            self.status_updated.emit(f"✅ Engagement created and activated: {name} (ID: {engagement_id[:8]}...)")
+        except Exception as e:
+            self.status_updated.emit(f"⚠️ Engagement creation failed: {e}")
+        
+        # Activate the profile in credential manager and tenant system
         try:
             from app.core.credential_manager import credential_manager
-            credential_manager.set_profile(name.strip())
+            credential_manager.set_profile(engagement_id or name.strip())
         except Exception:
             pass
         
         try:
             from app.core.tenant_aware_updater import tenant_aware_updater
-            tenant_aware_updater.set_tenant(name.strip())
+            tenant_aware_updater.set_tenant(engagement_id or name.strip())
         except Exception:
             pass
+        
+        # Show success feedback
+        if engagement_id:
+            QMessageBox.information(
+                dialog, "Engagement Created",
+                f"Target profile saved and engagement created successfully.\n\n"
+                f"Name: {name}\nEngagement ID: {engagement_id[:8]}...\n\n"
+                f"You can now proceed to the next step."
+            )
         
         self.status_updated.emit(f"✅ Target profile saved: {name}")
         dialog.accept()

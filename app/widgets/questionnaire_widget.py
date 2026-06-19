@@ -614,27 +614,70 @@ class QuestionnaireWidget(QWidget):
             QMessageBox.warning(dialog, "Error", f"Failed to save profile: {str(e)}")
             return
         
-        # Activate the profile in the application
+        # Save target info to responses
+        self.responses['target_definition'] = target_info
+        self.responses['selected_profile'] = target_name
+        
+        # Pre-fill the remaining Target Definition responses so they're not asked again
+        scope_text = self.target_url.text() or self.target_scope.toPlainText()
+        self.responses['target_scope'] = scope_text
+        target_type = self._infer_target_type(scope_text)
+        self.responses['target_type'] = target_type
+        self.responses['target_selection'] = 'Define New Target'
+        
+        # Create and activate engagement in the shared engagement manager
+        engagement_id = None
+        try:
+            from app.core.feature_gap_integration import FeatureGapIntegration
+            eng_manager = FeatureGapIntegration.engines.engagement_manager
+        except Exception:
+            from app.core.engagement_manager import EngagementManager
+            eng_manager = EngagementManager()
+        
+        try:
+            profile_data['target_name'] = target_name
+            engagement_id = eng_manager.create_from_profile(profile_data)
+            eng_manager.open_engagement(engagement_id)
+            self.responses['engagement_id'] = engagement_id
+            
+            # Update main window state so scan tools save to this engagement
+            main_window = self._get_main_window()
+            if main_window:
+                main_window.current_engagement_id = engagement_id
+                main_window.current_profile_name = target_name
+        except Exception:
+            pass
+        
+        # Activate the profile in credential manager and tenant system
         try:
             from app.core.credential_manager import credential_manager
-            credential_manager.set_profile(target_name)
+            credential_manager.set_profile(engagement_id or target_name)
         except Exception:
             pass
         
         try:
             from app.core.tenant_aware_updater import tenant_aware_updater
-            tenant_aware_updater.set_tenant(target_name)
+            tenant_aware_updater.set_tenant(engagement_id or target_name)
         except Exception:
             pass
-        
-        # Save target info to responses
-        self.responses['target_definition'] = target_info
-        self.responses['selected_profile'] = target_name
         
         # Emit the response
         self.response_submitted.emit(self.session_id, 'selected_profile', target_name)
         
         dialog.accept()
+        
+        # Skip remaining Target Definition questions — they're answered by the dialog.
+        # Jump to the next category (Reconnaissance).
+        if self.categories and self.current_category == self.categories[0]:
+            current_idx = self.categories.index(self.current_category)
+            if current_idx < len(self.categories) - 1:
+                self.current_category = self.categories[current_idx + 1]
+                self.current_question_index = 0
+                self.display_current_question()
+                self.update_progress()
+                return
+        
+        # Fallback: advance to next question if not in first category
         self.next_question()
     
     def show_load_profile_dialog(self):
@@ -802,16 +845,46 @@ class QuestionnaireWidget(QWidget):
         # Mark the target_selection question as answered
         self.responses['target_selection'] = 'Select Existing Target'
         
+        # Create or find engagement and activate it
+        try:
+            from app.core.feature_gap_integration import FeatureGapIntegration
+            eng_manager = FeatureGapIntegration.engines.engagement_manager
+        except Exception:
+            from app.core.engagement_manager import EngagementManager
+            eng_manager = EngagementManager()
+        
+        try:
+            # Check if engagement already exists for this profile
+            existing = eng_manager.find_by_name(profile_data.get('target_name', profile_name))
+            if existing:
+                engagement_id = existing['id']
+            else:
+                # Create new engagement from the loaded profile
+                create_data = dict(profile_data)
+                create_data['target_name'] = profile_data.get('target_name', profile_name)
+                engagement_id = eng_manager.create_from_profile(create_data)
+            
+            eng_manager.open_engagement(engagement_id)
+            self.responses['engagement_id'] = engagement_id
+            
+            # Update main window state
+            main_window = self._get_main_window()
+            if main_window:
+                main_window.current_engagement_id = engagement_id
+                main_window.current_profile_name = profile_name
+        except Exception:
+            pass
+        
         # Activate the profile in the application
         try:
             from app.core.credential_manager import credential_manager
-            credential_manager.set_profile(profile_name)
+            credential_manager.set_profile(self.responses.get('engagement_id', profile_name))
         except Exception:
             pass
         
         try:
             from app.core.tenant_aware_updater import tenant_aware_updater
-            tenant_aware_updater.set_tenant(profile_name)
+            tenant_aware_updater.set_tenant(self.responses.get('engagement_id', profile_name))
         except Exception:
             pass
         
@@ -949,6 +1022,16 @@ class QuestionnaireWidget(QWidget):
             child = self.question_layout.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
+    
+    def _get_main_window(self):
+        """Walk the parent widget chain to find the main application window."""
+        widget = self.parent()
+        while widget is not None:
+            # The main window has current_engagement_id and page_manager attributes
+            if hasattr(widget, 'current_engagement_id') and hasattr(widget, 'page_manager'):
+                return widget
+            widget = widget.parent() if hasattr(widget, 'parent') else None
+        return None
     
     def _infer_target_type(self, scope_text: str) -> str:
         """Infer the target type from scope text for pre-filling questionnaire responses"""
