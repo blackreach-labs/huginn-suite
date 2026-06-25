@@ -69,7 +69,7 @@ class InventoryPage(QWidget):
             self.asset_details.back_button.setVisible(False)
         h_split.addWidget(self.asset_details)    
 
-        h_split.setSizes([380, 650])
+        h_split.setSizes([410, 760])
 
         layout.addWidget(h_split, 1)
 
@@ -84,7 +84,7 @@ class InventoryPage(QWidget):
                 border-radius: 5px;
             }
         """)
-        bar.setFixedHeight(72)
+        bar.setFixedHeight(55)
         layout = QHBoxLayout(bar)
         layout.setContentsMargins(20, 8, 20, 8)
         layout.setSpacing(0)
@@ -110,11 +110,11 @@ class InventoryPage(QWidget):
         lay.setSpacing(1)
         v = QLabel(value)
         v.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        v.setStyleSheet("font-size: 16pt; font-weight: bold; color: #64C8FF;"
+        v.setStyleSheet("font-size: 13pt; font-weight: bold; color: #64C8FF;"
                         " background: transparent; border: none;")
         d = QLabel(label)
         d.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        d.setStyleSheet("font-size: 9pt; color: #87CEEB;"
+        d.setStyleSheet("font-size: 8pt; color: #87CEEB;"
                         " background: transparent; border: none;")
         lay.addWidget(v)
         lay.addWidget(d)
@@ -274,7 +274,12 @@ class InventoryPage(QWidget):
                 item = QTreeWidgetItem(ip_root)
                 item.setText(0, asset['ip_address'])
                 ports = asset.get('open_ports', [])
-                detail = f"{len(ports)} ports" if ports else asset.get('status', '')
+                os_type = asset.get("os_type", "")
+
+                if os_type:
+                    detail = os_type
+                else:
+                    detail = f"{len(ports)} ports"
                 item.setText(1, detail)
                 item.setData(0, Qt.ItemDataRole.UserRole, asset['asset_id'])
                 self._style_asset_item(item, asset)

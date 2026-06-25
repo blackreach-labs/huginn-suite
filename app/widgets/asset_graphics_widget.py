@@ -1,5 +1,5 @@
 # app/widgets/asset_graphics_widget.py
-from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
+from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,QTableWidget, QTableWidgetItem,
                              QFrame, QScrollArea, QGridLayout, QPushButton, QMenu, QTabWidget)
 from PyQt6.QtCore import Qt, pyqtSignal, QTimer, QPropertyAnimation, QEasingCurve, QRect
 from PyQt6.QtGui import QPainter, QColor, QFont, QPixmap, QPen, QBrush, QAction
@@ -452,7 +452,10 @@ class AssetDetailsWidget(QFrame):
             
             if not asset_data:
                 no_selection = QLabel("No asset selected")
-                no_selection.setStyleSheet("color: #87CEEB; font-style: italic; text-align: center; padding: 20px;")
+                no_selection.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                no_selection.setStyleSheet(
+                    "color: #87CEEB; font-style: italic; padding: 20px;"
+                )
                 self.overview_layout.addWidget(no_selection)
                 return
             
@@ -484,6 +487,30 @@ class AssetDetailsWidget(QFrame):
     def populate_overview_tab(self, asset_data):
         """Populate the overview tab"""
         # Basic information card
+
+        summary_card = self.create_info_card("Asset Summary")
+        ports = len(asset_data.get('open_ports', []))
+        services = len(asset_data.get('services', []))
+        vulns = len(asset_data.get('vulnerabilities', []))
+        summary_text = QLabel(
+            f"""
+        <b>{asset_data['ip_address']}</b><br>
+        {asset_data.get('os_type', 'Unknown')}<br>
+        Status: {asset_data.get('status', 'DISCOVERED')} |
+        Ports: {ports} |
+        Services: {services} |
+        Vulnerabilities: {vulns}
+        """
+        )
+        summary_text.setStyleSheet("""
+            color: #DCDCDC;
+            border: none;
+            background: transparent;
+        """)
+        summary_card.layout().addWidget(summary_text)
+        self.overview_layout.addWidget(summary_card)
+
+
         basic_card = self.create_info_card("Basic Information")
         self.add_card_row(basic_card, "IP Address", asset_data['ip_address'])
         
@@ -522,26 +549,44 @@ class AssetDetailsWidget(QFrame):
         # Services card with detailed information (limit to prevent memory issues)
         services = asset_data.get('services', [])
         if services:
-            services_card = self.create_info_card(f"Services ({len(services)})")
-            # Limit to 10 services to prevent memory issues
-            for service in services[:10]:
-                service_text = f"{service.get('port')}: {service.get('service')}"
-                if service.get('version'):
-                    service_text += f" ({service['version']})"
-                
-                # Simplified SSH details to reduce memory usage
-                if service.get('service') == 'ssh':
-                    if service.get('banner'):
-                        service_text += f"\n    Banner: {service['banner'][:50]}..."
-                    if service.get('ssh_version'):
-                        service_text += f"\n    Version: {service['ssh_version']}"
-                    if service.get('vulnerability_count', 0) > 0:
-                        service_text += f"\n    Vulnerabilities: {service['vulnerability_count']} found"
-                
-                self.add_card_item(services_card, service_text)
-            if len(services) > 10:
-                self.add_card_item(services_card, f"... and {len(services) - 10} more", "#87CEEB")
-            self.services_layout.addWidget(services_card)
+            table = QTableWidget()
+            table.setColumnCount(3)
+            table.setHorizontalHeaderLabels([
+                "Port",
+                "Service",
+                "Version"
+            ])
+            table.setRowCount(len(services))
+            table.horizontalHeader().setStretchLastSection(True)
+            for row, service in enumerate(services):
+                table.setItem(
+                    row,
+                    0,
+                    QTableWidgetItem(str(service.get('port', '')))
+                )
+                table.setItem(
+                    row,
+                    1,
+                    QTableWidgetItem(service.get('service', ''))
+                )
+                table.setItem(
+                    row,
+                    2,
+                    QTableWidgetItem(service.get('version', ''))
+                )
+            table.setStyleSheet("""
+                QTableWidget {
+                    background: rgba(26,34,46,220);
+                    color: #DCDCDC;
+                    border: none;
+                }
+                QHeaderView::section {
+                    background-color: rgba(20,30,50,200);
+                    color: #64C8FF;
+                    font-weight: bold;
+                }
+            """)
+            self.services_layout.addWidget(table)
         
         # SSH detailed information card (simplified to reduce memory usage)
         ssh_services = [s for s in services if s.get('service') == 'ssh']
@@ -613,16 +658,33 @@ class AssetDetailsWidget(QFrame):
         """Populate the security tab"""
         # Vulnerabilities card
         vulnerabilities = asset_data.get('vulnerabilities', [])
+
         if vulnerabilities:
-            vulns_card = self.create_info_card(f"Vulnerabilities ({len(vulnerabilities)})")
-            for vuln in vulnerabilities[:10]:
-                vuln_text = f"{vuln.get('name', vuln.get('id', 'Unknown'))}"
-                severity = vuln.get('severity', 'unknown').lower()
-                severity_color = {'critical': '#FF4444', 'high': '#FF8800', 'medium': '#FFAA00', 'low': '#90EE90'}.get(severity, '#DCDCDC')
-                self.add_card_item(vulns_card, f"{vuln_text} ({severity.upper()})", severity_color)
-            if len(vulnerabilities) > 10:
-                self.add_card_item(vulns_card, f"... and {len(vulnerabilities) - 10} more", "#87CEEB")
-            self.security_layout.addWidget(vulns_card)
+            table = QTableWidget()
+            table.setColumnCount(2)
+            table.setHorizontalHeaderLabels([
+                "Severity",
+                "Vulnerability"
+            ])
+            table.setRowCount(len(vulnerabilities))
+            table.horizontalHeader().setStretchLastSection(True)
+
+            for row, vuln in enumerate(vulnerabilities):
+                table.setItem(
+                    row,
+                    0,
+                    QTableWidgetItem(
+                        vuln.get('severity', 'unknown').upper()
+                    )
+                )
+                table.setItem(
+                    row,
+                    1,
+                    QTableWidgetItem(
+                        vuln.get('name', vuln.get('id', 'Unknown'))
+                    )
+                )
+            self.security_layout.addWidget(table)
         
         # Security assessment card
         metadata = asset_data.get('metadata', {})
@@ -662,8 +724,8 @@ class AssetDetailsWidget(QFrame):
         """)
         
         layout = QVBoxLayout(card)
-        layout.setContentsMargins(15, 10, 15, 10)
-        layout.setSpacing(8)
+        layout.setContentsMargins(12, 8, 12, 8)
+        layout.setSpacing(3)
         
         # Card title
         title_label = QLabel(title)
@@ -672,34 +734,40 @@ class AssetDetailsWidget(QFrame):
         
         return card
     
+
     def add_card_row(self, card, label, value, color="#DCDCDC"):
-        """Add a label-value row to a card"""
-        try:
-            # Create a simple horizontal layout with labels instead of nested widgets
-            row_layout = QHBoxLayout()
-            row_layout.setContentsMargins(0, 2, 0, 2)
-            
-            label_widget = QLabel(f"{label}:")
-            label_widget.setStyleSheet("color: #87CEEB; font-weight: bold;")
-            label_widget.setFixedWidth(180)
-            
-            value_widget = QLabel(str(value))
-            value_widget.setStyleSheet(f"color: {color};")
-            value_widget.setWordWrap(True)
-            
-            # Add directly to card layout instead of creating wrapper widget
-            card_layout = card.layout()
-            card_layout.addLayout(row_layout)
-            row_layout.addWidget(label_widget)
-            row_layout.addWidget(value_widget, 1)
-            
-        except Exception as e:
-            print(f"Error adding card row: {e}")
-            # Fallback: add simple label
-            simple_label = QLabel(f"{label}: {value}")
-            simple_label.setStyleSheet(f"color: {color};")
-            card.layout().addWidget(simple_label)
-    
+        """Compact property-grid style row"""
+
+        row_layout = QHBoxLayout()
+        row_layout.setContentsMargins(0, 0, 0, 0)
+        row_layout.setSpacing(10)
+
+        label_widget = QLabel(label)
+
+        label_widget.setFixedWidth(140)
+
+        label_widget.setStyleSheet("""
+            color: #87CEEB;
+            font-weight: bold;
+            border: none;
+            background: transparent;
+        """)
+
+        value_widget = QLabel(str(value))
+
+        value_widget.setWordWrap(True)
+
+        value_widget.setStyleSheet(f"""
+            color: {color};
+            border: none;
+            background: transparent;
+        """)
+
+        row_layout.addWidget(label_widget)
+        row_layout.addWidget(value_widget, 1)
+
+        card.layout().addLayout(row_layout)
+
     def add_card_item(self, card, text, color="#DCDCDC"):
         """Add a simple item to a card"""
         item = QLabel(f"• {text}")
