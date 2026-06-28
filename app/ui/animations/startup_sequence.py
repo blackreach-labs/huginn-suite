@@ -84,21 +84,9 @@ class StartupSequenceWidget(QWidget):
         self._progress = 0.0
         self._timer.start(16)
 
-    def skip(self):
-        """Skip the animation immediately."""
-        self._timer.stop()
-        self.sequence_finished.emit()
-
     # ------------------------------------------------------------------
-    # Events
+    # Events (skipping disabled - intro must complete)
     # ------------------------------------------------------------------
-
-    def keyPressEvent(self, event):
-        if event.key() in (Qt.Key.Key_Escape, Qt.Key.Key_Space, Qt.Key.Key_Return):
-            self.skip()
-
-    def mousePressEvent(self, event):
-        self.skip()
 
     # ------------------------------------------------------------------
     # Animation tick

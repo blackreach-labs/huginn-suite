@@ -953,13 +953,14 @@ class GuidedWorkflowPage(QWidget):
         """
         # Full mapping: action → (page_name, tab_index, sub_tab_index)
         # Recon enumeration tabs: 0=OSINT, 1=Network Scanning, 2=DNS, 3=Service Enumeration
+        # Network Scanning sub-tabs: 0=Cloud Discovery, 1=Port Scanning
         # Service Enumeration sub-tabs: 0=HTTP, 1=RPC, 2=SMB, 3=SSH, 4=SMTP, 5=LDAP, 6=SNMP, 7=API
         # Vuln scanning tabs: 0=Vulnerability Scanner, 1=Web Application Scanner
         navigation_actions = {
             'launch_osint': ('osint', None, None),
             'launch_dns_enum': ('recon_enumeration', 2, None),          # DNS tab
             'launch_cert_search': ('osint', None, None),                # Cert transparency in OSINT
-            'launch_port_scan': ('recon_enumeration', 1, None),         # Network Scanning tab
+            'launch_port_scan': ('recon_enumeration', 1, 1),            # Network Scanning > Port Scanning
             'launch_http_enum': ('recon_enumeration', 3, 0),            # Service Enum > HTTP
             'launch_smb_enum': ('recon_enumeration', 3, 2),             # Service Enum > SMB
             'launch_rpc_enum': ('recon_enumeration', 3, 1),             # Service Enum > RPC
