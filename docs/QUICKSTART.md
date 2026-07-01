@@ -90,6 +90,6 @@ asyncio.run(scan())
 
 ## Need Help?
 
-- Check `README_USAGE.md` for detailed documentation
-- See `examples/` directory for advanced usage
+- See `docs/` directory for comprehensive platform documentation
+- Check `examples/` directory for advanced usage
 - Review configuration in `resources/config/scanner_config.yaml`

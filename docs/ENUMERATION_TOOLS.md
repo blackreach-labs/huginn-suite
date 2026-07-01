@@ -4,7 +4,7 @@ This document provides detailed information about all enumeration tools availabl
 
 ## Overview
 
-Huginn includes 8 comprehensive enumeration tools, each designed for specific network reconnaissance and security assessment tasks. All tools feature:
+Huginn includes 12 comprehensive enumeration tools, each designed for specific network reconnaissance and security assessment tasks. All tools feature:
 
 - **Multi-threaded scanning** for improved performance
 - **Real-time progress tracking** with visual feedback
@@ -155,6 +155,83 @@ Huginn includes 8 comprehensive enumeration tools, each designed for specific ne
 - Authentication testing
 - API vulnerability analysis
 
+### 9. LDAP/S Enumeration
+**Purpose**: Directory service reconnaissance and assessment
+**Protocols**: LDAP (TCP 389), LDAPS (TCP 636)
+
+**Features**:
+- Anonymous and authenticated bind enumeration
+- User and group discovery
+- Base DN detection and directory tree walking
+- Server information gathering (naming contexts, supported controls)
+- SSL/TLS certificate analysis for LDAPS
+- Centralized data collection integration
+
+**Use Cases**:
+- Active Directory reconnaissance
+- User account enumeration
+- Group membership mapping
+- Directory service security assessment
+- Privilege escalation preparation
+
+### 10. Database Enumeration
+**Purpose**: Database service discovery and security assessment
+**Protocols**: MSSQL (TCP 1433), MySQL/MariaDB (TCP 3306), Oracle (TCP 1521)
+
+**Features**:
+- Service detection with protocol-level banner grabbing
+- MySQL/MariaDB protocol analysis and version identification
+- MSSQL instance enumeration
+- Authentication testing (anonymous, credential-based)
+- Security configuration analysis
+- Vulnerability identification (default credentials, exposed services)
+
+**Use Cases**:
+- Database service discovery
+- Version and patch-level identification
+- Authentication weakness detection
+- Security configuration auditing
+- Attack surface mapping for database services
+
+### 11. IKE/IPSec Enumeration
+**Purpose**: VPN security analysis and enumeration
+**Protocols**: IKE (UDP 500), NAT-T (UDP 4500)
+
+**Features**:
+- IKE service detection via UDP probing
+- Transform set enumeration (encryption, hash, auth, group)
+- Aggressive mode testing for credential harvesting
+- Vendor ID fingerprinting
+- Integration with `ike-scan` tool
+- Main mode and aggressive mode handshake analysis
+
+**Use Cases**:
+- VPN endpoint discovery
+- IKE configuration enumeration
+- Aggressive mode vulnerability assessment
+- VPN vendor identification
+- IPSec security posture evaluation
+
+### 12. AV/Firewall Detection
+**Purpose**: Security control identification and WAF detection
+**Protocols**: HTTP/HTTPS
+
+**Features**:
+- Web Application Firewall (WAF) detection via response analysis
+- WAF vendor identification (Cloudflare, Akamai, AWS WAF, Imperva, Sucuri, F5, Barracuda, Fortinet)
+- Detection via HTTP headers, status codes, and response body patterns
+- Test payload injection (SQLi, XSS, path traversal triggers)
+- Network firewall detection (via dedicated `firewall_detector.py` worker)
+- IDS/IPS detection (via dedicated `ids_ips_detector.py` worker)
+- Evasion profiling (via dedicated `evasion_profiler.py` worker)
+
+**Use Cases**:
+- WAF identification before web application testing
+- Security control mapping
+- Evasion strategy planning
+- Attack surface understanding
+- Defensive technology fingerprinting
+
 ## Tool Integration
 
 ### External Tool Dependencies
@@ -167,12 +244,14 @@ Huginn includes 8 comprehensive enumeration tools, each designed for specific ne
 - `snmp-utils` - SNMP enumeration
 - `gobuster` - Directory and API enumeration
 - `nikto` - Web vulnerability scanning
+- `ike-scan` - IKE/IPSec enumeration
+- `ldapsearch` - LDAP directory queries (optional, native Python used primarily)
 
 **Installation Commands**:
 ```bash
 # Ubuntu/Debian
 sudo apt update
-sudo apt install nmap smbclient nbtscan samba-common-bin snmp snmp-utils
+sudo apt install nmap smbclient nbtscan samba-common-bin snmp snmp-utils ike-scan ldap-utils
 
 # Optional tools
 sudo apt install gobuster nikto
@@ -206,6 +285,10 @@ All enumeration tools use native Python libraries where possible:
 - **SNMP**: Community strings, MIB OIDs, version support
 - **HTTP**: Extensions, wordlists, security analysis
 - **API**: Endpoint patterns, vulnerability testing depth
+- **LDAP**: Base DN, authentication type, SSL/TLS mode
+- **Database**: Target DBMS type, port, authentication credentials
+- **IKE**: Aggressive/main mode, transform sets, port
+- **AV/Firewall**: Test payload selection, WAF vendor signatures
 
 ## Output Formats
 

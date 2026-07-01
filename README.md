@@ -218,7 +218,6 @@ A full security review was completed in May 2025. All 8 identified issues (4 Cri
 |----------|-------------|
 | [`docs/SECURITY.md`](docs/SECURITY.md) | Secure coding standards, contribution rules, known issues |
 | [`docs/SECURITY_REVIEW.md`](docs/SECURITY_REVIEW.md) | Full review findings and remediation summary |
-| [`docs/CHANGELOG.md`](docs/CHANGELOG.md) | Detailed change log for every fix |
 
 Key changes: SSL verification enabled by default, Fernet-encrypted credentials at rest, `shell=True` eliminated, SQL injection fixed, HMAC-SHA256 agent attestation, HTML output escaping, bare exception handlers replaced with logging, and simulation mode clearly labels synthetic data.
 

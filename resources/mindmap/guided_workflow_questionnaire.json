@@ -1,4 +1,4 @@
-﻿{
+{
   "Target Definition": [
     {
       "id": "target_selection",
@@ -55,12 +55,6 @@
       "type": "single-choice",
       "options": ["Stealth", "Normal", "Aggressive"],
       "action": "set_scan_intensity"
-    },
-    {
-      "id": "os_detection",
-      "text": "Enable OS detection and service versioning?",
-      "type": "boolean",
-      "action": "enable_os_detection"
     }
   ],
   "Service Enumeration": [

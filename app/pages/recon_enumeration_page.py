@@ -469,6 +469,7 @@ class ReconEnumerationPage(QWidget, ServiceScannersMixin, ServiceUIComponentsMix
         # Create sub-tab widget for different service types
         sub_tab_widget = QTabWidget()
         sub_tab_widget.setContentsMargins(0, 0, 0, 0)
+        self.service_sub_tab_widget = sub_tab_widget  # Store for external navigation
         
         # Service enumeration tabs with full functionality
         services = [

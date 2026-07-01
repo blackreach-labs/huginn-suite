@@ -4,6 +4,10 @@ from PyQt6.QtGui import QIcon
 import os
 
 from app.widgets.progress_widget import ProgressWidget
+from app.core.scan_registry import scan_registry
+
+# DNS tab index within the recon_enumeration tab_widget
+_DNS_TAB_INDEX = 2
 
 class DNSEnumerationPage(QWidget):
     def __init__(self, parent=None):
@@ -391,6 +395,13 @@ class DNSEnumerationPage(QWidget):
             import traceback
             self.append_dns_output(f"<p style='color: #FF6B6B;'>[ERROR] Traceback: {traceback.format_exc()}</p><br>")
         
+        # Register scan with the Running Scans registry
+        self._dns_scan_id = scan_registry.register_scan(
+            "DNS Enumeration", target,
+            source_page="recon_enumeration",
+            source_tab=_DNS_TAB_INDEX,
+        )
+
         # Set scanning state
         self.dns_scanning = True
         self.dns_scan_results = {}
@@ -599,6 +610,99 @@ class DNSEnumerationPage(QWidget):
         self.append_dns_output(f"<p style='color: #FFAA00;'>[SCAN] DNS enumeration cancelled</p><br>")
         if hasattr(self, 'show_status'):
             self.show_status("DNS scan cancelled", "warning")
+
+    def _update_inventory_from_dns_results(self, results):
+        """Store DNS scan results into the asset inventory.
+
+        Results format: {domain: {record_type: [values, ...]}}
+        Each domain is stored as a DOMAINS asset with its DNS records in metadata.
+        A records also create IP-based HOSTS entries linked back to the domain.
+        """
+        if not results:
+            return
+
+        try:
+            from app.core.asset_manager import asset_manager
+            from app.core.inventory_integration import get_current_tenant
+
+            tenant_id = get_current_tenant()
+            stored_count = 0
+
+            for domain, record_types in results.items():
+                # Collect all record data for metadata
+                dns_records = {}
+                resolved_ips = []
+
+                for rtype, values in record_types.items():
+                    dns_records[rtype] = values
+                    if rtype == 'A':
+                        resolved_ips.extend(values)
+                    elif rtype == 'AAAA':
+                        resolved_ips.extend(values)
+
+                # Determine parent domain (last two segments)
+                parts = domain.rsplit('.', 2)
+                parent_domain = '.'.join(parts[-2:]) if len(parts) >= 2 else domain
+
+                # --- Store the domain itself as a DOMAINS asset ---
+                if resolved_ips:
+                    # If we have a resolved IP, use it as identifier with hostname
+                    primary_ip = resolved_ips[0]
+                    asset_manager.add_or_update_asset(
+                        tenant_id=tenant_id,
+                        ip_address=primary_ip,
+                        hostname=domain,
+                        fqdn=domain,
+                        status='IDENTIFIED',
+                        confidence=85,
+                        metadata={
+                            'discovery_method': 'dns_enumeration',
+                            'parent_domain': parent_domain,
+                            'dns_records': dns_records,
+                            'all_ips': resolved_ips,
+                        }
+                    )
+                    stored_count += 1
+
+                    # Store additional IPs as separate host entries
+                    for ip in resolved_ips[1:]:
+                        asset_manager.add_or_update_asset(
+                            tenant_id=tenant_id,
+                            ip_address=ip,
+                            hostname=domain,
+                            fqdn=domain,
+                            status='IDENTIFIED',
+                            confidence=80,
+                            metadata={
+                                'discovery_method': 'dns_enumeration',
+                                'parent_domain': parent_domain,
+                                'record_type': 'A' if '.' in ip and ':' not in ip else 'AAAA',
+                            }
+                        )
+                        stored_count += 1
+                else:
+                    # No IP resolved — store as domain-only asset
+                    asset_manager.add_or_update_asset(
+                        tenant_id=tenant_id,
+                        ip_address=domain,
+                        fqdn=domain,
+                        status='DISCOVERED',
+                        confidence=60,
+                        metadata={
+                            'discovery_method': 'dns_enumeration',
+                            'parent_domain': parent_domain,
+                            'dns_records': dns_records,
+                        }
+                    )
+                    stored_count += 1
+
+            if stored_count > 0:
+                self.append_dns_output(
+                    f"<p style='color: #64C8FF;'>[INVENTORY] Stored {stored_count} assets from DNS results</p><br>"
+                )
+        except Exception as e:
+            from app.core.logger import logger
+            logger.error(f"Failed to update inventory from DNS results: {e}")
 
     def export_dns_results(self):
         """Export DNS scan results"""

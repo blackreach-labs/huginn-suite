@@ -17,6 +17,10 @@ class ScanInfo:
         self.details = f"{scan_type} scan on {target}"
         self.thread_id = None
         self.controller = None
+        # Navigation metadata: where to go when user clicks this scan
+        self.source_page = None   # e.g. "recon_enumeration"
+        self.source_tab = None    # e.g. "Service Enumeration" or tab index
+        self.source_subtab = None # e.g. "http_enum" tool_key or sub-tab index
 
 class ScanRegistry(QObject):
     """Global registry for tracking all running scans"""
@@ -32,7 +36,9 @@ class ScanRegistry(QObject):
         self._scan_counter = 0
     
     def register_scan(self, scan_type: str, target: str, total_items: int = 0, 
-                     thread_id: str = None, controller=None) -> str:
+                     thread_id: str = None, controller=None,
+                     source_page: str = None, source_tab: str = None,
+                     source_subtab: str = None) -> str:
         """Register a new scan and return scan ID"""
         with self.lock:
             self._scan_counter += 1
@@ -41,6 +47,9 @@ class ScanRegistry(QObject):
             scan_info = ScanInfo(scan_id, scan_type, target, total_items)
             scan_info.thread_id = thread_id
             scan_info.controller = controller
+            scan_info.source_page = source_page
+            scan_info.source_tab = source_tab
+            scan_info.source_subtab = source_subtab
             
             self.scans[scan_id] = scan_info
             

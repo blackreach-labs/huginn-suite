@@ -685,7 +685,16 @@ class HTTPFingerprinter:
                 # Get OOB callback URL using configured bind IP
                 callback_url = None
                 try:
-                    callback_url = self.listener_manager.get_listener_url(bind_ip=True)
+                    if self.listener_manager:
+                        active_listeners = self.listener_manager.get_active_listeners()
+                        for listener in active_listeners:
+                            if listener['type'] in ('http', 'http_oob'):
+                                bind_ip = listener.get('bind_ip', '0.0.0.0')
+                                if bind_ip == '0.0.0.0':
+                                    bind_ip = self._get_attacker_ip()
+                                port = listener.get('port', 80)
+                                callback_url = f"http://{bind_ip}:{port}"
+                                break
                 except Exception as _exc:
                     pass
                     logger.debug("Suppressed exception", exc_info=True)

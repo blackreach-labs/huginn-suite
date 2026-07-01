@@ -1,8 +1,37 @@
 # app/pages/recon_enumeration/service_scanners.py
+from app.core.scan_registry import scan_registry
+
+# Mapping from tool_key to sub-tab index within the Service Enumeration tab
+_SERVICE_SUBTAB_INDEX = {
+    'http_enum': 0,
+    'rpc_enum': 1,
+    'smb_enum': 2,
+    'ssh_enum': 3,
+    'smtp_enum': 4,
+    'ldap_enum': 5,
+    'snmp_enum': 6,
+    'api_enum': 7,
+    'db_enum': 8,
+    'ike_enum': 9,
+    'av_detect': 10,
+}
+
+# Index of the "Service Enumeration" tab in the main recon tab_widget
+_SERVICE_TAB_INDEX = 3
+
 
 class ServiceScannersMixin:
     """Mixin for service enumeration scanners"""
-    
+
+    def _register_service_scan(self, scan_type, target, tool_key):
+        """Register a scan with navigation metadata for the Running Scans page."""
+        return scan_registry.register_scan(
+            scan_type, target,
+            source_page="recon_enumeration",
+            source_tab=_SERVICE_TAB_INDEX,
+            source_subtab=_SERVICE_SUBTAB_INDEX.get(tool_key, 0),
+        )
+
     def run_service_scan(self, tool_key):
         """Route service scan to appropriate method based on tool key"""
         target_input = getattr(self, f"{tool_key}_target_input", None)
@@ -190,6 +219,10 @@ class ServiceScannersMixin:
                         auth_headers = getattr(control_panel, 'captured_auth_headers', {})
                         auth_cookies = getattr(control_panel, 'captured_auth_cookies', {})
             
+            # REGISTER SCAN WITH REGISTRY
+            scan_id = self._register_service_scan(scan_type, target, tool_key)
+            setattr(self, f"{tool_key}_scan_id", scan_id)  # Store for later completion
+
             worker = HTTPEnumWorker(
                 target=target,
                 scan_type=scan_type,
@@ -274,6 +307,10 @@ class ServiceScannersMixin:
             # Get current tenant from main window
             tenant_id = getattr(self.main_window, 'current_profile_name', 'default')
             
+            # REGISTER SCAN WITH REGISTRY
+            scan_id = self._register_service_scan(scan_type, target, tool_key)
+            setattr(self, f"{tool_key}_scan_id", scan_id)  # Store for later completion
+
             # Create RPC worker with same parameters as enumeration page
             worker = RPCWorker(
                 target=target,
@@ -319,6 +356,10 @@ class ServiceScannersMixin:
             
             # Get current tenant from main window
             tenant_id = getattr(self.main_window, 'current_profile_name', 'default')
+            
+            # REGISTER SCAN WITH REGISTRY
+            scan_id = self._register_service_scan(scan_type, target, tool_key)
+            setattr(self, f"{tool_key}_scan_id", scan_id)  # Store for later completion
             
             # Create SMB worker with exact same parameters as enumeration page
             worker = SMBWorker(
@@ -375,6 +416,10 @@ class ServiceScannersMixin:
                 helo_name = controls['smtp_helo'].text() if 'smtp_helo' in controls else "test.local"
                 wordlist_path = controls['smtp_wordlist'].currentData() if 'smtp_wordlist' in controls else None
             
+            # REGISTER SCAN WITH REGISTRY
+            scan_id = self._register_service_scan(scan_type, target, tool_key)
+            setattr(self, f"{tool_key}_scan_id", scan_id)  # Store for later completion
+            
             # Create SMTP worker with same parameters as enumeration page
             worker = SMTPWorker(
                 target=target,
@@ -428,6 +473,10 @@ class ServiceScannersMixin:
             
             # Get current tenant from main window
             tenant_id = getattr(self.main_window, 'current_profile_name', 'default')
+            
+            # REGISTER SCAN WITH REGISTRY
+            scan_id = self._register_service_scan(scan_type, target, tool_key)
+            setattr(self, f"{tool_key}_scan_id", scan_id)  # Store for later completion
             
             # Create SNMP worker with same parameters as enumeration page
             worker = SNMPWorker(
@@ -491,6 +540,10 @@ class ServiceScannersMixin:
             # Get current tenant from main window
             tenant_id = getattr(self.main_window, 'current_profile_name', 'default')
             
+            # REGISTER SCAN WITH REGISTRY
+            scan_id = self._register_service_scan(scan_type, target, tool_key)
+            setattr(self, f"{tool_key}_scan_id", scan_id)  # Store for later completion
+            
             # Create LDAP worker with same parameters as enumeration page
             worker = LDAPWorker(
                 target=target,
@@ -548,6 +601,10 @@ class ServiceScannersMixin:
             
             # Use API wordlist if available
             api_wordlist = os.path.join(getattr(self.main_window, 'project_root', ''), "resources", "wordlists", "http_enum", "api.txt")
+            
+            # REGISTER SCAN WITH REGISTRY
+            scan_id = self._register_service_scan(scan_type, target, tool_key)
+            setattr(self, f"{tool_key}_scan_id", scan_id)  # Store for later completion
             
             # Create HTTP worker with API-focused settings
             worker = HTTPEnumWorker(
@@ -621,6 +678,10 @@ class ServiceScannersMixin:
             
             self.append_service_output(tool_key, f"<p style='color: #00BFFF;'>[DB SCAN] Starting {scan_type} on {target}:{port} ({db_type.upper()})</p><br>")
             
+            # REGISTER SCAN WITH REGISTRY
+            scan_id = self._register_service_scan(scan_type, target, tool_key)
+            setattr(self, f"{tool_key}_scan_id", scan_id)  # Store for later completion
+            
             # Create database worker with same parameters as enumeration page
             worker = DatabaseEnumWorker(
                 target=target,
@@ -684,6 +745,10 @@ class ServiceScannersMixin:
                 scan_type = controls['ike_scan_type'].currentText() if 'ike_scan_type' in controls else "Basic Info"
                 aggressive_mode = controls['ike_aggressive_mode'].isChecked() if 'ike_aggressive_mode' in controls else True
             
+            # REGISTER SCAN WITH REGISTRY
+            scan_id = self._register_service_scan(scan_type, target, tool_key)
+            setattr(self, f"{tool_key}_scan_id", scan_id)  # Store for later completion
+            
             # Create IKE worker with same parameters as enumeration page
             worker = IKEWorker(
                 target=target,
@@ -738,6 +803,10 @@ class ServiceScannersMixin:
             setattr(self, f"{tool_key}_current_scan_type", detection_type)
             
             self.append_service_output(tool_key, f"<p style='color: #00BFFF;'>[AV DETECTION] Starting detection for {target}</p><br>")
+            
+            # REGISTER SCAN WITH REGISTRY
+            scan_id = self._register_service_scan(scan_type, target, tool_key)
+            setattr(self, f"{tool_key}_scan_id", scan_id)  # Store for later completion
             
             # Create AV/Firewall worker
             worker = AVFirewallWorker(
@@ -820,6 +889,10 @@ class ServiceScannersMixin:
             if hasattr(self, 'on_ssh_scan_type_changed'):
                 self.on_ssh_scan_type_changed(tool_key, scan_type)
             
+            # REGISTER SCAN WITH REGISTRY
+            scan_id = self._register_service_scan(scan_type, target, tool_key)
+            setattr(self, f"{tool_key}_scan_id", scan_id)  # Store for later completion
+            
             # Create SSH worker
             worker = SSHWorker(
                 target=target,
@@ -882,6 +955,11 @@ class ServiceScannersMixin:
     
     def on_http_scan_finished(self, tool_key, scan_type):
         """Handle HTTP scan completion"""
+        # Notify registry that this scan is done
+        scan_id = getattr(self, f"{tool_key}_scan_id", None)
+        if scan_id:
+            scan_registry.finish_scan(scan_id, status="Completed")
+
         # Reset scanning state
         setattr(self, f"{tool_key}_scanning", False)
         
@@ -908,6 +986,11 @@ class ServiceScannersMixin:
     
     def on_service_scan_finished(self, tool_key):
         """Generic service scan completion handler"""
+        # Notify registry that this scan is done
+        scan_id = getattr(self, f"{tool_key}_scan_id", None)
+        if scan_id:
+            scan_registry.finish_scan(scan_id, status="Completed")
+
         # Reset scanning state
         setattr(self, f"{tool_key}_scanning", False)
         
