@@ -51,3 +51,6 @@
 2026-06-28 18:18:56 - huginn - INFO - RetestWorkflow: database attached.
 2026-06-28 18:19:11 - huginn - DEBUG - Memory monitoring stopped
 2026-06-28 18:19:11 - huginn - DEBUG - Connection pool closed all sessions
+2026-06-28 18:20:14 - huginn - INFO - Using default configuration
+2026-06-28 18:20:17 - huginn - INFO - License saved successfully
+2026-06-28 18:20:17 - huginn - INFO - License loaded and validated successfully
