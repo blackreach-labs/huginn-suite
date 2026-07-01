@@ -255,7 +255,51 @@ class InventoryPage(QWidget):
             hosts_root.setForeground(0, QBrush(QColor("#64C8FF")))
             hosts_root.setExpanded(True)
 
-            for asset in sorted(hosts, key=lambda a: a.get('hostname', '')):
+            # Separate DNS-enumerated hosts (have parent_domain) from others
+            dns_hosts = []
+            other_hosts = []
+            for asset in hosts:
+                meta = asset.get('metadata', {})
+                parent_domain = meta.get('parent_domain', '')
+                if parent_domain and meta.get('discovery_method') == 'dns_enumeration':
+                    dns_hosts.append(asset)
+                else:
+                    other_hosts.append(asset)
+
+            # Group DNS hosts by parent_domain in collapsible sub-trees
+            domain_groups = {}
+            for asset in dns_hosts:
+                parent = asset.get('metadata', {}).get('parent_domain', 'Unknown')
+                domain_groups.setdefault(parent, []).append(asset)
+
+            for parent_domain, group in sorted(domain_groups.items()):
+                # Find the root domain asset to use as the parent node
+                root_asset = next(
+                    (a for a in domains if (a.get('fqdn', '') or a.get('hostname', '') or a.get('ip_address', '')) == parent_domain),
+                    None
+                )
+                parent_item = QTreeWidgetItem(hosts_root)
+                parent_item.setText(0, f"🌐 {parent_domain} ({len(group)})")
+                parent_item.setForeground(0, QBrush(QColor("#87CEEB")))
+                parent_item.setFont(0, self._category_font())
+                parent_item.setExpanded(False)
+                if root_asset:
+                    parent_item.setData(0, Qt.ItemDataRole.UserRole, root_asset['asset_id'])
+
+                for asset in sorted(group, key=lambda a: a.get('hostname', '')):
+                    child = QTreeWidgetItem(parent_item)
+                    child.setText(0, asset.get('hostname', asset['ip_address']))
+                    meta = asset.get('metadata', {})
+                    all_ips = meta.get('all_ips', [])
+                    if all_ips:
+                        child.setText(1, ", ".join(all_ips))
+                    else:
+                        child.setText(1, asset['ip_address'])
+                    child.setData(0, Qt.ItemDataRole.UserRole, asset['asset_id'])
+                    self._style_asset_item(child, asset)
+
+            # Non-DNS hosts displayed flat as before
+            for asset in sorted(other_hosts, key=lambda a: a.get('hostname', '')):
                 item = QTreeWidgetItem(hosts_root)
                 item.setText(0, asset.get('hostname', asset['ip_address']))
                 item.setText(1, f"{asset['ip_address']} — {asset.get('status', '')}")
@@ -285,16 +329,25 @@ class InventoryPage(QWidget):
                 self._style_asset_item(item, asset)
 
         # ── DOMAINS category ──────────────────────────────────────────
-        if domains:
+        # Exclude root domains that are already shown as parent nodes in HOSTS
+        dns_root_domains = set()
+        for asset in domains:
+            meta = asset.get('metadata', {})
+            if meta.get('asset_type') == 'root_domain' and meta.get('subdomains'):
+                dns_root_domains.add(asset.get('asset_id'))
+
+        filtered_domains = [a for a in domains if a.get('asset_id') not in dns_root_domains]
+
+        if filtered_domains:
             domains_root = QTreeWidgetItem(self.asset_tree)
-            domains_root.setText(0, f"🔗  DOMAINS ({len(domains)})")
+            domains_root.setText(0, f"🔗  DOMAINS ({len(filtered_domains)})")
             domains_root.setFont(0, self._category_font())
             domains_root.setForeground(0, QBrush(QColor("#FFD93D")))
             domains_root.setExpanded(True)
 
             # Group domains by parent domain
             parent_groups = {}
-            for asset in domains:
+            for asset in filtered_domains:
                 fqdn = asset.get('fqdn', '') or asset.get('hostname', '') or asset.get('ip_address', '')
                 parent = self._get_parent_domain(fqdn, asset)
                 parent_groups.setdefault(parent, []).append(asset)
@@ -583,6 +636,7 @@ class InventoryPage(QWidget):
             try:
                 if asset_manager.remove_asset(self.tenant_id, asset['ip_address']):
                     self.load_assets()
+                    self.asset_details.update_asset(None)
                     self.status_updated.emit(
                         f"Asset {asset['ip_address']} removed")
                 else:

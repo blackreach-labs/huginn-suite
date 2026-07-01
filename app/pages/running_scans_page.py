@@ -136,7 +136,7 @@ class RunningScansPage(BasePage):
         self.details_component = ScanDetailsComponent(self)
         splitter.addWidget(self.details_component)
 
-        splitter.setSizes([450, 200])
+        splitter.setSizes([350, 350])
         self.content_layout.addWidget(splitter)
 
     def _create_stat_label(self, value, label):

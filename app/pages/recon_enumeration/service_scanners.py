@@ -1547,24 +1547,48 @@ class ServiceScannersMixin:
         progress_widget = getattr(self, f"{tool_key}_progress_widget", None)
         if progress_widget and hasattr(progress_widget, 'start_progress'):
             progress_widget.start_progress(total, message)
+        
+        # Update scan registry with total items
+        scan_id = getattr(self, f"{tool_key}_scan_id", None)
+        if scan_id:
+            scan_info = scan_registry.get_scan_info(scan_id)
+            if scan_info:
+                scan_info.total_items = total
     
     def update_http_progress(self, tool_key, current, found, message):
         """Update HTTP progress bar"""
         progress_widget = getattr(self, f"{tool_key}_progress_widget", None)
         if progress_widget and hasattr(progress_widget, 'update_progress'):
             progress_widget.update_progress(current, found, message)
+        
+        # Update scan registry with progress
+        scan_id = getattr(self, f"{tool_key}_scan_id", None)
+        if scan_id:
+            scan_registry.update_scan_progress(scan_id, current)
     
     def start_rpc_progress(self, tool_key, total, message):
         """Start RPC progress bar"""
         progress_widget = getattr(self, f"{tool_key}_progress_widget", None)
         if progress_widget and hasattr(progress_widget, 'start_progress'):
             progress_widget.start_progress(total, message)
+        
+        # Update scan registry with total items
+        scan_id = getattr(self, f"{tool_key}_scan_id", None)
+        if scan_id:
+            scan_info = scan_registry.get_scan_info(scan_id)
+            if scan_info:
+                scan_info.total_items = total
     
     def update_rpc_progress(self, tool_key, current, found, message):
         """Update RPC progress bar"""
         progress_widget = getattr(self, f"{tool_key}_progress_widget", None)
         if progress_widget and hasattr(progress_widget, 'update_progress'):
             progress_widget.update_progress(current, found, message)
+        
+        # Update scan registry with progress
+        scan_id = getattr(self, f"{tool_key}_scan_id", None)
+        if scan_id:
+            scan_registry.update_scan_progress(scan_id, current)
     
     def update_http_graph_view(self, tool_key, scan_type, crawl_data):
         """Update HTTP graph view with crawl data"""

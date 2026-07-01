@@ -55,7 +55,14 @@ class IPRangeParser:
                 return IPRangeParser._parse_cidr(f"{target}/24")
             return [target]
         except Exception:
-            return []
+            pass
+        
+        # Attempt hostname/FQDN resolution
+        resolved = IPRangeParser._resolve_hostname(target)
+        if resolved:
+            return resolved
+        
+        return []
     
     @staticmethod
     def _parse_cidr(cidr: str) -> List[str]:
@@ -131,6 +138,27 @@ class IPRangeParser:
         except Exception:
             return []
     
+    @staticmethod
+    def _resolve_hostname(hostname: str) -> List[str]:
+        """Resolve a hostname or FQDN to IP address(es)"""
+        import socket
+        try:
+            # Basic validation: must contain at least one dot or be a known local name
+            if not re.match(r'^[a-zA-Z0-9]([a-zA-Z0-9\-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9\-]*[a-zA-Z0-9])?)*$', hostname):
+                return []
+            
+            # Resolve all addresses for the hostname
+            results = socket.getaddrinfo(hostname, None, socket.AF_INET)
+            ips = list(set(result[4][0] for result in results))
+            if ips:
+                logger.debug(f"Resolved hostname '{hostname}' to: {ips}")
+                return sorted(ips)
+        except (socket.gaierror, socket.herror, OSError) as e:
+            logger.debug(f"Failed to resolve hostname '{hostname}': {e}")
+        except Exception as e:
+            logger.debug(f"Unexpected error resolving '{hostname}': {e}")
+        return []
+
     @staticmethod
     def _is_reserved(ip: str) -> bool:
         """Check if IP is in reserved range"""

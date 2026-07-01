@@ -562,6 +562,10 @@ class DNSEnumerationPage(QWidget):
         if hasattr(self, 'show_status'):
             self.show_status("DNS enumeration completed", "success")
         
+        # Mark scan as completed in the registry
+        if hasattr(self, '_dns_scan_id') and self._dns_scan_id:
+            scan_registry.finish_scan(self._dns_scan_id, "Completed")
+        
         # Reset button state
         if hasattr(self.dns_run_button, 'stop_scan'):
             self.dns_run_button.stop_scan()
@@ -582,6 +586,8 @@ class DNSEnumerationPage(QWidget):
         # Enable export button if we have results
         if self.dns_scan_results:
             self.dns_export_button.setEnabled(True)
+            # Push results to the asset inventory for the active engagement
+            self._update_inventory_from_dns_results(self.dns_scan_results)
 
     def toggle_dns_scan(self):
         """Toggle DNS scan - start if not running, stop if running"""
@@ -596,6 +602,10 @@ class DNSEnumerationPage(QWidget):
             self.current_worker.is_running = False
         
         self.dns_scanning = False
+        
+        # Mark scan as cancelled in the registry
+        if hasattr(self, '_dns_scan_id') and self._dns_scan_id:
+            scan_registry.finish_scan(self._dns_scan_id, "Cancelled")
         
         # Reset button state
         if hasattr(self.dns_run_button, 'stop_scan'):
@@ -615,19 +625,47 @@ class DNSEnumerationPage(QWidget):
         """Store DNS scan results into the asset inventory.
 
         Results format: {domain: {record_type: [values, ...]}}
-        Each domain is stored as a DOMAINS asset with its DNS records in metadata.
-        A records also create IP-based HOSTS entries linked back to the domain.
+        Each domain is stored as an asset linked to its root domain.
+        A root domain entry is always created as the parent.
         """
         if not results:
             return
 
         try:
             from app.core.asset_manager import asset_manager
-            from app.core.inventory_integration import get_current_tenant
 
-            tenant_id = get_current_tenant()
+            tenant_id = getattr(self.main_window, 'current_profile_name', None)
+            if not tenant_id:
+                from app.core.inventory_integration import get_current_tenant
+                tenant_id = get_current_tenant()
             stored_count = 0
 
+            # Determine the root domain from the scan target
+            target = self.dns_target_input.text().strip()
+            # Use target as root domain (e.g. infomedia.com.au)
+            root_domain = target
+
+            # Collect all subdomain IPs for the root domain entry
+            all_subdomains = list(results.keys())
+
+            # --- Always create/update the root domain entry ---
+            asset_manager.add_or_update_asset(
+                tenant_id=tenant_id,
+                ip_address=root_domain,
+                hostname=root_domain,
+                fqdn=root_domain,
+                status='IDENTIFIED',
+                confidence=90,
+                metadata={
+                    'discovery_method': 'dns_enumeration',
+                    'asset_type': 'root_domain',
+                    'parent_domain': root_domain,
+                    'subdomains': all_subdomains,
+                }
+            )
+            stored_count += 1
+
+            # --- Store each subdomain/host linked to root domain ---
             for domain, record_types in results.items():
                 # Collect all record data for metadata
                 dns_records = {}
@@ -640,13 +678,8 @@ class DNSEnumerationPage(QWidget):
                     elif rtype == 'AAAA':
                         resolved_ips.extend(values)
 
-                # Determine parent domain (last two segments)
-                parts = domain.rsplit('.', 2)
-                parent_domain = '.'.join(parts[-2:]) if len(parts) >= 2 else domain
-
-                # --- Store the domain itself as a DOMAINS asset ---
                 if resolved_ips:
-                    # If we have a resolved IP, use it as identifier with hostname
+                    # Use the first IP as the primary identifier
                     primary_ip = resolved_ips[0]
                     asset_manager.add_or_update_asset(
                         tenant_id=tenant_id,
@@ -657,29 +690,12 @@ class DNSEnumerationPage(QWidget):
                         confidence=85,
                         metadata={
                             'discovery_method': 'dns_enumeration',
-                            'parent_domain': parent_domain,
+                            'parent_domain': root_domain,
                             'dns_records': dns_records,
                             'all_ips': resolved_ips,
                         }
                     )
                     stored_count += 1
-
-                    # Store additional IPs as separate host entries
-                    for ip in resolved_ips[1:]:
-                        asset_manager.add_or_update_asset(
-                            tenant_id=tenant_id,
-                            ip_address=ip,
-                            hostname=domain,
-                            fqdn=domain,
-                            status='IDENTIFIED',
-                            confidence=80,
-                            metadata={
-                                'discovery_method': 'dns_enumeration',
-                                'parent_domain': parent_domain,
-                                'record_type': 'A' if '.' in ip and ':' not in ip else 'AAAA',
-                            }
-                        )
-                        stored_count += 1
                 else:
                     # No IP resolved — store as domain-only asset
                     asset_manager.add_or_update_asset(
@@ -690,7 +706,7 @@ class DNSEnumerationPage(QWidget):
                         confidence=60,
                         metadata={
                             'discovery_method': 'dns_enumeration',
-                            'parent_domain': parent_domain,
+                            'parent_domain': root_domain,
                             'dns_records': dns_records,
                         }
                     )
@@ -744,9 +760,19 @@ class DNSEnumerationPage(QWidget):
         self.progress_widget.start_progress(total, "DNS enumeration...")
         if hasattr(self, 'show_status'):
             self.show_status(f"Starting DNS scan with {total} items", "info")
+        
+        # Update the scan registry with total items
+        if hasattr(self, '_dns_scan_id') and self._dns_scan_id:
+            scan_info = scan_registry.get_scan_info(self._dns_scan_id)
+            if scan_info:
+                scan_info.total_items = total
 
     def update_dns_progress(self, completed, found, message=""):
         """Update DNS scan progress"""
         self.progress_widget.update_progress(completed, found)
         if hasattr(self, 'show_status'):
             self.show_status(f"Progress: {completed} completed, {found} found", "info")
+        
+        # Update the scan registry with progress
+        if hasattr(self, '_dns_scan_id') and self._dns_scan_id:
+            scan_registry.update_scan_progress(self._dns_scan_id, completed)

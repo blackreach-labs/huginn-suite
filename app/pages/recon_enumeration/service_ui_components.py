@@ -313,6 +313,17 @@ class ServiceUIComponentsMixin:
                     table.setColumnCount(4)
                     table.setHorizontalHeaderLabels(["Category", "Item", "Status/Value", "Details"])
                     tables[scan_type] = table
+                elif scan_type == "VHost Brute":
+                    # Tree view for VHost Brute results
+                    try:
+                        from app.widgets.crawl_tree_widget import CrawlTreeWidget
+                        tree_view = CrawlTreeWidget()
+                        tables[scan_type] = tree_view
+                    except ImportError:
+                        tree = QTreeWidget()
+                        tree.setHeaderLabels(["Virtual Host", "Status", "Size"])
+                        tree.setRootIsDecorated(True)
+                        tables[scan_type] = tree
                 else:
                     # Table view for other scan types
                     table = QTableWidget()

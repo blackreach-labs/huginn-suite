@@ -18,3 +18,171 @@ ValueError: 'www.infomedia.com.au' does not appear to be an IPv4 or IPv6 address
 2026-07-01 21:20:38 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
 2026-07-01 21:27:46 - huginn - DEBUG - Memory monitoring stopped
 2026-07-01 21:27:46 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-01 21:56:51 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-01 21:57:06 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-01 21:57:06 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-01 22:02:12 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-01 22:02:20 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-01 22:02:20 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-01 22:05:31 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-01 22:05:39 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-01 22:05:39 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-01 22:07:53 - huginn - DEBUG - Memory monitoring stopped
+2026-07-01 22:07:53 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-01 22:09:14 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-01 22:09:26 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-01 22:09:26 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-01 22:12:12 - huginn - DEBUG - Memory monitoring stopped
+2026-07-01 22:12:12 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-01 22:14:20 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-01 22:14:28 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-01 22:14:28 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-01 22:14:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-01 22:14:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-01 22:14:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-01 22:14:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-01 22:15:39 - huginn - DEBUG - Memory monitoring stopped
+2026-07-01 22:15:39 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-01 22:17:17 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-01 22:17:25 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-01 22:17:25 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-01 22:17:56 - huginn - DEBUG - Memory monitoring stopped
+2026-07-01 22:17:56 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-01 22:18:13 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-01 22:18:22 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-01 22:18:22 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-01 22:18:45 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-01 22:18:45 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-01 22:18:45 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-01 22:18:45 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-01 22:18:53 - huginn - DEBUG - Memory monitoring stopped
+2026-07-01 22:18:53 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-01 22:20:36 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-01 22:20:44 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-01 22:20:44 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-01 22:21:37 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-01 22:21:37 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-01 22:21:37 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-01 22:21:37 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-01 22:27:41 - huginn - DEBUG - Memory monitoring stopped
+2026-07-01 22:27:41 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-01 22:48:12 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-01 22:48:20 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-01 22:48:20 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-01 22:55:00 - huginn - DEBUG - Memory monitoring stopped
+2026-07-01 22:55:00 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-01 22:57:38 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-01 22:57:47 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-01 22:57:47 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-01 23:04:33 - huginn - DEBUG - Memory monitoring stopped
+2026-07-01 23:04:33 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-01 23:05:43 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-01 23:05:51 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-01 23:05:51 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-01 23:07:41 - huginn - DEBUG - Memory monitoring stopped
+2026-07-01 23:07:41 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-01 23:11:25 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-01 23:11:32 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-01 23:11:32 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-01 23:12:06 - huginn - DEBUG - Resolved hostname 'www.infomedia.com.au' to: ['134.199.145.27']
+2026-07-01 23:12:09 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\port_scanner.py", line 442, in scan_tcp_port
+    banner = sock.recv(1024).decode("utf-8", errors="ignore").strip()
+             ~~~~~~~~~^^^^^^
+TimeoutError: timed out
+2026-07-01 23:14:34 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\dns_resolver.py", line 14, in resolve_hostname
+    ipaddress.ip_address(hostname)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 54, in ip_address
+    raise ValueError(f'{address!r} does not appear to be an IPv4 or IPv6 address')
+ValueError: 'blackreachlabs.com' does not appear to be an IPv4 or IPv6 address
+2026-07-01 23:17:23 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\dns_resolver.py", line 14, in resolve_hostname
+    ipaddress.ip_address(hostname)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 54, in ip_address
+    raise ValueError(f'{address!r} does not appear to be an IPv4 or IPv6 address')
+ValueError: 'blackreachlabs.com' does not appear to be an IPv4 or IPv6 address
+2026-07-01 23:17:56 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\dns_resolver.py", line 14, in resolve_hostname
+    ipaddress.ip_address(hostname)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 54, in ip_address
+    raise ValueError(f'{address!r} does not appear to be an IPv4 or IPv6 address')
+ValueError: 'infomedia.com.au' does not appear to be an IPv4 or IPv6 address
+2026-07-01 23:18:25 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\dns_resolver.py", line 14, in resolve_hostname
+    ipaddress.ip_address(hostname)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 54, in ip_address
+    raise ValueError(f'{address!r} does not appear to be an IPv4 or IPv6 address')
+ValueError: 'infomedia.com.au' does not appear to be an IPv4 or IPv6 address
+2026-07-01 23:19:11 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\dns_resolver.py", line 14, in resolve_hostname
+    ipaddress.ip_address(hostname)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 54, in ip_address
+    raise ValueError(f'{address!r} does not appear to be an IPv4 or IPv6 address')
+ValueError: 'example.com' does not appear to be an IPv4 or IPv6 address
+2026-07-01 23:20:56 - huginn - DEBUG - Memory monitoring stopped
+2026-07-01 23:20:56 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-01 23:21:09 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-01 23:23:12 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-01 23:23:12 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-01 23:23:35 - huginn - DEBUG - Memory monitoring stopped
+2026-07-01 23:23:35 - huginn - DEBUG - Connection pool closed all sessions

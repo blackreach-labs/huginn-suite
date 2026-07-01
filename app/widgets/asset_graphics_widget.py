@@ -514,6 +514,14 @@ class AssetDetailsWidget(QFrame):
         basic_card = self.create_info_card("Basic Information")
         self.add_card_row(basic_card, "IP Address", asset_data['ip_address'])
         
+        # Show additional IPs if present
+        metadata = asset_data.get('metadata', {})
+        all_ips = metadata.get('all_ips', [])
+        if len(all_ips) > 1:
+            additional_ips = [ip for ip in all_ips if ip != asset_data['ip_address']]
+            if additional_ips:
+                self.add_card_row(basic_card, "Additional IPs", ", ".join(additional_ips))
+        
         if asset_data.get('hostname'):
             self.add_card_row(basic_card, "Hostname", asset_data['hostname'])
         
@@ -535,18 +543,7 @@ class AssetDetailsWidget(QFrame):
     
     def populate_services_tab(self, asset_data):
         """Populate the services tab"""
-        # Open ports card
-        open_ports = asset_data.get('open_ports', [])
-        if open_ports:
-            ports_card = self.create_info_card(f"Open Ports ({len(open_ports)})")
-            for port in open_ports[:15]:
-                port_text = f"{port.get('port')}/{port.get('protocol', 'tcp')}"
-                self.add_card_item(ports_card, port_text)
-            if len(open_ports) > 15:
-                self.add_card_item(ports_card, f"... and {len(open_ports) - 15} more", "#87CEEB")
-            self.services_layout.addWidget(ports_card)
-        
-        # Services card with detailed information (limit to prevent memory issues)
+        # Services table with detailed information
         services = asset_data.get('services', [])
         if services:
             table = QTableWidget()
@@ -684,6 +681,18 @@ class AssetDetailsWidget(QFrame):
                         vuln.get('name', vuln.get('id', 'Unknown'))
                     )
                 )
+            table.setStyleSheet("""
+                QTableWidget {
+                    background: rgba(26,34,46,220);
+                    color: #DCDCDC;
+                    border: none;
+                }
+                QHeaderView::section {
+                    background-color: rgba(20,30,50,200);
+                    color: #64C8FF;
+                    font-weight: bold;
+                }
+            """)
             self.security_layout.addWidget(table)
         
         # Security assessment card
@@ -744,7 +753,7 @@ class AssetDetailsWidget(QFrame):
 
         label_widget = QLabel(label)
 
-        label_widget.setFixedWidth(140)
+        label_widget.setFixedWidth(165)
 
         label_widget.setStyleSheet("""
             color: #87CEEB;

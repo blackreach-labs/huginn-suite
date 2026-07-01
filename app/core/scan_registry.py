@@ -13,6 +13,7 @@ class ScanInfo:
         self.total_items = total_items
         self.completed_items = 0
         self.start_time = time.time()
+        self.end_time = None
         self.status = "Running"
         self.details = f"{scan_type} scan on {target}"
         self.thread_id = None
@@ -61,7 +62,9 @@ class ScanRegistry(QObject):
         with self.lock:
             if scan_id in self.scans:
                 self.scans[scan_id].completed_items = completed_items
-                self.scan_updated.emit(scan_id, completed_items)
+            else:
+                return
+        self.scan_updated.emit(scan_id, completed_items)
     
     def update_scan_details(self, scan_id: str, details: str):
         """Update scan details"""
@@ -74,7 +77,10 @@ class ScanRegistry(QObject):
         with self.lock:
             if scan_id in self.scans:
                 self.scans[scan_id].status = status
-                self.scan_finished.emit(scan_id, status)
+                self.scans[scan_id].end_time = time.time()
+            else:
+                return
+        self.scan_finished.emit(scan_id, status)
     
     def pause_scan(self, scan_id: str) -> bool:
         """Pause a scan"""
@@ -114,9 +120,11 @@ class ScanRegistry(QObject):
                     thread_manager.cancel_thread(scan_info.thread_id)
                 
                 scan_info.status = "Stopped"
-                self.scan_finished.emit(scan_id, "Stopped")
-                return True
-        return False
+                scan_info.end_time = time.time()
+            else:
+                return False
+        self.scan_finished.emit(scan_id, "Stopped")
+        return True
     
     def get_scan_info(self, scan_id: str) -> Optional[ScanInfo]:
         """Get scan information"""

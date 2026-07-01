@@ -2457,6 +2457,23 @@ class HTTPEnumWorker(QRunnable):
             
             results['vhost_results'] = discovered
             
+            # Build crawl_tree_data for graph view
+            if discovered:
+                vhost_category = {
+                    'name': 'Virtual Hosts',
+                    'type': 'category',
+                    'children': []
+                }
+                for entry in discovered:
+                    vhost_category['children'].append({
+                        'field': entry['vhost'],
+                        'value': f"Status: {entry['status']}, Size: {entry['size']}",
+                        'type': 'vhost'
+                    })
+                self.crawl_tree_data = {'Virtual Hosts': vhost_category}
+                results['crawl_data'] = self.crawl_tree_data
+                self.signals.results_ready.emit(results)
+            
         except Exception as e:
             self.signals.output.emit(f"<p style='color: #FF4444;'>VHost brute-force error: {h(str(e))}</p><br>")
             logger.error(f"VHost brute-force error: {e}")
