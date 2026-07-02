@@ -54,16 +54,15 @@ class ScanAssetIntegrator(QObject):
                 pass
                 logger.debug("Suppressed exception", exc_info=True)
             
-            # Fallback to file system check
-            import os
-            profiles_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'profiles')
-            if os.path.exists(profiles_dir):
-                profile_files = [f for f in os.listdir(profiles_dir) if f.endswith('.json')]
-                if profile_files:
-                    latest_profile = max(profile_files, key=lambda f: os.path.getmtime(os.path.join(profiles_dir, f)))
-                    profile_name = latest_profile.replace('.json', '')
-                    print(f"Found profile from filesystem: {profile_name}")
-                    return profile_name
+            # Fallback to engagement manager DB
+            try:
+                from app.core.feature_gap_integration import FeatureGapIntegration
+                eng_manager = FeatureGapIntegration.engines.engagement_manager
+                if eng_manager and eng_manager.active_engagement_id:
+                    print(f"Found profile from engagement manager: {eng_manager.active_engagement_id}")
+                    return eng_manager.active_engagement_id
+            except Exception:
+                pass
             
             print("No profile found, using default")
             return 'default'

@@ -1,4 +1,5 @@
 {
-  "current_dns": "LocalDNS",
-  "local_dns_port": 53530
+  "current_dns": "Local DNS",
+  "local_dns_port": 53530,
+  "custom_dns_ip": ""
 }

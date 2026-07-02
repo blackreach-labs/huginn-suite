@@ -11,14 +11,12 @@ def enumerate_hostnames_sync(target, wordlist_path, record_types):
     try:
         # Get DNS server from global settings
         from app.core.dns_settings import dns_settings
-        dns_server = dns_settings.get_current_dns()
-        if dns_server == "Default DNS":
-            dns_server = None
+        dns_server = dns_settings.get_effective_dns_server()
         
         # Setup resolver with global DNS server
         resolver = dns.resolver.Resolver()
         if dns_server:
-            if dns_server.lower() == 'localdns':
+            if dns_settings.get_current_dns() == 'LocalDNS':
                 from app.core.local_dns_server import local_dns_server
                 resolver.nameservers = ['127.0.0.1']
                 resolver.port = local_dns_server.port if local_dns_server.running else 53530

@@ -118,12 +118,15 @@ class _EngineRegistry:
     # ------------------------------------------------------------------
 
     def _get_or_create(self, key: str, factory):
-        if key not in self._instances:
-            try:
-                self._instances[key] = factory()
-            except Exception as exc:
-                logger.warning(f"[FeatureGapIntegration] Failed to create {key}: {exc}")
-                self._instances[key] = None
+        instance = self._instances.get(key)
+        if instance is not None:
+            return instance
+        # Not yet created or previous attempt failed — try (again)
+        try:
+            self._instances[key] = factory()
+        except Exception as exc:
+            logger.warning(f"[FeatureGapIntegration] Failed to create {key}: {exc}")
+            self._instances[key] = None
         return self._instances[key]
 
     # --- Factory methods (import at call-time) ---

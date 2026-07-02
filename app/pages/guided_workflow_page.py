@@ -1039,12 +1039,190 @@ class GuidedWorkflowPage(QWidget):
         except Exception:
             pass
     
+    def _get_engagement_manager(self):
+        """Resolve the shared EngagementManager instance.
+
+        Tries multiple paths in order of preference:
+        1. FeatureGapIntegration shared registry (canonical)
+        2. AttackChainHomePage's cached manager (via main_window page stack)
+        3. Main window's _engagement_mgr attribute
+        Falls back to a new instance only as a last resort.
+        """
+        from app.core.engagement_manager import EngagementManager
+
+        # 1. Shared singleton from FeatureGapIntegration
+        try:
+            from app.core.feature_gap_integration import FeatureGapIntegration
+            mgr = FeatureGapIntegration.engines.engagement_manager
+            if mgr is not None:
+                return mgr
+        except Exception:
+            pass
+
+        # 2. AttackChainHomePage's cached manager (the Setup > Engagements page)
+        if self.main_window:
+            try:
+                # Look through the page stack for AttackChainHomePage
+                stack = getattr(self.main_window, 'stack', None)
+                if stack:
+                    for i in range(stack.count()):
+                        page = stack.widget(i)
+                        if hasattr(page, '_engagement_mgr') and page._engagement_mgr is not None:
+                            return page._engagement_mgr
+            except Exception:
+                pass
+
+            # 3. Direct attribute on main window
+            if hasattr(self.main_window, '_engagement_mgr') and self.main_window._engagement_mgr is not None:
+                return self.main_window._engagement_mgr
+
+        # 4. Last resort — standalone instance with same default DB path
+        return EngagementManager()
+
+    def _activate_engagement(self, engagement_id: str, engagement_name: str):
+        """Activate an engagement as the current active engagement.
+
+        Sets the engagement on the engagement manager, main window state,
+        credential manager, and tenant system.
+        """
+        eng_manager = self._get_engagement_manager()
+
+        # Open the engagement DB (emits engagement_opened signal)
+        eng_manager.open_engagement(engagement_id)
+
+        # Store in workflow results
+        if not self.workflow_steps[0].results:
+            self.workflow_steps[0].results = {}
+        self.workflow_steps[0].results['engagement_id'] = engagement_id
+        self.workflow_steps[0].results.setdefault('target_info', {})['name'] = engagement_name
+
+        # Update main window state so scan tools know the active engagement
+        if self.main_window:
+            self.main_window.current_engagement_id = engagement_id
+            self.main_window.current_profile_name = engagement_name
+
+        # Activate in credential manager
+        try:
+            from app.core.credential_manager import credential_manager
+            credential_manager.set_profile(engagement_id)
+        except Exception:
+            pass
+
+        # Activate in tenant system
+        try:
+            from app.core.tenant_aware_updater import tenant_aware_updater
+            tenant_aware_updater.set_tenant(engagement_id)
+        except Exception:
+            pass
+
+    def _use_selected_engagement(self, dialog, list_widget, engagements):
+        """Handle selection of an existing engagement from the inline list."""
+        row = list_widget.currentRow()
+        if row < 0:
+            QMessageBox.warning(dialog, "No Selection",
+                                "Please select an engagement from the list first.")
+            return
+
+        selected_eng = engagements[row]
+        engagement_id = selected_eng["id"]
+        engagement_name = selected_eng.get("name", "Unnamed")
+
+        try:
+            self._activate_engagement(engagement_id, engagement_name)
+        except Exception as e:
+            QMessageBox.warning(dialog, "Activation Failed",
+                                f"Could not activate engagement:\n{e}")
+            return
+
+        self.status_updated.emit(
+            f"✅ Existing engagement activated: {engagement_name} (ID: {engagement_id[:8]}...)"
+        )
+        QMessageBox.information(
+            dialog, "Engagement Activated",
+            f"Engagement '{engagement_name}' is now the active target.\n\n"
+            f"You can proceed to the next step."
+        )
+        dialog.accept()
+
+    def select_existing_engagement(self, dialog):
+        """Show a picker for existing engagements and activate the selected one."""
+        from PyQt6.QtWidgets import QDialog, QVBoxLayout, QListWidget, QDialogButtonBox, QLabel
+
+        try:
+            eng_manager = self._get_engagement_manager()
+        except Exception as e:
+            QMessageBox.warning(dialog, "Error", f"Could not load engagement manager:\n{e}")
+            return
+
+        try:
+            engagements = eng_manager.list_engagements()
+        except Exception as e:
+            QMessageBox.warning(dialog, "Error", f"Could not list engagements:\n{e}")
+            return
+
+        if not engagements:
+            QMessageBox.information(dialog, "No Engagements",
+                                   "No existing engagements found. Define a new target instead.")
+            return
+
+        picker = QDialog(dialog)
+        picker.setWindowTitle("📂 Select Existing Target")
+        picker.setModal(True)
+        picker.resize(420, 320)
+        picker.setStyleSheet("""
+            QDialog { background-color: #1A1F2E; }
+            QLabel { color: #DCDCDC; font-size: 10pt; }
+            QListWidget {
+                background-color: rgba(40, 50, 70, 200); color: white;
+                border: 1px solid rgba(100, 200, 255, 60); border-radius: 6px;
+                padding: 6px; font-size: 10pt;
+            }
+            QListWidget::item:selected {
+                background-color: rgba(100, 200, 255, 80);
+            }
+        """)
+
+        playout = QVBoxLayout(picker)
+        playout.setContentsMargins(20, 20, 20, 20)
+        playout.setSpacing(12)
+        playout.addWidget(QLabel("Select an engagement to use as the active target:"))
+
+        list_widget = QListWidget()
+        for eng in engagements:
+            display = f"{eng.get('name', 'Unnamed')}  ({eng.get('engagement_type', '')})"
+            list_widget.addItem(display)
+        playout.addWidget(list_widget)
+
+        btn_box = QDialogButtonBox(
+            QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
+        )
+        btn_box.accepted.connect(picker.accept)
+        btn_box.rejected.connect(picker.reject)
+        playout.addWidget(btn_box)
+
+        if picker.exec() == QDialog.DialogCode.Accepted and list_widget.currentRow() >= 0:
+            selected_eng = engagements[list_widget.currentRow()]
+            engagement_id = selected_eng["id"]
+            engagement_name = selected_eng.get("name", "Unnamed")
+
+            self._activate_engagement(engagement_id, engagement_name)
+            self.status_updated.emit(
+                f"✅ Existing engagement activated: {engagement_name} (ID: {engagement_id[:8]}...)"
+            )
+
+            QMessageBox.information(
+                dialog, "Engagement Activated",
+                f"Engagement '{engagement_name}' is now the active target.\n\n"
+                f"You can proceed to the next step."
+            )
+            dialog.accept()
+
     def show_target_profiles_questions(self):
         """Show target profile questions dialog"""
         dialog = QDialog(self)
         dialog.setWindowTitle("🎯 Target Profile & Scope Setup")
         dialog.setModal(True)
-        dialog.resize(550, 520)
+        dialog.resize(600, 700)
         dialog.setStyleSheet("""
             QDialog {
                 background-color: #1A1F2E;
@@ -1079,6 +1257,60 @@ class GuidedWorkflowPage(QWidget):
         header = QLabel("Define your target and engagement scope")
         header.setStyleSheet("font-size: 11pt; color: #87CEEB; font-style: italic; margin-bottom: 8px;")
         layout.addWidget(header)
+
+        # --- Existing Engagements Section ---
+        try:
+            eng_manager = self._get_engagement_manager()
+            existing_engagements = eng_manager.list_engagements() if eng_manager else []
+        except Exception:
+            existing_engagements = []
+
+        if existing_engagements:
+            existing_label = QLabel(f"Existing Engagements ({len(existing_engagements)} found):")
+            existing_label.setStyleSheet("font-size: 10pt; color: #64C8FF; font-weight: bold;")
+            layout.addWidget(existing_label)
+
+            from PyQt6.QtWidgets import QListWidget
+            existing_list = QListWidget()
+            existing_list.setMaximumHeight(100)
+            existing_list.setStyleSheet("""
+                QListWidget {
+                    background-color: rgba(40, 50, 70, 200); color: white;
+                    border: 1px solid rgba(100, 200, 255, 60); border-radius: 6px;
+                    padding: 4px; font-size: 10pt;
+                }
+                QListWidget::item:selected {
+                    background-color: rgba(100, 200, 255, 80);
+                }
+            """)
+            for eng in existing_engagements:
+                existing_list.addItem(f"{eng.get('name', 'Unnamed')}  ({eng.get('engagement_type', '')})")
+            layout.addWidget(existing_list)
+
+            select_btn = QPushButton("✅  Use Selected Engagement")
+            select_btn.setStyleSheet("""
+                QPushButton { background: rgba(80, 180, 120, 30); color: #7DCEA0;
+                    border: 1px solid rgba(80, 180, 120, 100); border-radius: 6px; padding: 8px 16px; font-weight: bold; }
+                QPushButton:hover { background: rgba(80, 180, 120, 60); color: white; }
+            """)
+            select_btn.clicked.connect(lambda: self._use_selected_engagement(
+                dialog, existing_list, existing_engagements))
+            layout.addWidget(select_btn)
+
+            separator = QFrame()
+            separator.setFrameShape(QFrame.Shape.HLine)
+            separator.setStyleSheet("color: rgba(100, 200, 255, 40);")
+            layout.addWidget(separator)
+
+            new_label = QLabel("— Or define a new target below —")
+            new_label.setStyleSheet("font-size: 9pt; color: #8899AA; font-style: italic;")
+            new_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            layout.addWidget(new_label)
+        else:
+            # No existing engagements — just show a subtle note
+            no_eng_label = QLabel("No existing engagements found. Define a new target below.")
+            no_eng_label.setStyleSheet("font-size: 9pt; color: #8899AA; font-style: italic;")
+            layout.addWidget(no_eng_label)
         
         form_layout = QFormLayout()
         form_layout.setSpacing(12)
@@ -1301,10 +1533,7 @@ class GuidedWorkflowPage(QWidget):
         dialog.exec()
     
     def save_target_info(self, dialog, name, url, in_scope, out_scope, eng_type, dos, social, physical):
-        """Save target profile, create engagement, and persist to disk"""
-        import os
-        import json
-        
+        """Save target profile by creating an engagement in the database."""
         if not name.strip():
             QMessageBox.warning(dialog, "Missing Name", "Please enter a target name.")
             return
@@ -1323,11 +1552,6 @@ class GuidedWorkflowPage(QWidget):
             'physical_allowed': physical
         }
         
-        # Save to profiles/ directory for persistence
-        project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        profiles_dir = os.path.join(project_root, 'profiles')
-        os.makedirs(profiles_dir, exist_ok=True)
-        
         profile_data = {
             'target_name': name,
             'primary_target': url or in_scope,
@@ -1339,51 +1563,18 @@ class GuidedWorkflowPage(QWidget):
             'dos_allowed': dos,
             'social_eng_allowed': social,
             'physical_allowed': physical,
-            'credentials': {},
         }
-        
-        profile_file = os.path.join(profiles_dir, f"{name.strip()}.json")
-        try:
-            with open(profile_file, 'w') as f:
-                json.dump(profile_data, f, indent=2)
-        except Exception as e:
-            self.status_updated.emit(f"⚠️ Could not save profile to disk: {e}")
         
         # Create and activate engagement in the shared engagement manager
         engagement_id = None
-        try:
-            from app.core.feature_gap_integration import FeatureGapIntegration
-            eng_manager = FeatureGapIntegration.engines.engagement_manager
-        except Exception:
-            from app.core.engagement_manager import EngagementManager
-            eng_manager = EngagementManager()
-        
+        eng_manager = self._get_engagement_manager()
+
         try:
             engagement_id = eng_manager.create_from_profile(profile_data)
-            eng_manager.open_engagement(engagement_id)
-            self.workflow_steps[0].results['engagement_id'] = engagement_id
-            
-            # Update main window state so scan tools know the active engagement
-            if self.main_window:
-                self.main_window.current_engagement_id = engagement_id
-                self.main_window.current_profile_name = name.strip()
-            
+            self._activate_engagement(engagement_id, name.strip())
             self.status_updated.emit(f"✅ Engagement created and activated: {name} (ID: {engagement_id[:8]}...)")
         except Exception as e:
             self.status_updated.emit(f"⚠️ Engagement creation failed: {e}")
-        
-        # Activate the profile in credential manager and tenant system
-        try:
-            from app.core.credential_manager import credential_manager
-            credential_manager.set_profile(engagement_id or name.strip())
-        except Exception:
-            pass
-        
-        try:
-            from app.core.tenant_aware_updater import tenant_aware_updater
-            tenant_aware_updater.set_tenant(engagement_id or name.strip())
-        except Exception:
-            pass
         
         # Show success feedback
         if engagement_id:

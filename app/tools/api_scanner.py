@@ -42,8 +42,8 @@ class APIEnumWorker(QRunnable):
         
         # Setup custom DNS resolution using global settings
         from app.core.dns_settings import dns_settings
-        self.dns_server = dns_settings.get_current_dns()
-        if self.dns_server and self.dns_server != "Default DNS":
+        self.dns_server = dns_settings.get_effective_dns_server()
+        if self.dns_server:
             self.setup_custom_dns()
     
     def setup_custom_dns(self):

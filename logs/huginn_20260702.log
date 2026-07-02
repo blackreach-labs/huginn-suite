@@ -1,0 +1,643 @@
+2026-07-02 07:38:53 - huginn - INFO - License saved successfully
+2026-07-02 07:38:53 - huginn - INFO - License loaded and validated successfully
+2026-07-02 07:38:53 - huginn - INFO - Application starting...
+2026-07-02 07:38:53 - huginn - INFO - Huginn version 0.0.0
+2026-07-02 07:38:53 - huginn - INFO - Font loaded successfully
+2026-07-02 07:38:53 - huginn - INFO - Stylesheet loaded successfully
+2026-07-02 07:38:53 - huginn - INFO - Creating main window...
+2026-07-02 07:38:53 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-07-02 07:38:53 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-07-02 07:38:55 - huginn - INFO - Master index schema initialized.
+2026-07-02 07:38:56 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-02 07:38:56 - huginn - INFO - [FeatureGapIntegration] All new modules integrated successfully.
+2026-07-02 07:38:56 - huginn - INFO - Feature gap integration completed successfully
+2026-07-02 07:40:15 - huginn - DEBUG - Memory monitoring stopped
+2026-07-02 07:40:15 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-02 20:06:09 - huginn - INFO - License saved successfully
+2026-07-02 20:06:09 - huginn - INFO - License loaded and validated successfully
+2026-07-02 20:06:09 - huginn - INFO - Application starting...
+2026-07-02 20:06:09 - huginn - INFO - Huginn version 0.0.0
+2026-07-02 20:06:09 - huginn - INFO - Font loaded successfully
+2026-07-02 20:06:09 - huginn - INFO - Stylesheet loaded successfully
+2026-07-02 20:06:09 - huginn - INFO - Creating main window...
+2026-07-02 20:06:09 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-07-02 20:06:09 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-07-02 20:06:11 - huginn - INFO - Master index schema initialized.
+2026-07-02 20:06:11 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-02 20:06:11 - huginn - INFO - [FeatureGapIntegration] All new modules integrated successfully.
+2026-07-02 20:06:11 - huginn - INFO - Feature gap integration completed successfully
+2026-07-02 20:25:01 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (pool_size=5)
+2026-07-02 20:25:01 - huginn - INFO - EngagementDatabase schema created: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db
+2026-07-02 20:25:01 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (5 connections)
+2026-07-02 20:25:01 - huginn - INFO - Engagement created: 3be37757-07dc-499f-b6c5-bf1ed60dc47f (BlackreachLabs)
+2026-07-02 20:25:01 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (pool_size=5)
+2026-07-02 20:25:01 - huginn - INFO - Engagement opened: 3be37757-07dc-499f-b6c5-bf1ed60dc47f
+2026-07-02 20:25:01 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 20:25:01 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 20:26:00 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 713, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-02 20:31:29 - huginn - INFO - Using default configuration
+2026-07-02 20:31:29 - huginn - INFO - DNS scan started - Target: blackreachlabs.com, Wordlist: subdomains-top1000.txt, Types: ['A', 'AAAA', 'CNAME', 'MX', 'TXT', 'NS', 'SRV']
+2026-07-02 20:32:06 - huginn - INFO - DNS scan completed - Target: blackreachlabs.com, Results: 2
+2026-07-02 20:38:20 - huginn - INFO - Using default configuration
+2026-07-02 20:38:22 - huginn - INFO - License saved successfully
+2026-07-02 20:38:22 - huginn - INFO - License loaded and validated successfully
+2026-07-02 20:48:57 - huginn - INFO - Using default configuration
+2026-07-02 20:49:00 - huginn - INFO - License saved successfully
+2026-07-02 20:49:00 - huginn - INFO - License loaded and validated successfully
+2026-07-02 20:49:34 - huginn - INFO - Using default configuration
+2026-07-02 20:49:36 - huginn - INFO - License saved successfully
+2026-07-02 20:49:36 - huginn - INFO - License loaded and validated successfully
+2026-07-02 20:50:01 - huginn - DEBUG - Memory monitoring stopped
+2026-07-02 20:50:01 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-02 20:50:06 - huginn - INFO - License saved successfully
+2026-07-02 20:50:06 - huginn - INFO - License loaded and validated successfully
+2026-07-02 20:50:06 - huginn - INFO - Application starting...
+2026-07-02 20:50:06 - huginn - INFO - Huginn version 0.0.0
+2026-07-02 20:50:06 - huginn - INFO - Font loaded successfully
+2026-07-02 20:50:06 - huginn - INFO - Stylesheet loaded successfully
+2026-07-02 20:50:06 - huginn - INFO - Creating main window...
+2026-07-02 20:50:06 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-07-02 20:50:06 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-07-02 20:50:07 - huginn - INFO - Master index schema initialized.
+2026-07-02 20:50:07 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-02 20:50:07 - huginn - INFO - [FeatureGapIntegration] All new modules integrated successfully.
+2026-07-02 20:50:07 - huginn - INFO - Feature gap integration completed successfully
+2026-07-02 20:50:16 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (pool_size=5)
+2026-07-02 20:50:16 - huginn - INFO - Engagement opened: 3be37757-07dc-499f-b6c5-bf1ed60dc47f
+2026-07-02 20:50:16 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 20:50:16 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 20:51:48 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (5 connections)
+2026-07-02 20:51:48 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (pool_size=5)
+2026-07-02 20:51:48 - huginn - INFO - Engagement opened: 3be37757-07dc-499f-b6c5-bf1ed60dc47f
+2026-07-02 20:51:48 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 20:51:48 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 20:53:52 - huginn - DEBUG - Memory monitoring stopped
+2026-07-02 20:53:52 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-02 20:54:49 - huginn - INFO - Using default configuration
+2026-07-02 20:54:51 - huginn - INFO - License saved successfully
+2026-07-02 20:54:51 - huginn - INFO - License loaded and validated successfully
+2026-07-02 20:55:00 - huginn - INFO - Using default configuration
+2026-07-02 20:55:02 - huginn - INFO - License saved successfully
+2026-07-02 20:55:02 - huginn - INFO - License loaded and validated successfully
+2026-07-02 20:55:20 - huginn - INFO - Using default configuration
+2026-07-02 20:55:22 - huginn - INFO - License saved successfully
+2026-07-02 20:55:22 - huginn - INFO - License loaded and validated successfully
+2026-07-02 20:58:46 - huginn - INFO - Using default configuration
+2026-07-02 20:58:48 - huginn - INFO - License saved successfully
+2026-07-02 20:58:48 - huginn - INFO - License loaded and validated successfully
+2026-07-02 20:58:58 - huginn - INFO - Using default configuration
+2026-07-02 20:59:00 - huginn - INFO - License saved successfully
+2026-07-02 20:59:00 - huginn - INFO - License loaded and validated successfully
+2026-07-02 21:00:04 - huginn - INFO - License saved successfully
+2026-07-02 21:00:04 - huginn - INFO - License loaded and validated successfully
+2026-07-02 21:00:04 - huginn - INFO - Application starting...
+2026-07-02 21:00:04 - huginn - INFO - Huginn version 0.0.0
+2026-07-02 21:00:04 - huginn - INFO - Font loaded successfully
+2026-07-02 21:00:04 - huginn - INFO - Stylesheet loaded successfully
+2026-07-02 21:00:04 - huginn - INFO - Creating main window...
+2026-07-02 21:00:04 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-07-02 21:00:04 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-07-02 21:00:06 - huginn - INFO - Master index schema initialized.
+2026-07-02 21:00:06 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-02 21:00:06 - huginn - INFO - [FeatureGapIntegration] All new modules integrated successfully.
+2026-07-02 21:00:06 - huginn - INFO - Feature gap integration completed successfully
+2026-07-02 21:00:20 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (pool_size=5)
+2026-07-02 21:00:20 - huginn - INFO - Engagement opened: 3be37757-07dc-499f-b6c5-bf1ed60dc47f
+2026-07-02 21:00:20 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 21:00:20 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 21:00:44 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (5 connections)
+2026-07-02 21:00:44 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (pool_size=5)
+2026-07-02 21:00:44 - huginn - INFO - Engagement opened: 3be37757-07dc-499f-b6c5-bf1ed60dc47f
+2026-07-02 21:00:44 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 21:00:44 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 21:00:52 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (5 connections)
+2026-07-02 21:00:52 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\d6dc5850-2ceb-456a-b7fa-ec5039429ea6\engagement.db (pool_size=5)
+2026-07-02 21:00:52 - huginn - INFO - Engagement opened: d6dc5850-2ceb-456a-b7fa-ec5039429ea6
+2026-07-02 21:00:52 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 21:00:52 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 21:00:52 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-02 21:00:52 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-02 21:02:07 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\48b57901-54d5-47d5-8204-90ce61fe5f8f\engagement.db (pool_size=5)
+2026-07-02 21:02:07 - huginn - INFO - EngagementDatabase schema created: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\48b57901-54d5-47d5-8204-90ce61fe5f8f\engagement.db
+2026-07-02 21:02:07 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\48b57901-54d5-47d5-8204-90ce61fe5f8f\engagement.db (5 connections)
+2026-07-02 21:02:07 - huginn - INFO - Engagement created: 48b57901-54d5-47d5-8204-90ce61fe5f8f (LABtest)
+2026-07-02 21:02:07 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\d6dc5850-2ceb-456a-b7fa-ec5039429ea6\engagement.db (5 connections)
+2026-07-02 21:02:07 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\48b57901-54d5-47d5-8204-90ce61fe5f8f\engagement.db (pool_size=5)
+2026-07-02 21:02:07 - huginn - INFO - Engagement opened: 48b57901-54d5-47d5-8204-90ce61fe5f8f
+2026-07-02 21:02:07 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 21:02:07 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 21:02:09 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\48b57901-54d5-47d5-8204-90ce61fe5f8f\engagement.db (5 connections)
+2026-07-02 21:02:09 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\d6dc5850-2ceb-456a-b7fa-ec5039429ea6\engagement.db (pool_size=5)
+2026-07-02 21:02:09 - huginn - INFO - Engagement opened: d6dc5850-2ceb-456a-b7fa-ec5039429ea6
+2026-07-02 21:02:09 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 21:02:09 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 21:02:09 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-02 21:02:09 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-02 21:02:11 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\d6dc5850-2ceb-456a-b7fa-ec5039429ea6\engagement.db (5 connections)
+2026-07-02 21:02:11 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\d6dc5850-2ceb-456a-b7fa-ec5039429ea6\engagement.db (pool_size=5)
+2026-07-02 21:02:11 - huginn - INFO - Engagement opened: d6dc5850-2ceb-456a-b7fa-ec5039429ea6
+2026-07-02 21:02:11 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 21:02:11 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 21:02:11 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-02 21:02:11 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-02 21:02:12 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\d6dc5850-2ceb-456a-b7fa-ec5039429ea6\engagement.db (5 connections)
+2026-07-02 21:02:12 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (pool_size=5)
+2026-07-02 21:02:12 - huginn - INFO - Engagement opened: 3be37757-07dc-499f-b6c5-bf1ed60dc47f
+2026-07-02 21:02:12 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 21:02:12 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 21:04:05 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (5 connections)
+2026-07-02 21:04:05 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (pool_size=5)
+2026-07-02 21:04:05 - huginn - INFO - Engagement opened: 3be37757-07dc-499f-b6c5-bf1ed60dc47f
+2026-07-02 21:04:05 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 21:04:05 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 21:06:52 - huginn - INFO - Using default configuration
+2026-07-02 21:06:54 - huginn - INFO - License saved successfully
+2026-07-02 21:06:54 - huginn - INFO - License loaded and validated successfully
+2026-07-02 21:07:15 - huginn - INFO - Using default configuration
+2026-07-02 21:07:17 - huginn - INFO - License saved successfully
+2026-07-02 21:07:17 - huginn - INFO - License loaded and validated successfully
+2026-07-02 21:07:28 - huginn - INFO - Using default configuration
+2026-07-02 21:07:30 - huginn - INFO - License saved successfully
+2026-07-02 21:07:30 - huginn - INFO - License loaded and validated successfully
+2026-07-02 21:07:41 - huginn - INFO - Using default configuration
+2026-07-02 21:07:43 - huginn - INFO - License saved successfully
+2026-07-02 21:07:43 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:07:17 - huginn - DEBUG - Memory monitoring stopped
+2026-07-02 22:07:17 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-02 22:07:21 - huginn - INFO - License saved successfully
+2026-07-02 22:07:21 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:07:21 - huginn - INFO - Application starting...
+2026-07-02 22:07:21 - huginn - INFO - Huginn version 0.0.0
+2026-07-02 22:07:21 - huginn - INFO - Font loaded successfully
+2026-07-02 22:07:21 - huginn - INFO - Stylesheet loaded successfully
+2026-07-02 22:07:21 - huginn - INFO - Creating main window...
+2026-07-02 22:07:21 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-07-02 22:07:21 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-07-02 22:07:23 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:07:24 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-02 22:07:24 - huginn - INFO - [FeatureGapIntegration] All new modules integrated successfully.
+2026-07-02 22:07:24 - huginn - INFO - Feature gap integration completed successfully
+2026-07-02 22:08:03 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\d6dc5850-2ceb-456a-b7fa-ec5039429ea6\engagement.db (pool_size=5)
+2026-07-02 22:08:03 - huginn - INFO - Engagement opened: d6dc5850-2ceb-456a-b7fa-ec5039429ea6
+2026-07-02 22:08:03 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:08:03 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:08:03 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-02 22:08:03 - huginn - DEBUG - Credentials loaded for engagement 'd6dc5850-2ceb-456a-b7fa-ec5039429ea6'
+2026-07-02 22:08:09 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\d6dc5850-2ceb-456a-b7fa-ec5039429ea6\engagement.db (5 connections)
+2026-07-02 22:08:09 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (pool_size=5)
+2026-07-02 22:08:09 - huginn - INFO - Engagement opened: 3be37757-07dc-499f-b6c5-bf1ed60dc47f
+2026-07-02 22:08:09 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:08:09 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:08:09 - huginn - INFO - Engagement deleted: d6dc5850-2ceb-456a-b7fa-ec5039429ea6
+2026-07-02 22:08:23 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8bcc135b-22fa-42eb-9357-d3c856bb93b4\engagement.db (pool_size=5)
+2026-07-02 22:08:23 - huginn - INFO - EngagementDatabase schema created: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8bcc135b-22fa-42eb-9357-d3c856bb93b4\engagement.db
+2026-07-02 22:08:23 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8bcc135b-22fa-42eb-9357-d3c856bb93b4\engagement.db (5 connections)
+2026-07-02 22:08:23 - huginn - INFO - Engagement created: 8bcc135b-22fa-42eb-9357-d3c856bb93b4 (Info)
+2026-07-02 22:08:23 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (5 connections)
+2026-07-02 22:08:23 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8bcc135b-22fa-42eb-9357-d3c856bb93b4\engagement.db (pool_size=5)
+2026-07-02 22:08:23 - huginn - INFO - Engagement opened: 8bcc135b-22fa-42eb-9357-d3c856bb93b4
+2026-07-02 22:08:23 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:08:23 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:08:23 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8bcc135b-22fa-42eb-9357-d3c856bb93b4\engagement.db (5 connections)
+2026-07-02 22:08:23 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8bcc135b-22fa-42eb-9357-d3c856bb93b4\engagement.db (pool_size=5)
+2026-07-02 22:08:23 - huginn - INFO - Engagement opened: 8bcc135b-22fa-42eb-9357-d3c856bb93b4
+2026-07-02 22:08:23 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:08:23 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:08:31 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8bcc135b-22fa-42eb-9357-d3c856bb93b4\engagement.db (5 connections)
+2026-07-02 22:08:31 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8bcc135b-22fa-42eb-9357-d3c856bb93b4\engagement.db (pool_size=5)
+2026-07-02 22:08:31 - huginn - INFO - Engagement opened: 8bcc135b-22fa-42eb-9357-d3c856bb93b4
+2026-07-02 22:08:31 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:08:31 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:08:31 - huginn - DEBUG - Credentials saved (encrypted) for profile '8bcc135b-22fa-42eb-9357-d3c856bb93b4'
+2026-07-02 22:08:45 - huginn - DEBUG - Memory monitoring stopped
+2026-07-02 22:08:45 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-02 22:08:47 - huginn - INFO - License saved successfully
+2026-07-02 22:08:47 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:08:47 - huginn - INFO - Application starting...
+2026-07-02 22:08:47 - huginn - INFO - Huginn version 0.0.0
+2026-07-02 22:08:47 - huginn - INFO - Font loaded successfully
+2026-07-02 22:08:47 - huginn - INFO - Stylesheet loaded successfully
+2026-07-02 22:08:47 - huginn - INFO - Creating main window...
+2026-07-02 22:08:47 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-07-02 22:08:47 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-07-02 22:08:48 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:08:48 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-02 22:08:48 - huginn - INFO - [FeatureGapIntegration] All new modules integrated successfully.
+2026-07-02 22:08:48 - huginn - INFO - Feature gap integration completed successfully
+2026-07-02 22:09:00 - huginn - DEBUG - Memory monitoring stopped
+2026-07-02 22:09:00 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-02 22:10:52 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:11:03 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:11:25 - huginn - INFO - Using default configuration
+2026-07-02 22:11:27 - huginn - INFO - License saved successfully
+2026-07-02 22:11:27 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:12:12 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:13:36 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:14:00 - huginn - INFO - Using default configuration
+2026-07-02 22:14:03 - huginn - INFO - License saved successfully
+2026-07-02 22:14:03 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:14:08 - huginn - INFO - Using default configuration
+2026-07-02 22:14:10 - huginn - INFO - License saved successfully
+2026-07-02 22:14:10 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:14:30 - huginn - INFO - Using default configuration
+2026-07-02 22:14:33 - huginn - INFO - License saved successfully
+2026-07-02 22:14:33 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:14:52 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:15:46 - huginn - INFO - License saved successfully
+2026-07-02 22:15:46 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:15:46 - huginn - INFO - Application starting...
+2026-07-02 22:15:46 - huginn - INFO - Huginn version 0.0.0
+2026-07-02 22:15:46 - huginn - INFO - Font loaded successfully
+2026-07-02 22:15:46 - huginn - INFO - Stylesheet loaded successfully
+2026-07-02 22:15:46 - huginn - INFO - Creating main window...
+2026-07-02 22:15:46 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-07-02 22:15:46 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-07-02 22:15:47 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:15:48 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-02 22:15:48 - huginn - INFO - [FeatureGapIntegration] All new modules integrated successfully.
+2026-07-02 22:15:48 - huginn - INFO - Feature gap integration completed successfully
+2026-07-02 22:16:02 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8bcc135b-22fa-42eb-9357-d3c856bb93b4\engagement.db (pool_size=5)
+2026-07-02 22:16:02 - huginn - INFO - Engagement opened: 8bcc135b-22fa-42eb-9357-d3c856bb93b4
+2026-07-02 22:16:02 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:16:02 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:16:02 - huginn - DEBUG - Credentials loaded for engagement '8bcc135b-22fa-42eb-9357-d3c856bb93b4'
+2026-07-02 22:16:02 - huginn - DEBUG - Credentials loaded for engagement '8bcc135b-22fa-42eb-9357-d3c856bb93b4'
+2026-07-02 22:16:05 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8bcc135b-22fa-42eb-9357-d3c856bb93b4\engagement.db (5 connections)
+2026-07-02 22:16:05 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\48b57901-54d5-47d5-8204-90ce61fe5f8f\engagement.db (pool_size=5)
+2026-07-02 22:16:05 - huginn - INFO - Engagement opened: 48b57901-54d5-47d5-8204-90ce61fe5f8f
+2026-07-02 22:16:05 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:16:05 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:16:05 - huginn - INFO - Engagement deleted: 8bcc135b-22fa-42eb-9357-d3c856bb93b4
+2026-07-02 22:16:14 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8e243f9c-f187-4d93-91b7-45c8177bddea\engagement.db (pool_size=5)
+2026-07-02 22:16:14 - huginn - INFO - EngagementDatabase schema created: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8e243f9c-f187-4d93-91b7-45c8177bddea\engagement.db
+2026-07-02 22:16:14 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8e243f9c-f187-4d93-91b7-45c8177bddea\engagement.db (5 connections)
+2026-07-02 22:16:14 - huginn - INFO - Engagement created: 8e243f9c-f187-4d93-91b7-45c8177bddea (testert)
+2026-07-02 22:16:14 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\48b57901-54d5-47d5-8204-90ce61fe5f8f\engagement.db (5 connections)
+2026-07-02 22:16:14 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8e243f9c-f187-4d93-91b7-45c8177bddea\engagement.db (pool_size=5)
+2026-07-02 22:16:14 - huginn - INFO - Engagement opened: 8e243f9c-f187-4d93-91b7-45c8177bddea
+2026-07-02 22:16:14 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:16:14 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:16:14 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8e243f9c-f187-4d93-91b7-45c8177bddea\engagement.db (5 connections)
+2026-07-02 22:16:14 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8e243f9c-f187-4d93-91b7-45c8177bddea\engagement.db (pool_size=5)
+2026-07-02 22:16:14 - huginn - INFO - Engagement opened: 8e243f9c-f187-4d93-91b7-45c8177bddea
+2026-07-02 22:16:14 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:16:14 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:16:26 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\scope_manager.py", line 50, in _parse_scope_text
+    network = ipaddress.IPv4Network(item, strict=False)
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1550, in __init__
+    self.netmask, self._prefixlen = self._make_netmask(mask)
+                                    ~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 1182, in _make_netmask
+    prefixlen = cls._prefix_from_ip_string(arg)
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 516, in _prefix_from_ip_string
+    cls._report_invalid_netmask(ip_str)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 472, in _report_invalid_netmask
+    raise NetmaskValueError(msg) from None
+ipaddress.NetmaskValueError: '' is not a valid netmask
+2026-07-02 22:16:30 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8e243f9c-f187-4d93-91b7-45c8177bddea\engagement.db (5 connections)
+2026-07-02 22:16:30 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8e243f9c-f187-4d93-91b7-45c8177bddea\engagement.db (pool_size=5)
+2026-07-02 22:16:30 - huginn - INFO - Engagement opened: 8e243f9c-f187-4d93-91b7-45c8177bddea
+2026-07-02 22:16:30 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:16:30 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:16:30 - huginn - DEBUG - Credentials saved (encrypted) for profile '8e243f9c-f187-4d93-91b7-45c8177bddea'
+2026-07-02 22:16:55 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8e243f9c-f187-4d93-91b7-45c8177bddea\engagement.db (5 connections)
+2026-07-02 22:16:55 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\48b57901-54d5-47d5-8204-90ce61fe5f8f\engagement.db (pool_size=5)
+2026-07-02 22:16:55 - huginn - INFO - Engagement opened: 48b57901-54d5-47d5-8204-90ce61fe5f8f
+2026-07-02 22:16:55 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:16:55 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:16:55 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\48b57901-54d5-47d5-8204-90ce61fe5f8f\engagement.db (5 connections)
+2026-07-02 22:16:55 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8e243f9c-f187-4d93-91b7-45c8177bddea\engagement.db (pool_size=5)
+2026-07-02 22:16:55 - huginn - INFO - Engagement opened: 8e243f9c-f187-4d93-91b7-45c8177bddea
+2026-07-02 22:16:55 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:16:55 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:16:55 - huginn - DEBUG - Credentials loaded for engagement '8e243f9c-f187-4d93-91b7-45c8177bddea'
+2026-07-02 22:16:55 - huginn - DEBUG - Credentials loaded for engagement '8e243f9c-f187-4d93-91b7-45c8177bddea'
+2026-07-02 22:16:56 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8e243f9c-f187-4d93-91b7-45c8177bddea\engagement.db (5 connections)
+2026-07-02 22:16:56 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8e243f9c-f187-4d93-91b7-45c8177bddea\engagement.db (pool_size=5)
+2026-07-02 22:16:56 - huginn - INFO - Engagement opened: 8e243f9c-f187-4d93-91b7-45c8177bddea
+2026-07-02 22:16:56 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:16:56 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:16:56 - huginn - DEBUG - Credentials loaded for engagement '8e243f9c-f187-4d93-91b7-45c8177bddea'
+2026-07-02 22:16:56 - huginn - DEBUG - Credentials saved (encrypted) for profile '8e243f9c-f187-4d93-91b7-45c8177bddea'
+2026-07-02 22:19:00 - huginn - DEBUG - Memory monitoring stopped
+2026-07-02 22:19:00 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-02 22:19:29 - huginn - INFO - Using default configuration
+2026-07-02 22:19:32 - huginn - INFO - License saved successfully
+2026-07-02 22:19:32 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:22:07 - huginn - INFO - Using default configuration
+2026-07-02 22:22:10 - huginn - INFO - License saved successfully
+2026-07-02 22:22:10 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:22:18 - huginn - INFO - Using default configuration
+2026-07-02 22:22:20 - huginn - INFO - License saved successfully
+2026-07-02 22:22:20 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:22:25 - huginn - INFO - Using default configuration
+2026-07-02 22:22:27 - huginn - INFO - License saved successfully
+2026-07-02 22:22:27 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:22:56 - huginn - INFO - Using default configuration
+2026-07-02 22:22:58 - huginn - INFO - License saved successfully
+2026-07-02 22:22:58 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:23:24 - huginn - INFO - Using default configuration
+2026-07-02 22:23:27 - huginn - INFO - License saved successfully
+2026-07-02 22:23:27 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:24:25 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:24:38 - huginn - INFO - Using default configuration
+2026-07-02 22:24:40 - huginn - INFO - License saved successfully
+2026-07-02 22:24:40 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:26:39 - huginn - INFO - Using default configuration
+2026-07-02 22:26:42 - huginn - INFO - License saved successfully
+2026-07-02 22:26:42 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:26:52 - huginn - INFO - Using default configuration
+2026-07-02 22:26:54 - huginn - INFO - License saved successfully
+2026-07-02 22:26:54 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:27:29 - huginn - INFO - Using default configuration
+2026-07-02 22:27:31 - huginn - INFO - License saved successfully
+2026-07-02 22:27:31 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:28:05 - huginn - INFO - Using default configuration
+2026-07-02 22:28:07 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:28:07 - huginn - INFO - License saved successfully
+2026-07-02 22:28:07 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:28:34 - huginn - INFO - Using default configuration
+2026-07-02 22:28:36 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:28:36 - huginn - INFO - License saved successfully
+2026-07-02 22:28:36 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:30:13 - huginn - INFO - License saved successfully
+2026-07-02 22:30:13 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:30:13 - huginn - INFO - Application starting...
+2026-07-02 22:30:13 - huginn - INFO - Huginn version 0.0.0
+2026-07-02 22:30:13 - huginn - INFO - Font loaded successfully
+2026-07-02 22:30:13 - huginn - INFO - Stylesheet loaded successfully
+2026-07-02 22:30:13 - huginn - INFO - Creating main window...
+2026-07-02 22:30:13 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-07-02 22:30:13 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-07-02 22:30:15 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:30:15 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-02 22:30:15 - huginn - INFO - [FeatureGapIntegration] All new modules integrated successfully.
+2026-07-02 22:30:15 - huginn - INFO - Feature gap integration completed successfully
+2026-07-02 22:30:24 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8e243f9c-f187-4d93-91b7-45c8177bddea\engagement.db (pool_size=5)
+2026-07-02 22:30:24 - huginn - INFO - Engagement opened: 8e243f9c-f187-4d93-91b7-45c8177bddea
+2026-07-02 22:30:24 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:30:24 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:30:24 - huginn - DEBUG - Credentials loaded for engagement '8e243f9c-f187-4d93-91b7-45c8177bddea'
+2026-07-02 22:30:24 - huginn - DEBUG - Credentials loaded for engagement '8e243f9c-f187-4d93-91b7-45c8177bddea'
+2026-07-02 22:30:25 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8e243f9c-f187-4d93-91b7-45c8177bddea\engagement.db (5 connections)
+2026-07-02 22:30:25 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\48b57901-54d5-47d5-8204-90ce61fe5f8f\engagement.db (pool_size=5)
+2026-07-02 22:30:25 - huginn - INFO - Engagement opened: 48b57901-54d5-47d5-8204-90ce61fe5f8f
+2026-07-02 22:30:25 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:30:25 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:30:26 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\48b57901-54d5-47d5-8204-90ce61fe5f8f\engagement.db (5 connections)
+2026-07-02 22:30:26 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (pool_size=5)
+2026-07-02 22:30:26 - huginn - INFO - Engagement opened: 3be37757-07dc-499f-b6c5-bf1ed60dc47f
+2026-07-02 22:30:26 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:30:26 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:30:43 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (5 connections)
+2026-07-02 22:30:43 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (pool_size=5)
+2026-07-02 22:30:43 - huginn - INFO - Engagement opened: 3be37757-07dc-499f-b6c5-bf1ed60dc47f
+2026-07-02 22:30:43 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:30:43 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:30:56 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (5 connections)
+2026-07-02 22:30:56 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\48b57901-54d5-47d5-8204-90ce61fe5f8f\engagement.db (pool_size=5)
+2026-07-02 22:30:56 - huginn - INFO - Engagement opened: 48b57901-54d5-47d5-8204-90ce61fe5f8f
+2026-07-02 22:30:56 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:30:56 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:31:17 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\48b57901-54d5-47d5-8204-90ce61fe5f8f\engagement.db (5 connections)
+2026-07-02 22:31:17 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (pool_size=5)
+2026-07-02 22:31:17 - huginn - INFO - Engagement opened: 3be37757-07dc-499f-b6c5-bf1ed60dc47f
+2026-07-02 22:31:17 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:31:17 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:31:34 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (5 connections)
+2026-07-02 22:31:34 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\48b57901-54d5-47d5-8204-90ce61fe5f8f\engagement.db (pool_size=5)
+2026-07-02 22:31:34 - huginn - INFO - Engagement opened: 48b57901-54d5-47d5-8204-90ce61fe5f8f
+2026-07-02 22:31:34 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:31:34 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:31:35 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\48b57901-54d5-47d5-8204-90ce61fe5f8f\engagement.db (5 connections)
+2026-07-02 22:31:35 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (pool_size=5)
+2026-07-02 22:31:35 - huginn - INFO - Engagement opened: 3be37757-07dc-499f-b6c5-bf1ed60dc47f
+2026-07-02 22:31:35 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:31:35 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:31:35 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (5 connections)
+2026-07-02 22:31:35 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8e243f9c-f187-4d93-91b7-45c8177bddea\engagement.db (pool_size=5)
+2026-07-02 22:31:35 - huginn - INFO - Engagement opened: 8e243f9c-f187-4d93-91b7-45c8177bddea
+2026-07-02 22:31:35 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:31:35 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:31:35 - huginn - DEBUG - Credentials loaded for engagement '8e243f9c-f187-4d93-91b7-45c8177bddea'
+2026-07-02 22:31:35 - huginn - DEBUG - Credentials loaded for engagement '8e243f9c-f187-4d93-91b7-45c8177bddea'
+2026-07-02 22:31:44 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8e243f9c-f187-4d93-91b7-45c8177bddea\engagement.db (5 connections)
+2026-07-02 22:31:44 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8e243f9c-f187-4d93-91b7-45c8177bddea\engagement.db (pool_size=5)
+2026-07-02 22:31:44 - huginn - INFO - Engagement opened: 8e243f9c-f187-4d93-91b7-45c8177bddea
+2026-07-02 22:31:44 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:31:44 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:31:44 - huginn - DEBUG - Credentials loaded for engagement '8e243f9c-f187-4d93-91b7-45c8177bddea'
+2026-07-02 22:31:44 - huginn - DEBUG - Credentials loaded for engagement '8e243f9c-f187-4d93-91b7-45c8177bddea'
+2026-07-02 22:31:46 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8e243f9c-f187-4d93-91b7-45c8177bddea\engagement.db (5 connections)
+2026-07-02 22:31:46 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8e243f9c-f187-4d93-91b7-45c8177bddea\engagement.db (pool_size=5)
+2026-07-02 22:31:46 - huginn - INFO - Engagement opened: 8e243f9c-f187-4d93-91b7-45c8177bddea
+2026-07-02 22:31:46 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:31:46 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:31:46 - huginn - DEBUG - Credentials loaded for engagement '8e243f9c-f187-4d93-91b7-45c8177bddea'
+2026-07-02 22:31:46 - huginn - DEBUG - Credentials loaded for engagement '8e243f9c-f187-4d93-91b7-45c8177bddea'
+2026-07-02 22:31:54 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8e243f9c-f187-4d93-91b7-45c8177bddea\engagement.db (5 connections)
+2026-07-02 22:31:54 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8e243f9c-f187-4d93-91b7-45c8177bddea\engagement.db (pool_size=5)
+2026-07-02 22:31:54 - huginn - INFO - Engagement opened: 8e243f9c-f187-4d93-91b7-45c8177bddea
+2026-07-02 22:31:54 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:31:54 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:31:54 - huginn - DEBUG - Credentials loaded for engagement '8e243f9c-f187-4d93-91b7-45c8177bddea'
+2026-07-02 22:31:54 - huginn - DEBUG - Credentials loaded for engagement '8e243f9c-f187-4d93-91b7-45c8177bddea'
+2026-07-02 22:31:56 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\8e243f9c-f187-4d93-91b7-45c8177bddea\engagement.db (5 connections)
+2026-07-02 22:31:56 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\48b57901-54d5-47d5-8204-90ce61fe5f8f\engagement.db (pool_size=5)
+2026-07-02 22:31:56 - huginn - INFO - Engagement opened: 48b57901-54d5-47d5-8204-90ce61fe5f8f
+2026-07-02 22:31:56 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:31:56 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:31:57 - huginn - INFO - Engagement deleted: 8e243f9c-f187-4d93-91b7-45c8177bddea
+2026-07-02 22:31:58 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\48b57901-54d5-47d5-8204-90ce61fe5f8f\engagement.db (5 connections)
+2026-07-02 22:31:58 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\48b57901-54d5-47d5-8204-90ce61fe5f8f\engagement.db (pool_size=5)
+2026-07-02 22:31:58 - huginn - INFO - Engagement opened: 48b57901-54d5-47d5-8204-90ce61fe5f8f
+2026-07-02 22:31:58 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:31:58 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:32:00 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\48b57901-54d5-47d5-8204-90ce61fe5f8f\engagement.db (5 connections)
+2026-07-02 22:32:00 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (pool_size=5)
+2026-07-02 22:32:00 - huginn - INFO - Engagement opened: 3be37757-07dc-499f-b6c5-bf1ed60dc47f
+2026-07-02 22:32:00 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:32:00 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:32:00 - huginn - INFO - Engagement deleted: 48b57901-54d5-47d5-8204-90ce61fe5f8f
+2026-07-02 22:33:20 - huginn - DEBUG - Memory monitoring stopped
+2026-07-02 22:33:20 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-02 22:33:23 - huginn - INFO - License saved successfully
+2026-07-02 22:33:23 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:33:23 - huginn - INFO - Application starting...
+2026-07-02 22:33:23 - huginn - INFO - Huginn version 0.0.0
+2026-07-02 22:33:23 - huginn - INFO - Font loaded successfully
+2026-07-02 22:33:23 - huginn - INFO - Stylesheet loaded successfully
+2026-07-02 22:33:23 - huginn - INFO - Creating main window...
+2026-07-02 22:33:23 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-07-02 22:33:23 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-07-02 22:33:24 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:33:25 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-02 22:33:25 - huginn - INFO - [FeatureGapIntegration] All new modules integrated successfully.
+2026-07-02 22:33:25 - huginn - INFO - Feature gap integration completed successfully
+2026-07-02 22:33:35 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (pool_size=5)
+2026-07-02 22:33:35 - huginn - INFO - Engagement opened: 3be37757-07dc-499f-b6c5-bf1ed60dc47f
+2026-07-02 22:33:35 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:33:35 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:33:57 - huginn - DEBUG - Memory monitoring stopped
+2026-07-02 22:33:57 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-02 22:34:01 - huginn - INFO - License saved successfully
+2026-07-02 22:34:01 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:34:01 - huginn - INFO - Application starting...
+2026-07-02 22:34:01 - huginn - INFO - Huginn version 0.0.0
+2026-07-02 22:34:01 - huginn - INFO - Font loaded successfully
+2026-07-02 22:34:01 - huginn - INFO - Stylesheet loaded successfully
+2026-07-02 22:34:01 - huginn - INFO - Creating main window...
+2026-07-02 22:34:01 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-07-02 22:34:01 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-07-02 22:34:02 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:34:02 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-02 22:34:02 - huginn - INFO - [FeatureGapIntegration] All new modules integrated successfully.
+2026-07-02 22:34:02 - huginn - INFO - Feature gap integration completed successfully
+2026-07-02 22:35:01 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (pool_size=5)
+2026-07-02 22:35:01 - huginn - INFO - Engagement opened: 3be37757-07dc-499f-b6c5-bf1ed60dc47f
+2026-07-02 22:35:01 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:35:01 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:35:04 - huginn - INFO - EngagementDatabase closed: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (5 connections)
+2026-07-02 22:35:04 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (pool_size=5)
+2026-07-02 22:35:04 - huginn - INFO - Engagement opened: 3be37757-07dc-499f-b6c5-bf1ed60dc47f
+2026-07-02 22:35:04 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 22:35:04 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 22:35:10 - huginn - DEBUG - Memory monitoring stopped
+2026-07-02 22:35:10 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-02 22:35:11 - huginn - INFO - License saved successfully
+2026-07-02 22:35:11 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:35:12 - huginn - INFO - Application starting...
+2026-07-02 22:35:12 - huginn - INFO - Huginn version 0.0.0
+2026-07-02 22:35:12 - huginn - INFO - Font loaded successfully
+2026-07-02 22:35:12 - huginn - INFO - Stylesheet loaded successfully
+2026-07-02 22:35:12 - huginn - INFO - Creating main window...
+2026-07-02 22:35:12 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-07-02 22:35:12 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-07-02 22:35:13 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:35:13 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-02 22:35:13 - huginn - INFO - [FeatureGapIntegration] All new modules integrated successfully.
+2026-07-02 22:35:13 - huginn - INFO - Feature gap integration completed successfully
+2026-07-02 22:43:40 - huginn - DEBUG - Memory monitoring stopped
+2026-07-02 22:43:40 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-02 22:44:41 - huginn - INFO - Using default configuration
+2026-07-02 22:44:43 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:44:43 - huginn - INFO - License saved successfully
+2026-07-02 22:44:43 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:44:52 - huginn - INFO - Using default configuration
+2026-07-02 22:44:54 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:44:55 - huginn - INFO - License saved successfully
+2026-07-02 22:44:55 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:45:03 - huginn - INFO - Using default configuration
+2026-07-02 22:45:05 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:45:05 - huginn - INFO - License saved successfully
+2026-07-02 22:45:05 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:45:32 - huginn - INFO - Using default configuration
+2026-07-02 22:45:34 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:45:35 - huginn - INFO - License saved successfully
+2026-07-02 22:45:35 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:45:54 - huginn - INFO - Using default configuration
+2026-07-02 22:45:56 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:45:56 - huginn - INFO - License saved successfully
+2026-07-02 22:45:56 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:46:10 - huginn - INFO - Using default configuration
+2026-07-02 22:46:13 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:46:13 - huginn - INFO - License saved successfully
+2026-07-02 22:46:13 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:46:19 - huginn - INFO - Using default configuration
+2026-07-02 22:46:23 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:46:23 - huginn - INFO - License saved successfully
+2026-07-02 22:46:23 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:46:30 - huginn - INFO - Using default configuration
+2026-07-02 22:46:33 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:46:33 - huginn - INFO - License saved successfully
+2026-07-02 22:46:33 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:46:51 - huginn - INFO - Using default configuration
+2026-07-02 22:46:53 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:46:53 - huginn - INFO - License saved successfully
+2026-07-02 22:46:53 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:47:03 - huginn - INFO - Using default configuration
+2026-07-02 22:47:05 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:47:05 - huginn - INFO - License saved successfully
+2026-07-02 22:47:05 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:47:16 - huginn - INFO - Using default configuration
+2026-07-02 22:47:18 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:47:18 - huginn - INFO - License saved successfully
+2026-07-02 22:47:18 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:47:27 - huginn - INFO - Using default configuration
+2026-07-02 22:47:29 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:47:29 - huginn - INFO - License saved successfully
+2026-07-02 22:47:29 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:47:39 - huginn - INFO - Using default configuration
+2026-07-02 22:47:41 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:47:41 - huginn - INFO - License saved successfully
+2026-07-02 22:47:41 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:48:04 - huginn - INFO - Custom DNS IP set to: 8.8.8.8
+2026-07-02 22:48:04 - huginn - INFO - DNS server changed to: Custom DNS
+2026-07-02 22:48:04 - huginn - INFO - DNS server changed to: Default DNS
+2026-07-02 22:48:16 - huginn - INFO - DNS server changed to: Default DNS
+2026-07-02 22:48:16 - huginn - INFO - Custom DNS IP set to: 
+2026-07-02 22:54:40 - huginn - INFO - License saved successfully
+2026-07-02 22:54:40 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:54:40 - huginn - INFO - Application starting...
+2026-07-02 22:54:40 - huginn - INFO - Huginn version 0.0.0
+2026-07-02 22:54:40 - huginn - INFO - Font loaded successfully
+2026-07-02 22:54:40 - huginn - INFO - Stylesheet loaded successfully
+2026-07-02 22:54:40 - huginn - INFO - Creating main window...
+2026-07-02 22:54:40 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-07-02 22:54:40 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-07-02 22:54:42 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:54:42 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-02 22:54:42 - huginn - INFO - [FeatureGapIntegration] All new modules integrated successfully.
+2026-07-02 22:54:42 - huginn - INFO - Feature gap integration completed successfully
+2026-07-02 22:56:03 - huginn - DEBUG - Memory monitoring stopped
+2026-07-02 22:56:03 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-02 22:56:20 - huginn - INFO - Using default configuration
+2026-07-02 22:56:22 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:56:22 - huginn - INFO - License saved successfully
+2026-07-02 22:56:22 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:56:38 - huginn - INFO - License saved successfully
+2026-07-02 22:56:38 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:56:38 - huginn - INFO - Application starting...
+2026-07-02 22:56:38 - huginn - INFO - Huginn version 0.0.0
+2026-07-02 22:56:38 - huginn - INFO - Font loaded successfully
+2026-07-02 22:56:38 - huginn - INFO - Stylesheet loaded successfully
+2026-07-02 22:56:38 - huginn - INFO - Creating main window...
+2026-07-02 22:56:38 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-07-02 22:56:38 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-07-02 22:56:39 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:56:39 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-02 22:56:39 - huginn - INFO - [FeatureGapIntegration] All new modules integrated successfully.
+2026-07-02 22:56:39 - huginn - INFO - Feature gap integration completed successfully
+2026-07-02 22:56:57 - huginn - DEBUG - Memory monitoring stopped
+2026-07-02 22:56:57 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-02 22:59:19 - huginn - INFO - Using default configuration
+2026-07-02 22:59:21 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:59:21 - huginn - INFO - License saved successfully
+2026-07-02 22:59:21 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:59:32 - huginn - INFO - License saved successfully
+2026-07-02 22:59:32 - huginn - INFO - License loaded and validated successfully
+2026-07-02 22:59:32 - huginn - INFO - Application starting...
+2026-07-02 22:59:32 - huginn - INFO - Huginn version 0.0.0
+2026-07-02 22:59:32 - huginn - INFO - Font loaded successfully
+2026-07-02 22:59:32 - huginn - INFO - Stylesheet loaded successfully
+2026-07-02 22:59:32 - huginn - INFO - Creating main window...
+2026-07-02 22:59:32 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-07-02 22:59:32 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-07-02 22:59:34 - huginn - INFO - Master index schema initialized.
+2026-07-02 22:59:34 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-02 22:59:34 - huginn - INFO - [FeatureGapIntegration] All new modules integrated successfully.
+2026-07-02 22:59:34 - huginn - INFO - Feature gap integration completed successfully
+2026-07-02 22:59:47 - huginn - INFO - DNS server changed to: Local DNS
+2026-07-02 22:59:50 - huginn - INFO - Local DNS server started on port 53530
+2026-07-02 23:00:12 - huginn - INFO - Knowledge base schema initialized.
+2026-07-02 23:00:24 - huginn - INFO - Local DNS server stopped
+2026-07-02 23:00:24 - huginn - INFO - local_dns_server stopped
+2026-07-02 23:00:24 - huginn - DEBUG - Memory monitoring stopped
+2026-07-02 23:00:24 - huginn - DEBUG - Connection pool closed all sessions

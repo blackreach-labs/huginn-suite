@@ -17,9 +17,7 @@ def run_dns_scan(target, wordlist_path=None, record_types=None, dns_server=None,
     # Get DNS server from global settings if not provided
     if dns_server is None:
         from app.core.dns_settings import dns_settings
-        dns_server = dns_settings.get_current_dns()
-        if dns_server == "Default DNS":
-            dns_server = None
+        dns_server = dns_settings.get_effective_dns_server()
     
     # Initialize centralized data collector
     data_collector = create_dns_collector(tenant_id)

@@ -7,9 +7,7 @@ def run_api_enumeration(target, scan_type="basic", wordlist_path=None, dns_serve
     # Use global DNS settings if not specified
     if dns_server is None:
         from app.core.dns_settings import dns_settings
-        dns_server = dns_settings.get_current_dns()
-        if dns_server == "Default DNS":
-            dns_server = None
+        dns_server = dns_settings.get_effective_dns_server()
     
     worker = APIEnumWorker(target, scan_type, wordlist_path, dns_server)
     

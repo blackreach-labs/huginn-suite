@@ -217,6 +217,9 @@ class ProfessionalSubdomainController(QObject):
     def get_available_sources(self) -> List[Dict[str, Any]]:
         """Get list of available sources with their status"""
         
+        # Always refresh API keys from global settings before checking
+        self._refresh_api_keys()
+        
         sources = []
         for name, plugin in subdomain_engine.plugins.items():
             status = "available"

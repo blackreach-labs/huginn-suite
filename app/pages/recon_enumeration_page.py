@@ -760,9 +760,7 @@ class ReconEnumerationPage(QWidget, ServiceScannersMixin, ServiceUIComponentsMix
             
             # Get global DNS server setting
             from app.core.dns_settings import dns_settings
-            dns_server = dns_settings.get_current_dns()
-            if dns_server == "Default DNS":
-                dns_server = None
+            dns_server = dns_settings.get_effective_dns_server()
             
             # Run DNS enumeration
             self.current_worker = dns_utils.enumerate_hostnames(

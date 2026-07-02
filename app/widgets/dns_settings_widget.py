@@ -78,7 +78,30 @@ class DNSSettingsWidget(QWidget):
             }
         """)
         dns_select_layout.addWidget(self.dns_combo)
+
+        # Custom DNS IP input (shown inline when "Custom DNS" is selected)
+        self.custom_dns_label = QLabel("IP:")
+        self.custom_dns_input = QLineEdit()
+        self.custom_dns_input.setPlaceholderText("e.g. 8.8.8.8")
+        self.custom_dns_input.setMaxLength(15)
+        self.custom_dns_input.setStyleSheet("""
+            QLineEdit {
+                background-color: rgba(50, 50, 50, 150);
+                color: #DCDCDC;
+                border: 1px solid #64C8FF;
+                border-radius: 4px;
+                padding: 5px;
+                min-width: 150px;
+                max-width: 200px;
+            }
+        """)
+        dns_select_layout.addWidget(self.custom_dns_label)
+        dns_select_layout.addWidget(self.custom_dns_input)
         dns_select_layout.addStretch()
+
+        # Initially hide the custom DNS input
+        self.custom_dns_label.setVisible(False)
+        self.custom_dns_input.setVisible(False)
         
         dns_layout.addLayout(dns_select_layout)
         
@@ -347,7 +370,7 @@ class DNSSettingsWidget(QWidget):
             }
         """)
         info_text.setPlainText(
-            "DNS Settings affect all scanning tools globally. Default DNS uses system settings, LocalDNS uses local server."
+            "DNS Settings affect all scanning tools globally. Default DNS uses system settings, Local DNS uses local server."
         )
         layout.addWidget(info_text)
         
@@ -384,6 +407,13 @@ class DNSSettingsWidget(QWidget):
         else:
             # If it's a custom DNS server, set it as text
             self.dns_combo.setCurrentText(current_dns)
+
+        # Load custom DNS IP and show/hide the field
+        custom_ip = dns_settings.get_custom_dns_ip()
+        self.custom_dns_input.setText(custom_ip)
+        is_custom = (current_dns == "Custom DNS")
+        self.custom_dns_label.setVisible(is_custom)
+        self.custom_dns_input.setVisible(is_custom)
         
         # Initially disable apply button
         self.apply_btn.setEnabled(False)
@@ -430,6 +460,16 @@ class DNSSettingsWidget(QWidget):
     def apply_dns_settings(self):
         """Apply DNS settings globally"""
         selected_dns = self.dns_combo.currentText()
+
+        # Validate custom DNS IP if selected
+        if selected_dns == "Custom DNS":
+            custom_ip = self.custom_dns_input.text().strip()
+            if not self._validate_ip(custom_ip):
+                QMessageBox.warning(self, "Invalid IP",
+                                    "Please enter a valid IPv4 address (e.g. 8.8.8.8).")
+                return
+            dns_settings.set_custom_dns_ip(custom_ip)
+
         dns_settings.set_dns_server(selected_dns)
         
         # Update initial DNS and disable button
@@ -445,10 +485,31 @@ class DNSSettingsWidget(QWidget):
                 font-weight: bold;
             }
         """)
+
+    @staticmethod
+    def _validate_ip(ip_string):
+        """Validate that ip_string is a valid IPv4 address."""
+        parts = ip_string.split('.')
+        if len(parts) != 4:
+            return False
+        for part in parts:
+            try:
+                num = int(part)
+                if num < 0 or num > 255:
+                    return False
+            except ValueError:
+                return False
+        return True
     
     def on_dns_changed(self):
         """Handle DNS combo box changes"""
         current_dns = self.dns_combo.currentText()
+
+        # Show/hide custom DNS IP field
+        is_custom = (current_dns == "Custom DNS")
+        self.custom_dns_label.setVisible(is_custom)
+        self.custom_dns_input.setVisible(is_custom)
+
         if current_dns != self.initial_dns:
             self.apply_btn.setEnabled(True)
             self.apply_btn.setStyleSheet("""

@@ -343,9 +343,7 @@ class DNSEnumerationPage(QWidget):
             from app.tools import dns_utils
             from app.core.dns_settings import dns_settings
             
-            dns_server = dns_settings.get_current_dns()
-            if dns_server == "Default DNS":
-                dns_server = None
+            dns_server = dns_settings.get_effective_dns_server()
             
             # Check if PTR scan
             if self.ptr_checkbox.isEnabled() and self.ptr_checkbox.isChecked():

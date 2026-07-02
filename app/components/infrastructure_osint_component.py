@@ -68,22 +68,20 @@ class InfrastructureOSINTComponent(QWidget):
             # Create checkbox with status indicator
             if status == "available":
                 status_icon = "🟢"
-                tooltip = f"{description} - Ready to use"
+                tooltip = f"{description} - Ready to use (no API key required)"
             elif status == "configured":
                 status_icon = "🔑"
                 tooltip = f"{description} - API key configured"
             else:
-                status_icon = "🔴"
-                tooltip = f"{description} - Requires API key configuration"
+                status_icon = "⚪"
+                tooltip = f"{description} - API key not yet configured (configure in Global Settings)"
             
             checkbox = QCheckBox(f"{status_icon} {name.upper()}")
             checkbox.setToolTip(tooltip)
             
-            # Enable by default if available
+            # Enable by default if available or configured
             if status in ["available", "configured"]:
                 checkbox.setChecked(True)
-            else:
-                checkbox.setEnabled(False)
             
             self.source_checkboxes[name] = checkbox
             config_layout.addWidget(checkbox)
@@ -119,7 +117,7 @@ class InfrastructureOSINTComponent(QWidget):
         layout.addWidget(config_group)
         
         # Global Settings integration note
-        settings_note = QLabel("🔑 API Keys: Configure in File → Global Settings → API Keys")
+        settings_note = QLabel("🔑 API Keys: Configure in Navigate → Global Settings → API Keys")
         settings_note.setStyleSheet("""
             QLabel {
                 background-color: rgba(0, 100, 200, 100);
@@ -257,6 +255,9 @@ class InfrastructureOSINTComponent(QWidget):
 
     def run_professional_subdomain_enum(self):
         """Run professional subdomain enumeration using the comprehensive engine"""
+        # Refresh source status before running
+        self.refresh_source_checkboxes()
+        
         target = self.target_input.text().strip()
         if not target:
             self.output_text.append("<p style='color: #FF6B6B;'>❌ Please enter a target domain</p>")
@@ -782,6 +783,41 @@ class InfrastructureOSINTComponent(QWidget):
         professional_subdomain_controller.progress_updated.connect(self.on_enumeration_progress)
         professional_subdomain_controller.enumeration_completed.connect(self.on_enumeration_completed)
         professional_subdomain_controller.error_occurred.connect(self.on_enumeration_error)
+
+    def showEvent(self, event):
+        """Refresh source checkbox states when the panel becomes visible"""
+        super().showEvent(event)
+        self.refresh_source_checkboxes()
+
+    def refresh_source_checkboxes(self):
+        """Re-evaluate source availability and update checkbox states"""
+        available_sources = professional_subdomain_controller.get_available_sources()
+        for source_info in available_sources:
+            name = source_info['name']
+            status = source_info['status']
+            description = source_info['description']
+
+            checkbox = self.source_checkboxes.get(name)
+            if not checkbox:
+                continue
+
+            if status == "available":
+                status_icon = "🟢"
+                tooltip = f"{description} - Ready to use (no API key required)"
+            elif status == "configured":
+                status_icon = "🔑"
+                tooltip = f"{description} - API key configured"
+            else:
+                status_icon = "⚪"
+                tooltip = f"{description} - API key not yet configured (configure in Global Settings)"
+
+            checkbox.setText(f"{status_icon} {name.upper()}")
+            checkbox.setToolTip(tooltip)
+            checkbox.setEnabled(True)
+            
+            # Auto-check if it just became configured
+            if status == "configured" and not checkbox.isChecked():
+                checkbox.setChecked(True)
     
     def stop_enumeration(self):
         """Stop current enumeration"""

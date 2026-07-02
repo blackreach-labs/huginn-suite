@@ -29,11 +29,21 @@ class AttackChainHomePage(BasePage):
         if self._engagement_mgr is None:
             try:
                 from app.core.feature_gap_integration import FeatureGapIntegration
-                self._engagement_mgr = FeatureGapIntegration.engines.engagement_manager
+                mgr = FeatureGapIntegration.engines.engagement_manager
+                if mgr is not None:
+                    self._engagement_mgr = mgr
             except Exception:
-                # Fallback: create a standalone instance
+                pass
+            if self._engagement_mgr is None:
+                # Fallback: create a standalone instance (same default DB)
                 self._engagement_mgr = EngagementManager()
         return self._engagement_mgr
+
+    def showEvent(self, event):
+        """Refresh the engagements table whenever this page becomes visible."""
+        super().showEvent(event)
+        if hasattr(self, 'target_table'):
+            self.load_existing_profiles()
     
     def setup_ui(self):
         """Setup the UI - required by BasePage"""

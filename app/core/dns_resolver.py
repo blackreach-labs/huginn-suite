@@ -19,16 +19,9 @@ class DNSResolver:
         
         # Get global DNS configuration from settings
         try:
-            import json
-            import os
-            dns_file = os.path.join(os.path.dirname(__file__), '..', '..', 'resources', 'config', 'dns_settings.json')
-            if os.path.exists(dns_file):
-                with open(dns_file, 'r') as f:
-                    dns_config = json.load(f)
-                dns_server = dns_config.get('current_dns')
-            else:
-                dns_server = None
-            use_local_dns = (dns_server == 'LocalDNS')
+            from app.core.dns_settings import dns_settings
+            dns_server = dns_settings.get_effective_dns_server()
+            use_local_dns = (dns_settings.get_current_dns() == 'Local DNS')
         except Exception as e:
             dns_server = None
             use_local_dns = False

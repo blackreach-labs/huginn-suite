@@ -569,10 +569,7 @@ class QuestionnaireWidget(QWidget):
         dialog.exec()
     
     def save_target_and_continue(self, dialog):
-        """Save target information to disk as a profile and continue to next question"""
-        import os
-        import json
-        
+        """Save target information as a DB engagement and continue to next question"""
         target_name = self.target_name.text().strip()
         if not target_name:
             from PyQt6.QtWidgets import QMessageBox
@@ -586,11 +583,6 @@ class QuestionnaireWidget(QWidget):
             'engagement_type': self.engagement_type.currentText()
         }
         
-        # Save to the profiles/ directory in the same format as attack_chain_home
-        project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        profiles_dir = os.path.join(project_root, 'profiles')
-        os.makedirs(profiles_dir, exist_ok=True)
-        
         profile_data = {
             'target_name': target_name,
             'primary_target': self.target_url.text() or self.target_scope.toPlainText(),
@@ -602,17 +594,7 @@ class QuestionnaireWidget(QWidget):
             'dos_allowed': False,
             'social_eng_allowed': False,
             'physical_allowed': False,
-            'credentials': {},
         }
-        
-        profile_file = os.path.join(profiles_dir, f"{target_name}.json")
-        try:
-            with open(profile_file, 'w') as f:
-                json.dump(profile_data, f, indent=2)
-        except Exception as e:
-            from PyQt6.QtWidgets import QMessageBox
-            QMessageBox.warning(dialog, "Error", f"Failed to save profile: {str(e)}")
-            return
         
         # Save target info to responses
         self.responses['target_definition'] = target_info
@@ -630,6 +612,8 @@ class QuestionnaireWidget(QWidget):
         try:
             from app.core.feature_gap_integration import FeatureGapIntegration
             eng_manager = FeatureGapIntegration.engines.engagement_manager
+            if eng_manager is None:
+                raise RuntimeError("engagement_manager is None")
         except Exception:
             from app.core.engagement_manager import EngagementManager
             eng_manager = EngagementManager()
@@ -681,53 +665,60 @@ class QuestionnaireWidget(QWidget):
         self.next_question()
     
     def show_load_profile_dialog(self):
-        """Show load profile dialog with real saved profiles from disk"""
+        """Show dialog listing engagements from the database for selection."""
         from PyQt6.QtWidgets import QDialog, QVBoxLayout, QListWidget, QPushButton, QLabel, QMessageBox
-        import os
-        import json
         
-        # Resolve the profiles directory relative to the project root
-        project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        profiles_dir = os.path.join(project_root, 'profiles')
-        
-        if not os.path.exists(profiles_dir):
-            QMessageBox.information(self, "No Profiles", "No saved profiles found. Define a new target first.")
+        # --- Gather engagements from the EngagementManager DB ---
+        try:
+            from app.core.feature_gap_integration import FeatureGapIntegration
+            eng_manager = FeatureGapIntegration.engines.engagement_manager
+            if eng_manager is None:
+                raise RuntimeError("engagement_manager is None")
+        except Exception:
+            from app.core.engagement_manager import EngagementManager
+            eng_manager = EngagementManager()
+
+        try:
+            engagements = eng_manager.list_engagements() or []
+        except Exception:
+            engagements = []
+
+        if not engagements:
+            QMessageBox.information(self, "No Engagements",
+                                   "No saved engagements found. Define a new target first.")
             return
-        
-        # Scan for saved profile JSON files
-        profile_files = sorted([f for f in os.listdir(profiles_dir) if f.endswith('.json')])
-        if not profile_files:
-            QMessageBox.information(self, "No Profiles", "No saved profiles found. Define a new target first.")
-            return
-        
-        # Load profile metadata for display
-        profiles_data = {}
-        display_names = []
-        for filename in profile_files:
-            profile_path = os.path.join(profiles_dir, filename)
-            try:
-                with open(profile_path, 'r', encoding='utf-8-sig') as f:
-                    data = json.load(f)
-                profile_name = filename.replace('.json', '')
-                target = data.get('primary_target', '') or data.get('scope', '')
-                display = f"{data.get('target_name', profile_name)}"
-                if target:
-                    # Show first line of scope, truncated
-                    first_line = target.strip().splitlines()[0] if target.strip() else ''
-                    if len(first_line) > 50:
-                        first_line = first_line[:48] + '…'
-                    display += f"  —  {first_line}"
-                display_names.append(display)
-                profiles_data[display] = {'name': profile_name, 'path': profile_path, 'data': data}
-            except Exception:
-                continue
-        
-        if not display_names:
-            QMessageBox.information(self, "No Profiles", "No valid profiles found. Define a new target first.")
-            return
+
+        # Build display list from DB engagements
+        profiles_data = {}   # display_text -> info dict
+
+        for eng in engagements:
+            name = eng.get('name', 'Unnamed')
+            scope = eng.get('scope_data') or {}
+            target = scope.get('primary_target', '')
+            display = name
+            if target:
+                first_line = target.strip().splitlines()[0] if target.strip() else ''
+                if len(first_line) > 50:
+                    first_line = first_line[:48] + '…'
+                display += f"  —  {first_line}"
+            profiles_data[display] = {
+                'name': name,
+                'data': {
+                    'target_name': name,
+                    'primary_target': scope.get('primary_target', ''),
+                    'scope': scope.get('primary_target', ''),
+                    'out_scope': scope.get('out_scope', ''),
+                    'dos_allowed': scope.get('dos_allowed', False),
+                    'social_eng_allowed': scope.get('social_eng_allowed', False),
+                    'physical_allowed': scope.get('physical_allowed', False),
+                },
+                'engagement_id': eng.get('id'),
+            }
+
+        display_names = list(profiles_data.keys())
         
         dialog = QDialog(self)
-        dialog.setWindowTitle("📁 Load Existing Target Profile")
+        dialog.setWindowTitle("📁 Select Existing Engagement")
         dialog.setModal(True)
         dialog.resize(550, 420)
         dialog.setStyleSheet("""
@@ -747,7 +738,7 @@ class QuestionnaireWidget(QWidget):
         layout.setContentsMargins(24, 24, 24, 24)
         layout.setSpacing(16)
         
-        label = QLabel(f"Select from {len(display_names)} saved profile(s):")
+        label = QLabel(f"Select from {len(display_names)} saved engagement(s):")
         label.setStyleSheet("font-size: 11pt; color: #87CEEB;")
         layout.addWidget(label)
         
@@ -845,33 +836,27 @@ class QuestionnaireWidget(QWidget):
         # Mark the target_selection question as answered
         self.responses['target_selection'] = 'Select Existing Target'
         
-        # Create or find engagement and activate it
+        # Activate the engagement
         try:
             from app.core.feature_gap_integration import FeatureGapIntegration
             eng_manager = FeatureGapIntegration.engines.engagement_manager
+            if eng_manager is None:
+                raise RuntimeError("engagement_manager is None")
         except Exception:
             from app.core.engagement_manager import EngagementManager
             eng_manager = EngagementManager()
         
         try:
-            # Check if engagement already exists for this profile
-            existing = eng_manager.find_by_name(profile_data.get('target_name', profile_name))
-            if existing:
-                engagement_id = existing['id']
-            else:
-                # Create new engagement from the loaded profile
-                create_data = dict(profile_data)
-                create_data['target_name'] = profile_data.get('target_name', profile_name)
-                engagement_id = eng_manager.create_from_profile(create_data)
-            
-            eng_manager.open_engagement(engagement_id)
-            self.responses['engagement_id'] = engagement_id
-            
-            # Update main window state
-            main_window = self._get_main_window()
-            if main_window:
-                main_window.current_engagement_id = engagement_id
-                main_window.current_profile_name = profile_name
+            engagement_id = profile_info.get('engagement_id')
+            if engagement_id:
+                eng_manager.open_engagement(engagement_id)
+                self.responses['engagement_id'] = engagement_id
+                
+                # Update main window state
+                main_window = self._get_main_window()
+                if main_window:
+                    main_window.current_engagement_id = engagement_id
+                    main_window.current_profile_name = profile_name
         except Exception:
             pass
         

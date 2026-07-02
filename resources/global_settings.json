@@ -14,17 +14,7 @@
     "google_cse_cx": "",
     "hunter": "",
     "numverify": "",
-    "abstractapi_phone": "",
-    "certspotter": "",
-    "censys_id": "",
-    "censys_secret": "",
-    "securitytrails": "",
-    "binaryedge": "",
-    "passivetotal_user": "",
-    "passivetotal_key": "",
-    "dnsdb": "",
-    "threatfox": "",
-    "alienvault_otx": ""
+    "abstractapi_phone": ""
   },
   "general": {
     "default_timeout": 30,
