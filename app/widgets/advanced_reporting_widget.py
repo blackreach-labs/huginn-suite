@@ -17,19 +17,10 @@ class AdvancedReportingWidget(QWidget):
         
         # Header
         header = QLabel("📈 Advanced Reporting & Compliance")
-        header.setStyleSheet("font-size: 16pt; font-weight: bold; color: #64C8FF; padding: 10px;")
         layout.addWidget(header)
         
         # Export section
         export_frame = QFrame()
-        export_frame.setStyleSheet("""
-            QFrame {
-                background-color: rgba(0, 0, 0, 100);
-                border-radius: 8px;
-                border: 1px solid rgba(100, 200, 255, 50);
-                margin: 5px;
-            }
-        """)
         export_layout = QVBoxLayout(export_frame)
         
         # Export buttons
@@ -49,17 +40,6 @@ class AdvancedReportingWidget(QWidget):
         
         # Compliance reporting
         compliance_btn = QPushButton("📈 Compliance Report")
-        compliance_btn.setStyleSheet("""
-            QPushButton {
-                background-color: rgba(0, 255, 0, 150);
-                border: 2px solid #00FF00;
-                border-radius: 5px;
-                color: #000000;
-                font-weight: bold;
-                padding: 8px 15px;
-            }
-            QPushButton:hover { background-color: rgba(50, 255, 50, 200); }
-        """)
         compliance_btn.clicked.connect(self.generate_compliance_report)
         button_layout.addWidget(compliance_btn)
         
@@ -78,7 +58,6 @@ class AdvancedReportingWidget(QWidget):
         
         # Report preview
         preview_label = QLabel("📋 Report Preview")
-        preview_label.setStyleSheet("font-size: 14pt; font-weight: bold; color: #87CEEB; padding: 10px;")
         layout.addWidget(preview_label)
         
         self.report_preview = QTextEdit()
@@ -86,22 +65,6 @@ class AdvancedReportingWidget(QWidget):
         self.report_preview.setPlainText("Report preview will appear here after generating compliance report...")
         layout.addWidget(self.report_preview)
         
-        # Apply button styles
-        for btn in [export_json_btn, export_html_btn, export_pdf_btn]:
-            btn.setStyleSheet("""
-                QPushButton {
-                    background-color: rgba(30, 40, 50, 150);
-                    border: 2px solid rgba(100, 200, 255, 100);
-                    border-radius: 8px;
-                    color: #DCDCDC;
-                    font-weight: bold;
-                    padding: 8px 15px;
-                }
-                QPushButton:hover {
-                    background-color: rgba(50, 70, 90, 200);
-                    border: 2px solid #64C8FF;
-                }
-            """)
     
     def export_findings(self, format_type):
         """Export findings in specified format"""

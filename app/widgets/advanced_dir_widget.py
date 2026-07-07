@@ -62,21 +62,6 @@ class AdvancedDirectoryWidget(QWidget):
         
         # Configuration group
         config_group = QGroupBox("🗂️ Advanced Directory Enumeration")
-        config_group.setStyleSheet("""
-            QGroupBox {
-                font-weight: bold;
-                color: #64C8FF;
-                border: 2px solid #555;
-                border-radius: 5px;
-                margin-top: 10px;
-                padding-top: 10px;
-            }
-            QGroupBox::title {
-                subcontrol-origin: margin;
-                left: 10px;
-                padding: 0 5px 0 5px;
-            }
-        """)
         
         config_layout = QVBoxLayout(config_group)
         
@@ -86,7 +71,6 @@ class AdvancedDirectoryWidget(QWidget):
         
         self.url_input = QLineEdit()
         self.url_input.setPlaceholderText("https://example.com")
-        self.url_input.setStyleSheet(self._get_input_style())
         
         url_layout.addWidget(self.url_input)
         
@@ -122,7 +106,6 @@ class AdvancedDirectoryWidget(QWidget):
         
         self.recursive_checkbox = QCheckBox("Recursive Scanning")
         self.recursive_checkbox.setChecked(True)
-        self.recursive_checkbox.setStyleSheet("color: #DCDCDC;")
         
         options_layout.addWidget(self.recursive_checkbox)
         options_layout.addStretch()
@@ -135,65 +118,16 @@ class AdvancedDirectoryWidget(QWidget):
         self.progress_bar.setRange(0, 0)  # Indeterminate
         self.progress_bar.setVisible(False)
         self.progress_bar.setFixedHeight(20)  # Fixed height to prevent squishing
-        self.progress_bar.setStyleSheet("""
-            QProgressBar {
-                border: 1px solid #555;
-                border-radius: 4px;
-                text-align: center;
-                color: white;
-                font-weight: bold;
-            }
-            QProgressBar::chunk {
-                background-color: rgba(100, 200, 255, 150);
-                border-radius: 3px;
-            }
-        """)
         control_layout.addWidget(self.progress_bar, 1)  # Stretch factor 1
         
         control_layout.addStretch()
         
         self.start_button = QPushButton("🚀 Start Enumeration")
         self.start_button.clicked.connect(self.start_enumeration)
-        self.start_button.setStyleSheet("""
-            QPushButton {
-                background-color: rgba(100, 255, 100, 150);
-                color: white;
-                border: none;
-                border-radius: 5px;
-                padding: 8px 16px;
-                font-size: 11pt;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: rgba(100, 255, 100, 200);
-            }
-            QPushButton:disabled {
-                background-color: rgba(60, 60, 60, 100);
-                color: #888;
-            }
-        """)
         
         self.stop_button = QPushButton("⏹️ Stop")
         self.stop_button.clicked.connect(self.stop_enumeration)
         self.stop_button.setEnabled(False)
-        self.stop_button.setStyleSheet("""
-            QPushButton {
-                background-color: rgba(255, 100, 100, 150);
-                color: white;
-                border: none;
-                border-radius: 5px;
-                padding: 8px 16px;
-                font-size: 11pt;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: rgba(255, 100, 100, 200);
-            }
-            QPushButton:disabled {
-                background-color: rgba(60, 60, 60, 100);
-                color: #888;
-            }
-        """)
         
         control_layout.addWidget(self.start_button)
         control_layout.addWidget(self.stop_button)

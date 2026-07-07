@@ -283,38 +283,5 @@ class DNSControlsComponent(QWidget):
         return self.target_input.text().strip()
 
     def apply_theme(self):
-        """Apply component theme"""
-        self.setStyleSheet("""
-            QFrame {
-                background-color: rgba(0, 0, 0, 100);
-                border-radius: 10px;
-                border: 1px solid rgba(100, 200, 255, 50);
-                padding: 10px;
-            }
-            QPushButton {
-                background-color: rgba(30, 40, 50, 150);
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 8px;
-                color: #DCDCDC;
-                font-weight: bold;
-                padding: 8px;
-            }
-            QPushButton:hover {
-                background-color: rgba(50, 70, 90, 200);
-                border: 2px solid #64C8FF;
-            }
-            QLineEdit, QComboBox, QSpinBox {
-                background-color: rgba(20, 30, 40, 150);
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-                color: #DCDCDC;
-                padding: 5px;
-            }
-            QLabel {
-                color: #64C8FF;
-                font-weight: bold;
-            }
-            QCheckBox {
-                color: #DCDCDC;
-            }
-        """)
+        """Theme is applied globally by UnifiedThemeManager."""
+        pass

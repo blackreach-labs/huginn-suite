@@ -37,15 +37,12 @@ class BasePage(QWidget, ABC, metaclass=BasePageMeta):
         pass
     
     def apply_theme(self):
-        """Apply theme to the page. Override in subclasses for custom theming."""
-        if self.main_window and hasattr(self.main_window, 'theme_manager'):
-            colors = self.main_window.theme_manager.get_theme_colors()
-            self.setStyleSheet(f"""
-                {self.__class__.__name__} {{
-                    background-color: {colors.get('background', '#1E1E1E')};
-                    color: {colors.get('text', '#DCDCDC')};
-                }}
-            """)
+        """Apply theme to the page. Override in subclasses for custom theming.
+        
+        Theme is applied globally by UnifiedThemeManager via QApplication.setStyleSheet().
+        Pages inherit the global theme automatically. Override only if truly needed.
+        """
+        pass
     
     def cleanup(self):
         """Cleanup resources when page is destroyed. Override in subclasses."""

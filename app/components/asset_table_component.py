@@ -203,36 +203,5 @@ class AssetTableComponent(QWidget):
         self.asset_table.clearSelection()
 
     def apply_theme(self):
-        """Apply component theme"""
-        self.setStyleSheet("""
-            QComboBox {
-                background-color: rgba(20, 30, 40, 150);
-                color: #DCDCDC;
-                border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 3px;
-                padding: 5px;
-                min-width: 160px;
-            }
-            QTableWidget {
-                background-color: rgba(0, 0, 0, 100);
-                color: #DCDCDC;
-                border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-                gridline-color: rgba(100, 200, 255, 50);
-            }
-            QTableWidget::item {
-                padding: 8px;
-                border-bottom: 1px solid rgba(100, 200, 255, 30);
-            }
-            QTableWidget::item:selected {
-                background-color: rgba(100, 200, 255, 100);
-                color: #000000;
-            }
-            QHeaderView::section {
-                background-color: rgba(100, 200, 255, 150);
-                color: #000000;
-                font-weight: bold;
-                padding: 8px;
-                border: none;
-            }
-        """)
+        """Theme is applied globally by UnifiedThemeManager."""
+        pass

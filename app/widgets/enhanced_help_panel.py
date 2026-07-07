@@ -83,7 +83,8 @@ class EnhancedHelpPanel(QWidget):
             ("Database Enumeration", "db"),
             ("AV/Firewall Detection", "av_fw"),
             ("🔮 Runecraft Guide", "runecraft"),
-            ("🚀 Huginn Scanner", "huginn_scanner")
+            ("🚀 Huginn Scanner", "huginn_scanner"),
+            ("🔐 Auth Workflows", "auth_workflows")
         ]
         
         for tool_name, tool_id in tools:
@@ -542,6 +543,49 @@ class EnhancedHelpPanel(QWidget):
                     "Each detection type has its own terminal — results are preserved when switching types",
                     "Use Ctrl-L to clear only the current detection type's output",
                     "Export results as JSON/CSV/XML/HTML for reporting"
+                ]
+            },
+            "auth_workflows": {
+                "title": "🔐 Auth Workflows — Authentication Flow Analysis & Testing",
+                "description": "Enterprise-grade authentication security testing module that captures, models, and tests authentication flows across all major protocols including OAuth 2.0, OIDC, NTLM, Kerberos, SAML 2.0, Forms-Based Auth, Certificate/mTLS, JWT, and API Keys.",
+                "features": [
+                    "<b>🎯 Flow Recording:</b> Protocol-aware proxy traffic capture with automatic detection of OAuth, NTLM, Kerberos, SAML, JWT, FBA, certificate auth, and API keys",
+                    "<b>🧩 State Model:</b> Directed-graph visualization of authentication flows with protocol-specific node classification (challenge, callback, token_mint, assertion_consumer, etc.)",
+                    "<b>⚡ 35+ Attack Mutations:</b> Protocol-specific security tests organized by category (Generic, OAuth2, OIDC, JWT, SAML, NTLM, FBA, API Key)",
+                    "<b>🔐 Deep Token Analysis:</b> JWT decode with weak-secret brute-force, SAML assertion parsing, Kerberos ticket encryption analysis, NTLM message parsing, session cookie entropy",
+                    "<b>📊 Automatic Vulnerability Detection:</b> 25+ security checks with CWE IDs covering all protocols",
+                    "<b>OAuth 2.0 Testing:</b> State bypass, redirect_uri manipulation, PKCE bypass, scope escalation, implicit grant detection, code reuse",
+                    "<b>OIDC Testing:</b> Nonce replay, audience confusion, id_token substitution, at_hash validation",
+                    "<b>NTLM Testing:</b> NTLMv1 detection, relay risk assessment, downgrade attacks, hash extraction",
+                    "<b>Kerberos Testing:</b> RC4/AES encryption detection (Kerberoasting risk), delegation analysis, ticket replay",
+                    "<b>SAML Testing:</b> Signature stripping, assertion replay, XXE injection, attribute injection, XSW detection",
+                    "<b>JWT Testing:</b> Algorithm none, signature stripping, claim tampering, KID injection, expiry bypass",
+                    "<b>Session Analysis:</b> Cookie entropy measurement, HttpOnly/Secure/SameSite attribute checks, predictability detection",
+                    "<b>HTML/JSON Export:</b> Professional reports with severity-colored vulnerability tables for client deliverables"
+                ],
+                "usage": [
+                    "<b>Access:</b> Navigate to EXPLOITATION → Web & App Exploits → Auth Workflows tab",
+                    "<b>Step 1 — Record:</b> Click 🔴 Start Recording, perform authentication in browser (via proxy), click ⏹️ Stop Recording",
+                    "<b>Step 2 — Analyze:</b> Select flow in State Model tab, click 🏗️ Build Model to see flow graph and auto-detected security issues",
+                    "<b>Step 3 — Test:</b> In Replay & Testing tab, choose: ▶️ Baseline (verify flow works), 🔒 Auto Security Test (protocol-appropriate), or 🛡️ Full Audit (all 35 mutations)",
+                    "<b>Step 4 — Tokens:</b> In Token Analysis tab, click 🔍 Analyze Tokens for deep inspection of all captured tokens",
+                    "<b>Step 5 — Report:</b> In Results tab, review all findings and export as HTML report or JSON",
+                    "<b>Selective Testing:</b> Check specific mutation checkboxes in the Testing tab and click 🧪 Run Selected Mutations",
+                    "<b>Import/Export:</b> Save flows to JSON for later analysis or share with team members"
+                ],
+                "tips": [
+                    "<b>Record complete flows:</b> Include the full sequence from unauthenticated state through successful authentication",
+                    "<b>Use Auto Security Test first:</b> It selects mutations based on detected protocols — most efficient approach",
+                    "<b>Test multiple roles:</b> Record admin, user, and guest flows separately for differential analysis",
+                    "<b>Check token entropy:</b> Tokens below 3.5 bits/char entropy are nearly always exploitable",
+                    "<b>Look for NTLMv1:</b> If detected, it's a critical finding for any internal penetration test",
+                    "<b>Verify PKCE:</b> Modern OAuth without PKCE is vulnerable to authorization code interception",
+                    "<b>SAML signature checks:</b> Unsigned assertions are critical — always verify signature enforcement",
+                    "<b>JWT weak secrets:</b> The analyzer tests 16 common passwords — a match is a critical finding",
+                    "<b>Cookie attributes:</b> Missing HttpOnly + Secure + SameSite is a common finding worth reporting",
+                    "<b>Watch for false positives:</b> WAF blocks on mutation tests may look like 'success' — verify manually",
+                    "<b>Full Audit for comprehensive:</b> When time allows, run all 35 mutations for maximum coverage",
+                    "<b>Export for reporting:</b> HTML export produces client-ready deliverables with severity colors"
                 ]
             }
         }

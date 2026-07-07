@@ -32,12 +32,17 @@ def update_inventory_from_port_scan(results):
             services = []
             
             for port_info in open_ports:
-                services.append({
+                service_entry = {
                     'port': port_info['port'],
-                    'service': port_info['service'],
+                    'service': port_info.get('service', 'unknown'),
                     'protocol': port_info.get('protocol', 'tcp'),
-                    'banner': port_info.get('banner', '')
-                })
+                    'banner': port_info.get('banner', ''),
+                    'confidence': port_info.get('confidence', 'medium'),
+                }
+                # Include TLS version if present
+                if port_info.get('tls_version'):
+                    service_entry['tls_version'] = port_info['tls_version']
+                services.append(service_entry)
             
             # Prepare metadata
             metadata = {
@@ -65,6 +70,9 @@ def update_inventory_from_port_scan(results):
             
             if 'server_type' in data:
                 metadata['server_type'] = data['server_type']
+
+            if 'service_categories' in data:
+                metadata['service_categories'] = data['service_categories']
             
             asset_manager.add_or_update_asset(
                 tenant_id=tenant_id,

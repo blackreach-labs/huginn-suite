@@ -1016,20 +1016,6 @@ class EvidenceManagerComponent(QWidget):
         msg.setIcon(QMessageBox.Icon.Warning)
         msg.setWindowTitle("Evidence Manager")
         msg.setText(message)
-        msg.setStyleSheet("""
-            QMessageBox {
-                background-color: rgba(20, 30, 40, 240);
-                color: #DCDCDC;
-            }
-            QLabel { color: #DCDCDC; }
-            QPushButton {
-                background-color: rgba(30, 40, 50, 150);
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-                color: #DCDCDC;
-                padding: 5px 15px;
-            }
-        """)
         msg.exec()
 
     def _show_info(self, message: str):
@@ -1038,20 +1024,6 @@ class EvidenceManagerComponent(QWidget):
         msg.setIcon(QMessageBox.Icon.Information)
         msg.setWindowTitle("Evidence Manager")
         msg.setText(message)
-        msg.setStyleSheet("""
-            QMessageBox {
-                background-color: rgba(20, 30, 40, 240);
-                color: #DCDCDC;
-            }
-            QLabel { color: #DCDCDC; }
-            QPushButton {
-                background-color: rgba(30, 40, 50, 150);
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-                color: #DCDCDC;
-                padding: 5px 15px;
-            }
-        """)
         msg.exec()
 
     # ------------------------------------------------------------------
@@ -1059,137 +1031,5 @@ class EvidenceManagerComponent(QWidget):
     # ------------------------------------------------------------------
 
     def apply_theme(self):
-        """Apply the dark theme with cyan accents matching project conventions."""
-        self.setStyleSheet("""
-            QWidget {
-                background-color: transparent;
-                color: #DCDCDC;
-            }
-            QFrame {
-                background-color: rgba(0, 0, 0, 100);
-                border-radius: 10px;
-                border: 1px solid rgba(100, 200, 255, 50);
-            }
-            QFrame#dropArea {
-                background-color: rgba(20, 30, 40, 100);
-                border: 2px dashed rgba(100, 200, 255, 80);
-                border-radius: 10px;
-                min-height: 80px;
-            }
-            QTabWidget::pane {
-                background-color: rgba(0, 0, 0, 100);
-                border: 1px solid rgba(100, 200, 255, 50);
-                border-radius: 8px;
-            }
-            QTabBar::tab {
-                background-color: rgba(30, 40, 50, 150);
-                border: 1px solid rgba(100, 200, 255, 50);
-                border-bottom: none;
-                border-top-left-radius: 6px;
-                border-top-right-radius: 6px;
-                padding: 8px 16px;
-                color: #DCDCDC;
-                font-weight: bold;
-            }
-            QTabBar::tab:selected {
-                background-color: rgba(50, 70, 90, 200);
-                border: 2px solid #64C8FF;
-                border-bottom: none;
-                color: #64C8FF;
-            }
-            QTabBar::tab:hover {
-                background-color: rgba(50, 70, 90, 200);
-            }
-            QPushButton {
-                background-color: rgba(30, 40, 50, 150);
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 8px;
-                color: #DCDCDC;
-                font-weight: bold;
-                padding: 8px;
-            }
-            QPushButton:hover {
-                background-color: rgba(50, 70, 90, 200);
-                border: 2px solid #64C8FF;
-            }
-            QPushButton:disabled {
-                background-color: rgba(20, 25, 30, 100);
-                border: 1px solid rgba(100, 200, 255, 30);
-                color: rgba(220, 220, 220, 80);
-            }
-            QLineEdit {
-                background-color: rgba(20, 30, 40, 150);
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-                color: #DCDCDC;
-                padding: 5px;
-            }
-            QLineEdit:focus {
-                border: 2px solid #64C8FF;
-            }
-            QTextEdit {
-                background-color: rgba(20, 30, 40, 150);
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-                color: #DCDCDC;
-                padding: 5px;
-            }
-            QTextEdit:focus {
-                border: 2px solid #64C8FF;
-            }
-            QComboBox {
-                background-color: rgba(20, 30, 40, 150);
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-                color: #DCDCDC;
-                padding: 5px;
-            }
-            QComboBox::drop-down {
-                border: none;
-                width: 20px;
-            }
-            QComboBox QAbstractItemView {
-                background-color: rgba(20, 30, 40, 240);
-                border: 1px solid rgba(100, 200, 255, 100);
-                color: #DCDCDC;
-                selection-background-color: rgba(100, 200, 255, 80);
-            }
-            QListWidget {
-                background-color: rgba(0, 0, 0, 150);
-                border: 1px solid rgba(100, 200, 255, 50);
-                border-radius: 5px;
-                color: #DCDCDC;
-            }
-            QListWidget::item {
-                padding: 6px;
-                border-bottom: 1px solid rgba(100, 200, 255, 20);
-            }
-            QListWidget::item:selected {
-                background-color: rgba(100, 200, 255, 60);
-            }
-            QLabel {
-                color: #DCDCDC;
-                border: none;
-                background: transparent;
-            }
-            QLabel#sectionLabel {
-                color: #64C8FF;
-                font-weight: bold;
-                font-size: 14px;
-                border: none;
-                background: transparent;
-            }
-            QLabel#stateIndicator {
-                color: #64C8FF;
-                font-weight: bold;
-                font-size: 13px;
-                border: none;
-                background: transparent;
-            }
-            QLabel#dropLabel {
-                color: rgba(100, 200, 255, 150);
-                font-size: 12px;
-                border: none;
-                background: transparent;
-            }
-        """)
+        """Theme is applied globally by UnifiedThemeManager."""
+        pass

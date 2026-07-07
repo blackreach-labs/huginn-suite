@@ -578,8 +578,12 @@ class EnhancedPortScanWorker(QRunnable):
                 
                 # Update inventory with enhanced scan results
                 try:
-                    from app.core.inventory_integration import update_inventory_from_port_scan
-                    update_inventory_from_port_scan(all_results)
+                    from app.core.inventory_integration import update_inventory_from_enhanced_scan
+                    update_inventory_from_enhanced_scan(
+                        all_results,
+                        service_detection=self.service_detection,
+                        os_detection=self.os_detection
+                    )
                 except Exception as e:
                     self.signals.output.emit(f"<p style='color: #FFAA00;'>[WARNING] Inventory update failed: {h(e)}</p><br>")
                 

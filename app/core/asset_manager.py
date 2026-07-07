@@ -490,13 +490,29 @@ class AssetManager:
             if 'open_ports' in data:
                 ports = [{'port': p.get('port'), 'protocol': p.get('protocol', 'tcp')} 
                         for p in data['open_ports']]
-                
+
+                services = []
+                for p in data['open_ports']:
+                    service_entry = {
+                        'port': p.get('port'),
+                        'service': p.get('service', 'unknown'),
+                        'protocol': p.get('protocol', 'tcp'),
+                    }
+                    if p.get('banner'):
+                        service_entry['banner'] = p['banner']
+                    if p.get('tls_version'):
+                        service_entry['tls_version'] = p['tls_version']
+                    if p.get('confidence'):
+                        service_entry['confidence'] = p['confidence']
+                    services.append(service_entry)
+
                 self.add_or_update_asset(
                     tenant_id=tenant_id,
                     ip_address=ip,
                     status='IDENTIFIED',
                     confidence=50,
                     open_ports=ports,
+                    services=services,
                     metadata={'discovery_method': 'port_scan'}
                 )
     

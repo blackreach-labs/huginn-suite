@@ -20,21 +20,6 @@ class TemplateWidget(QWidget):
         
         # Template management group
         template_group = QGroupBox("📋 Scan Templates")
-        template_group.setStyleSheet("""
-            QGroupBox {
-                font-weight: bold;
-                color: #64C8FF;
-                border: 2px solid #555;
-                border-radius: 5px;
-                margin-top: 10px;
-                padding-top: 10px;
-            }
-            QGroupBox::title {
-                subcontrol-origin: margin;
-                left: 10px;
-                padding: 0 5px 0 5px;
-            }
-        """)
         
         template_layout = QVBoxLayout(template_group)
         
@@ -63,16 +48,6 @@ class TemplateWidget(QWidget):
         self.description_text = QTextEdit()
         self.description_text.setFixedHeight(60)
         self.description_text.setReadOnly(True)
-        self.description_text.setStyleSheet("""
-            QTextEdit {
-                background-color: rgba(0, 0, 0, 150);
-                border: 1px solid #555;
-                border-radius: 4px;
-                color: #DCDCDC;
-                font-size: 10pt;
-                padding: 5px;
-            }
-        """)
         
         # Create new template
         create_layout = QHBoxLayout()
@@ -81,11 +56,9 @@ class TemplateWidget(QWidget):
         self.new_name_input = QLineEdit()
         self.new_name_input.setPlaceholderText("Template name")
         self.new_name_input.setFixedWidth(150)
-        self.new_name_input.setStyleSheet(self._get_input_style())
         
         self.new_desc_input = QLineEdit()
         self.new_desc_input.setPlaceholderText("Description")
-        self.new_desc_input.setStyleSheet(self._get_input_style())
         
         self.save_button = QPushButton("💾 Save Current")
         self.save_button.clicked.connect(self.save_current_as_template)
@@ -95,28 +68,8 @@ class TemplateWidget(QWidget):
         create_layout.addWidget(self.new_desc_input)
         create_layout.addWidget(self.save_button)
         
-        # Button styling
-        button_style = """
-            QPushButton {
-                background-color: rgba(100, 200, 255, 150);
-                color: white;
-                border: none;
-                border-radius: 4px;
-                padding: 6px;
-                font-size: 10pt;
-            }
-            QPushButton:hover {
-                background-color: rgba(100, 200, 255, 200);
-            }
-        """
-        
-        self.load_button.setStyleSheet(button_style)
-        self.delete_button.setStyleSheet(button_style.replace("100, 200, 255", "255, 100, 100"))
-        self.save_button.setStyleSheet(button_style.replace("100, 200, 255", "100, 255, 100"))
-        
         # Status label
         self.status_label = QLabel("Select a template to load")
-        self.status_label.setStyleSheet("color: #888; font-size: 10pt; padding: 5px;")
         
         # Add to template layout
         template_layout.addLayout(select_layout)
@@ -166,7 +119,6 @@ class TemplateWidget(QWidget):
             self.description_text.setPlainText(display_text)
             
             self.status_label.setText(f"Template: {template_name}")
-            self.status_label.setStyleSheet("color: #64C8FF; font-size: 10pt; padding: 5px;")
     
     def load_template(self):
         """Load selected template"""
@@ -178,10 +130,8 @@ class TemplateWidget(QWidget):
         if template:
             self.template_loaded.emit(template)
             self.status_label.setText(f"✅ Loaded: {template_name}")
-            self.status_label.setStyleSheet("color: #00AA00; font-size: 10pt; padding: 5px;")
         else:
             self.status_label.setText(f"❌ Failed to load: {template_name}")
-            self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")
     
     def delete_template(self):
         """Delete selected template"""
@@ -192,16 +142,13 @@ class TemplateWidget(QWidget):
         # Don't delete default templates
         if template_name in ["Quick Web Scan", "Stealth Recon", "Full Assessment"]:
             self.status_label.setText("❌ Cannot delete default templates")
-            self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")
             return
         
         if template_manager.delete_template(template_name):
             self.refresh_template_list()
             self.status_label.setText(f"🗑️ Deleted: {template_name}")
-            self.status_label.setStyleSheet("color: #FFAA00; font-size: 10pt; padding: 5px;")
         else:
             self.status_label.setText(f"❌ Failed to delete: {template_name}")
-            self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")
     
     def save_current_as_template(self):
         """Save current settings as new template"""
@@ -210,7 +157,6 @@ class TemplateWidget(QWidget):
         
         if not name:
             self.status_label.setText("❌ Please enter template name")
-            self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")
             return
         
         if not description:
@@ -234,7 +180,5 @@ class TemplateWidget(QWidget):
             self.new_desc_input.clear()
             
             self.status_label.setText(f"💾 Saved: {name}")
-            self.status_label.setStyleSheet("color: #00AA00; font-size: 10pt; padding: 5px;")
         else:
             self.status_label.setText(f"❌ Failed to save: {name}")
-            self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")

@@ -184,21 +184,6 @@ class WordlistWidget(QWidget):
         
         # Main group
         main_group = QGroupBox("📝 Custom Wordlist Manager")
-        main_group.setStyleSheet("""
-            QGroupBox {
-                font-weight: bold;
-                color: #64C8FF;
-                border: 2px solid #555;
-                border-radius: 5px;
-                margin-top: 10px;
-                padding-top: 10px;
-            }
-            QGroupBox::title {
-                subcontrol-origin: margin;
-                left: 10px;
-                padding: 0 5px 0 5px;
-            }
-        """)
         
         main_layout = QVBoxLayout(main_group)
         
@@ -223,27 +208,6 @@ class WordlistWidget(QWidget):
         self.refresh_button = QPushButton("🔄 Refresh")
         self.refresh_button.clicked.connect(self.refresh_wordlists)
         
-        button_style = """
-            QPushButton {
-                background-color: rgba(100, 200, 255, 150);
-                color: white;
-                border: none;
-                border-radius: 4px;
-                padding: 6px 12px;
-                font-size: 10pt;
-            }
-            QPushButton:hover {
-                background-color: rgba(100, 200, 255, 200);
-            }
-        """
-        
-        self.new_button.setStyleSheet(button_style.replace("100, 200, 255", "100, 255, 100"))
-        self.edit_button.setStyleSheet(button_style)
-        self.delete_button.setStyleSheet(button_style.replace("100, 200, 255", "255, 100, 100"))
-        self.import_button.setStyleSheet(button_style)
-        self.merge_button.setStyleSheet(button_style.replace("100, 200, 255", "255, 200, 100"))
-        self.refresh_button.setStyleSheet(button_style)
-        
         controls_layout.addWidget(self.new_button)
         controls_layout.addWidget(self.edit_button)
         controls_layout.addWidget(self.delete_button)
@@ -265,22 +229,6 @@ class WordlistWidget(QWidget):
         
         # Results tabs
         self.results_tabs = QTabWidget()
-        self.results_tabs.setStyleSheet("""
-            QTabWidget::pane {
-                border: 1px solid #555;
-                background-color: rgba(0, 0, 0, 100);
-            }
-            QTabBar::tab {
-                background-color: rgba(50, 50, 50, 150);
-                color: #DCDCDC;
-                padding: 8px 12px;
-                margin-right: 2px;
-            }
-            QTabBar::tab:selected {
-                background-color: rgba(100, 200, 255, 150);
-                color: #000;
-            }
-        """)
         
         # Wordlists table
         self.wordlists_table = QTableWidget()
@@ -290,15 +238,11 @@ class WordlistWidget(QWidget):
         ])
         self.wordlists_table.setStyleSheet("""
             QTableWidget {
-                background-color: rgba(0, 0, 0, 150);
                 border: 1px solid #555;
                 border-radius: 4px;
-                color: #DCDCDC;
                 gridline-color: #555;
             }
             QHeaderView::section {
-                background-color: rgba(100, 200, 255, 150);
-                color: white;
                 padding: 4px;
                 border: none;
                 font-weight: bold;
@@ -310,38 +254,15 @@ class WordlistWidget(QWidget):
         # Preview tab
         self.preview_text = QTextEdit()
         self.preview_text.setReadOnly(True)
-        self.preview_text.setStyleSheet("""
-            QTextEdit {
-                background-color: rgba(0, 0, 0, 150);
-                border: 1px solid #555;
-                border-radius: 4px;
-                color: #DCDCDC;
-                font-size: 10pt;
-                padding: 8px;
-                font-family: 'Courier New', monospace;
-            }
-        """)
         self.results_tabs.addTab(self.preview_text, "👁️ Preview")
         
         # Statistics tab
         self.stats_text = QTextEdit()
         self.stats_text.setReadOnly(True)
-        self.stats_text.setStyleSheet("""
-            QTextEdit {
-                background-color: rgba(0, 0, 0, 150);
-                border: 1px solid #555;
-                border-radius: 4px;
-                color: #DCDCDC;
-                font-size: 10pt;
-                padding: 8px;
-                font-family: 'Courier New', monospace;
-            }
-        """)
         self.results_tabs.addTab(self.stats_text, "📊 Statistics")
         
         # Status label
         self.status_label = QLabel("Wordlist manager ready")
-        self.status_label.setStyleSheet("color: #888; font-size: 10pt; padding: 5px;")
         
         # Add to main layout
         main_layout.addLayout(controls_layout)
@@ -424,11 +345,9 @@ class WordlistWidget(QWidget):
             self.update_statistics()
             
             self.status_label.setText(f"Loaded {len(wordlists)} wordlists")
-            self.status_label.setStyleSheet("color: #00AA00; font-size: 10pt; padding: 5px;")
             
         except Exception as e:
             self.status_label.setText(f"Error loading wordlists: {str(e)}")
-            self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")
     
     def create_new_wordlist(self):
         """Create new wordlist"""
@@ -439,7 +358,6 @@ class WordlistWidget(QWidget):
             
             if not data['name'] or not data['content']:
                 self.status_label.setText("❌ Name and content are required")
-                self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")
                 return
             
             if wordlist_manager.create_wordlist(
@@ -450,17 +368,14 @@ class WordlistWidget(QWidget):
             ):
                 self.refresh_wordlists()
                 self.status_label.setText(f"✅ Created wordlist: {data['name']}")
-                self.status_label.setStyleSheet("color: #00AA00; font-size: 10pt; padding: 5px;")
             else:
                 self.status_label.setText("❌ Failed to create wordlist")
-                self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")
     
     def edit_selected_wordlist(self):
         """Edit selected wordlist"""
         current_row = self.wordlists_table.currentRow()
         if current_row < 0:
             self.status_label.setText("❌ Please select a wordlist to edit")
-            self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")
             return
         
         name_item = self.wordlists_table.item(current_row, 0)
@@ -485,20 +400,16 @@ class WordlistWidget(QWidget):
                     ):
                         self.refresh_wordlists()
                         self.status_label.setText(f"✅ Updated wordlist: {data['name']}")
-                        self.status_label.setStyleSheet("color: #00AA00; font-size: 10pt; padding: 5px;")
                     else:
                         self.status_label.setText("❌ Failed to update wordlist")
-                        self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")
             else:
                 self.status_label.setText("❌ Cannot edit built-in wordlists")
-                self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")
     
     def delete_selected_wordlist(self):
         """Delete selected wordlist"""
         current_row = self.wordlists_table.currentRow()
         if current_row < 0:
             self.status_label.setText("❌ Please select a wordlist to delete")
-            self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")
             return
         
         name_item = self.wordlists_table.item(current_row, 0)
@@ -513,13 +424,10 @@ class WordlistWidget(QWidget):
                 if wordlist_manager.delete_wordlist(wordlist_id):
                     self.refresh_wordlists()
                     self.status_label.setText(f"🗑️ Deleted wordlist: {wordlist_data['name']}")
-                    self.status_label.setStyleSheet("color: #FFAA00; font-size: 10pt; padding: 5px;")
                 else:
                     self.status_label.setText("❌ Failed to delete wordlist")
-                    self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")
             else:
                 self.status_label.setText("❌ Cannot delete built-in wordlists")
-                self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")
     
     def import_wordlist(self):
         """Import wordlist from file"""
@@ -534,10 +442,8 @@ class WordlistWidget(QWidget):
             if wordlist_manager.import_wordlist(file_path, name, "imported"):
                 self.refresh_wordlists()
                 self.status_label.setText(f"📁 Imported wordlist: {name}")
-                self.status_label.setStyleSheet("color: #00AA00; font-size: 10pt; padding: 5px;")
             else:
                 self.status_label.setText("❌ Failed to import wordlist")
-                self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")
     
     def merge_wordlists(self):
         """Merge multiple wordlists"""
@@ -545,7 +451,6 @@ class WordlistWidget(QWidget):
         
         if len(wordlists) < 2:
             self.status_label.setText("❌ Need at least 2 wordlists to merge")
-            self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")
             return
         
         dialog = MergeDialog(wordlists, parent=self)
@@ -555,7 +460,6 @@ class WordlistWidget(QWidget):
             
             if not data['name'] or len(data['wordlist_ids']) < 2:
                 self.status_label.setText("❌ Name and at least 2 wordlists required")
-                self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")
                 return
             
             if wordlist_manager.merge_wordlists(
@@ -565,10 +469,8 @@ class WordlistWidget(QWidget):
             ):
                 self.refresh_wordlists()
                 self.status_label.setText(f"🔗 Merged wordlist: {data['name']}")
-                self.status_label.setStyleSheet("color: #00AA00; font-size: 10pt; padding: 5px;")
             else:
                 self.status_label.setText("❌ Failed to merge wordlists")
-                self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")
     
     def filter_wordlists(self):
         """Filter wordlists by category"""

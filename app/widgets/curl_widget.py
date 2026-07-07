@@ -49,36 +49,36 @@ class CurlWidget(QWidget):
     def setup_ui(self):
         layout = QVBoxLayout(self)
         
-        # Control panel
+        # Control panel - right-aligned proxy controls with status + button on top,
+        # intercept checkbox below
         control_frame = QFrame()
-        control_layout = QHBoxLayout(control_frame)
+        control_outer = QVBoxLayout(control_frame)
+        control_outer.setContentsMargins(0, 0, 0, 0)
+        control_outer.setSpacing(4)
         
-        # Proxy controls
-        self.start_proxy_btn = QPushButton("Start Proxy")
-        self.start_proxy_btn.clicked.connect(self.toggle_proxy)
-        control_layout.addWidget(self.start_proxy_btn)
+        # Top row: stretch | status | start proxy button
+        top_row = QHBoxLayout()
+        top_row.addStretch()
         
         self.proxy_status = QLabel("Proxy: Stopped")
-        self.proxy_status.setStyleSheet("color: #FF4500;")
-        control_layout.addWidget(self.proxy_status)
+        top_row.addWidget(self.proxy_status)
+        
+        self.start_proxy_btn = QPushButton("Start Proxy")
+        self.start_proxy_btn.clicked.connect(self.toggle_proxy)
+        top_row.addWidget(self.start_proxy_btn)
+        
+        control_outer.addLayout(top_row)
+        
+        # Bottom row: intercept checkbox aligned right
+        bottom_row = QHBoxLayout()
+        bottom_row.addStretch()
         
         self.intercept_checkbox = QCheckBox("Intercept requests")
         self.intercept_checkbox.toggled.connect(self.toggle_intercept)
         self.intercept_checkbox.setEnabled(False)  # Disabled until proxy starts
-        control_layout.addWidget(self.intercept_checkbox)
+        bottom_row.addWidget(self.intercept_checkbox)
         
-        control_layout.addStretch()
-        
-        # Install CA certificate button
-        self.install_cert_btn = QPushButton("Install CA Cert")
-        self.install_cert_btn.setToolTip("Install mitmproxy CA certificate to trusted root store (requires admin)")
-        self.install_cert_btn.setStyleSheet(
-            "QPushButton { background-color: #6A1B9A; color: white; "
-            "border-radius: 4px; padding: 4px 10px; }"
-            "QPushButton:hover { background-color: #7B1FA2; }"
-        )
-        self.install_cert_btn.clicked.connect(self.install_proxy_certificate)
-        control_layout.addWidget(self.install_cert_btn)
+        control_outer.addLayout(bottom_row)
         
         layout.addWidget(control_frame)
         
@@ -789,8 +789,16 @@ class CurlWidget(QWidget):
         self.verify_ssl_cb.setChecked(True)
     
     def toggle_proxy(self):
-        """Start or stop the proxy server"""
+        """Start or stop the proxy server.
+        
+        On start, checks if the mitmproxy CA certificate is installed in the
+        Windows trusted root store. If not, prompts the user to install it.
+        """
         if not self.proxy_running:
+            # Check if CA cert is installed before starting
+            if not self._is_ca_cert_installed():
+                self._prompt_ca_cert_install()
+            
             if self.request_handler.start_proxy(8080):
                 self.curl_response.append("\n[INFO] Starting proxy server on port 8080...")
             else:
@@ -799,12 +807,46 @@ class CurlWidget(QWidget):
             self.request_handler.stop_proxy()
             self.curl_response.append("\n[INFO] Stopping proxy server...")
     
+    def _is_ca_cert_installed(self):
+        """Check if the mitmproxy CA certificate is already in the Windows trusted root store."""
+        import subprocess
+        try:
+            result = subprocess.run(
+                ["certutil", "-verifystore", "root", "mitmproxy"],
+                capture_output=True, text=True,
+                creationflags=subprocess.CREATE_NO_WINDOW
+            )
+            # certutil returns 0 and includes the cert subject if found
+            return result.returncode == 0 and "mitmproxy" in result.stdout.lower()
+        except Exception:
+            # If certutil fails, assume not installed
+            return False
+    
+    def _prompt_ca_cert_install(self):
+        """Show a dialog asking the user to install the CA certificate."""
+        from PyQt6.QtWidgets import QMessageBox
+        
+        msg = QMessageBox(self)
+        msg.setWindowTitle("CA Certificate Not Installed")
+        msg.setIcon(QMessageBox.Icon.Question)
+        msg.setText(
+            "The mitmproxy CA certificate is not installed in your trusted root store.\n\n"
+            "HTTPS interception requires this certificate to avoid browser errors.\n\n"
+            "Would you like to install it now? (Requires admin privileges)"
+        )
+        msg.setStandardButtons(
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+        )
+        msg.setDefaultButton(QMessageBox.StandardButton.Yes)
+        
+        if msg.exec() == QMessageBox.StandardButton.Yes:
+            self.install_proxy_certificate()
+    
     def on_proxy_started(self, port):
         """Handle proxy started event"""
         self.proxy_running = True
         self.start_proxy_btn.setText("Stop Proxy")
         self.proxy_status.setText(f"Proxy: Running on port {port}")
-        self.proxy_status.setStyleSheet("color: #00FF41;")
         self.intercept_checkbox.setEnabled(True)
         self.curl_response.append(f"\n[SUCCESS] Proxy started on port {port}")
         self.curl_response.append(f"\n[INFO] Configure browser proxy: 127.0.0.1:{port}")
@@ -814,7 +856,6 @@ class CurlWidget(QWidget):
         self.proxy_running = False
         self.start_proxy_btn.setText("Start Proxy")
         self.proxy_status.setText("Proxy: Stopped")
-        self.proxy_status.setStyleSheet("color: #FF4500;")
         self.intercept_checkbox.setEnabled(False)
         self.intercept_checkbox.setChecked(False)
         self.curl_response.append("\n[INFO] Proxy stopped")

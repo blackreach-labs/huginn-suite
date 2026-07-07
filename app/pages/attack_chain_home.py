@@ -101,20 +101,13 @@ class AttackChainHomePage(BasePage):
 
         # ── Form frame ───────────────────────────────────────────────────────
         form_frame = QFrame()
-        form_frame.setStyleSheet("""
-            QFrame {
-                background-color: rgba(0, 0, 0, 150);
-                border-radius: 10px;
-                border: 1px solid rgba(100, 200, 255, 50);
-            }
-        """)
         form_layout = QVBoxLayout(form_frame)
         form_layout.setContentsMargins(15, 15, 15, 15)
         form_layout.setSpacing(0)
 
         FIELD_HEIGHT = 30
-        LABEL_STYLE  = "font-size: 10pt; font-weight: bold; color: #DCDCDC;"
-        HDR_STYLE    = ("font-size: 10pt; font-weight: bold; color: #64C8FF;"
+        LABEL_STYLE  = "font-size: 10pt; font-weight: bold;"
+        HDR_STYLE    = ("font-size: 10pt; font-weight: bold;"
                         " padding: 8px 0px 4px 0px;")
 
         def hdr(text):
@@ -131,7 +124,6 @@ class AttackChainHomePage(BasePage):
             w = QLineEdit()
             w.setPlaceholderText(placeholder)
             w.setFixedHeight(FIELD_HEIGHT)
-            w.setStyleSheet("font-size: 10pt; color: #DCDCDC;")
             return w
 
         grid = QGridLayout()
@@ -202,11 +194,8 @@ class AttackChainHomePage(BasePage):
         self.scope_status = QLabel("Scope: Not configured")
         self.scope_status.setStyleSheet("""
             QLabel {
-                background-color: rgba(255, 165, 0, 100);
-                border: 1px solid #FFA500;
                 border-radius: 5px;
                 padding: 5px 12px;
-                color: #FFFFFF;
                 font-size: 10pt;
                 font-weight: bold;
                 margin-top: 8px;
@@ -223,12 +212,10 @@ class AttackChainHomePage(BasePage):
         btn_layout.setSpacing(8)
 
         add_btn = QPushButton("💾 Save Engagement")
-        add_btn.setStyleSheet(self.get_button_style("#64C8FF", "#000000"))
         add_btn.clicked.connect(self.save_current_profile)
         btn_layout.addWidget(add_btn)
 
         delete_btn = QPushButton("🗑 Delete")
-        delete_btn.setStyleSheet(self.get_button_style("#FF4444", "#FFFFFF"))
         delete_btn.clicked.connect(self.delete_selected_profile)
         btn_layout.addWidget(delete_btn)
 
@@ -237,7 +224,7 @@ class AttackChainHomePage(BasePage):
 
         # ── Engagements summary table ────────────────────────────────────────────
         list_label = QLabel("📋 Engagements:")
-        list_label.setStyleSheet("font-weight: bold; color: #64C8FF; margin-top: 4px;")
+        list_label.setStyleSheet("font-weight: bold; margin-top: 4px;")
         layout.addWidget(list_label)
 
         self.target_table = QTableWidget()
@@ -247,15 +234,11 @@ class AttackChainHomePage(BasePage):
         self.target_table.setMinimumHeight(300)
         self.target_table.setStyleSheet("""
             QTableWidget {
-                background-color: rgba(20, 30, 40, 150);
                 border: 1px solid rgba(100, 200, 255, 100);
                 border-radius: 5px;
-                color: #DCDCDC;
                 gridline-color: rgba(100, 200, 255, 50);
             }
             QHeaderView::section {
-                background-color: rgba(100, 200, 255, 100);
-                color: #000000;
                 font-weight: bold;
                 padding: 5px;
                 border: none;
@@ -309,9 +292,7 @@ class AttackChainHomePage(BasePage):
         form_frame = QFrame()
         form_frame.setStyleSheet("""
             QFrame {
-                background-color: rgba(0, 0, 0, 150);
                 border-radius: 10px;
-                border: 1px solid rgba(100, 200, 255, 50);
             }
         """)
         form_layout = QVBoxLayout(form_frame)
@@ -322,12 +303,10 @@ class AttackChainHomePage(BasePage):
 
         btn_layout = QHBoxLayout()
         add_cred_btn = QPushButton("Add Credential")
-        add_cred_btn.setStyleSheet(self.get_button_style("#64C8FF", "#000000"))
         add_cred_btn.clicked.connect(self.add_credential)
         btn_layout.addWidget(add_cred_btn)
 
         delete_cred_btn = QPushButton("Delete Selected")
-        delete_cred_btn.setStyleSheet(self.get_button_style("#FF6347"))
         delete_cred_btn.clicked.connect(self.delete_selected_credential)
         btn_layout.addWidget(delete_cred_btn)
         btn_layout.addStretch()
@@ -339,7 +318,7 @@ class AttackChainHomePage(BasePage):
         cred_header.addWidget(QLabel("Stored Credentials:"))
         cred_header.addStretch()
         self.show_passwords_cb = QCheckBox("Show Passwords")
-        self.show_passwords_cb.setStyleSheet("color: #DCDCDC; font-weight: bold;")
+        self.show_passwords_cb.setStyleSheet("font-weight: bold;")
         self.show_passwords_cb.stateChanged.connect(self.toggle_password_display)
         cred_header.addWidget(self.show_passwords_cb)
         layout.addLayout(cred_header)
@@ -352,14 +331,12 @@ class AttackChainHomePage(BasePage):
         self.cred_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.cred_table.setStyleSheet("""
             QTableWidget {
-                background-color: rgba(20, 30, 40, 150);
                 border: 1px solid rgba(100, 200, 255, 50);
-                border-radius: 5px; color: #DCDCDC;
+                border-radius: 5px;
                 gridline-color: rgba(100, 200, 255, 50); font-size: 9pt;
             }
             QHeaderView::section {
-                background-color: rgba(100, 200, 255, 100);
-                color: #000000; font-weight: bold; padding: 3px; border: none;
+                font-weight: bold; padding: 3px; border: none;
             }
         """)
         hdr = self.cred_table.horizontalHeader()
@@ -391,7 +368,7 @@ class AttackChainHomePage(BasePage):
             print(f"Error creating mindmap: {e}")
             placeholder = QLabel("🧠 Interactive Attack Chain Mindmap\n(Click phases to navigate)")
             placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            placeholder.setStyleSheet("color: #DCDCDC; padding: 20px; font-size: 14pt;")
+            placeholder.setStyleSheet("padding: 20px; font-size: 14pt;")
             layout.addWidget(placeholder)
         
         return widget
@@ -439,7 +416,7 @@ class AttackChainHomePage(BasePage):
         except ImportError:
             placeholder = QLabel("🔗 Cross-Scan Correlations Dashboard\n(Vulnerability correlation and analysis)")
             placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            placeholder.setStyleSheet("color: #DCDCDC; padding: 20px; font-size: 14pt;")
+            placeholder.setStyleSheet("padding: 20px; font-size: 14pt;")
             return placeholder
     
     def create_remediation_tab(self):
@@ -457,7 +434,7 @@ class AttackChainHomePage(BasePage):
             # Placeholder for remediation
             placeholder = QLabel("🛠️ Automated Remediation Engine\n(Remediation planning and execution)")
             placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            placeholder.setStyleSheet("color: #DCDCDC; padding: 20px; font-size: 14pt;")
+            placeholder.setStyleSheet("padding: 20px; font-size: 14pt;")
             layout.addWidget(placeholder)
         
         return widget
@@ -477,7 +454,7 @@ class AttackChainHomePage(BasePage):
             # Placeholder for dashboard
             placeholder = QLabel("🛡️ Centralized Security Dashboard\n(Real-time metrics and monitoring)")
             placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            placeholder.setStyleSheet("color: #DCDCDC; padding: 20px; font-size: 14pt;")
+            placeholder.setStyleSheet("padding: 20px; font-size: 14pt;")
             layout.addWidget(placeholder)
         
         return widget
@@ -497,7 +474,7 @@ class AttackChainHomePage(BasePage):
             # Placeholder for analytics
             placeholder = QLabel("🔬 Advanced Security Analytics\n(ML-powered threat analysis and insights)")
             placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            placeholder.setStyleSheet("color: #DCDCDC; padding: 20px; font-size: 14pt;")
+            placeholder.setStyleSheet("padding: 20px; font-size: 14pt;")
             layout.addWidget(placeholder)
         
         return widget
@@ -524,7 +501,7 @@ class AttackChainHomePage(BasePage):
         from PyQt6.QtWidgets import QGridLayout
 
         FIELD_HEIGHT = 30
-        LABEL_STYLE = "font-size: 10pt; font-weight: bold; color: #DCDCDC;"
+        LABEL_STYLE = "font-size: 10pt; font-weight: bold;"
 
         grid = QGridLayout()
         grid.setHorizontalSpacing(10)
@@ -539,14 +516,13 @@ class AttackChainHomePage(BasePage):
             le = QLineEdit()
             le.setPlaceholderText(placeholder)
             le.setFixedHeight(FIELD_HEIGHT)
-            le.setStyleSheet("font-size: 10pt; color: #DCDCDC;")
             if echo:
                 le.setEchoMode(QLineEdit.EchoMode.Password)
             return le
 
         # ── Type dropdown — row 0, always visible ───────────────────────────
         type_lbl = QLabel("Type:")
-        type_lbl.setStyleSheet("font-size: 10pt; font-weight: bold; color: #64C8FF;")
+        type_lbl.setStyleSheet("font-size: 10pt; font-weight: bold;")
         grid.addWidget(type_lbl, 0, 0)
 
         self.type_combo = QComboBox()
@@ -1582,17 +1558,6 @@ class AttackChainHomePage(BasePage):
         
         if not in_scope_text:
             self.scope_status.setText("⚠️ Scope: Not configured")
-            self.scope_status.setStyleSheet("""
-                QLabel {
-                    background-color: rgba(255, 165, 0, 100);
-                    border: 1px solid #FFA500;
-                    border-radius: 5px;
-                    padding: 8px 12px;
-                    color: #FFFFFF;
-                    font-size: 11pt;
-                    font-weight: bold;
-                }
-            """)
             return
         
         # Parse and display scope summary
@@ -1625,17 +1590,6 @@ class AttackChainHomePage(BasePage):
         summary = "; ".join(summary_parts) if summary_parts else "Configured"
         
         self.scope_status.setText(f"✅ Scope: {summary}")
-        self.scope_status.setStyleSheet("""
-            QLabel {
-                background-color: rgba(50, 150, 50, 100);
-                border: 1px solid #32CD32;
-                border-radius: 5px;
-                padding: 8px 12px;
-                color: #FFFFFF;
-                font-size: 11pt;
-                font-weight: bold;
-            }
-        """)
         
         # Update global scope manager for validation
         try:

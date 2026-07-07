@@ -175,34 +175,5 @@ class ProgressComponent(QWidget):
         self.scan_cancelled.emit()
 
     def apply_theme(self):
-        """Apply component theme"""
-        self.setStyleSheet("""
-            QWidget {
-                background-color: rgba(20, 30, 40, 150);
-                border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-            }
-            QProgressBar {
-                border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 4px;
-                text-align: center;
-                background-color: rgba(50, 50, 50, 150);
-                color: #DCDCDC;
-            }
-            QProgressBar::chunk {
-                background-color: rgba(100, 200, 255, 200);
-                border-radius: 3px;
-            }
-            QPushButton {
-                background-color: rgba(30, 40, 50, 150);
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 6px;
-                color: #DCDCDC;
-                font-weight: bold;
-                padding: 4px 8px;
-            }
-            QPushButton:hover {
-                background-color: rgba(50, 70, 90, 200);
-                border: 2px solid #64C8FF;
-            }
-        """)
+        """Theme is applied globally by UnifiedThemeManager."""
+        pass

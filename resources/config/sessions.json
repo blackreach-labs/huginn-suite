@@ -8,6 +8,32 @@
     "scan_ids": [],
     "status": "active",
     "tags": [],
-    "notes": ""
+    "notes": "",
+    "exports": [
+      {
+        "id": "b3a0cecc-0532-400d-af11-0d28c167bd6f",
+        "file_path": "exports\\scan_results_www.blackreachlabs.com_1782997622.json",
+        "format": "json",
+        "target": "www.blackreachlabs.com",
+        "file_size": 2505,
+        "timestamp": "2026-07-02T23:07:02.485155"
+      },
+      {
+        "id": "dcad97d9-2177-406e-b7c5-f0b0c4394d4d",
+        "file_path": "exports\\scan_results_www.blackreachlabs.com_1782997627.csv",
+        "format": "csv",
+        "target": "www.blackreachlabs.com",
+        "file_size": 2049,
+        "timestamp": "2026-07-02T23:07:07.686261"
+      },
+      {
+        "id": "98193c92-0327-4488-aa4f-23b861c0b507",
+        "file_path": "exports\\scan_results_www.blackreachlabs.com_1782997743.json",
+        "format": "json",
+        "target": "www.blackreachlabs.com",
+        "file_size": 2505,
+        "timestamp": "2026-07-02T23:09:03.955978"
+      }
+    ]
   }
 }

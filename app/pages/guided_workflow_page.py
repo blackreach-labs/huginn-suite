@@ -37,9 +37,7 @@ class StepTimelineWidget(QFrame):
         self.setObjectName("StepTimeline")
         self.setStyleSheet("""
             QFrame#StepTimeline {
-                background-color: rgba(10, 15, 25, 200);
                 border-radius: 12px;
-                border: 1px solid rgba(100, 200, 255, 40);
             }
         """)
         self.setup_ui()
@@ -51,12 +49,10 @@ class StepTimelineWidget(QFrame):
         scroll.setStyleSheet("""
             QScrollArea { background: transparent; border: none; }
             QScrollBar:vertical {
-                background: rgba(30, 40, 60, 100);
                 width: 6px;
                 border-radius: 3px;
             }
             QScrollBar::handle:vertical {
-                background: rgba(100, 200, 255, 80);
                 border-radius: 3px;
                 min-height: 30px;
             }
@@ -71,7 +67,7 @@ class StepTimelineWidget(QFrame):
         # Timeline header
         header = QLabel("WORKFLOW STEPS")
         header.setStyleSheet("""
-            font-size: 9pt; font-weight: bold; color: rgba(100, 200, 255, 180);
+            font-size: 9pt; font-weight: bold;
             letter-spacing: 2px; padding: 4px 8px;
         """)
         self.timeline_layout.addWidget(header)
@@ -110,7 +106,7 @@ class StepTimelineWidget(QFrame):
         name_label = QLabel(step.name)
         name_label.setObjectName(f"step_name_{index}")
         name_label.setWordWrap(True)
-        name_label.setStyleSheet("font-size: 9pt; color: #8899AA;")
+        name_label.setStyleSheet("font-size: 9pt;")
         layout.addWidget(name_label, 1)
         
         frame.setStyleSheet("""
@@ -119,7 +115,6 @@ class StepTimelineWidget(QFrame):
                 background: transparent;
                 padding: 2px;
             }
-            QFrame:hover { background: rgba(100, 200, 255, 15); }
         """)
         
         return frame
@@ -133,42 +128,35 @@ class StepTimelineWidget(QFrame):
             if i < index:
                 # Completed
                 indicator.setStyleSheet("""
-                    background-color: #2ECC71; color: white; 
                     border-radius: 13px; font-size: 9pt; font-weight: bold;
                 """)
                 indicator.setText("✓")
-                name_label.setStyleSheet("font-size: 9pt; color: #2ECC71; font-weight: bold;")
+                name_label.setStyleSheet("font-size: 9pt; font-weight: bold;")
                 frame.setStyleSheet("""
-                    QFrame { border-radius: 6px; background: rgba(46, 204, 113, 10); padding: 2px; }
-                    QFrame:hover { background: rgba(46, 204, 113, 25); }
+                    QFrame { border-radius: 6px; padding: 2px; }
                 """)
             elif i == index:
                 # Current
                 indicator.setStyleSheet("""
-                    background-color: #64C8FF; color: #0A0F19;
                     border-radius: 13px; font-size: 9pt; font-weight: bold;
                 """)
                 indicator.setText(str(i + 1))
-                name_label.setStyleSheet("font-size: 9pt; color: #64C8FF; font-weight: bold;")
+                name_label.setStyleSheet("font-size: 9pt; font-weight: bold;")
                 frame.setStyleSheet("""
                     QFrame { 
                         border-radius: 6px; 
-                        background: rgba(100, 200, 255, 15); 
-                        border: 1px solid rgba(100, 200, 255, 60);
                         padding: 2px;
                     }
                 """)
             else:
                 # Upcoming
                 indicator.setStyleSheet("""
-                    background-color: rgba(60, 70, 90, 180); color: #556677;
                     border-radius: 13px; font-size: 9pt; font-weight: bold;
                 """)
                 indicator.setText(str(i + 1))
-                name_label.setStyleSheet("font-size: 9pt; color: #556677;")
+                name_label.setStyleSheet("font-size: 9pt;")
                 frame.setStyleSheet("""
                     QFrame { border-radius: 6px; background: transparent; padding: 2px; }
-                    QFrame:hover { background: rgba(100, 200, 255, 8); }
                 """)
 
 
@@ -302,13 +290,10 @@ class GuidedWorkflowPage(QWidget):
         self.overall_progress.setTextVisible(False)
         self.overall_progress.setStyleSheet("""
             QProgressBar {
-                background-color: rgba(40, 50, 70, 150);
                 border-radius: 3px;
                 border: none;
             }
             QProgressBar::chunk {
-                background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                    stop:0 #2ECC71, stop:1 #64C8FF);
                 border-radius: 3px;
             }
         """)
@@ -353,9 +338,7 @@ class GuidedWorkflowPage(QWidget):
         frame = QFrame()
         frame.setStyleSheet("""
             QFrame {
-                background-color: rgba(10, 15, 25, 180);
                 border-radius: 10px;
-                border: 1px solid rgba(100, 200, 255, 30);
             }
         """)
         layout = QHBoxLayout(frame)
@@ -363,7 +346,7 @@ class GuidedWorkflowPage(QWidget):
         
         # Title
         title = QLabel("🎯 Guided Penetration Testing Workflow")
-        title.setStyleSheet("font-size: 16pt; font-weight: bold; color: white;")
+        title.setStyleSheet("font-size: 16pt; font-weight: bold;")
         layout.addWidget(title)
         
         layout.addStretch()
@@ -371,9 +354,7 @@ class GuidedWorkflowPage(QWidget):
         # Step counter badge
         self.step_counter = QLabel("Step 1 / 12")
         self.step_counter.setStyleSheet("""
-            font-size: 10pt; color: #64C8FF; font-weight: bold;
-            background: rgba(100, 200, 255, 15);
-            border: 1px solid rgba(100, 200, 255, 50);
+            font-size: 10pt; font-weight: bold;
             border-radius: 12px;
             padding: 4px 14px;
         """)
@@ -384,17 +365,10 @@ class GuidedWorkflowPage(QWidget):
         self.questionnaire_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.questionnaire_btn.setStyleSheet("""
             QPushButton {
-                background-color: rgba(46, 204, 113, 30);
-                color: #2ECC71;
-                border: 1px solid rgba(46, 204, 113, 80);
                 border-radius: 8px;
                 padding: 6px 16px;
                 font-size: 10pt;
                 font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: rgba(46, 204, 113, 60);
-                color: white;
             }
         """)
         self.questionnaire_btn.clicked.connect(self.start_questionnaire_directly)
@@ -408,9 +382,7 @@ class GuidedWorkflowPage(QWidget):
         frame.setObjectName("StepDetailsCard")
         frame.setStyleSheet("""
             QFrame#StepDetailsCard {
-                background-color: rgba(10, 15, 25, 200);
                 border-radius: 12px;
-                border: 1px solid rgba(100, 200, 255, 40);
             }
         """)
         
@@ -422,7 +394,7 @@ class GuidedWorkflowPage(QWidget):
         title_row = QHBoxLayout()
         
         self.step_title = QLabel()
-        self.step_title.setStyleSheet("font-size: 18pt; font-weight: bold; color: #64C8FF;")
+        self.step_title.setStyleSheet("font-size: 18pt; font-weight: bold;")
         title_row.addWidget(self.step_title)
         
         title_row.addStretch()
@@ -430,9 +402,7 @@ class GuidedWorkflowPage(QWidget):
         # Time estimate badge
         self.time_estimate = QLabel()
         self.time_estimate.setStyleSheet("""
-            font-size: 9pt; color: #87CEEB;
-            background: rgba(135, 206, 235, 10);
-            border: 1px solid rgba(135, 206, 235, 40);
+            font-size: 9pt;
             border-radius: 10px;
             padding: 4px 12px;
         """)
@@ -444,7 +414,7 @@ class GuidedWorkflowPage(QWidget):
         self.step_description = QLabel()
         self.step_description.setWordWrap(True)
         self.step_description.setStyleSheet("""
-            font-size: 11pt; color: #B0BEC5; line-height: 1.5;
+            font-size: 11pt;
             padding: 4px 0;
         """)
         layout.addWidget(self.step_description)
@@ -452,7 +422,7 @@ class GuidedWorkflowPage(QWidget):
         # Separator
         separator = QFrame()
         separator.setFrameShape(QFrame.Shape.HLine)
-        separator.setStyleSheet("background-color: rgba(100, 200, 255, 30); max-height: 1px;")
+        separator.setStyleSheet("max-height: 1px;")
         layout.addWidget(separator)
         
         # Prerequisites section (shown when applicable)
@@ -463,14 +433,14 @@ class GuidedWorkflowPage(QWidget):
         prereq_icon.setStyleSheet("font-size: 11pt;")
         prereq_layout.addWidget(prereq_icon)
         self.prereq_label = QLabel()
-        self.prereq_label.setStyleSheet("font-size: 9pt; color: #F39C12; font-style: italic;")
+        self.prereq_label.setStyleSheet("font-size: 9pt; font-style: italic;")
         prereq_layout.addWidget(self.prereq_label, 1)
         layout.addWidget(self.prereq_frame)
         
         # Tools section header
         tools_header = QLabel("Available Tools")
         tools_header.setStyleSheet("""
-            font-size: 11pt; font-weight: bold; color: rgba(100, 200, 255, 200);
+            font-size: 11pt; font-weight: bold;
             letter-spacing: 1px; padding-top: 4px;
         """)
         layout.addWidget(tools_header)
@@ -481,12 +451,10 @@ class GuidedWorkflowPage(QWidget):
         self.tools_scroll.setStyleSheet("""
             QScrollArea { background: transparent; border: none; }
             QScrollBar:vertical {
-                background: rgba(30, 40, 60, 100);
                 width: 6px;
                 border-radius: 3px;
             }
             QScrollBar::handle:vertical {
-                background: rgba(100, 200, 255, 80);
                 border-radius: 3px;
                 min-height: 20px;
             }
@@ -506,9 +474,7 @@ class GuidedWorkflowPage(QWidget):
         frame = QFrame()
         frame.setStyleSheet("""
             QFrame {
-                background-color: rgba(10, 15, 25, 150);
                 border-radius: 10px;
-                border: 1px solid rgba(100, 200, 255, 20);
             }
         """)
         layout = QHBoxLayout(frame)
@@ -519,23 +485,10 @@ class GuidedWorkflowPage(QWidget):
         self.prev_button.setCursor(Qt.CursorShape.PointingHandCursor)
         self.prev_button.setStyleSheet("""
             QPushButton {
-                background-color: rgba(50, 60, 80, 150);
-                color: #8899AA;
-                border: 1px solid rgba(100, 120, 150, 80);
                 border-radius: 8px;
                 padding: 10px 20px;
                 font-size: 10pt;
                 font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: rgba(70, 85, 110, 180);
-                color: #DCDCDC;
-                border-color: rgba(100, 200, 255, 80);
-            }
-            QPushButton:disabled {
-                background-color: rgba(30, 35, 50, 100);
-                color: #445566;
-                border-color: rgba(60, 70, 90, 50);
             }
         """)
         self.prev_button.clicked.connect(self.previous_step)
@@ -548,17 +501,10 @@ class GuidedWorkflowPage(QWidget):
         self.next_button.setCursor(Qt.CursorShape.PointingHandCursor)
         self.next_button.setStyleSheet("""
             QPushButton {
-                background-color: rgba(100, 200, 255, 30);
-                color: #64C8FF;
-                border: 1px solid rgba(100, 200, 255, 100);
                 border-radius: 8px;
                 padding: 10px 24px;
                 font-size: 10pt;
                 font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: rgba(100, 200, 255, 60);
-                color: white;
             }
         """)
         self.next_button.clicked.connect(self.next_step)
@@ -621,34 +567,20 @@ class GuidedWorkflowPage(QWidget):
             self.next_button.setText("✅ Finish Workflow")
             self.next_button.setStyleSheet("""
                 QPushButton {
-                    background-color: rgba(46, 204, 113, 30);
-                    color: #2ECC71;
-                    border: 1px solid rgba(46, 204, 113, 100);
                     border-radius: 8px;
                     padding: 10px 24px;
                     font-size: 10pt;
                     font-weight: bold;
-                }
-                QPushButton:hover {
-                    background-color: rgba(46, 204, 113, 60);
-                    color: white;
                 }
             """)
         else:
             self.next_button.setText("Mark Complete & Continue →")
             self.next_button.setStyleSheet("""
                 QPushButton {
-                    background-color: rgba(100, 200, 255, 30);
-                    color: #64C8FF;
-                    border: 1px solid rgba(100, 200, 255, 100);
                     border-radius: 8px;
                     padding: 10px 24px;
                     font-size: 10pt;
                     font-weight: bold;
-                }
-                QPushButton:hover {
-                    background-color: rgba(100, 200, 255, 60);
-                    color: white;
                 }
             """)
     
@@ -660,21 +592,10 @@ class GuidedWorkflowPage(QWidget):
         btn.setFixedHeight(40)
         btn.setStyleSheet("""
             QPushButton {
-                background-color: rgba(50, 60, 80, 150);
-                color: #DCDCDC;
-                border: 1px solid rgba(100, 120, 150, 60);
                 border-radius: 8px;
                 padding: 8px 16px;
                 font-size: 10pt;
                 text-align: left;
-            }
-            QPushButton:hover {
-                background-color: rgba(100, 200, 255, 25);
-                border-color: rgba(100, 200, 255, 100);
-                color: #64C8FF;
-            }
-            QPushButton:pressed {
-                background-color: rgba(100, 200, 255, 40);
             }
         """)
         btn.clicked.connect(lambda checked, t=tool_name: self.launch_tool(t))
@@ -967,7 +888,7 @@ class GuidedWorkflowPage(QWidget):
             'launch_service_enum': ('recon_enumeration', 3, None),      # Service Enumeration tab
             'launch_huginn_scanner': ('vuln_scanning', 0, None),          # Vulnerability Scanner
             'launch_web_testing': ('vuln_scanning', 1, None),           # Web Application Scanner
-            'launch_auth_testing': ('web_exploits', None, None),
+            'launch_auth_testing': ('web_exploits', 2, None),          # Exploits > Auth Workflows
             'launch_exploitation': ('web_exploits', None, None),
             'shell_management': ('shell_management', None, None),
             'launch_privesc': ('post_exploitation', None, None),
@@ -1169,18 +1090,6 @@ class GuidedWorkflowPage(QWidget):
         picker.setWindowTitle("📂 Select Existing Target")
         picker.setModal(True)
         picker.resize(420, 320)
-        picker.setStyleSheet("""
-            QDialog { background-color: #1A1F2E; }
-            QLabel { color: #DCDCDC; font-size: 10pt; }
-            QListWidget {
-                background-color: rgba(40, 50, 70, 200); color: white;
-                border: 1px solid rgba(100, 200, 255, 60); border-radius: 6px;
-                padding: 6px; font-size: 10pt;
-            }
-            QListWidget::item:selected {
-                background-color: rgba(100, 200, 255, 80);
-            }
-        """)
 
         playout = QVBoxLayout(picker)
         playout.setContentsMargins(20, 20, 20, 20)
@@ -1225,25 +1134,16 @@ class GuidedWorkflowPage(QWidget):
         dialog.resize(600, 700)
         dialog.setStyleSheet("""
             QDialog {
-                background-color: #1A1F2E;
             }
             QLabel {
-                color: #DCDCDC;
                 font-size: 10pt;
             }
             QLineEdit, QTextEdit, QComboBox {
-                background-color: rgba(40, 50, 70, 200);
-                color: white;
-                border: 1px solid rgba(100, 200, 255, 60);
                 border-radius: 6px;
                 padding: 8px;
                 font-size: 10pt;
             }
-            QLineEdit:focus, QTextEdit:focus {
-                border-color: #64C8FF;
-            }
             QCheckBox {
-                color: #DCDCDC;
                 font-size: 10pt;
                 spacing: 8px;
             }
@@ -1255,7 +1155,7 @@ class GuidedWorkflowPage(QWidget):
         
         # Dialog header
         header = QLabel("Define your target and engagement scope")
-        header.setStyleSheet("font-size: 11pt; color: #87CEEB; font-style: italic; margin-bottom: 8px;")
+        header.setStyleSheet("font-size: 11pt; font-style: italic; margin-bottom: 8px;")
         layout.addWidget(header)
 
         # --- Existing Engagements Section ---
@@ -1267,7 +1167,7 @@ class GuidedWorkflowPage(QWidget):
 
         if existing_engagements:
             existing_label = QLabel(f"Existing Engagements ({len(existing_engagements)} found):")
-            existing_label.setStyleSheet("font-size: 10pt; color: #64C8FF; font-weight: bold;")
+            existing_label.setStyleSheet("font-size: 10pt; font-weight: bold;")
             layout.addWidget(existing_label)
 
             from PyQt6.QtWidgets import QListWidget
@@ -1275,12 +1175,8 @@ class GuidedWorkflowPage(QWidget):
             existing_list.setMaximumHeight(100)
             existing_list.setStyleSheet("""
                 QListWidget {
-                    background-color: rgba(40, 50, 70, 200); color: white;
-                    border: 1px solid rgba(100, 200, 255, 60); border-radius: 6px;
+                    border-radius: 6px;
                     padding: 4px; font-size: 10pt;
-                }
-                QListWidget::item:selected {
-                    background-color: rgba(100, 200, 255, 80);
                 }
             """)
             for eng in existing_engagements:
@@ -1289,9 +1185,7 @@ class GuidedWorkflowPage(QWidget):
 
             select_btn = QPushButton("✅  Use Selected Engagement")
             select_btn.setStyleSheet("""
-                QPushButton { background: rgba(80, 180, 120, 30); color: #7DCEA0;
-                    border: 1px solid rgba(80, 180, 120, 100); border-radius: 6px; padding: 8px 16px; font-weight: bold; }
-                QPushButton:hover { background: rgba(80, 180, 120, 60); color: white; }
+                QPushButton { border-radius: 6px; padding: 8px 16px; font-weight: bold; }
             """)
             select_btn.clicked.connect(lambda: self._use_selected_engagement(
                 dialog, existing_list, existing_engagements))
@@ -1299,17 +1193,16 @@ class GuidedWorkflowPage(QWidget):
 
             separator = QFrame()
             separator.setFrameShape(QFrame.Shape.HLine)
-            separator.setStyleSheet("color: rgba(100, 200, 255, 40);")
             layout.addWidget(separator)
 
             new_label = QLabel("— Or define a new target below —")
-            new_label.setStyleSheet("font-size: 9pt; color: #8899AA; font-style: italic;")
+            new_label.setStyleSheet("font-size: 9pt; font-style: italic;")
             new_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             layout.addWidget(new_label)
         else:
             # No existing engagements — just show a subtle note
             no_eng_label = QLabel("No existing engagements found. Define a new target below.")
-            no_eng_label.setStyleSheet("font-size: 9pt; color: #8899AA; font-style: italic;")
+            no_eng_label.setStyleSheet("font-size: 9pt; font-style: italic;")
             layout.addWidget(no_eng_label)
         
         form_layout = QFormLayout()
@@ -1343,7 +1236,7 @@ class GuidedWorkflowPage(QWidget):
         
         # Permission checkboxes
         perms_label = QLabel("Permissions:")
-        perms_label.setStyleSheet("font-size: 10pt; color: #64C8FF; font-weight: bold; margin-top: 8px;")
+        perms_label.setStyleSheet("font-size: 10pt; font-weight: bold; margin-top: 8px;")
         layout.addWidget(perms_label)
         
         dos_allowed = QCheckBox("Denial of Service attacks allowed")
@@ -1361,18 +1254,14 @@ class GuidedWorkflowPage(QWidget):
         
         cancel_btn = QPushButton("Cancel")
         cancel_btn.setStyleSheet("""
-            QPushButton { background: rgba(50, 60, 80, 150); color: #8899AA;
-                border: 1px solid rgba(100, 120, 150, 60); border-radius: 6px; padding: 8px 20px; }
-            QPushButton:hover { background: rgba(70, 85, 110, 180); color: #DCDCDC; }
+            QPushButton { border-radius: 6px; padding: 8px 20px; }
         """)
         cancel_btn.clicked.connect(dialog.reject)
         btn_layout.addWidget(cancel_btn)
         
         save_btn = QPushButton("💾  Save Target")
         save_btn.setStyleSheet("""
-            QPushButton { background: rgba(100, 200, 255, 30); color: #64C8FF;
-                border: 1px solid rgba(100, 200, 255, 100); border-radius: 6px; padding: 8px 20px; font-weight: bold; }
-            QPushButton:hover { background: rgba(100, 200, 255, 60); color: white; }
+            QPushButton { border-radius: 6px; padding: 8px 20px; font-weight: bold; }
         """)
         save_btn.clicked.connect(lambda: self.save_target_info(
             dialog, target_name.text(), target_url.text(), in_scope.toPlainText(),
@@ -1389,23 +1278,13 @@ class GuidedWorkflowPage(QWidget):
         dialog.setWindowTitle("📋 Scope & Rules of Engagement")
         dialog.setModal(True)
         dialog.resize(500, 400)
-        dialog.setStyleSheet("""
-            QDialog { background-color: #1A1F2E; }
-            QLabel { color: #DCDCDC; font-size: 10pt; }
-            QTextEdit {
-                background-color: rgba(40, 50, 70, 200); color: white;
-                border: 1px solid rgba(100, 200, 255, 60); border-radius: 6px; padding: 8px; font-size: 10pt;
-            }
-            QTextEdit:focus { border-color: #64C8FF; }
-            QCheckBox { color: #DCDCDC; font-size: 10pt; spacing: 8px; }
-        """)
         
         layout = QVBoxLayout(dialog)
         layout.setContentsMargins(24, 24, 24, 24)
         layout.setSpacing(14)
         
         header = QLabel("Define the rules of engagement for this assessment")
-        header.setStyleSheet("font-size: 11pt; color: #87CEEB; font-style: italic;")
+        header.setStyleSheet("font-size: 11pt; font-style: italic;")
         layout.addWidget(header)
         
         form_layout = QFormLayout()
@@ -1424,7 +1303,7 @@ class GuidedWorkflowPage(QWidget):
         layout.addLayout(form_layout)
         
         perms_label = QLabel("Permissions:")
-        perms_label.setStyleSheet("font-size: 10pt; color: #64C8FF; font-weight: bold;")
+        perms_label.setStyleSheet("font-size: 10pt; font-weight: bold;")
         layout.addWidget(perms_label)
         
         dos_allowed = QCheckBox("Denial of Service attacks allowed")
@@ -1440,18 +1319,14 @@ class GuidedWorkflowPage(QWidget):
         btn_layout.addStretch()
         cancel_btn = QPushButton("Cancel")
         cancel_btn.setStyleSheet("""
-            QPushButton { background: rgba(50, 60, 80, 150); color: #8899AA;
-                border: 1px solid rgba(100, 120, 150, 60); border-radius: 6px; padding: 8px 20px; }
-            QPushButton:hover { background: rgba(70, 85, 110, 180); color: #DCDCDC; }
+            QPushButton { border-radius: 6px; padding: 8px 20px; }
         """)
         cancel_btn.clicked.connect(dialog.reject)
         btn_layout.addWidget(cancel_btn)
         
         save_btn = QPushButton("💾  Save Rules")
         save_btn.setStyleSheet("""
-            QPushButton { background: rgba(100, 200, 255, 30); color: #64C8FF;
-                border: 1px solid rgba(100, 200, 255, 100); border-radius: 6px; padding: 8px 20px; font-weight: bold; }
-            QPushButton:hover { background: rgba(100, 200, 255, 60); color: white; }
+            QPushButton { border-radius: 6px; padding: 8px 20px; font-weight: bold; }
         """)
         save_btn.clicked.connect(lambda: self.save_scope_info(
             dialog, in_scope.toPlainText(), out_of_scope.toPlainText(),
@@ -1467,22 +1342,13 @@ class GuidedWorkflowPage(QWidget):
         dialog.setWindowTitle("🔐 Credential Management")
         dialog.setModal(True)
         dialog.resize(480, 320)
-        dialog.setStyleSheet("""
-            QDialog { background-color: #1A1F2E; }
-            QLabel { color: #DCDCDC; font-size: 10pt; }
-            QLineEdit, QComboBox {
-                background-color: rgba(40, 50, 70, 200); color: white;
-                border: 1px solid rgba(100, 200, 255, 60); border-radius: 6px; padding: 8px; font-size: 10pt;
-            }
-            QLineEdit:focus { border-color: #64C8FF; }
-        """)
         
         layout = QVBoxLayout(dialog)
         layout.setContentsMargins(24, 24, 24, 24)
         layout.setSpacing(14)
         
         header = QLabel("Add credentials for authenticated testing")
-        header.setStyleSheet("font-size: 11pt; color: #87CEEB; font-style: italic;")
+        header.setStyleSheet("font-size: 11pt; font-style: italic;")
         layout.addWidget(header)
         
         form_layout = QFormLayout()
@@ -1512,18 +1378,14 @@ class GuidedWorkflowPage(QWidget):
         btn_layout.addStretch()
         cancel_btn = QPushButton("Cancel")
         cancel_btn.setStyleSheet("""
-            QPushButton { background: rgba(50, 60, 80, 150); color: #8899AA;
-                border: 1px solid rgba(100, 120, 150, 60); border-radius: 6px; padding: 8px 20px; }
-            QPushButton:hover { background: rgba(70, 85, 110, 180); color: #DCDCDC; }
+            QPushButton { border-radius: 6px; padding: 8px 20px; }
         """)
         cancel_btn.clicked.connect(dialog.reject)
         btn_layout.addWidget(cancel_btn)
         
         save_btn = QPushButton("🔐  Add Credential")
         save_btn.setStyleSheet("""
-            QPushButton { background: rgba(100, 200, 255, 30); color: #64C8FF;
-                border: 1px solid rgba(100, 200, 255, 100); border-radius: 6px; padding: 8px 20px; font-weight: bold; }
-            QPushButton:hover { background: rgba(100, 200, 255, 60); color: white; }
+            QPushButton { border-radius: 6px; padding: 8px 20px; font-weight: bold; }
         """)
         save_btn.clicked.connect(lambda: self.save_credential_info(
             dialog, cred_type.currentText(), username.text(), password.text(), domain.text()))

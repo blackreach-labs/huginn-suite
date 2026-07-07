@@ -641,3 +641,358 @@ ipaddress.NetmaskValueError: '' is not a valid netmask
 2026-07-02 23:00:24 - huginn - INFO - local_dns_server stopped
 2026-07-02 23:00:24 - huginn - DEBUG - Memory monitoring stopped
 2026-07-02 23:00:24 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-02 23:01:00 - huginn - INFO - License saved successfully
+2026-07-02 23:01:00 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:01:00 - huginn - INFO - Application starting...
+2026-07-02 23:01:00 - huginn - INFO - Huginn version 0.0.0
+2026-07-02 23:01:00 - huginn - INFO - Font loaded successfully
+2026-07-02 23:01:00 - huginn - INFO - Stylesheet loaded successfully
+2026-07-02 23:01:00 - huginn - INFO - Creating main window...
+2026-07-02 23:01:00 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-07-02 23:01:00 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-07-02 23:01:01 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:01:01 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-02 23:01:01 - huginn - INFO - [FeatureGapIntegration] All new modules integrated successfully.
+2026-07-02 23:01:01 - huginn - INFO - Feature gap integration completed successfully
+2026-07-02 23:01:11 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (pool_size=5)
+2026-07-02 23:01:11 - huginn - INFO - Engagement opened: 3be37757-07dc-499f-b6c5-bf1ed60dc47f
+2026-07-02 23:01:11 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 23:01:11 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 23:01:39 - huginn - DEBUG - Resolved hostname 'blackreachlabs.com' to: ['76.223.105.230', '13.248.243.5']
+2026-07-02 23:02:02 - huginn - DEBUG - Resolved hostname 'www.blackreachlabs.com' to: ['76.223.105.230', '13.248.243.5']
+2026-07-02 23:02:05 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\port_scanner.py", line 442, in scan_tcp_port
+    banner = sock.recv(1024).decode("utf-8", errors="ignore").strip()
+             ~~~~~~~~~^^^^^^
+TimeoutError: timed out
+2026-07-02 23:02:19 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\tools\port_scanner.py", line 442, in scan_tcp_port
+    banner = sock.recv(1024).decode("utf-8", errors="ignore").strip()
+             ~~~~~~~~~^^^^^^
+TimeoutError: timed out
+2026-07-02 23:05:25 - huginn - INFO - Using default configuration
+2026-07-02 23:05:27 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:05:27 - huginn - INFO - License saved successfully
+2026-07-02 23:05:27 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:05:33 - huginn - INFO - Using default configuration
+2026-07-02 23:05:35 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:05:36 - huginn - INFO - License saved successfully
+2026-07-02 23:05:36 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:05:43 - huginn - INFO - Using default configuration
+2026-07-02 23:05:45 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:05:45 - huginn - INFO - License saved successfully
+2026-07-02 23:05:45 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:07:02 - huginn - INFO - Results exported to exports\scan_results_www.blackreachlabs.com_1782997622.json
+2026-07-02 23:07:07 - huginn - INFO - Results exported to exports\scan_results_www.blackreachlabs.com_1782997627.csv
+2026-07-02 23:09:03 - huginn - INFO - Results exported to exports\scan_results_www.blackreachlabs.com_1782997743.json
+2026-07-02 23:11:15 - huginn - DEBUG - Memory monitoring stopped
+2026-07-02 23:11:15 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-02 23:11:20 - huginn - INFO - License saved successfully
+2026-07-02 23:11:20 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:11:20 - huginn - INFO - Application starting...
+2026-07-02 23:11:20 - huginn - INFO - Huginn version 0.0.0
+2026-07-02 23:11:20 - huginn - INFO - Font loaded successfully
+2026-07-02 23:11:20 - huginn - INFO - Stylesheet loaded successfully
+2026-07-02 23:11:20 - huginn - INFO - Creating main window...
+2026-07-02 23:11:20 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-07-02 23:11:20 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-07-02 23:11:21 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:11:22 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-02 23:11:22 - huginn - INFO - [FeatureGapIntegration] All new modules integrated successfully.
+2026-07-02 23:11:22 - huginn - INFO - Feature gap integration completed successfully
+2026-07-02 23:11:30 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (pool_size=5)
+2026-07-02 23:11:30 - huginn - INFO - Engagement opened: 3be37757-07dc-499f-b6c5-bf1ed60dc47f
+2026-07-02 23:11:30 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 23:11:30 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 23:11:59 - huginn - INFO - Using default configuration
+2026-07-02 23:11:59 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\dns_resolver.py", line 14, in resolve_hostname
+    ipaddress.ip_address(hostname)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 54, in ip_address
+    raise ValueError(f'{address!r} does not appear to be an IPv4 or IPv6 address')
+ValueError: 'www.blackreachlabs.com' does not appear to be an IPv4 or IPv6 address
+2026-07-02 23:13:12 - huginn - INFO - Using default configuration
+2026-07-02 23:13:14 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:13:14 - huginn - INFO - License saved successfully
+2026-07-02 23:13:14 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:13:27 - huginn - INFO - Using default configuration
+2026-07-02 23:13:29 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:13:29 - huginn - INFO - License saved successfully
+2026-07-02 23:13:29 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:13:44 - huginn - INFO - Using default configuration
+2026-07-02 23:13:47 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:13:47 - huginn - INFO - License saved successfully
+2026-07-02 23:13:47 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:13:53 - huginn - INFO - Using default configuration
+2026-07-02 23:13:55 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:13:55 - huginn - INFO - License saved successfully
+2026-07-02 23:13:55 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:14:10 - huginn - INFO - Using default configuration
+2026-07-02 23:14:12 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:14:12 - huginn - INFO - License saved successfully
+2026-07-02 23:14:12 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:14:53 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\dns_resolver.py", line 14, in resolve_hostname
+    ipaddress.ip_address(hostname)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\allie\anaconda3\Lib\ipaddress.py", line 54, in ip_address
+    raise ValueError(f'{address!r} does not appear to be an IPv4 or IPv6 address')
+ValueError: 'www.blackreachlabs.com' does not appear to be an IPv4 or IPv6 address
+2026-07-02 23:22:42 - huginn - INFO - Using default configuration
+2026-07-02 23:22:44 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:22:44 - huginn - INFO - License saved successfully
+2026-07-02 23:22:44 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:25:40 - huginn - DEBUG - Memory monitoring stopped
+2026-07-02 23:25:40 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-02 23:25:46 - huginn - INFO - Using default configuration
+2026-07-02 23:25:48 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:25:49 - huginn - INFO - License saved successfully
+2026-07-02 23:25:49 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:25:53 - huginn - INFO - Using default configuration
+2026-07-02 23:25:55 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:25:55 - huginn - INFO - License saved successfully
+2026-07-02 23:25:55 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:26:13 - huginn - INFO - License saved successfully
+2026-07-02 23:26:13 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:26:13 - huginn - INFO - Application starting...
+2026-07-02 23:26:13 - huginn - INFO - Huginn version 0.0.0
+2026-07-02 23:26:13 - huginn - INFO - Font loaded successfully
+2026-07-02 23:26:13 - huginn - INFO - Stylesheet loaded successfully
+2026-07-02 23:26:13 - huginn - INFO - Creating main window...
+2026-07-02 23:26:13 - huginn - INFO - QThreadPool max threads set to 32 (CPUs: 32)
+2026-07-02 23:26:13 - huginn - INFO - Custom font 'Neuropol X' loaded from C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\fonts\neuropol.otf
+2026-07-02 23:26:14 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:26:15 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-02 23:26:15 - huginn - INFO - [FeatureGapIntegration] All new modules integrated successfully.
+2026-07-02 23:26:15 - huginn - INFO - Feature gap integration completed successfully
+2026-07-02 23:26:23 - huginn - INFO - EngagementDatabase connected: C:\Users\allie\Coding Projects\huggin_suite\huginn\resources\engagements\3be37757-07dc-499f-b6c5-bf1ed60dc47f\engagement.db (pool_size=5)
+2026-07-02 23:26:23 - huginn - INFO - Engagement opened: 3be37757-07dc-499f-b6c5-bf1ed60dc47f
+2026-07-02 23:26:23 - huginn - INFO - NoteSystem: database attached and FTS initialized.
+2026-07-02 23:26:23 - huginn - INFO - RetestWorkflow: database attached.
+2026-07-02 23:32:49 - huginn - DEBUG - Memory monitoring stopped
+2026-07-02 23:32:49 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-02 23:37:16 - huginn - INFO - Using default configuration
+2026-07-02 23:37:18 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:37:18 - huginn - INFO - License saved successfully
+2026-07-02 23:37:18 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:37:26 - huginn - INFO - Using default configuration
+2026-07-02 23:37:29 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:37:29 - huginn - INFO - License saved successfully
+2026-07-02 23:37:29 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:37:37 - huginn - INFO - Using default configuration
+2026-07-02 23:37:39 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:37:39 - huginn - INFO - License saved successfully
+2026-07-02 23:37:39 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:37:49 - huginn - INFO - Using default configuration
+2026-07-02 23:37:51 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:37:51 - huginn - INFO - License saved successfully
+2026-07-02 23:37:51 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:38:05 - huginn - INFO - Using default configuration
+2026-07-02 23:38:07 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:38:07 - huginn - INFO - License saved successfully
+2026-07-02 23:38:07 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:38:20 - huginn - INFO - Using default configuration
+2026-07-02 23:38:23 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:38:23 - huginn - INFO - License saved successfully
+2026-07-02 23:38:23 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:38:42 - huginn - INFO - Using default configuration
+2026-07-02 23:38:44 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:38:44 - huginn - INFO - License saved successfully
+2026-07-02 23:38:44 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:39:00 - huginn - INFO - Using default configuration
+2026-07-02 23:39:02 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:39:02 - huginn - INFO - License saved successfully
+2026-07-02 23:39:02 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:39:25 - huginn - INFO - Using default configuration
+2026-07-02 23:39:27 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:39:27 - huginn - INFO - License saved successfully
+2026-07-02 23:39:27 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:39:48 - huginn - INFO - Using default configuration
+2026-07-02 23:39:50 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:39:50 - huginn - INFO - License saved successfully
+2026-07-02 23:39:50 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:40:14 - huginn - INFO - Using default configuration
+2026-07-02 23:40:16 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:40:16 - huginn - INFO - License saved successfully
+2026-07-02 23:40:16 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:40:40 - huginn - INFO - Using default configuration
+2026-07-02 23:40:42 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:40:43 - huginn - INFO - License saved successfully
+2026-07-02 23:40:43 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:40:56 - huginn - INFO - Using default configuration
+2026-07-02 23:40:58 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:40:58 - huginn - INFO - License saved successfully
+2026-07-02 23:40:58 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:41:37 - huginn - INFO - Using default configuration
+2026-07-02 23:41:39 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:41:39 - huginn - INFO - License saved successfully
+2026-07-02 23:41:39 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:41:52 - huginn - INFO - Using default configuration
+2026-07-02 23:41:54 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:41:55 - huginn - INFO - License saved successfully
+2026-07-02 23:41:55 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:42:21 - huginn - INFO - Using default configuration
+2026-07-02 23:42:23 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:42:23 - huginn - INFO - License saved successfully
+2026-07-02 23:42:23 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:42:38 - huginn - INFO - Using default configuration
+2026-07-02 23:42:40 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:42:40 - huginn - INFO - License saved successfully
+2026-07-02 23:42:40 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:42:54 - huginn - INFO - Using default configuration
+2026-07-02 23:42:56 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:42:56 - huginn - INFO - License saved successfully
+2026-07-02 23:42:56 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:43:22 - huginn - INFO - Using default configuration
+2026-07-02 23:43:24 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:43:24 - huginn - INFO - License saved successfully
+2026-07-02 23:43:24 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:43:52 - huginn - INFO - Using default configuration
+2026-07-02 23:43:54 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:43:55 - huginn - INFO - License saved successfully
+2026-07-02 23:43:55 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:44:32 - huginn - INFO - Using default configuration
+2026-07-02 23:44:34 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:44:34 - huginn - INFO - License saved successfully
+2026-07-02 23:44:34 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:44:52 - huginn - INFO - Using default configuration
+2026-07-02 23:44:54 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:44:54 - huginn - INFO - License saved successfully
+2026-07-02 23:44:54 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:45:12 - huginn - INFO - Using default configuration
+2026-07-02 23:45:15 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:45:15 - huginn - INFO - License saved successfully
+2026-07-02 23:45:15 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:45:58 - huginn - INFO - Using default configuration
+2026-07-02 23:46:00 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:46:00 - huginn - INFO - License saved successfully
+2026-07-02 23:46:00 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:46:14 - huginn - INFO - Using default configuration
+2026-07-02 23:46:16 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:46:16 - huginn - INFO - License saved successfully
+2026-07-02 23:46:16 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:46:42 - huginn - INFO - Using default configuration
+2026-07-02 23:46:44 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:46:45 - huginn - INFO - License saved successfully
+2026-07-02 23:46:45 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:47:01 - huginn - INFO - Using default configuration
+2026-07-02 23:47:03 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:47:03 - huginn - INFO - License saved successfully
+2026-07-02 23:47:03 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:47:22 - huginn - INFO - Using default configuration
+2026-07-02 23:47:24 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:47:25 - huginn - INFO - License saved successfully
+2026-07-02 23:47:25 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:47:48 - huginn - INFO - Using default configuration
+2026-07-02 23:47:50 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:47:50 - huginn - INFO - License saved successfully
+2026-07-02 23:47:50 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:48:11 - huginn - INFO - Using default configuration
+2026-07-02 23:48:13 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:48:13 - huginn - INFO - License saved successfully
+2026-07-02 23:48:13 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:48:33 - huginn - INFO - Using default configuration
+2026-07-02 23:48:35 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:48:36 - huginn - INFO - License saved successfully
+2026-07-02 23:48:36 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:49:10 - huginn - INFO - Using default configuration
+2026-07-02 23:49:12 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:49:12 - huginn - INFO - License saved successfully
+2026-07-02 23:49:12 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:49:57 - huginn - INFO - Using default configuration
+2026-07-02 23:49:59 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:49:59 - huginn - INFO - License saved successfully
+2026-07-02 23:49:59 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:50:26 - huginn - INFO - Using default configuration
+2026-07-02 23:50:28 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:50:28 - huginn - INFO - License saved successfully
+2026-07-02 23:50:28 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:50:42 - huginn - INFO - Using default configuration
+2026-07-02 23:50:44 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:50:44 - huginn - INFO - License saved successfully
+2026-07-02 23:50:44 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:51:05 - huginn - INFO - Using default configuration
+2026-07-02 23:51:07 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:51:07 - huginn - INFO - License saved successfully
+2026-07-02 23:51:07 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:51:24 - huginn - INFO - Using default configuration
+2026-07-02 23:51:26 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:51:26 - huginn - INFO - License saved successfully
+2026-07-02 23:51:26 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:51:47 - huginn - INFO - Using default configuration
+2026-07-02 23:51:49 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:51:49 - huginn - INFO - License saved successfully
+2026-07-02 23:51:49 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:52:17 - huginn - INFO - Using default configuration
+2026-07-02 23:52:19 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:52:19 - huginn - INFO - License saved successfully
+2026-07-02 23:52:19 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:52:42 - huginn - INFO - Using default configuration
+2026-07-02 23:52:44 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:52:45 - huginn - INFO - License saved successfully
+2026-07-02 23:52:45 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:53:01 - huginn - INFO - Using default configuration
+2026-07-02 23:53:03 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:53:04 - huginn - INFO - License saved successfully
+2026-07-02 23:53:04 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:53:19 - huginn - INFO - Using default configuration
+2026-07-02 23:53:21 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:53:21 - huginn - INFO - License saved successfully
+2026-07-02 23:53:21 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:54:07 - huginn - INFO - Using default configuration
+2026-07-02 23:54:10 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:54:10 - huginn - INFO - License saved successfully
+2026-07-02 23:54:10 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:54:24 - huginn - INFO - Using default configuration
+2026-07-02 23:54:26 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:54:26 - huginn - INFO - License saved successfully
+2026-07-02 23:54:26 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:54:41 - huginn - INFO - Using default configuration
+2026-07-02 23:54:43 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:54:43 - huginn - INFO - License saved successfully
+2026-07-02 23:54:43 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:54:55 - huginn - INFO - Using default configuration
+2026-07-02 23:54:57 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:54:57 - huginn - INFO - License saved successfully
+2026-07-02 23:54:57 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:55:15 - huginn - INFO - Using default configuration
+2026-07-02 23:55:17 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:55:17 - huginn - INFO - License saved successfully
+2026-07-02 23:55:17 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:55:31 - huginn - INFO - Using default configuration
+2026-07-02 23:55:33 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:55:34 - huginn - INFO - License saved successfully
+2026-07-02 23:55:34 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:55:52 - huginn - INFO - Using default configuration
+2026-07-02 23:55:54 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:55:54 - huginn - INFO - License saved successfully
+2026-07-02 23:55:54 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:56:10 - huginn - INFO - Using default configuration
+2026-07-02 23:56:12 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:56:12 - huginn - INFO - License saved successfully
+2026-07-02 23:56:12 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:56:31 - huginn - INFO - Using default configuration
+2026-07-02 23:56:33 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:56:33 - huginn - INFO - License saved successfully
+2026-07-02 23:56:33 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:56:52 - huginn - INFO - Using default configuration
+2026-07-02 23:56:55 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:56:55 - huginn - INFO - License saved successfully
+2026-07-02 23:56:55 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:57:26 - huginn - INFO - Using default configuration
+2026-07-02 23:57:28 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:57:29 - huginn - INFO - License saved successfully
+2026-07-02 23:57:29 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:57:46 - huginn - INFO - Using default configuration
+2026-07-02 23:57:48 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:57:48 - huginn - INFO - License saved successfully
+2026-07-02 23:57:48 - huginn - INFO - License loaded and validated successfully
+2026-07-02 23:58:06 - huginn - INFO - Using default configuration
+2026-07-02 23:58:08 - huginn - INFO - Master index schema initialized.
+2026-07-02 23:58:08 - huginn - INFO - License saved successfully
+2026-07-02 23:58:08 - huginn - INFO - License loaded and validated successfully

@@ -154,47 +154,5 @@ class CloudDiscoveryComponent(QWidget):
         self.output_text.append(text)
 
     def apply_theme(self):
-        """Apply component theme"""
-        self.setStyleSheet("""
-            QFrame {
-                background-color: rgba(20, 30, 40, 150);
-                border-radius: 10px;
-                border: 1px solid rgba(100, 200, 255, 50);
-            }
-            QPushButton {
-                background-color: rgba(100, 200, 255, 150);
-                border: 2px solid #64C8FF;
-                border-radius: 8px;
-                color: #000000;
-                font-weight: bold;
-                padding: 10px 20px;
-            }
-            QPushButton:hover {
-                background-color: rgba(100, 200, 255, 200);
-            }
-            QPushButton:disabled {
-                background-color: rgba(60, 60, 60, 100);
-                color: #888888;
-            }
-            QLineEdit {
-                background-color: rgba(20, 30, 40, 150);
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-                color: #DCDCDC;
-                padding: 5px;
-            }
-            QTextEdit {
-                background-color: rgba(0, 0, 0, 200);
-                border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-                color: #00FF00;
-                font-family: 'Courier New', monospace;
-            }
-            QLabel {
-                color: #64C8FF;
-                font-weight: bold;
-            }
-            QCheckBox {
-                color: #DCDCDC;
-            }
-        """)
+        """Theme is applied globally by UnifiedThemeManager."""
+        pass

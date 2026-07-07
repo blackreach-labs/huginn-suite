@@ -197,6 +197,7 @@ class MainWindow(QMainWindow):
         self.page_manager.register_page('huginn_scanner', lambda: self._create_huginn_scanner())
         self.page_manager.register_page('shell_management', lambda: self._create_shell_management())
         self.page_manager.register_page('network_discovery', lambda: self._create_network_discovery())
+        self.page_manager.register_page('http_interceptor', lambda: self._create_http_interceptor())
         # Add other pages as needed
         
 
@@ -374,6 +375,16 @@ class MainWindow(QMainWindow):
             logger.error(f"Failed to create network discovery page: {e}")
             return None
     
+    def _create_http_interceptor(self):
+        try:
+            from app.pages.http_interceptor_page import HttpInterceptorPage
+            page = HttpInterceptorPage(self)
+            self._connect_page_signals(page)
+            return page
+        except Exception as e:
+            logger.error(f"Failed to create HTTP interceptor page: {e}")
+            return None
+    
     def _connect_page_signals(self, page):
         """Connect signals for a specific page when it's created."""
         if hasattr(page, 'navigate_signal'):
@@ -383,7 +394,6 @@ class MainWindow(QMainWindow):
     
     def _apply_styling(self):
         """Apply global styling and theme."""
-        self._apply_global_styling()
         self.theme_manager.apply_initial_theme()
     
     def _optimized_final_setup(self):
@@ -419,51 +429,8 @@ class MainWindow(QMainWindow):
             self.neuropol_family = None
     
     def _apply_global_styling(self):
-        """Apply global application styling."""
-        self.setStyleSheet("""
-            QMainWindow {
-                background-color: #0A0A0A;
-            }
-            
-            /* Scrollbars */
-            QScrollBar:vertical {
-                background-color: rgba(50, 50, 50, 100);
-                width: 12px;
-                border-radius: 6px;
-                margin: 0px;
-            }
-            QScrollBar::handle:vertical {
-                background-color: rgba(100, 200, 255, 150);
-                border-radius: 6px;
-                min-height: 20px;
-                margin: 2px;
-            }
-            QScrollBar::handle:vertical:hover {
-                background-color: rgba(100, 200, 255, 200);
-            }
-            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
-                height: 0px;
-            }
-            
-            QScrollBar:horizontal {
-                background-color: rgba(50, 50, 50, 100);
-                height: 12px;
-                border-radius: 6px;
-                margin: 0px;
-            }
-            QScrollBar::handle:horizontal {
-                background-color: rgba(100, 200, 255, 150);
-                border-radius: 6px;
-                min-width: 20px;
-                margin: 2px;
-            }
-            QScrollBar::handle:horizontal:hover {
-                background-color: rgba(100, 200, 255, 200);
-            }
-            QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
-                width: 0px;
-            }
-        """)
+        """Legacy method - styling is now handled entirely by the theme manager."""
+        pass
     
     # Delegate methods to managers
     def navigate_to(self, page_name):

@@ -305,48 +305,5 @@ class ScanProfilesComponent(QWidget):
         dialog.exec()
 
     def apply_theme(self):
-        """Apply component theme"""
-        self.setStyleSheet("""
-            QFrame {
-                background-color: rgba(0, 0, 0, 100);
-                border-radius: 10px;
-                border: 1px solid rgba(100, 200, 255, 50);
-            }
-            QListWidget {
-                background-color: rgba(20, 30, 40, 150);
-                border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-                color: #DCDCDC;
-            }
-            QListWidget::item {
-                padding: 8px;
-                border-bottom: 1px solid rgba(100, 200, 255, 30);
-            }
-            QListWidget::item:selected {
-                background-color: rgba(100, 200, 255, 100);
-                color: #000000;
-            }
-            QTextEdit {
-                background-color: rgba(0, 0, 0, 200);
-                border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-                color: #DCDCDC;
-                padding: 10px;
-            }
-            QLabel {
-                color: #64C8FF;
-                font-weight: bold;
-            }
-            QPushButton {
-                background-color: rgba(100, 200, 255, 150);
-                border: 2px solid #64C8FF;
-                border-radius: 8px;
-                color: #000000;
-                font-weight: bold;
-                padding: 8px 16px;
-                margin: 5px;
-            }
-            QPushButton:hover {
-                background-color: rgba(100, 200, 255, 200);
-            }
-        """)
+        """Theme is applied globally by UnifiedThemeManager."""
+        pass

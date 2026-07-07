@@ -37,18 +37,5 @@ class AssetDetailsComponent(QWidget):
             self.details_widget.update_asset(asset)
 
     def apply_theme(self):
-        """Apply component theme"""
-        self.setStyleSheet("""
-            QPushButton {
-                background-color: rgba(30, 40, 50, 150);
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 8px;
-                color: #DCDCDC;
-                font-weight: bold;
-                padding: 8px;
-            }
-            QPushButton:hover {
-                background-color: rgba(50, 70, 90, 200);
-                border: 2px solid #64C8FF;
-            }
-        """)
+        """Theme is applied globally by UnifiedThemeManager."""
+        pass

@@ -87,7 +87,6 @@ class ComplianceComponent(QWidget):
         self.clear_content()
         
         title = QLabel("⚖️ Legal Guidelines for OSINT Activities")
-        title.setStyleSheet("color: #64C8FF; font-size: 16pt; font-weight: bold; padding: 10px;")
         self.content_layout.addWidget(title)
         
         content = QTextEdit()
@@ -140,7 +139,6 @@ class ComplianceComponent(QWidget):
         self.clear_content()
         
         title = QLabel("🤝 Ethical Standards for OSINT Practitioners")
-        title.setStyleSheet("color: #64C8FF; font-size: 16pt; font-weight: bold; padding: 10px;")
         self.content_layout.addWidget(title)
         
         content = QTextEdit()
@@ -184,7 +182,6 @@ class ComplianceComponent(QWidget):
         self.clear_content()
         
         title = QLabel("🔒 Privacy Compliance Requirements")
-        title.setStyleSheet("color: #64C8FF; font-size: 16pt; font-weight: bold; padding: 10px;")
         self.content_layout.addWidget(title)
         
         content = QTextEdit()
@@ -228,7 +225,6 @@ class ComplianceComponent(QWidget):
         self.clear_content()
         
         title = QLabel("🛡️ Data Protection Guidelines")
-        title.setStyleSheet("color: #64C8FF; font-size: 16pt; font-weight: bold; padding: 10px;")
         self.content_layout.addWidget(title)
         
         content = QTextEdit()
@@ -271,7 +267,6 @@ class ComplianceComponent(QWidget):
         self.clear_content()
         
         title = QLabel("✅ Consent Management Framework")
-        title.setStyleSheet("color: #64C8FF; font-size: 16pt; font-weight: bold; padding: 10px;")
         self.content_layout.addWidget(title)
         
         content = QTextEdit()
@@ -315,7 +310,6 @@ class ComplianceComponent(QWidget):
         self.clear_content()
         
         title = QLabel("📋 Audit Trail and Documentation")
-        title.setStyleSheet("color: #64C8FF; font-size: 16pt; font-weight: bold; padding: 10px;")
         self.content_layout.addWidget(title)
         
         content = QTextEdit()
@@ -359,7 +353,6 @@ class ComplianceComponent(QWidget):
         self.clear_content()
         
         title = QLabel("⚠️ Risk Assessment Framework")
-        title.setStyleSheet("color: #64C8FF; font-size: 16pt; font-weight: bold; padding: 10px;")
         self.content_layout.addWidget(title)
         
         content = QTextEdit()
@@ -398,50 +391,5 @@ class ComplianceComponent(QWidget):
         self.compliance_completed.emit({"risk_assessment": True})
 
     def apply_theme(self):
-        """Apply component theme"""
-        self.setStyleSheet("""
-            QFrame {
-                background-color: rgba(0, 0, 0, 100);
-                border-radius: 10px;
-                border: 1px solid rgba(100, 200, 255, 50);
-            }
-            QPushButton {
-                background-color: rgba(30, 40, 50, 150);
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 8px;
-                color: #DCDCDC;
-                font-weight: bold;
-                padding: 8px;
-            }
-            QPushButton:hover {
-                background-color: rgba(50, 70, 90, 200);
-                border: 2px solid #64C8FF;
-            }
-            QTextEdit {
-                background-color: rgba(0, 0, 0, 200);
-                border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-                color: #DCDCDC;
-                font-family: 'Neuropol X', sans-serif;
-            }
-            QLabel {
-                color: #64C8FF;
-                font-weight: bold;
-            }
-            QGroupBox {
-                font-weight: bold;
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-                margin-top: 10px;
-                color: #64C8FF;
-            }
-            QGroupBox::title {
-                subcontrol-origin: margin;
-                left: 10px;
-                padding: 0 5px 0 5px;
-            }
-            QScrollArea {
-                border: none;
-                background-color: transparent;
-            }
-        """)
+        """Theme is applied globally by UnifiedThemeManager."""
+        pass

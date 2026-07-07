@@ -38,109 +38,6 @@ from app.core.collaboration_manager import CollaborationManager
 
 
 # ---------------------------------------------------------------------------
-# Stylesheet constants
-# ---------------------------------------------------------------------------
-
-DIALOG_STYLE = """
-    QDialog {
-        background-color: #1e1e2e;
-    }
-    QLabel {
-        color: #e0e0e0;
-        font-size: 10pt;
-    }
-    QLineEdit {
-        background-color: #2b2b3d;
-        border: 1px solid #555;
-        border-radius: 4px;
-        padding: 6px;
-        color: #e0e0e0;
-        font-size: 10pt;
-    }
-    QLineEdit:focus {
-        border: 2px solid #64C8FF;
-    }
-    QPushButton {
-        background-color: #2b2b3d;
-        border: 1px solid #555;
-        border-radius: 4px;
-        padding: 8px 16px;
-        color: #e0e0e0;
-        font-size: 10pt;
-    }
-    QPushButton:hover {
-        background-color: #3a3a4d;
-        border: 1px solid #64C8FF;
-    }
-    QPushButton:pressed {
-        background-color: #64C8FF;
-        color: #000000;
-    }
-    QPushButton#primaryBtn {
-        background-color: rgba(100, 200, 255, 150);
-        border: 1px solid #64C8FF;
-        color: #000000;
-        font-weight: bold;
-    }
-    QPushButton#primaryBtn:hover {
-        background-color: rgba(100, 200, 255, 200);
-    }
-    QPushButton#primaryBtn:disabled {
-        background-color: #3a3a4d;
-        border: 1px solid #555;
-        color: #888;
-    }
-    QGroupBox {
-        font-weight: bold;
-        color: #64C8FF;
-        border: 2px solid #555;
-        border-radius: 5px;
-        margin-top: 10px;
-        padding-top: 10px;
-    }
-    QGroupBox::title {
-        subcontrol-origin: margin;
-        left: 10px;
-        padding: 0 5px;
-        color: #64C8FF;
-    }
-    QCheckBox {
-        color: #e0e0e0;
-        font-size: 10pt;
-        spacing: 6px;
-    }
-    QCheckBox::indicator {
-        width: 16px;
-        height: 16px;
-        border: 2px solid #555;
-        border-radius: 3px;
-        background-color: #2b2b3d;
-    }
-    QCheckBox::indicator:checked {
-        border: 2px solid #64C8FF;
-        background-color: #64C8FF;
-    }
-    QProgressBar {
-        border: 1px solid #555;
-        border-radius: 4px;
-        background-color: #2b2b3d;
-        text-align: center;
-        color: #e0e0e0;
-        font-size: 9pt;
-        min-height: 20px;
-    }
-    QProgressBar::chunk {
-        background-color: #64C8FF;
-        border-radius: 3px;
-    }
-    QScrollArea {
-        border: none;
-        background-color: transparent;
-    }
-"""
-
-
-# ---------------------------------------------------------------------------
 # Export Worker Thread
 # ---------------------------------------------------------------------------
 
@@ -255,7 +152,6 @@ class ExportDialog(QDialog):
         self.setWindowTitle("Export Engagement Package")
         self.setMinimumWidth(500)
         self.setMinimumHeight(450)
-        self.setStyleSheet(DIALOG_STYLE)
         self._build_ui()
         self._connect_signals()
 
@@ -266,7 +162,6 @@ class ExportDialog(QDialog):
 
         # Title
         title = QLabel("Export Engagement Package")
-        title.setStyleSheet("font-size: 14pt; font-weight: bold; color: #64C8FF;")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title)
 
@@ -436,7 +331,6 @@ class ExportDialog(QDialog):
         self._progress_bar.setVisible(True)
         self._progress_bar.setValue(0)
         self._status_label.setText("Exporting...")
-        self._status_label.setStyleSheet("color: #64C8FF;")
         self.export_started.emit()
 
         # Run export in background thread
@@ -490,17 +384,14 @@ class ExportDialog(QDialog):
         if success:
             self._progress_bar.setValue(100)
             self._status_label.setText("✓ Export completed successfully")
-            self._status_label.setStyleSheet("color: #00FF41; font-weight: bold;")
             self.export_completed.emit(True)
         else:
             self._status_label.setText("✗ Export failed")
-            self._status_label.setStyleSheet("color: #FF5555; font-weight: bold;")
             self.export_completed.emit(False)
 
     def _show_error(self, message: str):
         """Display a validation error to the user."""
         self._status_label.setText(f"⚠ {message}")
-        self._status_label.setStyleSheet("color: #FFD700;")
 
 
 # ---------------------------------------------------------------------------
@@ -538,7 +429,6 @@ class ImportDialog(QDialog):
         self.setWindowTitle("Import Engagement Package")
         self.setMinimumWidth(480)
         self.setMinimumHeight(350)
-        self.setStyleSheet(DIALOG_STYLE)
         self._build_ui()
         self._connect_signals()
 
@@ -549,7 +439,6 @@ class ImportDialog(QDialog):
 
         # Title
         title = QLabel("Import Engagement Package")
-        title.setStyleSheet("font-size: 14pt; font-weight: bold; color: #64C8FF;")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title)
 
@@ -587,9 +476,6 @@ class ImportDialog(QDialog):
         val_layout = QVBoxLayout(self._validation_frame)
         val_layout.setContentsMargins(8, 8, 8, 8)
         self._validation_title = QLabel("Integrity Validation")
-        self._validation_title.setStyleSheet(
-            "font-size: 11pt; font-weight: bold; color: #64C8FF;"
-        )
         val_layout.addWidget(self._validation_title)
         self._validation_status = QLabel("")
         val_layout.addWidget(self._validation_status)
@@ -650,9 +536,7 @@ class ImportDialog(QDialog):
         self._progress_bar.setValue(0)
         self._validation_frame.setVisible(True)
         self._validation_status.setText("Decrypting and validating...")
-        self._validation_status.setStyleSheet("color: #64C8FF;")
         self._status_label.setText("Importing...")
-        self._status_label.setStyleSheet("color: #64C8FF;")
         self.import_started.emit()
 
         # Run import in background thread
@@ -680,7 +564,6 @@ class ImportDialog(QDialog):
         }
         if current in stage_labels:
             self._validation_status.setText(stage_labels[current])
-            self._validation_status.setStyleSheet("color: #00FF41;")
 
     def _on_import_finished(self, new_engagement_id: str):
         """Handle import completion."""
@@ -691,25 +574,20 @@ class ImportDialog(QDialog):
             self._status_label.setText(
                 f"✓ Import successful — New ID: {new_engagement_id[:8]}..."
             )
-            self._status_label.setStyleSheet("color: #00FF41; font-weight: bold;")
             self._validation_status.setText(
                 "All integrity checks passed ✓\nEngagement registered in master index."
             )
-            self._validation_status.setStyleSheet("color: #00FF41;")
             self.import_completed.emit(new_engagement_id)
         else:
             self._status_label.setText("✗ Import failed — check passphrase or file integrity")
-            self._status_label.setStyleSheet("color: #FF5555; font-weight: bold;")
             self._validation_status.setText(
                 "Validation failed — incorrect passphrase or corrupted package."
             )
-            self._validation_status.setStyleSheet("color: #FF5555;")
             self.import_completed.emit("")
 
     def _show_error(self, message: str):
         """Display a validation error to the user."""
         self._status_label.setText(f"⚠ {message}")
-        self._status_label.setStyleSheet("color: #FFD700;")
 
 
 # ---------------------------------------------------------------------------
@@ -759,14 +637,12 @@ class CollaborationComponent(QWidget):
 
         # Title
         title = QLabel("Team Collaboration")
-        title.setStyleSheet("font-size: 16pt; font-weight: bold; color: #64C8FF;")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title)
 
         subtitle = QLabel(
             "Share engagement data with teammates via encrypted packages."
         )
-        subtitle.setStyleSheet("color: #aaa; font-size: 10pt;")
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(subtitle)
 
@@ -774,30 +650,15 @@ class CollaborationComponent(QWidget):
 
         # Export section
         export_group = QGroupBox("Export Engagement")
-        export_group.setStyleSheet(
-            "QGroupBox { font-weight: bold; color: #64C8FF; "
-            "border: 2px solid #555; border-radius: 5px; margin-top: 10px; padding-top: 10px; }"
-            "QGroupBox::title { subcontrol-origin: margin; left: 10px; "
-            "padding: 0 5px; color: #64C8FF; }"
-        )
         export_layout = QVBoxLayout(export_group)
         export_desc = QLabel(
             "Create an AES-256-GCM encrypted package of the active engagement.\n"
             "Teammates can import using the shared passphrase."
         )
-        export_desc.setStyleSheet("color: #ccc; font-size: 9pt;")
         export_desc.setWordWrap(True)
         export_layout.addWidget(export_desc)
         self._export_btn = QPushButton("Export Engagement...")
         self._export_btn.setObjectName("primaryBtn")
-        self._export_btn.setStyleSheet(
-            "QPushButton#primaryBtn { background-color: rgba(100, 200, 255, 150); "
-            "border: 1px solid #64C8FF; color: #000; font-weight: bold; "
-            "padding: 10px 20px; font-size: 11pt; }"
-            "QPushButton#primaryBtn:hover { background-color: rgba(100, 200, 255, 200); }"
-            "QPushButton#primaryBtn:disabled { background-color: #3a3a4d; "
-            "border: 1px solid #555; color: #888; }"
-        )
         self._export_btn.clicked.connect(self._open_export_dialog)
         export_layout.addWidget(self._export_btn)
 
@@ -809,28 +670,15 @@ class CollaborationComponent(QWidget):
 
         # Import section
         import_group = QGroupBox("Import Engagement")
-        import_group.setStyleSheet(
-            "QGroupBox { font-weight: bold; color: #64C8FF; "
-            "border: 2px solid #555; border-radius: 5px; margin-top: 10px; padding-top: 10px; }"
-            "QGroupBox::title { subcontrol-origin: margin; left: 10px; "
-            "padding: 0 5px; color: #64C8FF; }"
-        )
         import_layout = QVBoxLayout(import_group)
         import_desc = QLabel(
             "Import a .huginn encrypted package from a teammate.\n"
             "A new engagement ID is assigned to avoid conflicts."
         )
-        import_desc.setStyleSheet("color: #ccc; font-size: 9pt;")
         import_desc.setWordWrap(True)
         import_layout.addWidget(import_desc)
         self._import_btn = QPushButton("Import Package...")
         self._import_btn.setObjectName("primaryBtn")
-        self._import_btn.setStyleSheet(
-            "QPushButton#primaryBtn { background-color: rgba(100, 200, 255, 150); "
-            "border: 1px solid #64C8FF; color: #000; font-weight: bold; "
-            "padding: 10px 20px; font-size: 11pt; }"
-            "QPushButton#primaryBtn:hover { background-color: rgba(100, 200, 255, 200); }"
-        )
         self._import_btn.clicked.connect(self._open_import_dialog)
         import_layout.addWidget(self._import_btn)
 
@@ -883,7 +731,6 @@ class CollaborationComponent(QWidget):
         """Open the export dialog."""
         if not self._engagement_id or not self._engagement_base_path:
             self._export_status.setText("⚠ No active engagement selected")
-            self._export_status.setStyleSheet("color: #FFD700;")
             return
 
         dialog = ExportDialog(
@@ -915,10 +762,8 @@ class CollaborationComponent(QWidget):
         """Handle export dialog completion."""
         if success:
             self._export_status.setText("✓ Last export successful")
-            self._export_status.setStyleSheet("color: #00FF41; font-weight: bold;")
         else:
             self._export_status.setText("✗ Last export failed")
-            self._export_status.setStyleSheet("color: #FF5555;")
         self.export_completed.emit(success)
 
     def _on_import_completed(self, new_engagement_id: str):
@@ -927,8 +772,6 @@ class CollaborationComponent(QWidget):
             self._import_status.setText(
                 f"✓ Imported: {new_engagement_id[:8]}..."
             )
-            self._import_status.setStyleSheet("color: #00FF41; font-weight: bold;")
         else:
             self._import_status.setText("✗ Last import failed")
-            self._import_status.setStyleSheet("color: #FF5555;")
         self.import_completed.emit(new_engagement_id)

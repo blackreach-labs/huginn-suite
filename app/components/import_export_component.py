@@ -259,68 +259,8 @@ class CSVColumnMappingDialog(QDialog):
         return self._result_mapping
 
     def _apply_theme(self):
-        """Apply dark theme with cyan accents."""
-        self.setStyleSheet("""
-            QDialog {
-                background-color: #1e1e1e;
-                color: #DCDCDC;
-            }
-            QLabel {
-                color: #DCDCDC;
-            }
-            QGroupBox {
-                font-weight: bold;
-                font-size: 10pt;
-                border: 1px solid rgba(100, 200, 255, 80);
-                border-radius: 5px;
-                margin-top: 12px;
-                padding-top: 14px;
-            }
-            QGroupBox::title {
-                color: #64C8FF;
-                subcontrol-origin: margin;
-                left: 10px;
-                padding: 0 5px;
-            }
-            QComboBox {
-                background-color: rgba(20, 30, 40, 150);
-                color: #DCDCDC;
-                border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 3px;
-                padding: 4px 8px;
-                font-size: 9pt;
-            }
-            QComboBox::drop-down {
-                border: none;
-            }
-            QComboBox QAbstractItemView {
-                background-color: #2a2a2a;
-                color: #DCDCDC;
-                selection-background-color: rgba(100, 200, 255, 120);
-            }
-            QPushButton {
-                background-color: rgba(40, 50, 60, 180);
-                color: #DCDCDC;
-                border: 1px solid rgba(100, 200, 255, 80);
-                border-radius: 4px;
-                padding: 6px 16px;
-                font-size: 9pt;
-            }
-            QPushButton:hover {
-                background-color: rgba(60, 80, 100, 200);
-                border-color: rgba(100, 200, 255, 160);
-            }
-            QPushButton#applyBtn {
-                background-color: rgba(100, 200, 255, 140);
-                color: #000000;
-                font-weight: bold;
-                border: none;
-                border-radius: 5px;
-            }
-            QPushButton#applyBtn:hover {
-                background-color: rgba(100, 200, 255, 200);
-            }
-        """)
+        """Theme is applied globally by UnifiedThemeManager."""
+        pass
 
 
 # ---------------------------------------------------------------------------
@@ -431,14 +371,8 @@ class FileDropArea(QFrame):
         event.ignore()
 
     def _apply_default_style(self):
-        """Apply default frame style."""
-        self.setStyleSheet("""
-            FileDropArea {
-                background-color: rgba(20, 30, 40, 100);
-                border: 1px dashed rgba(100, 200, 255, 100);
-                border-radius: 6px;
-            }
-        """)
+        """Theme is applied globally by UnifiedThemeManager."""
+        pass
 
 
 # ---------------------------------------------------------------------------
@@ -917,146 +851,5 @@ class ImportExportComponent(QWidget):
     # ------------------------------------------------------------------
 
     def _apply_theme(self):
-        """Apply dark theme with cyan accent styling."""
-        self.setStyleSheet("""
-            QWidget {
-                background-color: #1e1e1e;
-                color: #DCDCDC;
-            }
-            QGroupBox {
-                font-weight: bold;
-                font-size: 10pt;
-                border: 1px solid rgba(100, 200, 255, 80);
-                border-radius: 5px;
-                margin-top: 12px;
-                padding-top: 14px;
-            }
-            QGroupBox::title {
-                color: #64C8FF;
-                subcontrol-origin: margin;
-                left: 10px;
-                padding: 0 5px;
-            }
-            QComboBox {
-                background-color: rgba(20, 30, 40, 150);
-                color: #DCDCDC;
-                border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 3px;
-                padding: 5px 8px;
-                font-size: 9pt;
-                min-height: 24px;
-            }
-            QComboBox::drop-down {
-                border: none;
-            }
-            QComboBox QAbstractItemView {
-                background-color: #2a2a2a;
-                color: #DCDCDC;
-                selection-background-color: rgba(100, 200, 255, 120);
-            }
-            QLineEdit {
-                background-color: rgba(20, 30, 40, 150);
-                color: #DCDCDC;
-                border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 3px;
-                padding: 5px 8px;
-                font-size: 9pt;
-            }
-            QPushButton {
-                background-color: rgba(40, 50, 60, 180);
-                color: #DCDCDC;
-                border: 1px solid rgba(100, 200, 255, 80);
-                border-radius: 4px;
-                padding: 6px 14px;
-                font-size: 9pt;
-            }
-            QPushButton:hover {
-                background-color: rgba(60, 80, 100, 200);
-                border-color: rgba(100, 200, 255, 160);
-            }
-            QPushButton:disabled {
-                background-color: rgba(30, 30, 30, 150);
-                color: #606060;
-                border-color: rgba(60, 60, 60, 80);
-            }
-            QPushButton#parseBtn, QPushButton#commitBtn, QPushButton#exportBtn {
-                background-color: rgba(100, 200, 255, 140);
-                color: #000000;
-                font-weight: bold;
-                border: none;
-                border-radius: 5px;
-            }
-            QPushButton#parseBtn:hover, QPushButton#commitBtn:hover, QPushButton#exportBtn:hover {
-                background-color: rgba(100, 200, 255, 200);
-            }
-            QPushButton#parseBtn:disabled, QPushButton#commitBtn:disabled, QPushButton#exportBtn:disabled {
-                background-color: rgba(60, 60, 60, 100);
-                color: #505050;
-            }
-            QPushButton#csvMappingBtn {
-                background-color: rgba(255, 165, 0, 120);
-                color: #000000;
-                font-weight: bold;
-                border: none;
-                border-radius: 4px;
-            }
-            QPushButton#csvMappingBtn:hover {
-                background-color: rgba(255, 165, 0, 180);
-            }
-            QProgressBar {
-                background-color: rgba(20, 30, 40, 150);
-                border: 1px solid rgba(100, 200, 255, 80);
-                border-radius: 3px;
-                text-align: center;
-                color: #DCDCDC;
-                font-size: 9pt;
-            }
-            QProgressBar::chunk {
-                background-color: rgba(100, 200, 255, 180);
-                border-radius: 2px;
-            }
-            QTableWidget {
-                background-color: rgba(15, 20, 30, 200);
-                color: #DCDCDC;
-                gridline-color: rgba(100, 200, 255, 40);
-                border: 1px solid rgba(100, 200, 255, 60);
-                border-radius: 4px;
-                font-size: 9pt;
-            }
-            QTableWidget::item {
-                padding: 4px;
-            }
-            QTableWidget::item:selected {
-                background-color: rgba(100, 200, 255, 80);
-            }
-            QHeaderView::section {
-                background-color: rgba(30, 40, 55, 200);
-                color: #64C8FF;
-                border: 1px solid rgba(100, 200, 255, 40);
-                padding: 5px;
-                font-weight: bold;
-                font-size: 9pt;
-            }
-            QTextEdit {
-                background-color: rgba(15, 20, 30, 200);
-                color: #F5A623;
-                border: 1px solid rgba(255, 165, 0, 80);
-                border-radius: 4px;
-                padding: 6px;
-                font-size: 9pt;
-                font-family: 'Consolas', 'Courier New', monospace;
-            }
-            QScrollBar:vertical {
-                background-color: transparent;
-                width: 10px;
-                margin: 0;
-            }
-            QScrollBar::handle:vertical {
-                background-color: rgba(100, 200, 255, 80);
-                border-radius: 5px;
-                min-height: 20px;
-            }
-            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
-                height: 0;
-            }
-        """)
+        """Theme is applied globally by UnifiedThemeManager."""
+        pass

@@ -63,9 +63,7 @@ class HomePage(BasePage):
         nav_frame.setFixedWidth(280)
         nav_frame.setStyleSheet("""
             QFrame#NavigationPanel {
-                background-color: rgba(0, 0, 0, 100);
                 border-radius: 15px;
-                border: 1px solid rgba(100, 200, 255, 50);
             }
         """)
         
@@ -80,7 +78,6 @@ class HomePage(BasePage):
         title.setStyleSheet("""
             font-size: 18pt;
             font-weight: bold;
-            color: #64C8FF;
             padding: 10px;
         """)
         nav_layout.addWidget(title)
@@ -156,28 +153,8 @@ class HomePage(BasePage):
         return button
     
     def apply_button_style(self, button):
-        """Apply consistent styling to navigation buttons."""
-        button.setStyleSheet("""
-            QPushButton {
-                background-color: rgba(20, 30, 40, 150);
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 10px;
-                color: #DCDCDC;
-                font-size: 12pt;
-                font-weight: bold;
-                text-align: left;
-                padding: 8px 12px;
-            }
-            QPushButton:hover {
-                background-color: rgba(40, 60, 80, 200);
-                border: 2px solid #64C8FF;
-                color: #FFFFFF;
-            }
-            QPushButton:pressed {
-                background-color: rgba(60, 100, 140, 220);
-                border: 2px solid #88DFFF;
-            }
-        """)
+        """Button styling is handled globally by the theme manager."""
+        pass
     
     def create_info_panel(self):
         """Create the right dashboard panel."""
@@ -185,9 +162,7 @@ class HomePage(BasePage):
         dashboard_splitter = QSplitter(Qt.Orientation.Vertical)
         dashboard_splitter.setStyleSheet("""
             QSplitter {
-                background-color: rgba(0, 0, 0, 150);
                 border-radius: 15px;
-                border: 1px solid rgba(100, 200, 255, 50);
             }
         """)
         
@@ -195,9 +170,7 @@ class HomePage(BasePage):
         mindmap_frame = QFrame()
         mindmap_frame.setStyleSheet("""
             QFrame {
-                background-color: rgba(0, 0, 0, 100);
                 border-radius: 10px;
-                border: 1px solid rgba(100, 200, 255, 30);
                 margin: 10px;
             }
         """)
@@ -210,7 +183,6 @@ class HomePage(BasePage):
         mindmap_title.setStyleSheet("""
             font-size: 16pt;
             font-weight: bold;
-            color: #64C8FF;
             padding: 5px;
         """)
         mindmap_layout.addWidget(mindmap_title)
@@ -224,7 +196,7 @@ class HomePage(BasePage):
             logging.warning(f"Could not load mindmap widget: {e}")
             placeholder = QLabel("🧠 Interactive Attack Chain Mindmap\n(Click phases to navigate)")
             placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            placeholder.setStyleSheet("color: #DCDCDC; padding: 20px;")
+            placeholder.setStyleSheet("padding: 20px;")
             mindmap_layout.addWidget(placeholder)
         
         dashboard_splitter.addWidget(mindmap_frame)
@@ -233,9 +205,7 @@ class HomePage(BasePage):
         dashboard_frame = QFrame()
         dashboard_frame.setStyleSheet("""
             QFrame {
-                background-color: rgba(0, 0, 0, 100);
                 border-radius: 10px;
-                border: 1px solid rgba(100, 200, 255, 30);
                 margin: 10px;
             }
         """)
@@ -248,7 +218,6 @@ class HomePage(BasePage):
         dashboard_title.setStyleSheet("""
             font-size: 16pt;
             font-weight: bold;
-            color: #64C8FF;
             padding: 5px;
         """)
         dashboard_layout.addWidget(dashboard_title)
@@ -261,7 +230,7 @@ class HomePage(BasePage):
             logging.warning(f"Could not load security dashboard: {e}")
             placeholder = QLabel("🛡️ Real-time Security Metrics\n(Live threat monitoring and system status)")
             placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            placeholder.setStyleSheet("color: #DCDCDC; padding: 20px;")
+            placeholder.setStyleSheet("padding: 20px;")
             dashboard_layout.addWidget(placeholder)
         
         dashboard_splitter.addWidget(dashboard_frame)
@@ -306,14 +275,8 @@ class HomePage(BasePage):
         pass
     
     def apply_theme(self):
-        """Apply theme to the home page."""
-        if self.main_window and hasattr(self.main_window, 'theme_manager'):
-            colors = self.main_window.theme_manager.get_theme_colors()
-            self.setStyleSheet(f"""
-                HomePage {{
-                    background-color: {colors.get('background', '#1E1E1E')};
-                }}
-            """)
+        """Theme is applied globally by UnifiedThemeManager."""
+        pass
     
     def get_page_title(self):
         """Get the display title for this page."""

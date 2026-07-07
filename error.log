@@ -1,0 +1,2 @@
+2026-07-06 21:28:17 - ERROR - [Errno 10048] HTTP(S) proxy failed to listen on *:8080 with [Errno 10048] error while attempting to bind on address ('0.0.0.0', 8080): [winerror 10048] only one usage of each socket address (protocol/network address/port) is normally permitted
+Try specifying a different port by using `--mode regular@8082`.

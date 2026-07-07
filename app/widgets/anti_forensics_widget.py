@@ -59,7 +59,6 @@ class AntiForensicsWidget(QWidget):
         
         # Header
         header = QLabel("Anti-Forensics & Evasion Techniques")
-        header.setStyleSheet("font-size: 16pt; font-weight: bold; color: #FF6B6B;")
         layout.addWidget(header)
         
         # Warning

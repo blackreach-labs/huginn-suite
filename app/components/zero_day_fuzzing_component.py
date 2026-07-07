@@ -81,21 +81,7 @@ class ZeroDayFuzzingComponent(QWidget):
         """Create output panel"""
         panel = QFrame()
         layout = QVBoxLayout(panel)
-        
-        # Warning banner
-        warning = QLabel("⚠️ ZERO-DAY DISCOVERY - AUTHORIZED TESTING ONLY")
-        warning.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        warning.setStyleSheet("""
-            background-color: #FF0000;
-            color: white;
-            padding: 10px;
-            font-weight: bold;
-            font-size: 12pt;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        """)
-        layout.addWidget(warning)
-        
+               
         self.terminal_output = QTextEdit()
         self.terminal_output.setReadOnly(True)
         self.terminal_output.setPlaceholderText("Zero-day fuzzing results will appear here...")
@@ -161,29 +147,5 @@ class ZeroDayFuzzingComponent(QWidget):
         self.fuzz_button.setEnabled(True)
 
     def apply_theme(self):
-        """Apply component theme"""
-        self.setStyleSheet("""
-            QFrame {
-                background-color: rgba(0, 0, 0, 100);
-                border-radius: 10px;
-                border: 1px solid rgba(100, 200, 255, 50);
-            }
-            QLineEdit, QComboBox {
-                background-color: rgba(20, 30, 40, 150);
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-                color: #DCDCDC;
-                padding: 5px;
-            }
-            QTextEdit {
-                background-color: rgba(0, 0, 0, 200);
-                border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-                color: #DCDCDC;
-                font-family: 'Courier New', monospace;
-            }
-            QLabel {
-                color: #64C8FF;
-                font-weight: bold;
-            }
-        """)
+        """Theme is applied globally by UnifiedThemeManager."""
+        pass

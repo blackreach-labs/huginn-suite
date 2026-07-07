@@ -78,7 +78,6 @@ class GlobalSettingsPage(QWidget):
         dot = QLabel("●")
         dot.setFixedWidth(16)
         dot.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        dot.setStyleSheet("color: #555555; font-size: 14px;")
 
         def _update_dot(text, _dot=dot):
             _dot.setStyleSheet(
@@ -95,10 +94,6 @@ class GlobalSettingsPage(QWidget):
             link_btn = QPushButton("🔗")
             link_btn.setFixedWidth(28)
             link_btn.setToolTip(f"Register / get API key: {link}")
-            link_btn.setStyleSheet(
-                "QPushButton { background: transparent; border: none; color: #64C8FF; font-size: 13px; }"
-                "QPushButton:hover { color: #FFFFFF; }"
-            )
             link_btn.clicked.connect(lambda _, url=link: QDesktopServices.openUrl(QUrl(url)))
             row_layout.addWidget(link_btn)
 
@@ -107,7 +102,6 @@ class GlobalSettingsPage(QWidget):
     def _section_label(self, text):
         """Return a styled section header label for use inside a QFormLayout."""
         lbl = QLabel(text)
-        lbl.setStyleSheet("font-weight: bold; color: #64C8FF; margin-top: 6px;")
         return lbl
 
     def _make_scrollable(self, inner_widget):
@@ -129,9 +123,6 @@ class GlobalSettingsPage(QWidget):
 
         # ── configured-key summary bar ───────────────────────────────────────
         self._api_summary_label = QLabel("0 of 0 API keys configured")
-        self._api_summary_label.setStyleSheet(
-            "color: #FFD93D; font-style: italic; padding: 4px 0;"
-        )
         outer_layout.addWidget(self._api_summary_label)
 
         # ── nested tab widget ────────────────────────────────────────────────
@@ -225,7 +216,6 @@ class GlobalSettingsPage(QWidget):
             "📝  Free sources active by default (no key needed): "
             "crt.sh · Wayback Machine · URLScan.io"
         )
-        free_note.setStyleSheet("color: #00CC66; font-style: italic;")
         free_note.setWordWrap(True)
         sub_layout.addWidget(free_note)
 

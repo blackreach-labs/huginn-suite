@@ -1,876 +1,942 @@
 # app/widgets/auth_workflows_widget.py
+"""Enterprise-grade Auth Workflows widget.
+
+Provides a comprehensive UI for capturing, modeling, and testing
+authentication flows across all major protocols (OAuth 2.0, OIDC,
+NTLM, Kerberos, SAML, FBA, certificate-based, JWT, API keys).
+"""
 import json
 import time
-from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
-                            QLabel, QTextEdit, QTableWidget, QTableWidgetItem,
-                            QTabWidget, QGroupBox, QLineEdit, QComboBox,
-                            QSplitter, QTreeWidget, QTreeWidgetItem, QProgressBar,
-                            QCheckBox, QSpinBox, QFileDialog, QMessageBox)
+from PyQt6.QtWidgets import (
+    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QTextEdit,
+    QTableWidget, QTableWidgetItem, QTabWidget, QGroupBox, QLineEdit,
+    QComboBox, QSplitter, QTreeWidget, QTreeWidgetItem, QProgressBar,
+    QCheckBox, QSpinBox, QFileDialog, QMessageBox, QHeaderView,
+    QFrame, QScrollArea, QGridLayout,
+)
 from PyQt6.QtCore import Qt, pyqtSignal, QTimer
 from PyQt6.QtGui import QFont, QColor
 
 from app.core.auth_flow_recorder import AuthFlowRecorder
 from app.core.auth_state_model import AuthStateModel
-from app.core.auth_replay_engine import AuthReplayEngine
+from app.core.auth_replay_engine import AuthReplayEngine, MUTATION_CATEGORIES
 from app.core.auth_token_analyzer import AuthTokenAnalyzer
-from app.core.proxy_engine import ProxyEngine
+from app.core.logger import logger
+
+try:
+    from app.core.proxy_engine import ProxyEngine
+except ImportError:
+    ProxyEngine = None
+
 
 class AuthWorkflowsWidget(QWidget):
-    """Main widget for authentication workflow analysis"""
-    
+    """Main widget for authentication workflow analysis."""
+
+    status_updated = pyqtSignal(str)
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.main_window = parent
-        
-        # Core components
+
+        # Core engines
         self.flow_recorder = AuthFlowRecorder()
         self.state_model = AuthStateModel()
         self.replay_engine = AuthReplayEngine()
         self.token_analyzer = AuthTokenAnalyzer()
-        
-        # Get proxy engine from main window
-        self.proxy_engine = getattr(parent, 'proxy_engine', None)
-        if not self.proxy_engine:
-            self.proxy_engine = ProxyEngine()
-        
+
+        # Proxy engine (shared with HTTP Interceptor if available)
+        self.proxy_engine = None
+        self._request_handler = None
+        self._resolve_proxy_engine()
+
         # State
         self.current_session = None
-        self.recorded_flows = {}
-        self.active_tests = {}
-        
+        self.recorded_flows: dict = {}
+        self.active_tests: dict = {}
+        self.proxy_running = False
+
         self.setup_ui()
         self.connect_signals()
         self.apply_theme()
-    
+
+    def _resolve_proxy_engine(self):
+        """Resolve the shared proxy engine from the HTTP Interceptor/CurlWidget."""
+        # Try to get from main window's existing CurlWidget (shared instance)
+        if self.main_window:
+            # Look for CurlWidget in the page stack
+            stack = getattr(self.main_window, 'stack', None)
+            if stack:
+                for i in range(stack.count()):
+                    page = stack.widget(i)
+                    # WebExploitsPage contains CurlWidget via HttpInterceptorComponent
+                    curl = self._find_curl_widget(page)
+                    if curl and hasattr(curl, 'request_handler'):
+                        self._request_handler = curl.request_handler
+                        self.proxy_engine = curl.request_handler.proxy_engine
+                        return
+
+        # Fallback: create own UnifiedRequestHandler (shares proxy with nothing)
+        try:
+            from app.core.unified_request_handler import UnifiedRequestHandler
+            self._request_handler = UnifiedRequestHandler()
+            self.proxy_engine = self._request_handler.proxy_engine
+        except Exception:
+            self.proxy_engine = None
+
+    def _find_curl_widget(self, widget):
+        """Recursively search for a CurlWidget instance."""
+        try:
+            from app.widgets.curl_widget import CurlWidget
+        except ImportError:
+            return None
+        if isinstance(widget, CurlWidget):
+            return widget
+        # Check direct children
+        for child in (widget.findChildren(QWidget) if widget else []):
+            if isinstance(child, CurlWidget):
+                return child
+        return None
+
+    # ──────────────────────────────────────────────────────────────────────
+    # UI Setup
+    # ──────────────────────────────────────────────────────────────────────
+
     def setup_ui(self):
-        """Setup the user interface"""
         layout = QVBoxLayout(self)
-        
+        layout.setSpacing(6)
+        layout.setContentsMargins(4, 4, 4, 4)
+
         # Header
-        header = self.create_header()
+        header = self._create_header()
         layout.addWidget(header)
-        
-        # Main content tabs
+
+        # Main tab widget
         self.tab_widget = QTabWidget()
-        
-        # Flow Recording Tab
-        self.recording_tab = self.create_recording_tab()
-        self.tab_widget.addTab(self.recording_tab, "🎯 Flow Recording")
-        
-        # State Model Tab
-        self.model_tab = self.create_model_tab()
-        self.tab_widget.addTab(self.model_tab, "🧩 State Model")
-        
-        # Replay & Testing Tab
-        self.testing_tab = self.create_testing_tab()
-        self.tab_widget.addTab(self.testing_tab, "⚡ Replay & Testing")
-        
-        # Token Analysis Tab
-        self.token_tab = self.create_token_tab()
-        self.tab_widget.addTab(self.token_tab, "🔐 Token Analysis")
-        
-        # Results Tab
-        self.results_tab = self.create_results_tab()
-        self.tab_widget.addTab(self.results_tab, "📊 Results")
-        
+        self.tab_widget.addTab(self._create_recording_tab(), "🎯 Flow Recording")
+        self.tab_widget.addTab(self._create_model_tab(), "🧩 State Model")
+        self.tab_widget.addTab(self._create_testing_tab(), "⚡ Replay && Testing")
+        self.tab_widget.addTab(self._create_token_tab(), "🔐 Token Analysis")
+        self.tab_widget.addTab(self._create_results_tab(), "📊 Results")
         layout.addWidget(self.tab_widget)
-    
-    def create_header(self):
-        """Create header with title and controls"""
-        header = QGroupBox("Auth Workflows - Capture, Model & Test Authentication Flows")
+
+    def _create_header(self):
+        header = QGroupBox("Auth Workflows - Capture, Model && Test Authentication Flows")
         layout = QHBoxLayout(header)
-        
-        # Status indicator
         self.status_label = QLabel("Ready")
-        self.status_label.setStyleSheet("color: #64C8FF; font-weight: bold;")
-        
-        # Proxy status
         self.proxy_status = QLabel("Proxy: Disconnected")
-        self.proxy_status.setStyleSheet("color: #FF6B6B;")
-        
+        self.protocol_label = QLabel("Protocols: —")
+
+        self.proxy_toggle_btn = QPushButton("Start Proxy")
+        self.proxy_toggle_btn.clicked.connect(self.toggle_proxy)
+
         layout.addWidget(self.status_label)
+        layout.addWidget(self.protocol_label)
         layout.addStretch()
         layout.addWidget(self.proxy_status)
-        
+        layout.addWidget(self.proxy_toggle_btn)
         return header
-    
-    def create_recording_tab(self):
-        """Create flow recording tab"""
+
+    # ──── Recording Tab ───────────────────────────────────────────────────
+
+    def _create_recording_tab(self):
         tab = QWidget()
         layout = QVBoxLayout(tab)
-        
-        # Recording controls
+
+        # Controls
         controls = QGroupBox("Recording Controls")
-        controls_layout = QHBoxLayout(controls)
-        
+        cl = QHBoxLayout(controls)
         self.session_name_input = QLineEdit()
         self.session_name_input.setPlaceholderText("Session name (optional)")
-        
         self.start_recording_btn = QPushButton("🔴 Start Recording")
         self.start_recording_btn.clicked.connect(self.start_recording)
-        
         self.stop_recording_btn = QPushButton("⏹️ Stop Recording")
         self.stop_recording_btn.clicked.connect(self.stop_recording)
         self.stop_recording_btn.setEnabled(False)
-        
-        controls_layout.addWidget(QLabel("Session Name:"))
-        controls_layout.addWidget(self.session_name_input)
-        controls_layout.addWidget(self.start_recording_btn)
-        controls_layout.addWidget(self.stop_recording_btn)
-        controls_layout.addStretch()
-        
+        cl.addWidget(QLabel("Session:"))
+        cl.addWidget(self.session_name_input)
+        cl.addWidget(self.start_recording_btn)
+        cl.addWidget(self.stop_recording_btn)
+        cl.addStretch()
         layout.addWidget(controls)
-        
-        # Recorded flows list
+
+        # Flows table
         flows_group = QGroupBox("Recorded Flows")
-        flows_layout = QVBoxLayout(flows_group)
-        
+        fl = QVBoxLayout(flows_group)
         self.flows_table = QTableWidget()
-        self.flows_table.setColumnCount(5)
-        self.flows_table.setHorizontalHeaderLabels(["Session", "Requests", "Duration", "Tokens", "Actions"])
+        self.flows_table.setColumnCount(6)
+        self.flows_table.setHorizontalHeaderLabels(
+            ["Session", "Requests", "Protocols", "Tokens", "Duration", "Actions"])
         self.flows_table.horizontalHeader().setStretchLastSection(True)
-        
-        flows_layout.addWidget(self.flows_table)
-        
-        # Flow actions
-        flow_actions = QHBoxLayout()
-        
+        self.flows_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+        fl.addWidget(self.flows_table)
+
+        # Flow action buttons
+        btn_row = QHBoxLayout()
         self.analyze_flow_btn = QPushButton("📊 Analyze Flow")
         self.analyze_flow_btn.clicked.connect(self.analyze_selected_flow)
-        
-        self.export_flow_btn = QPushButton("💾 Export Flow")
+        self.export_flow_btn = QPushButton("💾 Export")
         self.export_flow_btn.clicked.connect(self.export_flow)
-        
-        self.import_flow_btn = QPushButton("📁 Import Flow")
+        self.import_flow_btn = QPushButton("📁 Import")
         self.import_flow_btn.clicked.connect(self.import_flow)
-        
-        flow_actions.addWidget(self.analyze_flow_btn)
-        flow_actions.addWidget(self.export_flow_btn)
-        flow_actions.addWidget(self.import_flow_btn)
-        flow_actions.addStretch()
-        
-        flows_layout.addLayout(flow_actions)
+        self.delete_flow_btn = QPushButton("🗑️ Delete")
+        self.delete_flow_btn.clicked.connect(self.delete_selected_flow)
+        btn_row.addWidget(self.analyze_flow_btn)
+        btn_row.addWidget(self.export_flow_btn)
+        btn_row.addWidget(self.import_flow_btn)
+        btn_row.addWidget(self.delete_flow_btn)
+        btn_row.addStretch()
+        fl.addLayout(btn_row)
         layout.addWidget(flows_group)
-        
-        # Live request feed
+
+        # Live feed
         feed_group = QGroupBox("Live Request Feed")
-        feed_layout = QVBoxLayout(feed_group)
-        
+        feed_l = QVBoxLayout(feed_group)
         self.request_feed = QTextEdit()
-        self.request_feed.setMaximumHeight(200)
+        self.request_feed.setMaximumHeight(180)
         self.request_feed.setReadOnly(True)
-        
-        feed_layout.addWidget(self.request_feed)
+        feed_l.addWidget(self.request_feed)
         layout.addWidget(feed_group)
-        
+
         return tab
-    
-    def create_model_tab(self):
-        """Create state model visualization tab"""
+
+    # ──── State Model Tab ─────────────────────────────────────────────────
+
+    def _create_model_tab(self):
         tab = QWidget()
         layout = QVBoxLayout(tab)
-        
-        # Model controls
+
+        # Controls
         controls = QGroupBox("Model Controls")
-        controls_layout = QHBoxLayout(controls)
-        
+        cl = QHBoxLayout(controls)
         self.flow_selector = QComboBox()
-        self.flow_selector.currentTextChanged.connect(self.load_flow_model)
-        
+        self.flow_selector.setMinimumWidth(200)
         self.build_model_btn = QPushButton("🏗️ Build Model")
         self.build_model_btn.clicked.connect(self.build_state_model)
-        
         self.export_model_btn = QPushButton("💾 Export Model")
         self.export_model_btn.clicked.connect(self.export_model)
-        
-        controls_layout.addWidget(QLabel("Flow:"))
-        controls_layout.addWidget(self.flow_selector)
-        controls_layout.addWidget(self.build_model_btn)
-        controls_layout.addWidget(self.export_model_btn)
-        controls_layout.addStretch()
-        
+        cl.addWidget(QLabel("Flow:"))
+        cl.addWidget(self.flow_selector)
+        cl.addWidget(self.build_model_btn)
+        cl.addWidget(self.export_model_btn)
+        cl.addStretch()
         layout.addWidget(controls)
-        
-        # Model visualization
+
+        # Splitter: Flow graph + Details
         splitter = QSplitter(Qt.Orientation.Horizontal)
-        
-        # Flow graph (simplified text representation)
+
+        # Flow graph
         graph_group = QGroupBox("Flow Graph")
-        graph_layout = QVBoxLayout(graph_group)
-        
+        gl = QVBoxLayout(graph_group)
         self.flow_graph = QTreeWidget()
-        self.flow_graph.setHeaderLabels(["Node", "Type", "Auth Required", "Parameters"])
-        
-        graph_layout.addWidget(self.flow_graph)
+        self.flow_graph.setHeaderLabels(["Node", "Type", "Protocol", "Auth Required"])
+        self.flow_graph.setColumnCount(4)
+        self.flow_graph.itemClicked.connect(self.on_node_clicked)
+        gl.addWidget(self.flow_graph)
         splitter.addWidget(graph_group)
-        
+
         # Node details
         details_group = QGroupBox("Node Details")
-        details_layout = QVBoxLayout(details_group)
-        
+        dl = QVBoxLayout(details_group)
         self.node_details = QTextEdit()
         self.node_details.setReadOnly(True)
-        
-        details_layout.addWidget(self.node_details)
+        dl.addWidget(self.node_details)
         splitter.addWidget(details_group)
-        
+        splitter.setSizes([400, 300])
+
         layout.addWidget(splitter)
-        
-        # Security issues
+
+        # Security issues table
         issues_group = QGroupBox("Security Issues")
-        issues_layout = QVBoxLayout(issues_group)
-        
-        self.security_issues = QTableWidget()
-        self.security_issues.setColumnCount(4)
-        self.security_issues.setHorizontalHeaderLabels(["Type", "Severity", "Node", "Description"])
-        self.security_issues.setMaximumHeight(150)
-        
-        issues_layout.addWidget(self.security_issues)
+        il = QVBoxLayout(issues_group)
+        self.security_issues_table = QTableWidget()
+        self.security_issues_table.setColumnCount(6)
+        self.security_issues_table.setHorizontalHeaderLabels(
+            ["ID", "Severity", "Protocol", "Type", "Description", "CWE"])
+        self.security_issues_table.horizontalHeader().setStretchLastSection(True)
+        self.security_issues_table.setMaximumHeight(200)
+        il.addWidget(self.security_issues_table)
         layout.addWidget(issues_group)
-        
+
         return tab
-    
-    def create_testing_tab(self):
-        """Create replay and testing tab"""
+
+    # ──── Replay & Testing Tab ────────────────────────────────────────────
+
+    def _create_testing_tab(self):
         tab = QWidget()
         layout = QVBoxLayout(tab)
-        
-        # Test controls
-        controls = QGroupBox("Test Controls")
-        controls_layout = QVBoxLayout(controls)
-        
-        # Flow selection and basic controls
-        flow_controls = QHBoxLayout()
-        
+
+        # Flow selection and quick actions
+        top_controls = QGroupBox("Test Configuration")
+        tc_layout = QVBoxLayout(top_controls)
+
+        row1 = QHBoxLayout()
         self.test_flow_selector = QComboBox()
-        
-        self.replay_btn = QPushButton("▶️ Basic Replay")
+        self.test_flow_selector.setMinimumWidth(200)
+        self.replay_btn = QPushButton("▶️ Baseline Replay")
         self.replay_btn.clicked.connect(self.replay_flow)
-        
-        self.security_test_btn = QPushButton("🔒 Security Tests")
-        self.security_test_btn.clicked.connect(self.run_security_tests)
-        
-        flow_controls.addWidget(QLabel("Flow:"))
-        flow_controls.addWidget(self.test_flow_selector)
-        flow_controls.addWidget(self.replay_btn)
-        flow_controls.addWidget(self.security_test_btn)
-        flow_controls.addStretch()
-        
-        controls_layout.addLayout(flow_controls)
-        
-        # Mutation options
-        mutations_group = QGroupBox("Mutation Tests")
-        mutations_layout = QHBoxLayout(mutations_group)
-        
-        self.remove_token_cb = QCheckBox("Remove Tokens")
-        self.remove_state_cb = QCheckBox("Remove State")
-        self.modify_redirect_cb = QCheckBox("Modify Redirect URI")
-        self.remove_csrf_cb = QCheckBox("Remove CSRF")
-        self.privilege_escalation_cb = QCheckBox("Privilege Escalation")
-        
-        self.run_mutations_btn = QPushButton("🧪 Run Selected Mutations")
-        self.run_mutations_btn.clicked.connect(self.run_mutation_tests)
-        
-        mutations_layout.addWidget(self.remove_token_cb)
-        mutations_layout.addWidget(self.remove_state_cb)
-        mutations_layout.addWidget(self.modify_redirect_cb)
-        mutations_layout.addWidget(self.remove_csrf_cb)
-        mutations_layout.addWidget(self.privilege_escalation_cb)
-        mutations_layout.addWidget(self.run_mutations_btn)
-        
-        controls_layout.addWidget(mutations_group)
-        layout.addWidget(controls)
-        
-        # Test results
+        self.auto_test_btn = QPushButton("🔒 Auto Security Test")
+        self.auto_test_btn.clicked.connect(self.run_auto_security_test)
+        self.full_audit_btn = QPushButton("🛡️ Full Audit (All Mutations)")
+        self.full_audit_btn.clicked.connect(self.run_full_audit)
+        row1.addWidget(QLabel("Flow:"))
+        row1.addWidget(self.test_flow_selector)
+        row1.addWidget(self.replay_btn)
+        row1.addWidget(self.auto_test_btn)
+        row1.addWidget(self.full_audit_btn)
+        row1.addStretch()
+        tc_layout.addLayout(row1)
+
+        # Protocol-specific mutation checkboxes
+        mutations_group = QGroupBox("Protocol-Specific Mutations")
+        mg_layout = QGridLayout(mutations_group)
+
+        self.mutation_checkboxes: dict = {}
+        col = 0
+        row = 0
+        for category, mutations in MUTATION_CATEGORIES.items():
+            # Category label
+            cat_label = QLabel(f"━ {category.upper()} ━")
+            mg_layout.addWidget(cat_label, row, col * 2, 1, 2)
+            row += 1
+            for mutation in mutations:
+                cb = QCheckBox(mutation.replace('_', ' ').title())
+                cb.setObjectName(mutation)
+                self.mutation_checkboxes[mutation] = cb
+                mg_layout.addWidget(cb, row, col * 2, 1, 2)
+                row += 1
+            col += 1
+            row = 0
+            if col > 3:
+                col = 0
+                row = max(mg_layout.rowCount(), row)
+
+        tc_layout.addWidget(mutations_group)
+
+        # Run selected mutations button
+        run_row = QHBoxLayout()
+        self.run_selected_btn = QPushButton("🧪 Run Selected Mutations")
+        self.run_selected_btn.clicked.connect(self.run_selected_mutations)
+        self.select_all_btn = QPushButton("Select All")
+        self.select_all_btn.clicked.connect(self._select_all_mutations)
+        self.clear_all_btn = QPushButton("Clear All")
+        self.clear_all_btn.clicked.connect(self._clear_all_mutations)
+        run_row.addWidget(self.run_selected_btn)
+        run_row.addWidget(self.select_all_btn)
+        run_row.addWidget(self.clear_all_btn)
+        run_row.addStretch()
+        tc_layout.addLayout(run_row)
+
+        layout.addWidget(top_controls)
+
+        # Progress
+        self.test_progress = QProgressBar()
+        self.test_progress.setMaximumHeight(20)
+        self.test_progress.setVisible(False)
+        layout.addWidget(self.test_progress)
+
+        # Test results output
         results_group = QGroupBox("Test Results")
-        results_layout = QVBoxLayout(results_group)
-        
+        rl = QVBoxLayout(results_group)
         self.test_results = QTextEdit()
         self.test_results.setReadOnly(True)
-        
-        results_layout.addWidget(self.test_results)
+        rl.addWidget(self.test_results)
         layout.addWidget(results_group)
-        
+
         return tab
-    
-    def create_token_tab(self):
-        """Create token analysis tab"""
+
+    # ──── Token Analysis Tab ──────────────────────────────────────────────
+
+    def _create_token_tab(self):
         tab = QWidget()
         layout = QVBoxLayout(tab)
-        
-        # Token controls
+
+        # Controls
         controls = QGroupBox("Token Analysis")
-        controls_layout = QHBoxLayout(controls)
-        
+        cl = QHBoxLayout(controls)
         self.token_flow_selector = QComboBox()
-        
+        self.token_flow_selector.setMinimumWidth(200)
         self.analyze_tokens_btn = QPushButton("🔍 Analyze Tokens")
         self.analyze_tokens_btn.clicked.connect(self.analyze_flow_tokens)
-        
-        controls_layout.addWidget(QLabel("Flow:"))
-        controls_layout.addWidget(self.token_flow_selector)
-        controls_layout.addWidget(self.analyze_tokens_btn)
-        controls_layout.addStretch()
-        
+        cl.addWidget(QLabel("Flow:"))
+        cl.addWidget(self.token_flow_selector)
+        cl.addWidget(self.analyze_tokens_btn)
+        cl.addStretch()
         layout.addWidget(controls)
-        
-        # Token list
+
+        # Token table
         tokens_group = QGroupBox("Discovered Tokens")
-        tokens_layout = QVBoxLayout(tokens_group)
-        
+        tl = QVBoxLayout(tokens_group)
         self.tokens_table = QTableWidget()
-        self.tokens_table.setColumnCount(6)
-        self.tokens_table.setHorizontalHeaderLabels(["Name", "Type", "Length", "Entropy", "Vulnerabilities", "Actions"])
+        self.tokens_table.setColumnCount(7)
+        self.tokens_table.setHorizontalHeaderLabels(
+            ["Name", "Type", "Length", "Entropy", "Algorithm", "Vulns", "Source"])
+        self.tokens_table.horizontalHeader().setStretchLastSection(True)
+        self.tokens_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.tokens_table.itemSelectionChanged.connect(self.show_token_details)
-        
-        tokens_layout.addWidget(self.tokens_table)
+        tl.addWidget(self.tokens_table)
         layout.addWidget(tokens_group)
-        
-        # Token details
-        details_group = QGroupBox("Token Details")
-        details_layout = QVBoxLayout(details_group)
-        
+
+        # Token detail view
+        detail_group = QGroupBox("Token Details")
+        dl = QVBoxLayout(detail_group)
         self.token_details = QTextEdit()
         self.token_details.setReadOnly(True)
-        
-        details_layout.addWidget(self.token_details)
-        layout.addWidget(details_group)
-        
+        dl.addWidget(self.token_details)
+        layout.addWidget(detail_group)
+
         return tab
-    
-    def create_results_tab(self):
-        """Create results summary tab"""
+
+    # ──── Results Tab ─────────────────────────────────────────────────────
+
+    def _create_results_tab(self):
         tab = QWidget()
         layout = QVBoxLayout(tab)
-        
+
         # Summary stats
-        stats_group = QGroupBox("Summary Statistics")
-        stats_layout = QHBoxLayout(stats_group)
-        
-        self.flows_count_label = QLabel("Flows: 0")
-        self.tokens_count_label = QLabel("Tokens: 0")
-        self.vulns_count_label = QLabel("Vulnerabilities: 0")
-        self.tests_count_label = QLabel("Tests: 0")
-        
-        stats_layout.addWidget(self.flows_count_label)
-        stats_layout.addWidget(self.tokens_count_label)
-        stats_layout.addWidget(self.vulns_count_label)
-        stats_layout.addWidget(self.tests_count_label)
-        stats_layout.addStretch()
-        
+        stats_group = QGroupBox("Summary")
+        sl = QHBoxLayout(stats_group)
+        self.stat_flows = QLabel("Flows: 0")
+        self.stat_tokens = QLabel("Tokens: 0")
+        self.stat_vulns = QLabel("Vulnerabilities: 0")
+        self.stat_critical = QLabel("Critical: 0")
+        self.stat_high = QLabel("High: 0")
+        self.stat_tests = QLabel("Tests Run: 0")
+        sl.addWidget(self.stat_flows)
+        sl.addWidget(self.stat_tokens)
+        sl.addWidget(self.stat_vulns)
+        sl.addWidget(self.stat_critical)
+        sl.addWidget(self.stat_high)
+        sl.addWidget(self.stat_tests)
+        sl.addStretch()
         layout.addWidget(stats_group)
-        
-        # Vulnerabilities summary
-        vulns_group = QGroupBox("Vulnerabilities Found")
-        vulns_layout = QVBoxLayout(vulns_group)
-        
-        self.vulnerabilities_table = QTableWidget()
-        self.vulnerabilities_table.setColumnCount(5)
-        self.vulnerabilities_table.setHorizontalHeaderLabels(["Type", "Severity", "Source", "Description", "Recommendation"])
-        
-        vulns_layout.addWidget(self.vulnerabilities_table)
-        layout.addWidget(vulns_group)
-        
-        # Export options
+
+        # Vulnerabilities table
+        vuln_group = QGroupBox("All Vulnerabilities")
+        vl = QVBoxLayout(vuln_group)
+        self.all_vulns_table = QTableWidget()
+        self.all_vulns_table.setColumnCount(6)
+        self.all_vulns_table.setHorizontalHeaderLabels(
+            ["Severity", "Protocol", "Type", "URL", "Description", "Mutation"])
+        self.all_vulns_table.horizontalHeader().setStretchLastSection(True)
+        vl.addWidget(self.all_vulns_table)
+        layout.addWidget(vuln_group)
+
+        # Export
         export_group = QGroupBox("Export Results")
-        export_layout = QHBoxLayout(export_group)
-        
+        el = QHBoxLayout(export_group)
         self.export_json_btn = QPushButton("📄 Export JSON")
         self.export_json_btn.clicked.connect(self.export_results_json)
-        
         self.export_html_btn = QPushButton("🌐 Export HTML Report")
         self.export_html_btn.clicked.connect(self.export_results_html)
-        
-        export_layout.addWidget(self.export_json_btn)
-        export_layout.addWidget(self.export_html_btn)
-        export_layout.addStretch()
-        
+        el.addWidget(self.export_json_btn)
+        el.addWidget(self.export_html_btn)
+        el.addStretch()
         layout.addWidget(export_group)
-        
+
         return tab
-    
+
+    # ──────────────────────────────────────────────────────────────────────
+    # Signal Connections
+    # ──────────────────────────────────────────────────────────────────────
+
     def connect_signals(self):
-        """Connect signals from core components"""
-        # Flow recorder signals
-        self.flow_recorder.session_started.connect(self.on_session_started)
-        self.flow_recorder.session_ended.connect(self.on_session_ended)
-        self.flow_recorder.flow_recorded.connect(self.on_flow_recorded)
-        
-        # Replay engine signals
-        self.replay_engine.replay_started.connect(self.on_replay_started)
-        self.replay_engine.replay_completed.connect(self.on_replay_completed)
-        self.replay_engine.vulnerability_found.connect(self.on_vulnerability_found)
-        
-        # Token analyzer signals
-        self.token_analyzer.token_analyzed.connect(self.on_token_analyzed)
-        self.token_analyzer.vulnerability_found.connect(self.on_vulnerability_found)
-        
-        # Proxy engine signals (if available)
+        # Flow recorder
+        self.flow_recorder.session_started.connect(self._on_session_started)
+        self.flow_recorder.session_ended.connect(self._on_session_ended)
+        self.flow_recorder.flow_recorded.connect(self._on_flow_recorded)
+        self.flow_recorder.protocol_detected.connect(self._on_protocol_detected)
+
+        # Replay engine
+        self.replay_engine.replay_started.connect(self._on_replay_started)
+        self.replay_engine.replay_completed.connect(self._on_replay_completed)
+        self.replay_engine.vulnerability_found.connect(self._on_vulnerability_found)
+        self.replay_engine.progress_updated.connect(self._on_progress_updated)
+        self.replay_engine.request_sent.connect(self._on_request_sent)
+
+        # Proxy (if available)
         if self.proxy_engine:
-            self.proxy_engine.request_logged.connect(self.on_request_logged)
-            self.proxy_engine.response_received.connect(self.on_response_received)
-            self.proxy_engine.proxy_started.connect(self.on_proxy_started)
-            self.proxy_engine.proxy_stopped.connect(self.on_proxy_stopped)
-    
+            if hasattr(self.proxy_engine, 'proxy_started'):
+                self.proxy_engine.proxy_started.connect(self._on_proxy_started)
+            if hasattr(self.proxy_engine, 'proxy_stopped'):
+                self.proxy_engine.proxy_stopped.connect(self._on_proxy_stopped)
+            if hasattr(self.proxy_engine, 'request_logged'):
+                self.proxy_engine.request_logged.connect(self._on_request_logged)
+            if hasattr(self.proxy_engine, 'response_received'):
+                self.proxy_engine.response_received.connect(self._on_response_received)
+
+    # ──────────────────────────────────────────────────────────────────────
+    # Recording Actions
+    # ──────────────────────────────────────────────────────────────────────
+
+    def toggle_proxy(self):
+        """Start or stop the proxy server (same as HTTP Interceptor)."""
+        if not self._request_handler:
+            # Late-resolve in case pages were loaded after init
+            self._resolve_proxy_engine()
+
+        if not self._request_handler:
+            QMessageBox.warning(self, "Proxy Unavailable",
+                                "Proxy engine is not available.\nInstall mitmproxy: pip install mitmproxy")
+            return
+
+        if not self.proxy_running:
+            if self._request_handler.start_proxy(8080):
+                self.request_feed.append("\n[INFO] Starting proxy server on port 8080...")
+            else:
+                self.request_feed.append("\n[ERROR] Failed to start proxy — install mitmproxy: pip install mitmproxy")
+        else:
+            self._request_handler.stop_proxy()
+            self.request_feed.append("\n[INFO] Stopping proxy server...")
+
     def start_recording(self):
-        """Start recording authentication flow"""
-        session_name = self.session_name_input.text().strip()
-        session_id = self.flow_recorder.start_recording(session_name)
-        
+        name = self.session_name_input.text().strip()
+        session_id = self.flow_recorder.start_recording(name)
         self.current_session = session_id
         self.start_recording_btn.setEnabled(False)
         self.stop_recording_btn.setEnabled(True)
-        self.status_label.setText(f"Recording: {session_id}")
-        self.status_label.setStyleSheet("color: #FF6B6B; font-weight: bold;")
-        
-        # Start proxy if not running
-        if self.proxy_engine and not hasattr(self.proxy_engine, 'master'):
-            self.proxy_engine.start_proxy(8080)
-    
+        self.status_label.setText(f"🔴 Recording: {session_id}")
+        self.request_feed.append(f"\n═══ Started recording: {session_id} ═══")
+
+        # Prompt user to start proxy if not running
+        if not self.proxy_running:
+            self.request_feed.append("[INFO] Proxy is not running — click 'Start Proxy' to capture traffic")
+
     def stop_recording(self):
-        """Stop recording authentication flow"""
         flow_data = self.flow_recorder.stop_recording()
-        
         self.current_session = None
         self.start_recording_btn.setEnabled(True)
         self.stop_recording_btn.setEnabled(False)
         self.status_label.setText("Ready")
-        self.status_label.setStyleSheet("color: #64C8FF; font-weight: bold;")
-        
+
         if flow_data:
-            self.recorded_flows[flow_data['session_id']] = flow_data
-            self.update_flows_table()
-            self.update_flow_selectors()
-    
-    def on_request_logged(self, http_request):
-        """Handle logged HTTP request"""
-        if self.flow_recorder.recording:
-            # Add to request feed
-            self.request_feed.append(f"[{time.strftime('%H:%M:%S')}] {http_request.method} {http_request.url}")
-            
-            # Scroll to bottom
-            scrollbar = self.request_feed.verticalScrollBar()
-            scrollbar.setValue(scrollbar.maximum())
-    
-    def on_response_received(self, http_response):
-        """Handle HTTP response"""
-        if self.flow_recorder.recording and http_response.request:
-            self.flow_recorder.process_request(http_response.request, http_response)
-    
-    def on_session_started(self, session_id):
-        """Handle session started"""
-        self.request_feed.append(f"\n=== Started recording session: {session_id} ===")
-    
-    def on_session_ended(self, session_id):
-        """Handle session ended"""
-        self.request_feed.append(f"\n=== Ended recording session: {session_id} ===")
-    
-    def on_flow_recorded(self, flow_data):
-        """Handle flow recorded"""
-        session_id = flow_data['session_id']
-        request_count = len(flow_data.get('requests', []))
-        token_count = len(flow_data.get('tokens', {}))
-        
-        self.request_feed.append(f"Flow recorded: {request_count} requests, {token_count} tokens")
-    
-    def update_flows_table(self):
-        """Update the flows table"""
-        self.flows_table.setRowCount(len(self.recorded_flows))
-        
-        for row, (session_id, flow_data) in enumerate(self.recorded_flows.items()):
-            self.flows_table.setItem(row, 0, QTableWidgetItem(session_id))
-            self.flows_table.setItem(row, 1, QTableWidgetItem(str(len(flow_data.get('requests', [])))))
-            
-            duration = flow_data.get('duration', 0)
-            self.flows_table.setItem(row, 2, QTableWidgetItem(f"{duration:.1f}s"))
-            
-            self.flows_table.setItem(row, 3, QTableWidgetItem(str(len(flow_data.get('tokens', {})))))
-            
-            # Actions column with buttons would be more complex in real implementation
-            self.flows_table.setItem(row, 4, QTableWidgetItem("View | Delete"))
-    
-    def update_flow_selectors(self):
-        """Update flow selector comboboxes"""
-        flow_names = list(self.recorded_flows.keys())
-        
-        self.flow_selector.clear()
-        self.flow_selector.addItems(flow_names)
-        
-        self.test_flow_selector.clear()
-        self.test_flow_selector.addItems(flow_names)
-        
-        self.token_flow_selector.clear()
-        self.token_flow_selector.addItems(flow_names)
-    
+            sid = flow_data['session_id']
+            self.recorded_flows[sid] = flow_data
+            self._refresh_flows_table()
+            self._refresh_flow_selectors()
+            protocols = flow_data.get('detected_protocols', [])
+            self.request_feed.append(
+                f"═══ Stopped. Captured {len(flow_data.get('requests', []))} requests, "
+                f"protocols: {', '.join(protocols) or 'none'} ═══\n")
+
+    def delete_selected_flow(self):
+        row = self.flows_table.currentRow()
+        if row < 0:
+            return
+        sid = self.flows_table.item(row, 0).text()
+        self.recorded_flows.pop(sid, None)
+        self._refresh_flows_table()
+        self._refresh_flow_selectors()
+
+    # ──────────────────────────────────────────────────────────────────────
+    # Model Actions
+    # ──────────────────────────────────────────────────────────────────────
+
     def analyze_selected_flow(self):
-        """Analyze the selected flow"""
-        current_row = self.flows_table.currentRow()
-        if current_row >= 0:
-            session_id = self.flows_table.item(current_row, 0).text()
-            self.tab_widget.setCurrentIndex(1)  # Switch to model tab
-            self.flow_selector.setCurrentText(session_id)
+        row = self.flows_table.currentRow()
+        if row >= 0:
+            sid = self.flows_table.item(row, 0).text()
+            self.flow_selector.setCurrentText(sid)
+            self.tab_widget.setCurrentIndex(1)
             self.build_state_model()
-    
+
     def build_state_model(self):
-        """Build state model for selected flow"""
         flow_name = self.flow_selector.currentText()
-        if flow_name in self.recorded_flows:
-            flow_data = self.recorded_flows[flow_name]
-            self.state_model.build_model(flow_data)
-            self.update_flow_graph()
-            self.update_security_issues()
-    
-    def load_flow_model(self):
-        """Load flow model when selector changes"""
-        pass  # Placeholder for future implementation
-    
-    def update_flow_graph(self):
-        """Update the flow graph display"""
+        if flow_name not in self.recorded_flows:
+            return
+        flow_data = self.recorded_flows[flow_name]
+        self.state_model.build_model(flow_data)
+        self._update_flow_graph()
+        self._update_security_issues_table()
+        self.status_updated.emit(f"Model built: {len(self.state_model.nodes)} nodes, "
+                                 f"{len(self.state_model.security_issues)} issues")
+
+    def _update_flow_graph(self):
         self.flow_graph.clear()
-        
-        for node_id, node in self.state_model.nodes.items():
-            item = QTreeWidgetItem([
-                f"{node.method} {node.endpoint}",
-                node.node_type,
-                "Yes" if node.requires_auth else "No",
-                ", ".join(node.parameters.keys())[:50]
-            ])
-            
-            # Color code based on node type
+        for node in self.state_model.nodes.values():
+            from urllib.parse import urlparse
+            path = urlparse(node.url).path or '/'
+            label = f"{node.method} {path}"
+            item = QTreeWidgetItem([label, node.node_type, node.protocol,
+                                    "Yes" if node.requires_auth else "No"])
             color = QColor(self.state_model._get_node_color(node))
             item.setBackground(0, color)
-            
+            item.setData(0, Qt.ItemDataRole.UserRole, node.id)
             self.flow_graph.addTopLevelItem(item)
-    
-    def update_security_issues(self):
-        """Update security issues table"""
-        issues = self.state_model.find_security_issues()
-        self.security_issues.setRowCount(len(issues))
-        
+
+    def on_node_clicked(self, item, column):
+        node_id = item.data(0, Qt.ItemDataRole.UserRole)
+        node = self.state_model.nodes.get(node_id)
+        if not node:
+            return
+        from dataclasses import asdict
+        details = json.dumps(asdict(node), indent=2, default=str)
+        self.node_details.setText(details)
+
+    def _update_security_issues_table(self):
+        issues = self.state_model.security_issues
+        self.security_issues_table.setRowCount(len(issues))
         for row, issue in enumerate(issues):
-            self.security_issues.setItem(row, 0, QTableWidgetItem(issue['type']))
-            self.security_issues.setItem(row, 1, QTableWidgetItem(issue['severity']))
-            self.security_issues.setItem(row, 2, QTableWidgetItem(issue.get('node_id', '')))
-            self.security_issues.setItem(row, 3, QTableWidgetItem(issue['description']))
-    
-    def replay_flow(self):
-        """Replay selected flow"""
-        flow_name = self.test_flow_selector.currentText()
-        if flow_name in self.recorded_flows:
-            flow_data = self.recorded_flows[flow_name]
-            test_id = self.replay_engine.replay_flow(flow_data, "basic_replay")
-            self.test_results.append(f"Started basic replay: {test_id}")
-    
-    def run_security_tests(self):
-        """Run security tests on selected flow"""
-        flow_name = self.test_flow_selector.currentText()
-        if flow_name in self.recorded_flows:
-            flow_data = self.recorded_flows[flow_name]
-            test_id = self.replay_engine.run_security_tests(flow_data)
-            self.test_results.append(f"Started security tests: {test_id}")
-    
-    def run_mutation_tests(self):
-        """Run selected mutation tests"""
-        flow_name = self.test_flow_selector.currentText()
-        if flow_name in self.recorded_flows:
-            mutations = []
-            
-            if self.remove_token_cb.isChecked():
-                mutations.append('remove_token')
-            if self.remove_state_cb.isChecked():
-                mutations.append('remove_state')
-            if self.modify_redirect_cb.isChecked():
-                mutations.append('modify_redirect_uri')
-            if self.remove_csrf_cb.isChecked():
-                mutations.append('remove_csrf')
-            if self.privilege_escalation_cb.isChecked():
-                mutations.append('privilege_escalation')
-            
-            if mutations:
-                flow_data = self.recorded_flows[flow_name]
-                test_id = self.replay_engine.test_mutations(flow_data, mutations)
-                self.test_results.append(f"Started mutation tests: {test_id} ({', '.join(mutations)})")
-    
-    def analyze_flow_tokens(self):
-        """Analyze tokens in selected flow"""
-        flow_name = self.token_flow_selector.currentText()
-        if flow_name in self.recorded_flows:
-            flow_data = self.recorded_flows[flow_name]
-            tokens = flow_data.get('tokens', {})
-            
-            if tokens:
-                analysis = self.token_analyzer.analyze_multiple_tokens(tokens)
-                self.update_tokens_table(analysis)
-                self.token_details.setText(self.token_analyzer.generate_token_report(analysis))
-            else:
-                self.token_details.setText("No tokens found in this flow.")
-    
-    def update_tokens_table(self, analysis):
-        """Update tokens table with analysis results"""
-        individual_analyses = analysis['individual_analyses']
-        self.tokens_table.setRowCount(len(individual_analyses))
-        
-        for row, (token_name, token_analysis) in enumerate(individual_analyses.items()):
-            self.tokens_table.setItem(row, 0, QTableWidgetItem(token_name))
-            self.tokens_table.setItem(row, 1, QTableWidgetItem(token_analysis['type']))
-            self.tokens_table.setItem(row, 2, QTableWidgetItem(str(token_analysis['length'])))
-            self.tokens_table.setItem(row, 3, QTableWidgetItem(f"{token_analysis['entropy']:.2f}"))
-            self.tokens_table.setItem(row, 4, QTableWidgetItem(str(len(token_analysis['vulnerabilities']))))
-            self.tokens_table.setItem(row, 5, QTableWidgetItem("View Details"))
-    
-    def show_token_details(self):
-        """Show details for selected token"""
-        current_row = self.tokens_table.currentRow()
-        if current_row >= 0:
-            token_name = self.tokens_table.item(current_row, 0).text()
-            # Would show detailed token analysis here
-            self.token_details.append(f"\nSelected token: {token_name}")
-    
-    def on_replay_started(self, test_id):
-        """Handle replay started"""
-        self.test_results.append(f"Test started: {test_id}")
-    
-    def on_replay_completed(self, test_id, results):
-        """Handle replay completed"""
-        success_rate = (results['successful_requests'] / results['requests_sent']) * 100 if results['requests_sent'] > 0 else 0
-        self.test_results.append(f"Test completed: {test_id} - {success_rate:.1f}% success rate")
-        
-        if results.get('vulnerabilities'):
-            self.test_results.append(f"  Found {len(results['vulnerabilities'])} vulnerabilities")
-    
-    def on_vulnerability_found(self, test_id, vuln_info):
-        """Handle vulnerability found"""
-        self.test_results.append(f"🚨 VULNERABILITY: {vuln_info['type']} - {vuln_info['description']}")
-    
-    def on_token_analyzed(self, analysis):
-        """Handle token analyzed"""
-        pass  # Already handled in analyze_flow_tokens
-    
-    def on_proxy_started(self, port):
-        """Handle proxy started"""
-        self.proxy_status.setText(f"Proxy: Running on port {port}")
-        self.proxy_status.setStyleSheet("color: #4ECDC4;")
-    
-    def on_proxy_stopped(self):
-        """Handle proxy stopped"""
-        self.proxy_status.setText("Proxy: Disconnected")
-        self.proxy_status.setStyleSheet("color: #FF6B6B;")
-    
-    def export_flow(self):
-        """Export selected flow to JSON"""
-        current_row = self.flows_table.currentRow()
-        if current_row >= 0:
-            session_id = self.flows_table.item(current_row, 0).text()
-            
-            filename, _ = QFileDialog.getSaveFileName(
-                self, "Export Flow", f"{session_id}.json", "JSON Files (*.json)"
-            )
-            
-            if filename:
-                self.flow_recorder.export_flow(session_id, filename)
-                QMessageBox.information(self, "Export Complete", f"Flow exported to {filename}")
-    
-    def import_flow(self):
-        """Import flow from JSON file"""
-        filename, _ = QFileDialog.getOpenFileName(
-            self, "Import Flow", "", "JSON Files (*.json)"
-        )
-        
-        if filename:
-            session_id = self.flow_recorder.import_flow(filename)
-            if session_id:
-                flow_data = self.flow_recorder.get_flow_data(session_id)
-                self.recorded_flows[session_id] = flow_data
-                self.update_flows_table()
-                self.update_flow_selectors()
-                QMessageBox.information(self, "Import Complete", f"Flow imported as {session_id}")
-            else:
-                QMessageBox.warning(self, "Import Failed", "Failed to import flow")
-    
+            from dataclasses import asdict
+            d = asdict(issue)
+            self.security_issues_table.setItem(row, 0, QTableWidgetItem(d['issue_id']))
+            sev_item = QTableWidgetItem(d['severity'].upper())
+            sev_colors = {'critical': '#FF4444', 'high': '#FF8C00', 'medium': '#FFD700', 'low': '#87CEEB'}
+            sev_item.setForeground(QColor(sev_colors.get(d['severity'], '#DCDCDC')))
+            self.security_issues_table.setItem(row, 1, sev_item)
+            self.security_issues_table.setItem(row, 2, QTableWidgetItem(d['protocol']))
+            self.security_issues_table.setItem(row, 3, QTableWidgetItem(d['issue_type']))
+            self.security_issues_table.setItem(row, 4, QTableWidgetItem(d['description'][:100]))
+            self.security_issues_table.setItem(row, 5, QTableWidgetItem(d['cwe_id']))
+
     def export_model(self):
-        """Export state model"""
-        if self.state_model.nodes:
-            filename, _ = QFileDialog.getSaveFileName(
-                self, "Export Model", "auth_model.json", "JSON Files (*.json)"
-            )
-            
-            if filename:
-                self.state_model.export_model(filename)
-                QMessageBox.information(self, "Export Complete", f"Model exported to {filename}")
-    
+        if not self.state_model.nodes:
+            QMessageBox.information(self, "No Model", "Build a model first.")
+            return
+        filename, _ = QFileDialog.getSaveFileName(
+            self, "Export Model", "auth_model.json", "JSON Files (*.json)")
+        if filename:
+            self.state_model.export_model(filename)
+            QMessageBox.information(self, "Exported", f"Model exported to {filename}")
+
+    # ──────────────────────────────────────────────────────────────────────
+    # Testing Actions
+    # ──────────────────────────────────────────────────────────────────────
+
+    def replay_flow(self):
+        flow_name = self.test_flow_selector.currentText()
+        if flow_name in self.recorded_flows:
+            test_id = self.replay_engine.replay_flow(self.recorded_flows[flow_name])
+            self.test_results.append(f"[{self._ts()}] Started baseline replay: {test_id}")
+
+    def run_auto_security_test(self):
+        flow_name = self.test_flow_selector.currentText()
+        if flow_name in self.recorded_flows:
+            test_id = self.replay_engine.run_security_tests(self.recorded_flows[flow_name])
+            self.test_results.append(f"[{self._ts()}] Started auto security test: {test_id}")
+
+    def run_full_audit(self):
+        flow_name = self.test_flow_selector.currentText()
+        if flow_name in self.recorded_flows:
+            test_id = self.replay_engine.run_all_protocol_tests(self.recorded_flows[flow_name])
+            self.test_results.append(f"[{self._ts()}] Started full audit (all mutations): {test_id}")
+
+    def run_selected_mutations(self):
+        flow_name = self.test_flow_selector.currentText()
+        if flow_name not in self.recorded_flows:
+            QMessageBox.warning(self, "No Flow", "Select a recorded flow first.")
+            return
+        selected = [name for name, cb in self.mutation_checkboxes.items() if cb.isChecked()]
+        if not selected:
+            QMessageBox.warning(self, "No Mutations", "Select at least one mutation to test.")
+            return
+        test_id = self.replay_engine.test_mutations(
+            self.recorded_flows[flow_name], selected)
+        self.test_results.append(
+            f"[{self._ts()}] Running {len(selected)} mutations: {test_id}\n"
+            f"  Mutations: {', '.join(selected)}")
+
+    def _select_all_mutations(self):
+        for cb in self.mutation_checkboxes.values():
+            cb.setChecked(True)
+
+    def _clear_all_mutations(self):
+        for cb in self.mutation_checkboxes.values():
+            cb.setChecked(False)
+
+    # ──────────────────────────────────────────────────────────────────────
+    # Token Analysis Actions
+    # ──────────────────────────────────────────────────────────────────────
+
+    def analyze_flow_tokens(self):
+        flow_name = self.token_flow_selector.currentText()
+        if flow_name not in self.recorded_flows:
+            return
+        flow_data = self.recorded_flows[flow_name]
+        tokens = flow_data.get('tokens', {})
+        if not tokens:
+            self.token_details.setText("No tokens found in this flow.")
+            return
+
+        results = self.token_analyzer.analyze_multiple_tokens(tokens)
+        self._update_tokens_table(results)
+        report = self.token_analyzer.generate_token_report(results)
+        self.token_details.setText(report)
+
+        # Update results tab
+        self._update_results_summary()
+
+    def _update_tokens_table(self, results: dict):
+        analyses = results.get('individual_analyses', {})
+        self.tokens_table.setRowCount(len(analyses))
+        for row, (name, a) in enumerate(analyses.items()):
+            self.tokens_table.setItem(row, 0, QTableWidgetItem(name))
+            self.tokens_table.setItem(row, 1, QTableWidgetItem(a.get('type', '')))
+            self.tokens_table.setItem(row, 2, QTableWidgetItem(str(a.get('length', 0))))
+            self.tokens_table.setItem(row, 3, QTableWidgetItem(f"{a.get('entropy', 0):.2f}"))
+            alg = a.get('properties', {}).get('algorithm', '—')
+            self.tokens_table.setItem(row, 4, QTableWidgetItem(str(alg)))
+            vuln_count = len(a.get('vulnerabilities', []))
+            vuln_item = QTableWidgetItem(str(vuln_count))
+            if vuln_count > 0:
+                vuln_item.setForeground(QColor('#FF4444'))
+            self.tokens_table.setItem(row, 5, vuln_item)
+            self.tokens_table.setItem(row, 6, QTableWidgetItem(a.get('source', '')))
+
+    def show_token_details(self):
+        row = self.tokens_table.currentRow()
+        if row < 0:
+            return
+        token_name = self.tokens_table.item(row, 0).text()
+        # Find analysis for this token
+        flow_name = self.token_flow_selector.currentText()
+        if flow_name not in self.recorded_flows:
+            return
+        tokens = self.recorded_flows[flow_name].get('tokens', {})
+        token_info = tokens.get(token_name, {})
+        if token_info:
+            analysis = self.token_analyzer.analyze_token(
+                token_name, token_info.get('value', ''), token_info.get('source', ''), token_info)
+            self.token_details.setText(json.dumps(analysis, indent=2, default=str))
+
+    # ──────────────────────────────────────────────────────────────────────
+    # Signal Handlers
+    # ──────────────────────────────────────────────────────────────────────
+
+    def _on_session_started(self, session_id):
+        self.request_feed.append(f"[{self._ts()}] Session started: {session_id}")
+
+    def _on_session_ended(self, session_id):
+        self.request_feed.append(f"[{self._ts()}] Session ended: {session_id}")
+
+    def _on_flow_recorded(self, flow_data):
+        n_req = len(flow_data.get('requests', []))
+        n_tok = len(flow_data.get('tokens', {}))
+        protocols = flow_data.get('detected_protocols', [])
+        self.request_feed.append(
+            f"[{self._ts()}] Flow recorded: {n_req} requests, {n_tok} tokens, "
+            f"protocols: {', '.join(protocols) or 'none'}")
+
+    def _on_protocol_detected(self, session_id, protocol):
+        self.protocol_label.setText(f"Protocols: {protocol}")
+        self.request_feed.append(f"[{self._ts()}] 🔎 Protocol detected: {protocol}")
+
+    def _on_request_logged(self, http_request):
+        if self.flow_recorder.recording:
+            self.request_feed.append(
+                f"[{self._ts()}] {http_request.method} {http_request.url}")
+            scrollbar = self.request_feed.verticalScrollBar()
+            scrollbar.setValue(scrollbar.maximum())
+
+    def _on_response_received(self, http_response):
+        if self.flow_recorder.recording and hasattr(http_response, 'request'):
+            self.flow_recorder.process_request(http_response.request, http_response)
+
+    def _on_proxy_started(self, port):
+        self.proxy_running = True
+        self.proxy_toggle_btn.setText("Stop Proxy")
+        self.proxy_status.setText(f"Proxy: Running on port {port}")
+        self.request_feed.append(f"\n[SUCCESS] Proxy started on port {port}")
+        self.request_feed.append(f"[INFO] Configure browser proxy: 127.0.0.1:{port}")
+
+    def _on_proxy_stopped(self):
+        self.proxy_running = False
+        self.proxy_toggle_btn.setText("Start Proxy")
+        self.proxy_status.setText("Proxy: Stopped")
+        self.request_feed.append("\n[INFO] Proxy stopped")
+
+    def _on_replay_started(self, test_id):
+        self.test_progress.setVisible(True)
+        self.test_progress.setValue(0)
+        self.test_results.append(f"\n[{self._ts()}] ▶ Test started: {test_id}")
+
+    def _on_replay_completed(self, test_id, results):
+        self.test_progress.setVisible(False)
+        vulns = results.get('vulnerabilities', [])
+        duration = results.get('duration', 0)
+        self.test_results.append(
+            f"[{self._ts()}] ✓ Test completed: {test_id}\n"
+            f"  Requests sent: {results.get('requests_sent', 0)}\n"
+            f"  Vulnerabilities: {len(vulns)}\n"
+            f"  Duration: {duration:.1f}s")
+        if vulns:
+            self.test_results.append("  ─── Findings ───")
+            for v in vulns:
+                self.test_results.append(
+                    f"  🚨 [{v.get('severity', '?').upper()}] {v.get('type')}: {v.get('description', '')[:80]}")
+        self._update_results_summary()
+
+    def _on_vulnerability_found(self, test_id, vuln):
+        self.test_results.append(
+            f"[{self._ts()}] 🚨 [{vuln.get('severity', '?').upper()}] "
+            f"{vuln.get('type')}: {vuln.get('description', '')[:100]}")
+        # Add to results table
+        self._add_vuln_to_table(vuln)
+
+    def _on_progress_updated(self, test_id, current, total):
+        if total > 0:
+            self.test_progress.setMaximum(total)
+            self.test_progress.setValue(current)
+
+    def _on_request_sent(self, test_id, info):
+        mutation = info.get('mutation', 'baseline')
+        self.test_results.append(
+            f"  → {info.get('method')} {info.get('url', '')[:60]} [{mutation}]")
+
+    # ──────────────────────────────────────────────────────────────────────
+    # Results & Export
+    # ──────────────────────────────────────────────────────────────────────
+
+    def _update_results_summary(self):
+        """Update the Results tab summary counters."""
+        total_flows = len(self.recorded_flows)
+        total_tokens = sum(len(f.get('tokens', {})) for f in self.recorded_flows.values())
+        total_vulns = self.all_vulns_table.rowCount()
+        critical = 0
+        high = 0
+        for row in range(total_vulns):
+            sev = self.all_vulns_table.item(row, 0)
+            if sev:
+                if sev.text().lower() == 'critical':
+                    critical += 1
+                elif sev.text().lower() == 'high':
+                    high += 1
+        self.stat_flows.setText(f"Flows: {total_flows}")
+        self.stat_tokens.setText(f"Tokens: {total_tokens}")
+        self.stat_vulns.setText(f"Vulnerabilities: {total_vulns}")
+        self.stat_critical.setText(f"Critical: {critical}")
+        self.stat_high.setText(f"High: {high}")
+
+    def _add_vuln_to_table(self, vuln: dict):
+        row = self.all_vulns_table.rowCount()
+        self.all_vulns_table.insertRow(row)
+        sev = vuln.get('severity', 'info')
+        sev_item = QTableWidgetItem(sev.upper())
+        sev_colors = {'critical': '#FF4444', 'high': '#FF8C00', 'medium': '#FFD700', 'low': '#87CEEB'}
+        sev_item.setForeground(QColor(sev_colors.get(sev, '#DCDCDC')))
+        self.all_vulns_table.setItem(row, 0, sev_item)
+        self.all_vulns_table.setItem(row, 1, QTableWidgetItem(vuln.get('protocol', vuln.get('mutation', ''))))
+        self.all_vulns_table.setItem(row, 2, QTableWidgetItem(vuln.get('type', '')))
+        self.all_vulns_table.setItem(row, 3, QTableWidgetItem(vuln.get('url', '')[:50]))
+        self.all_vulns_table.setItem(row, 4, QTableWidgetItem(vuln.get('description', '')[:80]))
+        self.all_vulns_table.setItem(row, 5, QTableWidgetItem(vuln.get('mutation', '')))
+
     def export_results_json(self):
-        """Export all results to JSON"""
-        results = {
-            'flows': self.recorded_flows,
+        data = {
+            'flows': {k: {kk: vv for kk, vv in v.items() if kk != 'endpoints' or not isinstance(vv, set)}
+                      for k, v in self.recorded_flows.items()},
             'timestamp': time.time(),
-            'summary': {
-                'total_flows': len(self.recorded_flows),
-                'total_tokens': sum(len(flow.get('tokens', {})) for flow in self.recorded_flows.values()),
-                'total_requests': sum(len(flow.get('requests', [])) for flow in self.recorded_flows.values())
-            }
+            'security_issues': [self._table_row_to_dict(self.all_vulns_table, r)
+                               for r in range(self.all_vulns_table.rowCount())],
         }
-        
         filename, _ = QFileDialog.getSaveFileName(
-            self, "Export Results", "auth_results.json", "JSON Files (*.json)"
-        )
-        
+            self, "Export Results", "auth_results.json", "JSON Files (*.json)")
         if filename:
-            with open(filename, 'w') as f:
-                json.dump(results, f, indent=2, default=str)
-            QMessageBox.information(self, "Export Complete", f"Results exported to {filename}")
-    
+            with open(filename, 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=2, default=str)
+            QMessageBox.information(self, "Exported", f"Results exported to {filename}")
+
     def export_results_html(self):
-        """Export results to HTML report"""
-        # Simplified HTML export - would be more comprehensive in real implementation
-        html_content = f"""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Auth Workflows Report</title>
-            <style>
-                body {{ font-family: Arial, sans-serif; margin: 20px; }}
-                .header {{ background: #2c3e50; color: white; padding: 20px; }}
-                .section {{ margin: 20px 0; padding: 15px; border: 1px solid #ddd; }}
-                .vulnerability {{ background: #ffebee; padding: 10px; margin: 5px 0; }}
-            </style>
-        </head>
-        <body>
-            <div class="header">
-                <h1>Authentication Workflows Analysis Report</h1>
-                <p>Generated: {time.strftime('%Y-%m-%d %H:%M:%S')}</p>
-            </div>
-            
-            <div class="section">
-                <h2>Summary</h2>
-                <p>Total Flows: {len(self.recorded_flows)}</p>
-                <p>Total Requests: {sum(len(flow.get('requests', [])) for flow in self.recorded_flows.values())}</p>
-                <p>Total Tokens: {sum(len(flow.get('tokens', {})) for flow in self.recorded_flows.values())}</p>
-            </div>
-            
-            <div class="section">
-                <h2>Recorded Flows</h2>
-        """
-        
-        for session_id, flow_data in self.recorded_flows.items():
-            html_content += f"""
-                <h3>{session_id}</h3>
-                <p>Requests: {len(flow_data.get('requests', []))}</p>
-                <p>Duration: {flow_data.get('duration', 0):.1f}s</p>
-                <p>Tokens: {len(flow_data.get('tokens', {}))}</p>
-            """
-        
-        html_content += """
-            </div>
-        </body>
-        </html>
-        """
-        
+        vulns = []
+        for r in range(self.all_vulns_table.rowCount()):
+            vulns.append(self._table_row_to_dict(self.all_vulns_table, r))
+        html = self._generate_html_report(vulns)
         filename, _ = QFileDialog.getSaveFileName(
-            self, "Export HTML Report", "auth_report.html", "HTML Files (*.html)"
-        )
-        
+            self, "Export HTML Report", "auth_report.html", "HTML Files (*.html)")
         if filename:
-            with open(filename, 'w') as f:
-                f.write(html_content)
-            QMessageBox.information(self, "Export Complete", f"HTML report exported to {filename}")
-    
+            with open(filename, 'w', encoding='utf-8') as f:
+                f.write(html)
+            QMessageBox.information(self, "Exported", f"HTML report exported to {filename}")
+
+    def export_flow(self):
+        row = self.flows_table.currentRow()
+        if row < 0:
+            return
+        sid = self.flows_table.item(row, 0).text()
+        filename, _ = QFileDialog.getSaveFileName(
+            self, "Export Flow", f"{sid}.json", "JSON Files (*.json)")
+        if filename:
+            self.flow_recorder.export_flow(sid, filename)
+
+    def import_flow(self):
+        filename, _ = QFileDialog.getOpenFileName(
+            self, "Import Flow", "", "JSON Files (*.json)")
+        if filename:
+            sid = self.flow_recorder.import_flow(filename)
+            if sid:
+                flow_data = self.flow_recorder.get_flow_data(sid)
+                if flow_data:
+                    self.recorded_flows[sid] = flow_data
+                    self._refresh_flows_table()
+                    self._refresh_flow_selectors()
+                    QMessageBox.information(self, "Imported", f"Flow imported as '{sid}'")
+
+    # ──────────────────────────────────────────────────────────────────────
+    # Helpers
+    # ──────────────────────────────────────────────────────────────────────
+
+    def _refresh_flows_table(self):
+        self.flows_table.setRowCount(len(self.recorded_flows))
+        for row, (sid, fd) in enumerate(self.recorded_flows.items()):
+            self.flows_table.setItem(row, 0, QTableWidgetItem(sid))
+            self.flows_table.setItem(row, 1, QTableWidgetItem(str(len(fd.get('requests', [])))))
+            protocols = ', '.join(fd.get('detected_protocols', []))
+            self.flows_table.setItem(row, 2, QTableWidgetItem(protocols or '—'))
+            self.flows_table.setItem(row, 3, QTableWidgetItem(str(len(fd.get('tokens', {})))))
+            dur = fd.get('duration', 0)
+            self.flows_table.setItem(row, 4, QTableWidgetItem(f"{dur:.1f}s"))
+            self.flows_table.setItem(row, 5, QTableWidgetItem("Analyze | Export | Delete"))
+
+    def _refresh_flow_selectors(self):
+        names = list(self.recorded_flows.keys())
+        for selector in (self.flow_selector, self.test_flow_selector, self.token_flow_selector):
+            selector.clear()
+            selector.addItems(names)
+
+    def _ts(self) -> str:
+        return time.strftime('%H:%M:%S')
+
+    def _table_row_to_dict(self, table: QTableWidget, row: int) -> dict:
+        headers = [table.horizontalHeaderItem(c).text() if table.horizontalHeaderItem(c) else f"col{c}"
+                   for c in range(table.columnCount())]
+        return {headers[c]: (table.item(row, c).text() if table.item(row, c) else '')
+                for c in range(table.columnCount())}
+
+    def _generate_html_report(self, vulns: list) -> str:
+        rows = ''
+        for v in vulns:
+            sev = v.get('Severity', 'info')
+            color = {'CRITICAL': '#FF4444', 'HIGH': '#FF8C00', 'MEDIUM': '#FFD700'}.get(sev, '#87CEEB')
+            rows += (f"<tr><td style='color:{color};font-weight:bold'>{sev}</td>"
+                     f"<td>{v.get('Protocol', '')}</td>"
+                     f"<td>{v.get('Type', '')}</td>"
+                     f"<td>{v.get('URL', '')}</td>"
+                     f"<td>{v.get('Description', '')}</td></tr>\n")
+        return f"""<!DOCTYPE html>
+<html><head><title>Auth Workflows Security Report</title>
+<style>
+body{{font-family:Arial,sans-serif;background:#1a1f2e;color:#dcdcdc;padding:20px}}
+h1{{color:#64C8FF}}h2{{color:#87CEEB}}
+table{{border-collapse:collapse;width:100%}}
+th,td{{border:1px solid #64C8FF;padding:8px;text-align:left}}
+th{{background:rgba(100,200,255,0.2)}}
+.summary{{display:flex;gap:20px;margin:20px 0}}
+.stat{{background:rgba(100,200,255,0.1);padding:15px;border-radius:8px;border:1px solid #64C8FF}}
+</style></head><body>
+<h1>Authentication Workflows Security Report</h1>
+<p>Generated: {time.strftime('%Y-%m-%d %H:%M:%S')}</p>
+<div class="summary">
+<div class="stat"><b>Flows Analyzed:</b> {len(self.recorded_flows)}</div>
+<div class="stat"><b>Vulnerabilities:</b> {len(vulns)}</div>
+<div class="stat"><b>Protocols Tested:</b> {', '.join(set(v.get('Protocol','') for v in vulns)) or 'N/A'}</div>
+</div>
+<h2>Vulnerabilities</h2>
+<table><tr><th>Severity</th><th>Protocol</th><th>Type</th><th>URL</th><th>Description</th></tr>
+{rows}</table></body></html>"""
+
+    # ──────────────────────────────────────────────────────────────────────
+    # Theme
+    # ──────────────────────────────────────────────────────────────────────
+
     def apply_theme(self):
-        """Apply dark theme styling"""
-        self.setStyleSheet("""
-            QGroupBox {
-                font-weight: bold;
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 8px;
-                margin-top: 10px;
-                padding-top: 10px;
-                background-color: rgba(0, 0, 0, 50);
-            }
-            QGroupBox::title {
-                subcontrol-origin: margin;
-                left: 10px;
-                padding: 0 5px 0 5px;
-                color: #64C8FF;
-            }
-            QPushButton {
-                background-color: rgba(30, 40, 50, 150);
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 8px;
-                color: #DCDCDC;
-                font-weight: bold;
-                padding: 8px;
-                min-width: 100px;
-            }
-            QPushButton:hover {
-                background-color: rgba(50, 70, 90, 200);
-                border: 2px solid #64C8FF;
-            }
-            QPushButton:pressed {
-                background-color: rgba(70, 90, 110, 250);
-            }
-            QPushButton:disabled {
-                background-color: rgba(20, 20, 20, 100);
-                border: 2px solid rgba(100, 100, 100, 50);
-                color: #666;
-            }
-            QLineEdit, QComboBox {
-                background-color: rgba(20, 30, 40, 150);
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-                color: #DCDCDC;
-                padding: 5px;
-            }
-            QTextEdit {
-                background-color: rgba(10, 20, 30, 150);
-                border: 1px solid rgba(100, 200, 255, 100);
-                color: #DCDCDC;
-                font-family: 'Courier New', monospace;
-            }
-            QTableWidget {
-                background-color: rgba(10, 20, 30, 150);
-                border: 1px solid rgba(100, 200, 255, 100);
-                color: #DCDCDC;
-                gridline-color: rgba(100, 200, 255, 50);
-            }
-            QTableWidget::item {
-                padding: 5px;
-            }
-            QTableWidget::item:selected {
-                background-color: rgba(100, 200, 255, 100);
-            }
-            QTreeWidget {
-                background-color: rgba(10, 20, 30, 150);
-                border: 1px solid rgba(100, 200, 255, 100);
-                color: #DCDCDC;
-            }
-            QTabWidget::pane {
-                border: 1px solid rgba(100, 200, 255, 50);
-                background-color: rgba(0, 0, 0, 30);
-            }
-            QTabBar::tab {
-                background-color: rgba(30, 40, 50, 150);
-                color: #DCDCDC;
-                padding: 8px 16px;
-                margin-right: 2px;
-                border-top-left-radius: 5px;
-                border-top-right-radius: 5px;
-            }
-            QTabBar::tab:selected {
-                background-color: rgba(50, 70, 90, 200);
-                color: #64C8FF;
-            }
-            QCheckBox {
-                color: #DCDCDC;
-            }
-            QCheckBox::indicator {
-                width: 18px;
-                height: 18px;
-            }
-            QCheckBox::indicator:unchecked {
-                border: 2px solid rgba(100, 200, 255, 100);
-                background-color: rgba(20, 30, 40, 150);
-            }
-            QCheckBox::indicator:checked {
-                border: 2px solid #64C8FF;
-                background-color: #64C8FF;
-            }
-        """)
+        """Theme is applied at the WebExploitsPage level for consistency."""
+        pass

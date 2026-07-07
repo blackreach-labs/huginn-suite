@@ -65,12 +65,5 @@ class InventoryStatsComponent(QWidget):
         self.recent_label.value_label.setText("0")  # Placeholder
 
     def apply_theme(self):
-        """Apply component theme"""
+        """Theme is applied globally by UnifiedThemeManager."""
         self.setFixedHeight(100)
-        self.setStyleSheet("""
-            QWidget {
-                background-color: rgba(20, 30, 40, 200);
-                border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-            }
-        """)

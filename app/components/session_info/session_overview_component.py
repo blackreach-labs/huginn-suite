@@ -13,37 +13,17 @@ class SessionOverviewComponent(QWidget):
         
         # Session info group
         info_group = QGroupBox("Session Information")
-        info_group.setStyleSheet("""
-            QGroupBox {
-                font-weight: bold;
-                color: #64C8FF;
-                border: 2px solid #555;
-                border-radius: 5px;
-                margin-top: 10px;
-                padding-top: 10px;
-            }
-        """)
         
         info_layout = QVBoxLayout(info_group)
         
         self.session_info_text = QTextEdit()
         self.session_info_text.setReadOnly(True)
         self.session_info_text.setMaximumHeight(200)
-        self.session_info_text.setStyleSheet("""
-            QTextEdit {
-                background-color: rgba(0, 0, 0, 150);
-                border: 1px solid #555;
-                color: #DCDCDC;
-                font-family: 'Courier New', monospace;
-                padding: 8px;
-            }
-        """)
         
         info_layout.addWidget(self.session_info_text)
         
         # Quick stats group
         stats_group = QGroupBox("Quick Statistics")
-        stats_group.setStyleSheet(info_group.styleSheet())
         
         stats_layout = QHBoxLayout(stats_group)
         
@@ -51,12 +31,6 @@ class SessionOverviewComponent(QWidget):
         self.exports_count_label = QLabel("Exports: 0")
         self.targets_count_label = QLabel("Targets: 0")
         self.results_count_label = QLabel("Results: 0")
-        
-        stat_style = "color: #00FF41; font-size: 12pt; font-weight: bold; padding: 10px;"
-        self.scans_count_label.setStyleSheet(stat_style)
-        self.exports_count_label.setStyleSheet(stat_style)
-        self.targets_count_label.setStyleSheet(stat_style)
-        self.results_count_label.setStyleSheet(stat_style)
         
         stats_layout.addWidget(self.scans_count_label)
         stats_layout.addWidget(self.exports_count_label)

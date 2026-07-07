@@ -1,0 +1,75 @@
+{
+  "13.248.243.5": {
+    "open_ports": [
+      {
+        "port": 80,
+        "protocol": "tcp",
+        "service": "HTTP",
+        "banner": "HTTP/1.1 404 Not Found\r\ncontent-type: text/html;charset=utf-8\r\ncontent-length: 189878\r\nset-cookie: dps_site_id=ap-southeast-1; path=/\r\nvary: Accept-Encoding\r\nserver: DPS/2.0.0+sha-928dbe7\r\nx-version: 928dbe7\r\nx-siteid: ap-southeast-1\r\ndate: Thu, 02 Jul 2026 13:02:03 GMT\r\nkeep-alive: timeout=5",
+        "confidence": "high",
+        "tls_version": null
+      },
+      {
+        "port": 443,
+        "protocol": "tcp",
+        "service": "HTTPS",
+        "banner": "",
+        "confidence": "high",
+        "tls_version": "TLSv1.3"
+      }
+    ],
+    "service_categories": {
+      "Web / HTTP(S) Services": [
+        80,
+        443
+      ]
+    },
+    "server_type": "Web Server",
+    "os_detection": {
+      "os": "Apache HTTP Server",
+      "confidence": "medium",
+      "evidence": [
+        "Required ports: [80]",
+        "Optional ports: [443]"
+      ],
+      "detection_methods": []
+    }
+  },
+  "76.223.105.230": {
+    "open_ports": [
+      {
+        "port": 80,
+        "protocol": "tcp",
+        "service": "HTTP",
+        "banner": "HTTP/1.1 404 Not Found\r\ncontent-type: text/html;charset=utf-8\r\ncontent-length: 189878\r\nset-cookie: dps_site_id=ap-southeast-1; path=/\r\nvary: Accept-Encoding\r\nserver: DPS/2.0.0+sha-928dbe7\r\nx-version: 928dbe7\r\nx-siteid: ap-southeast-1\r\ndate: Thu, 02 Jul 2026 13:02:17 GMT\r\nkeep-alive: timeout=5",
+        "confidence": "high",
+        "tls_version": null
+      },
+      {
+        "port": 443,
+        "protocol": "tcp",
+        "service": "HTTPS",
+        "banner": "",
+        "confidence": "high",
+        "tls_version": "TLSv1.3"
+      }
+    ],
+    "service_categories": {
+      "Web / HTTP(S) Services": [
+        80,
+        443
+      ]
+    },
+    "server_type": "Web Server",
+    "os_detection": {
+      "os": "Apache HTTP Server",
+      "confidence": "medium",
+      "evidence": [
+        "Required ports: [80]",
+        "Optional ports: [443]"
+      ],
+      "detection_methods": []
+    }
+  },
+  "_scan_message": "\n\n--- Port Scan Analysis Complete ---\nThis scan identified open network services. Consider:\n• Service enumeration on discovered ports\n• Version detection for security assessment\n• Vulnerability scanning of identified services\n• Review firewall rules and access controls"
+}

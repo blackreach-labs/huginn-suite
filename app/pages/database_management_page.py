@@ -164,7 +164,7 @@ class DatabaseManagementPage(QWidget):
         
         # Status bar
         self.status_label = QLabel("Ready")
-        self.status_label.setStyleSheet("color: #87CEEB; padding: 2px; font-size: 10pt;")
+        self.status_label.setStyleSheet("padding: 2px; font-size: 10pt;")
         self.status_label.setMaximumHeight(20)
         self.status_label.setMinimumHeight(20)
         main_layout.addWidget(self.status_label)
@@ -175,8 +175,6 @@ class DatabaseManagementPage(QWidget):
         panel.setFrameStyle(QFrame.Shape.Box)
         panel.setStyleSheet("""
             QFrame {
-                background-color: rgba(0, 0, 0, 50);
-                border: 1px solid rgba(100, 200, 255, 100);
                 border-radius: 5px;
             }
         """)
@@ -186,7 +184,7 @@ class DatabaseManagementPage(QWidget):
         
         # Panel title
         title = QLabel("Database Explorer")
-        title.setStyleSheet("font-size: 14pt; font-weight: bold; color: #64C8FF; margin-bottom: 10px;")
+        title.setStyleSheet("font-size: 14pt; font-weight: bold; margin-bottom: 10px;")
         layout.addWidget(title)
         
         # Database tree
@@ -196,21 +194,16 @@ class DatabaseManagementPage(QWidget):
         self.db_tree.itemDoubleClicked.connect(self.on_database_double_clicked)
         self.db_tree.setStyleSheet("""
             QTreeWidget {
-                background-color: rgba(20, 30, 40, 150);
-                color: #DCDCDC;
-                border: 1px solid rgba(100, 200, 255, 100);
                 border-radius: 3px;
             }
             QTreeWidget::item:selected {
-                background-color: rgba(100, 200, 255, 100);
-                color: #000000;
             }
         """)
         layout.addWidget(self.db_tree)
         
         # Quick actions
         actions_group = QGroupBox("Quick Actions")
-        actions_group.setStyleSheet("QGroupBox { font-weight: bold; color: #64C8FF; }")
+        actions_group.setStyleSheet("QGroupBox { font-weight: bold; }")
         actions_layout = QVBoxLayout(actions_group)
         
         self.refresh_btn = QPushButton("🔄 Refresh Databases")
@@ -236,8 +229,6 @@ class DatabaseManagementPage(QWidget):
         for btn in [self.refresh_btn, self.compact_btn, self.analyze_btn, self.backup_btn, self.integrity_btn, self.export_btn, self.cleanup_btn, self.connect_remote_btn, self.manage_connections_btn]:
             btn.setStyleSheet("""
                 QPushButton {
-                    background-color: rgba(100, 200, 255, 150);
-                    color: #000000;
                     border: none;
                     border-radius: 5px;
                     padding: 8px;
@@ -245,11 +236,8 @@ class DatabaseManagementPage(QWidget):
                     margin: 2px;
                 }
                 QPushButton:hover {
-                    background-color: rgba(100, 200, 255, 200);
                 }
                 QPushButton:disabled {
-                    background-color: rgba(100, 100, 100, 100);
-                    color: #666666;
                 }
             """)
             if btn not in [self.refresh_btn, self.connect_remote_btn, self.manage_connections_btn]:
@@ -263,26 +251,15 @@ class DatabaseManagementPage(QWidget):
         self.remote_panel.setVisible(False)
         self.remote_panel.setStyleSheet("""
             QFrame {
-                background-color: rgba(0, 20, 40, 180);
-                border: 1px solid rgba(100, 200, 255, 150);
                 border-radius: 5px;
             }
-            QLabel { color: #DCDCDC; }
-            QLineEdit, QSpinBox, QComboBox {
-                background-color: rgba(20, 30, 40, 200);
-                color: #DCDCDC;
-                border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 3px;
-                padding: 4px;
-            }
-            QCheckBox { color: #DCDCDC; }
         """)
         rp_layout = QVBoxLayout(self.remote_panel)
         rp_layout.setContentsMargins(10, 8, 10, 8)
         rp_layout.setSpacing(4)
 
         rp_title = QLabel("🌐 Remote Database Connection")
-        rp_title.setStyleSheet("font-weight: bold; color: #64C8FF; font-size: 11pt;")
+        rp_title.setStyleSheet("font-weight: bold; font-size: 11pt;")
         rp_layout.addWidget(rp_title)
 
         form = QFormLayout()
@@ -326,17 +303,16 @@ class DatabaseManagementPage(QWidget):
 
         self.rp_status = QLabel("")
         self.rp_status.setWordWrap(True)
-        self.rp_status.setStyleSheet("color: #87CEEB; font-size: 9pt; padding: 2px;")
+        self.rp_status.setStyleSheet("font-size: 9pt; padding: 2px;")
         rp_layout.addWidget(self.rp_status)
 
         rp_btn_row = QHBoxLayout()
         _btn_style = """
             QPushButton {
-                background-color: rgba(100, 200, 255, 150);
-                color: #000000; border: none; border-radius: 4px;
+                border: none; border-radius: 4px;
                 padding: 6px 10px; font-weight: bold;
             }
-            QPushButton:hover { background-color: rgba(100, 200, 255, 220); }
+            QPushButton:hover { }
         """
         rp_test_btn = QPushButton("🔍 Test")
         rp_test_btn.setStyleSheet(_btn_style)
@@ -362,16 +338,7 @@ class DatabaseManagementPage(QWidget):
         self.connections_panel.setVisible(False)
         self.connections_panel.setStyleSheet("""
             QFrame {
-                background-color: rgba(0, 20, 40, 180);
-                border: 1px solid rgba(100, 200, 255, 150);
                 border-radius: 5px;
-            }
-            QLabel { color: #DCDCDC; }
-            QListWidget {
-                background-color: rgba(20, 30, 40, 200);
-                color: #DCDCDC;
-                border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 3px;
             }
         """)
         cp_layout = QVBoxLayout(self.connections_panel)
@@ -379,7 +346,7 @@ class DatabaseManagementPage(QWidget):
         cp_layout.setSpacing(4)
 
         cp_title = QLabel("🔗 Active Remote Connections")
-        cp_title.setStyleSheet("font-weight: bold; color: #64C8FF; font-size: 11pt;")
+        cp_title.setStyleSheet("font-weight: bold; font-size: 11pt;")
         cp_layout.addWidget(cp_title)
 
         self.cp_list = QListWidget()
@@ -414,8 +381,6 @@ class DatabaseManagementPage(QWidget):
         panel.setFrameStyle(QFrame.Shape.Box)
         panel.setStyleSheet("""
             QFrame {
-                background-color: rgba(0, 0, 0, 50);
-                border: 1px solid rgba(100, 200, 255, 100);
                 border-radius: 5px;
             }
         """)
@@ -427,13 +392,13 @@ class DatabaseManagementPage(QWidget):
         header_layout = QHBoxLayout()
         
         title = QLabel("SQL Query Interface")
-        title.setStyleSheet("font-size: 14pt; font-weight: bold; color: #64C8FF;")
+        title.setStyleSheet("font-size: 14pt; font-weight: bold;")
         header_layout.addWidget(title)
         
         header_layout.addStretch()
         
         self.db_info_label = QLabel("No database selected")
-        self.db_info_label.setStyleSheet("color: #87CEEB; font-style: italic;")
+        self.db_info_label.setStyleSheet("font-style: italic;")
         header_layout.addWidget(self.db_info_label)
         
         layout.addLayout(header_layout)
@@ -442,18 +407,12 @@ class DatabaseManagementPage(QWidget):
         self.query_tabs = QTabWidget()
         self.query_tabs.setStyleSheet("""
             QTabWidget::pane {
-                border: 1px solid rgba(100, 200, 255, 100);
-                background-color: rgba(20, 30, 40, 100);
             }
             QTabBar::tab {
-                background-color: rgba(50, 60, 70, 150);
-                color: #DCDCDC;
                 padding: 8px 16px;
                 margin-right: 2px;
             }
             QTabBar::tab:selected {
-                background-color: rgba(100, 200, 255, 150);
-                color: #000000;
             }
         """)
         
@@ -464,7 +423,7 @@ class DatabaseManagementPage(QWidget):
         # Query input
         query_input_layout = QVBoxLayout()
         query_label = QLabel("SQL Query:")
-        query_label.setStyleSheet("color: #DCDCDC; font-weight: bold; margin-top: 5px;")
+        query_label.setStyleSheet("font-weight: bold; margin-top: 5px;")
         query_label.setMaximumHeight(20)
         query_input_layout.addWidget(query_label)
         
@@ -473,9 +432,6 @@ class DatabaseManagementPage(QWidget):
         self.query_input.setPlaceholderText("Enter your SQL query here...")
         self.query_input.setStyleSheet("""
             QTextEdit {
-                background-color: rgba(20, 30, 40, 150);
-                color: #DCDCDC;
-                border: 1px solid rgba(100, 200, 255, 100);
                 border-radius: 3px;
                 font-family: 'Courier New', monospace;
                 font-size: 10pt;
@@ -550,8 +506,6 @@ class DatabaseManagementPage(QWidget):
         for btn in [self.execute_btn, self.clear_btn]:
             btn.setStyleSheet("""
                 QPushButton {
-                    background-color: rgba(100, 200, 255, 150);
-                    color: #000000;
                     border: none;
                     border-radius: 5px;
                     padding: 8px 16px;
@@ -559,19 +513,13 @@ class DatabaseManagementPage(QWidget):
                     margin: 2px;
                 }
                 QPushButton:hover {
-                    background-color: rgba(100, 200, 255, 200);
                 }
                 QPushButton:disabled {
-                    background-color: rgba(100, 100, 100, 100);
-                    color: #666666;
                 }
             """)
         
         self.quick_query_combo.setStyleSheet("""
             QComboBox {
-                background-color: rgba(20, 30, 40, 150);
-                color: #DCDCDC;
-                border: 1px solid rgba(100, 200, 255, 100);
                 border-radius: 3px;
                 padding: 5px;
                 min-width: 200px;
@@ -592,43 +540,31 @@ class DatabaseManagementPage(QWidget):
         self.progress_bar.setVisible(False)
         self.progress_bar.setStyleSheet("""
             QProgressBar {
-                border: 1px solid rgba(100, 200, 255, 100);
                 border-radius: 3px;
                 text-align: center;
-                color: #DCDCDC;
             }
             QProgressBar::chunk {
-                background-color: rgba(100, 200, 255, 150);
             }
         """)
         query_layout.addWidget(self.progress_bar)
         
         # Results table
         results_label = QLabel("Query Results:")
-        results_label.setStyleSheet("color: #DCDCDC; font-weight: bold; margin-top: 5px;")
+        results_label.setStyleSheet("font-weight: bold; margin-top: 5px;")
         results_label.setMaximumHeight(20)
         query_layout.addWidget(results_label)
         
         self.results_table = QTableWidget()
         self.results_table.setStyleSheet("""
             QTableWidget {
-                background-color: rgba(0, 0, 0, 100);
-                color: #DCDCDC;
-                border: 1px solid rgba(100, 200, 255, 100);
                 border-radius: 5px;
-                gridline-color: rgba(100, 200, 255, 50);
             }
             QTableWidget::item {
                 padding: 4px;
-                border-bottom: 1px solid rgba(100, 200, 255, 30);
             }
             QTableWidget::item:selected {
-                background-color: rgba(100, 200, 255, 100);
-                color: #000000;
             }
             QHeaderView::section {
-                background-color: rgba(100, 200, 255, 150);
-                color: #000000;
                 font-weight: bold;
                 padding: 6px;
                 border: none;
@@ -655,14 +591,9 @@ class DatabaseManagementPage(QWidget):
         self.schema_tree.setHeaderLabels(["Object", "Type", "Details"])
         self.schema_tree.setStyleSheet("""
             QTreeWidget {
-                background-color: rgba(20, 30, 40, 150);
-                color: #DCDCDC;
-                border: 1px solid rgba(100, 200, 255, 100);
                 border-radius: 3px;
             }
             QTreeWidget::item:selected {
-                background-color: rgba(100, 200, 255, 100);
-                color: #000000;
             }
         """)
         layout.addWidget(self.schema_tree)
@@ -1151,15 +1082,12 @@ class DatabaseManagementPage(QWidget):
         """Test the remote connection inline."""
         from app.core.remote_database_connector import remote_db_manager
         self.rp_status.setText("Testing connection…")
-        self.rp_status.setStyleSheet("color: #87CEEB; font-size: 9pt;")
         config = self._rp_build_config()
         success, message = remote_db_manager.test_connection(config)
         if success:
             self.rp_status.setText("✅ Connection successful")
-            self.rp_status.setStyleSheet("color: #90EE90; font-size: 9pt;")
         else:
             self.rp_status.setText(f"❌ {message}")
-            self.rp_status.setStyleSheet("color: #FF6B6B; font-size: 9pt;")
 
     def _rp_connect(self):
         """Establish the remote connection inline."""
@@ -1167,24 +1095,20 @@ class DatabaseManagementPage(QWidget):
         if not all([self.rp_name.text().strip(), self.rp_host.text().strip(),
                     self.rp_database.text().strip(), self.rp_username.text().strip()]):
             self.rp_status.setText("❌ Please fill in all required fields.")
-            self.rp_status.setStyleSheet("color: #FF6B6B; font-size: 9pt;")
             return
 
         self.rp_status.setText("Connecting…")
-        self.rp_status.setStyleSheet("color: #87CEEB; font-size: 9pt;")
         config = self._rp_build_config()
         success, message = remote_db_manager.connect(config)
         if success:
             self.remote_connections[config.name] = config
             self.load_databases()
             self.rp_status.setText(f"✅ Connected: {config.name}")
-            self.rp_status.setStyleSheet("color: #90EE90; font-size: 9pt;")
             self.status_label.setText(f"Connected to remote {config.db_type.upper()}: {config.host}")
             # Clear the form and collapse after a short delay
             QTimer.singleShot(1500, lambda: self.remote_panel.setVisible(False))
         else:
             self.rp_status.setText(f"❌ {message}")
-            self.rp_status.setStyleSheet("color: #FF6B6B; font-size: 9pt;")
 
     def _cp_refresh_list(self):
         """Refresh the active connections list."""
@@ -1319,7 +1243,7 @@ class DatabaseManagementPage(QWidget):
             
             # Instructions
             instructions = QLabel("Select cleanup options for old data:")
-            instructions.setStyleSheet("font-weight: bold; color: #64C8FF; margin-bottom: 10px;")
+            instructions.setStyleSheet("font-weight: bold; margin-bottom: 10px;")
             layout.addWidget(instructions)
             
             # Days old input

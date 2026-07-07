@@ -37,11 +37,5 @@ class AssetGraphicsComponent(QWidget):
             self.graphics_widget.update_assets(assets)
 
     def apply_theme(self):
-        """Apply component theme"""
-        self.setStyleSheet("""
-            QWidget {
-                background-color: rgba(0, 0, 0, 50);
-                border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-            }
-        """)
+        """Theme is applied globally by UnifiedThemeManager."""
+        pass

@@ -142,7 +142,14 @@ class ScanAssetIntegrator(QObject):
                     hostname=data.get('hostname', ''),
                     os_type=os_data.get('os', '') if os_detection else '',
                     open_ports=[{'port': p['port'], 'protocol': p.get('protocol', 'tcp')} for p in open_ports_data],
-                    services=[{'port': p['port'], 'service': p['service'], 'protocol': p.get('protocol', 'tcp')} for p in open_ports_data],
+                    services=[{
+                        'port': p['port'],
+                        'service': p['service'],
+                        'protocol': p.get('protocol', 'tcp'),
+                        'banner': p.get('banner', ''),
+                        'confidence': p.get('confidence', 'medium'),
+                        **(({'tls_version': p['tls_version']} if p.get('tls_version') else {}))
+                    } for p in open_ports_data],
                     status='ANALYZED',
                     confidence=numeric_confidence,
                     metadata=metadata

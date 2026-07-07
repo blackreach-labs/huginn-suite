@@ -1,0 +1,18 @@
+Domain,Type,Value
+13.248.243.5,open_ports,"{'port': 80, 'protocol': 'tcp', 'service': 'HTTP', 'banner': 'HTTP/1.1 404 Not Found\r\ncontent-type: text/html;charset=utf-8\r\ncontent-length: 189878\r\nset-cookie: dps_site_id=ap-southeast-1; path=/\r\nvary: Accept-Encoding\r\nserver: DPS/2.0.0+sha-928dbe7\r\nx-version: 928dbe7\r\nx-siteid: ap-southeast-1\r\ndate: Thu, 02 Jul 2026 13:02:03 GMT\r\nkeep-alive: timeout=5', 'confidence': 'high', 'tls_version': None}"
+13.248.243.5,open_ports,"{'port': 443, 'protocol': 'tcp', 'service': 'HTTPS', 'banner': '', 'confidence': 'high', 'tls_version': 'TLSv1.3'}"
+13.248.243.5,service_categories,"{'Web / HTTP(S) Services': [80, 443]}"
+13.248.243.5,server_type,Web Server
+13.248.243.5,os_detection,"{'os': 'Apache HTTP Server', 'confidence': 'medium', 'evidence': ['Required ports: [80]', 'Optional ports: [443]'], 'detection_methods': []}"
+76.223.105.230,open_ports,"{'port': 80, 'protocol': 'tcp', 'service': 'HTTP', 'banner': 'HTTP/1.1 404 Not Found\r\ncontent-type: text/html;charset=utf-8\r\ncontent-length: 189878\r\nset-cookie: dps_site_id=ap-southeast-1; path=/\r\nvary: Accept-Encoding\r\nserver: DPS/2.0.0+sha-928dbe7\r\nx-version: 928dbe7\r\nx-siteid: ap-southeast-1\r\ndate: Thu, 02 Jul 2026 13:02:17 GMT\r\nkeep-alive: timeout=5', 'confidence': 'high', 'tls_version': None}"
+76.223.105.230,open_ports,"{'port': 443, 'protocol': 'tcp', 'service': 'HTTPS', 'banner': '', 'confidence': 'high', 'tls_version': 'TLSv1.3'}"
+76.223.105.230,service_categories,"{'Web / HTTP(S) Services': [80, 443]}"
+76.223.105.230,server_type,Web Server
+76.223.105.230,os_detection,"{'os': 'Apache HTTP Server', 'confidence': 'medium', 'evidence': ['Required ports: [80]', 'Optional ports: [443]'], 'detection_methods': []}"
+
+--- Port Scan Analysis Complete ---
+This scan identified open network services. Consider:
+• Service enumeration on discovered ports
+• Version detection for security assessment
+• Vulnerability scanning of identified services
+• Review firewall rules and access controls

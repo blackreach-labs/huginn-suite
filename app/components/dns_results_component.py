@@ -179,41 +179,5 @@ class DNSResultsComponent(QWidget):
                 self.append_output(f"[ERROR] Export failed: {e}")
 
     def apply_theme(self):
-        """Apply component theme"""
-        self.setStyleSheet("""
-            QTextEdit {
-                background-color: rgba(0, 0, 0, 100);
-                border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-                color: #DCDCDC;
-                font-family: 'Consolas', 'Monaco', monospace;
-                padding: 10px;
-            }
-            QComboBox {
-                background-color: rgba(20, 30, 40, 150);
-                border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 3px;
-                color: #DCDCDC;
-                padding: 5px;
-            }
-            QPushButton {
-                background-color: rgba(30, 40, 50, 150);
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 8px;
-                color: #DCDCDC;
-                font-weight: bold;
-                padding: 8px;
-            }
-            QPushButton:hover {
-                background-color: rgba(50, 70, 90, 200);
-                border: 2px solid #64C8FF;
-            }
-            QPushButton:disabled {
-                background-color: rgba(100, 100, 100, 100);
-                color: #666666;
-            }
-            QLabel {
-                color: #64C8FF;
-                font-weight: bold;
-            }
-        """)
+        """Theme is applied globally by UnifiedThemeManager."""
+        pass

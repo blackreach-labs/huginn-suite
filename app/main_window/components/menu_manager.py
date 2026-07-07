@@ -107,6 +107,7 @@ class MenuManager:
         """Create the Tools menu — configuration and utility tools."""
         tools_menu = self.menubar.addMenu('&Tools')
         
+        self._add_action(tools_menu, '&HTTP Interceptor', None, 'HTTP request interception, replay and analysis', lambda: self.main_window.navigate_to('http_interceptor'))
         self._add_action(tools_menu, '&Stealth Mode', None, 'Configure stealth and evasion settings', self.main_window.open_stealth_config)
         self._add_action(tools_menu, 'Script &Editor', None, 'Write and save scripts or wordlists', self.main_window.open_script_editor)
     

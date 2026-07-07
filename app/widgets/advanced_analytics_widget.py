@@ -23,12 +23,10 @@ class AdvancedAnalyticsWidget(QWidget):
         # Header
         header_layout = QHBoxLayout()
         title = QLabel("🔬 Advanced Analytics Dashboard")
-        title.setStyleSheet("font-size: 18px; font-weight: bold; color: #2c3e50; margin: 10px;")
         header_layout.addWidget(title)
         
         refresh_btn = QPushButton("🔄 Refresh")
         refresh_btn.clicked.connect(self.refresh_data)
-        refresh_btn.setStyleSheet("padding: 8px 16px; background: #3498db; color: white; border: none; border-radius: 4px;")
         header_layout.addWidget(refresh_btn)
         header_layout.addStretch()
         
@@ -36,11 +34,6 @@ class AdvancedAnalyticsWidget(QWidget):
         
         # Create tabs for different analytics views
         self.tab_widget = QTabWidget()
-        self.tab_widget.setStyleSheet("""
-            QTabWidget::pane { border: 1px solid #bdc3c7; background: white; }
-            QTabBar::tab { padding: 8px 16px; margin: 2px; }
-            QTabBar::tab:selected { background: #3498db; color: white; }
-        """)
         
         # Trend Analysis Tab
         self.trend_tab = self.create_trend_analysis_tab()
@@ -62,7 +55,6 @@ class AdvancedAnalyticsWidget(QWidget):
         
         # Status bar
         self.status_label = QLabel("Ready")
-        self.status_label.setStyleSheet("color: #7f8c8d; font-size: 12px; padding: 5px;")
         layout.addWidget(self.status_label)
     
     def create_trend_analysis_tab(self) -> QWidget:
@@ -79,10 +71,6 @@ class AdvancedAnalyticsWidget(QWidget):
         self.trend_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.trend_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.trend_table.verticalHeader().setVisible(False)
-        self.trend_table.setStyleSheet("""
-            QTableWidget { gridline-color: #ecf0f1; }
-            QTableWidget::item { padding: 6px 10px; }
-        """)
 
         # Column sizing: Metric stretches; numeric columns fixed-width
         hdr = self.trend_table.horizontalHeader()
@@ -117,10 +105,6 @@ class AdvancedAnalyticsWidget(QWidget):
         
         # Anomaly list
         self.anomaly_list = QListWidget()
-        self.anomaly_list.setStyleSheet("""
-            QListWidget::item { padding: 10px; margin: 2px; border-radius: 4px; }
-            QListWidget::item:selected { background: #3498db; color: white; }
-        """)
         
         layout.addWidget(QLabel("🚨 Detected Anomalies"))
         layout.addWidget(self.anomaly_list)
@@ -164,10 +148,8 @@ class AdvancedAnalyticsWidget(QWidget):
         # Maturity score display
         score_layout = QHBoxLayout()
         self.maturity_score_label = QLabel("Security Maturity Score")
-        self.maturity_score_label.setStyleSheet("font-size: 16px; font-weight: bold;")
         score_layout.addWidget(self.maturity_score_label)
         self.maturity_score_value = QLabel("--")
-        self.maturity_score_value.setStyleSheet("font-size: 24px; font-weight: bold; color: #3498db;")
         score_layout.addWidget(self.maturity_score_value)
         score_layout.addStretch()
         layout.addLayout(score_layout)
@@ -180,10 +162,6 @@ class AdvancedAnalyticsWidget(QWidget):
         self.maturity_breakdown.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.maturity_breakdown.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.maturity_breakdown.verticalHeader().setVisible(False)
-        self.maturity_breakdown.setStyleSheet("""
-            QTableWidget { gridline-color: #ecf0f1; }
-            QTableWidget::item { padding: 6px 10px; }
-        """)
 
         # Scan Type stretches; Score column sized to content
         mb_hdr = self.maturity_breakdown.horizontalHeader()
@@ -204,27 +182,12 @@ class AdvancedAnalyticsWidget(QWidget):
     def create_prediction_card(self, title: str, icon: str) -> QGroupBox:
         """Create a prediction card widget"""
         card = QGroupBox(f"{icon} {title}")
-        card.setStyleSheet("""
-            QGroupBox { 
-                font-weight: bold; 
-                border: 2px solid #bdc3c7; 
-                border-radius: 8px; 
-                margin: 5px; 
-                padding-top: 15px;
-            }
-            QGroupBox::title { 
-                subcontrol-origin: margin; 
-                left: 10px; 
-                padding: 0 5px 0 5px; 
-            }
-        """)
         
         layout = QVBoxLayout(card)
         
         # Content area
         content_label = QLabel("Loading...")
         content_label.setWordWrap(True)
-        content_label.setStyleSheet("padding: 10px; background: #f8f9fa; border-radius: 4px;")
         layout.addWidget(content_label)
         
         # Store reference for updates
@@ -393,7 +356,6 @@ class AdvancedAnalyticsWidget(QWidget):
         color = maturity.get('color', '#3498db')
         
         self.maturity_score_value.setText(f"{overall_score:.0f}/100")
-        self.maturity_score_value.setStyleSheet(f"font-size: 24px; font-weight: bold; color: {color};")
         self.maturity_score_label.setText(f"Security Maturity Score - {maturity_level}")
         
         # Update breakdown table

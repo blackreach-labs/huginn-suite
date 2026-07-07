@@ -1,385 +1,264 @@
-# Auth Workflows - Authentication Flow Analysis
+# Auth Workflows — Authentication Flow Analysis & Testing
 
-The Auth Workflows feature provides comprehensive analysis of complex authentication flows, including OAuth, multi-step authentication, and session management. It helps identify authentication bypasses, privilege escalation vulnerabilities, and IDOR (Insecure Direct Object Reference) issues.
+## Overview
 
-## 🎯 Overview
+Auth Workflows is an enterprise-grade authentication security testing module that captures, models, and tests authentication flows across all major protocols. It automatically detects the authentication mechanism in use, builds a visual state model, and runs protocol-specific security tests to identify vulnerabilities.
 
-Auth Workflows automatically learns, visualizes, and replays complex authentication flows to detect inconsistent auth checks and security vulnerabilities.
+**Location:** Exploits > Auth Workflows
 
-### Key Features
+## Supported Protocols
 
-- **Flow Recording**: Capture authentication sequences from HTTP proxy traffic
-- **State Modeling**: Build graph representations of authentication flows
-- **Replay & Mutation**: Test flows with various mutations to find bypasses
-- **Token Analysis**: Deep analysis of JWT, OAuth, and session tokens
-- **Differential Testing**: Compare authenticated vs unauthenticated responses
-- **Vulnerability Detection**: Automated detection of auth-related vulnerabilities
+| Protocol | Detection | Token Analysis | Attack Mutations |
+|----------|-----------|----------------|------------------|
+| OAuth 2.0 | Authorization Code, Implicit, Client Credentials, PKCE, Refresh | Scope, lifetime, entropy | 7 mutations |
+| OpenID Connect | id_token, nonce, at_hash, audience | Full OIDC claim validation | 3 mutations |
+| NTLM | Type 1/2/3 messages, NTLMv1/v2, domain/user extraction | Hash analysis, version detection | 3 mutations |
+| Kerberos | SPNEGO, realm/SPN extraction, encryption type | RC4/AES detection, ticket size | Delegation/encryption tests |
+| SAML 2.0 | POST/Redirect binding, assertion parsing | Signature, encryption, conditions | 5 mutations |
+| Forms-Based Auth | Login form detection, CSRF awareness | Session cookie analysis | 3 mutations |
+| Certificate/mTLS | Client cert headers, mutual TLS indicators | Certificate presence validation | Transport checks |
+| JWT | Bearer tokens, header/payload/signature decode | Algorithm, claims, weak secret brute-force | 5 mutations |
+| API Keys | Header and query parameter detection | Entropy, length, exposure | 3 mutations |
+| HTTP Basic/Digest | Authorization header parsing | Credential strength | Transport checks |
 
-## 🧩 Core Components
+## Getting Started
 
-### 1. Flow Recorder (`auth_flow_recorder.py`)
-Hooks into the HTTP proxy to capture authentication sequences:
-- Tracks request/response pairs
-- Identifies auth-related requests
-- Extracts tokens, cookies, and parameters
-- Builds redirect chains
-- Records session state changes
+### 1. Record an Authentication Flow
 
-### 2. State Model Builder (`auth_state_model.py`)
-Represents authentication flows as directed graphs:
-- **Nodes**: Endpoints/requests with auth requirements
-- **Edges**: Transitions between requests
-- **Token Lifecycle**: Track token creation, usage, and expiry
-- **Security Analysis**: Identify missing protections
+1. Navigate to **Exploits > Auth Workflows**
+2. In the **Flow Recording** tab, enter a session name (optional)
+3. Click **Start Recording**
+4. Perform the authentication flow in your browser (configure browser to use the proxy)
+5. Click **Stop Recording**
 
-### 3. Replay & Mutation Engine (`auth_replay_engine.py`)
-Tests authentication flows with various mutations:
-- Remove authentication tokens
-- Use expired tokens
-- Swap user tokens
-- Remove state parameters
-- Modify redirect URIs
-- Remove CSRF tokens
-- Test privilege escalation
+The recorder automatically detects the authentication protocol in use and classifies each request.
 
-### 4. Token Analyzer (`auth_token_analyzer.py`)
-Analyzes authentication tokens:
-- **JWT Analysis**: Decode headers/payloads, check algorithms
-- **OAuth Tokens**: Analyze structure and scope
-- **Session Cookies**: Check predictability and entropy
-- **Vulnerability Detection**: Find weak tokens and misconfigurations
+### 2. Analyze the Flow
 
-### 5. Differential Tester (`auth_differential_tester.py`)
-Compares responses between different authentication states:
-- Authenticated vs unauthenticated
-- Admin vs standard user
-- Different users
-- Identifies access control bypasses
+1. Select the recorded flow and click **Analyze Flow** (or go to the **State Model** tab)
+2. Click **Build Model** to generate the authentication state graph
+3. Review the **Flow Graph** — nodes are color-coded by type:
+   - Red: Token minting endpoints
+   - Blue: Login endpoints
+   - Teal: Callbacks
+   - Yellow: Challenge (NTLM/Kerberos)
+   - Purple: Authentication responses
+   - Pink: IdP redirects (SAML)
+4. Review the **Security Issues** table for automatically detected vulnerabilities
 
-## 🚀 Usage
+### 3. Run Security Tests
 
-### Basic Workflow
+1. Go to the **Replay & Testing** tab
+2. Select the flow to test
+3. Choose a testing approach:
+   - **Baseline Replay** — Replays the flow without changes (verifies it works)
+   - **Auto Security Test** — Runs protocol-appropriate mutations based on detected protocols
+   - **Full Audit** — Runs all 30+ mutations across all protocols
+   - **Selected Mutations** — Choose specific attacks from the checkbox grid
+4. Monitor results in the output panel and progress bar
 
-1. **Start Recording**
-   - Navigate to Web & App Exploits → Auth Workflows
-   - Click "🔴 Start Recording"
-   - Perform authentication flow in browser (login, OAuth, etc.)
-   - Click "⏹️ Stop Recording"
+### 4. Analyze Tokens
 
-2. **Analyze Flow**
-   - Select recorded flow
-   - Click "📊 Analyze Flow" to build state model
-   - Review flow graph and security issues
+1. Go to the **Token Analysis** tab
+2. Select a flow and click **Analyze Tokens**
+3. Review the token table (type, entropy, algorithm, vulnerabilities)
+4. Click a token row to see full analysis details
 
-3. **Test for Vulnerabilities**
-   - Go to "Replay & Testing" tab
-   - Select mutations to test
-   - Click "🧪 Run Selected Mutations"
-   - Review results for vulnerabilities
+## Security Tests Reference
 
-4. **Analyze Tokens**
-   - Go to "Token Analysis" tab
-   - Click "🔍 Analyze Tokens"
-   - Review token security and vulnerabilities
-
-### Advanced Testing
-
-#### Security Test Mutations
+### Generic Mutations (All Protocols)
 
 | Mutation | Purpose | Detects |
 |----------|---------|---------|
-| Remove Tokens | Remove auth tokens | Authentication bypass |
-| Remove State | Remove OAuth state param | CSRF on OAuth callback |
-| Modify Redirect URI | Change redirect destination | Open redirect vulnerabilities |
-| Remove CSRF | Remove CSRF tokens | CSRF vulnerabilities |
-| Privilege Escalation | Modify user IDs | Vertical privilege escalation |
+| Remove Auth Token | Strip all authentication from request | Missing auth enforcement (CWE-306) |
+| Use Expired Token | Replace token with invalid/expired value | Token validation bypass |
+| Swap User Token | Use a different user's token | Horizontal privilege escalation |
+| Remove CSRF | Strip CSRF protection tokens | CSRF vulnerabilities (CWE-352) |
+| Privilege Escalation | Modify user IDs to admin values | IDOR / vertical escalation |
+| Method Tampering | Change HTTP method (GET/POST swap) | Method-based access control bypass |
 
-#### Differential Testing
+### OAuth 2.0 Mutations
 
-```python
-# Compare authenticated vs unauthenticated
-differential_tester.compare_auth_vs_unauth(flow_data)
+| Mutation | Purpose | Detects |
+|----------|---------|---------|
+| Remove State | Strip state parameter from authorize request | CSRF on OAuth callback (CWE-352) |
+| Modify Redirect URI | Change redirect_uri to attacker-controlled URL | Open redirect / token theft (CWE-601) |
+| Code Reuse | Replay authorization code | Single-use code enforcement |
+| Scope Escalation | Add elevated scopes (admin, write:all) | Scope validation bypass |
+| PKCE Bypass | Remove code_verifier/code_challenge | PKCE enforcement (CWE-300) |
+| Implicit Token Leak | Force response_type=token | Implicit grant downgrade |
+| Client ID Swap | Replace client_id with different client | Client isolation failure |
 
-# Compare admin vs user
-differential_tester.compare_admin_vs_user(flow_data, admin_token, user_token)
+### OIDC Mutations
 
-# Compare different users
-differential_tester.compare_different_users(flow_data, user1_token, user2_token)
+| Mutation | Purpose | Detects |
+|----------|---------|---------|
+| Nonce Replay | Reuse a previously used nonce | id_token replay attacks (CWE-294) |
+| Audience Confusion | Change aud claim to different client | Audience validation bypass (CWE-284) |
+| id_token Swap | Replace id_token with forged one | Token verification bypass |
+
+### JWT Mutations
+
+| Mutation | Purpose | Detects |
+|----------|---------|---------|
+| Algorithm None | Set alg=none, empty signature | Signature bypass (CWE-327) |
+| Signature Strip | Remove signature entirely | Missing verification |
+| Claim Tamper | Modify role/admin claims | Claim-based authz bypass |
+| Expiry Bypass | Set exp far in the future | Expiration validation bypass (CWE-613) |
+| KID Injection | Inject path traversal in kid header | Key confusion / file read |
+
+### SAML Mutations
+
+| Mutation | Purpose | Detects |
+|----------|---------|---------|
+| Assertion Replay | Replay SAML assertion unchanged | Replay protection (CWE-294) |
+| Signature Strip | Remove XML digital signature | Signature validation bypass (CWE-345) |
+| Attribute Injection | Inject admin role attribute | Attribute validation bypass |
+| XXE Injection | Inject XML External Entity payload | XXE in SAML parser (CWE-611) |
+| Recipient Mismatch | Modify Destination/Recipient | Destination validation bypass |
+
+### NTLM Mutations
+
+| Mutation | Purpose | Detects |
+|----------|---------|---------|
+| Remove Auth | Strip NTLM Authorization header | Auth enforcement |
+| Downgrade to NTLMv1 | Send negotiate without NTLMv2 flag | Protocol downgrade acceptance |
+| Empty Challenge | Send empty NTLM token | Error handling / crash |
+
+### FBA Mutations
+
+| Mutation | Purpose | Detects |
+|----------|---------|---------|
+| Remove CSRF | Strip CSRF from login form | Login CSRF (CWE-352) |
+| Session Fixation | Send pre-set session cookie | Session fixation (CWE-384) |
+| Empty Credentials | Submit form with blank password | Empty password acceptance |
+
+### API Key Mutations
+
+| Mutation | Purpose | Detects |
+|----------|---------|---------|
+| Remove Key | Strip API key from request | Key enforcement |
+| Invalid Key | Replace with garbage value | Key validation |
+| Other User Key | Replace with different user's key | Key isolation |
+
+## Automatic Vulnerability Detection
+
+The State Model analyzer automatically checks for these issues when you build a model:
+
+### OAuth 2.0 / OIDC
+- Missing state parameter (CSRF risk)
+- Missing PKCE on authorization code flow
+- PKCE with plain method (no security benefit)
+- Implicit grant usage (deprecated, token exposure)
+- HTTP redirect_uri (token interception)
+- Overly broad scope requests
+- Missing nonce in OIDC (replay risk)
+- Missing at_hash (token substitution)
+- Missing/invalid audience
+
+### NTLM
+- NTLM over unencrypted HTTP (hash capture)
+- NTLMv1 negotiation/response (weak, crackable)
+- NTLM relay risk (no EPA/Channel Binding)
+
+### Kerberos
+- RC4 encryption (Kerberoasting vulnerable)
+- Large tickets (unconstrained delegation indicator)
+
+### SAML
+- Unsigned assertions (forgery trivial)
+- Unencrypted assertions (attribute exposure)
+- SAML over HTTP (interception)
+- Weak signature algorithms (SHA-1, MD5)
+- Multiple signatures (XSW attack surface)
+
+### JWT
+- Algorithm none (signature bypass)
+- Symmetric algorithms with weak secrets (brute-forced)
+- jku/x5u headers (key injection)
+- Missing expiration claim
+- Long token lifetime (>24h)
+- Sensitive data in claims
+
+### Generic (All Protocols)
+- Tokens in URL parameters (CWE-598)
+- Session cookies without HttpOnly (CWE-1004)
+- Session cookies without Secure flag (CWE-614)
+- SameSite=None on session cookies (CWE-1275)
+- Inconsistent authentication enforcement (CWE-306)
+
+## Token Analysis Deep Dive
+
+### JWT Analysis
+- **Header decode:** algorithm, type, kid, jku, x5u
+- **Payload decode:** all standard claims (iss, sub, aud, exp, iat, nbf, scope, roles)
+- **Weak secret brute-force:** Tests against 16 common secrets for HMAC-signed tokens
+- **Vulnerability detection:** alg=none, missing exp, long lifetime, sensitive claims, jku/x5u injection
+
+### SAML Assertion Analysis
+- **Structure:** issuer, NameID, destination, conditions (NotBefore/NotOnOrAfter)
+- **Security:** signature presence, encryption, signature algorithm strength
+- **Attributes:** extracted attribute names
+- **Attack surface:** multiple signatures (XSW), weak algorithms
+
+### Kerberos Ticket Analysis
+- **Encryption type:** RC4-HMAC (etype 23 — vulnerable), AES-128 (17), AES-256 (18)
+- **Metadata:** realm, SPN, ticket size
+- **Delegation:** large ticket detection (possible TGT forwarding)
+
+### NTLM Message Analysis
+- **Type 1 (Negotiate):** flags, NTLMv2 support
+- **Type 2 (Challenge):** target name, server challenge
+- **Type 3 (Authenticate):** domain, username, workstation, NTLMv1 vs v2 (response length)
+
+### Session Cookie Analysis
+- **Entropy:** Shannon entropy calculation
+- **Format:** numeric (predictable), short hex, random
+- **Attributes:** HttpOnly, Secure, SameSite
+
+## Export Options
+
+### JSON Export
+Exports all data including flows, tokens, vulnerabilities, and test results in machine-readable JSON format for integration with other tools.
+
+### HTML Report
+Generates a styled HTML report with:
+- Summary statistics (flows, vulnerabilities, protocols)
+- Severity-colored vulnerability table
+- Suitable for client deliverables
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                  Auth Workflows Widget                    │
+│  ┌─────────┬──────────┬──────────┬────────┬──────────┐ │
+│  │Recording│  Model   │ Testing  │ Tokens │ Results  │ │
+│  └────┬────┴────┬─────┴────┬─────┴───┬────┴────┬─────┘ │
+└───────┼─────────┼──────────┼─────────┼─────────┼────────┘
+        │         │          │         │         │
+   ┌────▼────┐┌───▼───┐┌────▼────┐┌───▼───┐    │
+   │  Flow   ││ State ││ Replay  ││ Token │    │
+   │Recorder ││ Model ││ Engine  ││Analyzer│    │
+   └────┬────┘└───┬───┘└────┬────┘└───┬───┘    │
+        │         │          │         │         │
+        └─────────┴──────────┴─────────┴─────────┘
+                    HTTP Proxy Engine
 ```
 
-## 🔍 Vulnerability Detection
+### Core Modules
+- **auth_flow_recorder.py** — Protocol-aware traffic capture with automatic classification
+- **auth_state_model.py** — Directed graph builder with protocol-specific security analyzers
+- **auth_replay_engine.py** — 30+ mutation attacks with threaded execution and vulnerability detection
+- **auth_token_analyzer.py** — Deep token inspection with entropy, structure, and weakness analysis
 
-### Automatically Detected Issues
+## Tips for Effective Testing
 
-1. **Missing State Parameter**
-   - OAuth flows without state parameter
-   - Risk: CSRF attacks on OAuth callback
-
-2. **Insecure Redirect URI**
-   - Non-HTTPS redirect URIs
-   - Risk: Token interception
-
-3. **Tokens in URL Parameters**
-   - Sensitive tokens in query strings
-   - Risk: Token leakage in logs/referrers
-
-4. **Missing CSRF Protection**
-   - POST requests without CSRF tokens
-   - Risk: Cross-site request forgery
-
-5. **JWT Vulnerabilities**
-   - `alg=none` algorithm
-   - Missing expiration claims
-   - Overly broad scopes
-
-6. **Predictable Session IDs**
-   - Sequential or low-entropy session IDs
-   - Risk: Session hijacking
-
-7. **Authentication Bypass**
-   - Requests succeed without tokens
-   - Risk: Unauthorized access
-
-8. **Privilege Escalation**
-   - User ID manipulation succeeds
-   - Risk: Horizontal/vertical privilege escalation
-
-## 📊 State Model Visualization
-
-The state model represents authentication flows as graphs:
-
-```
-[Login Form] --form_submit--> [POST /login] --redirect--> [OAuth Authorize]
-     |                            |                           |
-     v                            v                           v
-[Anonymous]                  [Requires CSRF]            [Requires state]
-                                  |                           |
-                                  v                           v
-                            [Token Created]              [Code Exchange]
-                                  |                           |
-                                  v                           v
-                            [Session Cookie]            [Access Token]
-```
-
-### Node Properties
-- **Auth Required**: Whether authentication is needed
-- **Token Required**: Whether tokens are required
-- **Anonymous**: Whether anonymous access is allowed
-- **Node Type**: login, callback, token_mint, redirect
-
-### Edge Properties
-- **Trigger**: What causes the transition (redirect, form_submit, etc.)
-- **Parameters Passed**: Which parameters flow between requests
-
-## 🔐 Token Analysis
-
-### JWT Token Analysis
-```json
-{
-  "header": {
-    "alg": "RS256",
-    "typ": "JWT"
-  },
-  "payload": {
-    "sub": "user123",
-    "exp": 1640995200,
-    "iat": 1640908800,
-    "scope": "read write"
-  },
-  "vulnerabilities": [
-    {
-      "type": "overly_broad_scope",
-      "severity": "medium",
-      "description": "JWT token has overly broad scope"
-    }
-  ]
-}
-```
-
-### Token Lifecycle Tracking
-- **Creation**: Where and when tokens are minted
-- **Usage**: Which endpoints consume tokens
-- **Expiry**: Token expiration and refresh patterns
-- **Scope**: Token permissions and limitations
-
-## 🧪 Testing Strategies
-
-### 1. OAuth Flow Testing
-```python
-# Test OAuth state parameter bypass
-mutations = ['remove_state']
-replay_engine.test_mutations(oauth_flow, mutations)
-
-# Test redirect URI manipulation
-mutations = ['modify_redirect_uri']
-replay_engine.test_mutations(oauth_flow, mutations)
-```
-
-### 2. Session Management Testing
-```python
-# Test session fixation
-mutations = ['remove_token', 'privilege_escalation']
-replay_engine.test_mutations(session_flow, mutations)
-```
-
-### 3. API Authentication Testing
-```python
-# Test JWT bypass
-mutations = ['remove_token', 'expired_token']
-replay_engine.test_mutations(api_flow, mutations)
-```
-
-## 📈 Reporting
-
-### Vulnerability Report Format
-```json
-{
-  "type": "authentication_bypass",
-  "severity": "high",
-  "description": "Request succeeded without authentication token",
-  "url": "https://api.example.com/user/profile",
-  "evidence": {
-    "original_status": 200,
-    "mutated_status": 200,
-    "mutation": "remove_token"
-  },
-  "recommendation": "Implement proper authentication checks"
-}
-```
-
-### Export Options
-- **JSON**: Raw data for integration
-- **HTML**: Interactive report with flow diagrams
-- **Database**: Persistent storage for historical analysis
-
-## 🔧 Configuration
-
-### Recording Settings
-```python
-# Configure auth indicators
-auth_indicators = [
-    'login', 'auth', 'oauth', 'token', 'callback',
-    'redirect_uri', 'code', 'state', 'access_token'
-]
-
-# Configure sensitive parameters
-sensitive_params = {
-    'oauth': ['code', 'state', 'redirect_uri', 'client_id'],
-    'csrf': ['csrf_token', 'authenticity_token', '_token'],
-    'session': ['session_id', 'JSESSIONID', 'PHPSESSID']
-}
-```
-
-### Mutation Settings
-```python
-# Configure mutation strategies
-mutations = {
-    'remove_token': remove_token_mutation,
-    'expired_token': expired_token_mutation,
-    'swap_user_token': swap_user_token_mutation,
-    'remove_state': remove_state_mutation,
-    'modify_redirect_uri': modify_redirect_uri_mutation
-}
-```
-
-## 🎯 Best Practices
-
-### 1. Recording Flows
-- Start recording before beginning authentication
-- Perform complete authentication flow (login → callback → resource access)
-- Include both successful and failed authentication attempts
-- Test different user roles (admin, user, guest)
-
-### 2. Analyzing Results
-- Focus on high-severity vulnerabilities first
-- Verify findings manually before reporting
-- Consider business logic context
-- Document reproduction steps
-
-### 3. Testing Mutations
-- Start with basic replay to ensure flow works
-- Test one mutation at a time initially
-- Combine mutations for advanced testing
-- Monitor for rate limiting and blocking
-
-## 🚨 Common Vulnerabilities Found
-
-### 1. OAuth Implementation Issues
-- Missing or weak state parameter validation
-- Insecure redirect URI validation
-- Authorization code reuse
-- Implicit flow vulnerabilities
-
-### 2. Session Management Issues
-- Predictable session IDs
-- Session fixation vulnerabilities
-- Insufficient session timeout
-- Missing secure/httponly flags
-
-### 3. JWT Implementation Issues
-- Algorithm confusion attacks (alg=none)
-- Weak signing keys
-- Missing expiration validation
-- Overly broad token scope
-
-### 4. Access Control Issues
-- Horizontal privilege escalation (IDOR)
-- Vertical privilege escalation
-- Missing authentication checks
-- Inconsistent authorization enforcement
-
-## 🔗 Integration
-
-### With Proxy Engine
-```python
-# Connect to proxy for traffic capture
-proxy_engine.request_logged.connect(flow_recorder.process_request)
-proxy_engine.response_received.connect(flow_recorder.process_request)
-```
-
-### With Vulnerability Scanner
-```python
-# Feed findings to main vulnerability database
-vuln_scanner.add_finding(vulnerability_data)
-```
-
-### With Reporting System
-```python
-# Generate comprehensive reports
-report_generator.add_auth_findings(auth_vulnerabilities)
-```
-
-## 📚 References
-
-- [OWASP Authentication Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html)
-- [OAuth 2.0 Security Best Practices](https://tools.ietf.org/html/draft-ietf-oauth-security-topics)
-- [JWT Security Best Practices](https://tools.ietf.org/html/rfc8725)
-- [OWASP Top 10 - Broken Authentication](https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/)
-
-## 🛠️ Development
-
-### Adding New Mutations
-```python
-def custom_mutation(self, request: HttpRequest) -> HttpRequest:
-    """Custom mutation logic"""
-    mutated = self._copy_request(request)
-    # Implement mutation logic
-    return mutated
-
-# Register mutation
-replay_engine.mutations['custom_mutation'] = custom_mutation
-```
-
-### Adding New Token Types
-```python
-def analyze_custom_token(self, token_value: str) -> dict:
-    """Analyze custom token format"""
-    analysis = {}
-    # Implement analysis logic
-    return analysis
-
-# Register analyzer
-token_analyzer.token_analyzers['custom'] = analyze_custom_token
-```
-
-This comprehensive authentication workflow analysis system provides deep insights into authentication security and helps identify critical vulnerabilities that traditional scanners might miss.
+1. **Record complete flows** — Include the full sequence from unauthenticated to authenticated
+2. **Test multiple roles** — Record flows for admin, user, and guest to enable differential analysis
+3. **Use Auto Security Test first** — It selects mutations based on detected protocols
+4. **Review false positives** — Some mutations may trigger WAF blocks that look like "success"
+5. **Check token entropy** — Low entropy tokens (<3.5 bits/char) are almost always exploitable
+6. **Look for NTLMv1** — If detected, it's a critical finding for any internal pentest
+7. **Verify PKCE** — Modern OAuth implementations without PKCE are vulnerable to code interception
+8. **Export for reporting** — Use HTML export for client deliverables, JSON for tool integration

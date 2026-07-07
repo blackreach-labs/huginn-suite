@@ -88,21 +88,6 @@ class SessionWidget(QWidget):
         
         # Main group
         main_group = QGroupBox("📁 Session Management")
-        main_group.setStyleSheet("""
-            QGroupBox {
-                font-weight: bold;
-                color: #64C8FF;
-                border: 2px solid #555;
-                border-radius: 5px;
-                margin-top: 10px;
-                padding-top: 10px;
-            }
-            QGroupBox::title {
-                subcontrol-origin: margin;
-                left: 10px;
-                padding: 0 5px 0 5px;
-            }
-        """)
         
         main_layout = QVBoxLayout(main_group)
         
@@ -111,7 +96,6 @@ class SessionWidget(QWidget):
         current_layout.addWidget(QLabel("Current Session:"))
         
         self.current_session_label = QLabel("None")
-        self.current_session_label.setStyleSheet("color: #FFAA00; font-weight: bold;")
         
         self.set_current_button = QPushButton("Set Current")
         self.set_current_button.clicked.connect(self.set_current_session)
@@ -135,26 +119,6 @@ class SessionWidget(QWidget):
         self.refresh_button = QPushButton("🔄 Refresh")
         self.refresh_button.clicked.connect(self.refresh_sessions)
         
-        button_style = """
-            QPushButton {
-                background-color: rgba(100, 200, 255, 150);
-                color: white;
-                border: none;
-                border-radius: 4px;
-                padding: 6px 12px;
-                font-size: 10pt;
-            }
-            QPushButton:hover {
-                background-color: rgba(100, 200, 255, 200);
-            }
-        """
-        
-        self.new_session_button.setStyleSheet(button_style.replace("100, 200, 255", "100, 255, 100"))
-        self.edit_session_button.setStyleSheet(button_style)
-        self.delete_session_button.setStyleSheet(button_style.replace("100, 200, 255", "255, 100, 100"))
-        self.refresh_button.setStyleSheet(button_style)
-        self.set_current_button.setStyleSheet(button_style)
-        
         controls_layout.addWidget(self.new_session_button)
         controls_layout.addWidget(self.edit_session_button)
         controls_layout.addWidget(self.delete_session_button)
@@ -163,22 +127,6 @@ class SessionWidget(QWidget):
         
         # Results tabs
         self.results_tabs = QTabWidget()
-        self.results_tabs.setStyleSheet("""
-            QTabWidget::pane {
-                border: 1px solid #555;
-                background-color: rgba(0, 0, 0, 100);
-            }
-            QTabBar::tab {
-                background-color: rgba(50, 50, 50, 150);
-                color: #DCDCDC;
-                padding: 8px 12px;
-                margin-right: 2px;
-            }
-            QTabBar::tab:selected {
-                background-color: rgba(100, 200, 255, 150);
-                color: #000;
-            }
-        """)
         
         # Sessions table tab
         self.sessions_table = QTableWidget()
@@ -188,15 +136,11 @@ class SessionWidget(QWidget):
         ])
         self.sessions_table.setStyleSheet("""
             QTableWidget {
-                background-color: rgba(0, 0, 0, 150);
                 border: 1px solid #555;
                 border-radius: 4px;
-                color: #DCDCDC;
                 gridline-color: #555;
             }
             QHeaderView::section {
-                background-color: rgba(100, 200, 255, 150);
-                color: white;
                 padding: 4px;
                 border: none;
                 font-weight: bold;
@@ -208,33 +152,11 @@ class SessionWidget(QWidget):
         # Session details tab
         self.details_text = QTextEdit()
         self.details_text.setReadOnly(True)
-        self.details_text.setStyleSheet("""
-            QTextEdit {
-                background-color: rgba(0, 0, 0, 150);
-                border: 1px solid #555;
-                border-radius: 4px;
-                color: #DCDCDC;
-                font-size: 10pt;
-                padding: 8px;
-                font-family: 'Courier New', monospace;
-            }
-        """)
         self.results_tabs.addTab(self.details_text, "📄 Details")
         
         # Statistics tab
         self.stats_text = QTextEdit()
         self.stats_text.setReadOnly(True)
-        self.stats_text.setStyleSheet("""
-            QTextEdit {
-                background-color: rgba(0, 0, 0, 150);
-                border: 1px solid #555;
-                border-radius: 4px;
-                color: #DCDCDC;
-                font-size: 10pt;
-                padding: 8px;
-                font-family: 'Courier New', monospace;
-            }
-        """)
         self.results_tabs.addTab(self.stats_text, "📊 Statistics")
         
         # Credential Management tab
@@ -244,7 +166,6 @@ class SessionWidget(QWidget):
         
         # Status label
         self.status_label = QLabel("Session management ready")
-        self.status_label.setStyleSheet("color: #888; font-size: 10pt; padding: 5px;")
         
         # Add to main layout
         main_layout.addLayout(current_layout)
@@ -312,17 +233,13 @@ class SessionWidget(QWidget):
             current_session = session_manager.get_current_session()
             if current_session:
                 self.current_session_label.setText(current_session['name'])
-                self.current_session_label.setStyleSheet("color: #00FF41; font-weight: bold;")
             else:
                 self.current_session_label.setText("None")
-                self.current_session_label.setStyleSheet("color: #FFAA00; font-weight: bold;")
             
             self.status_label.setText(f"Loaded {len(sessions)} sessions")
-            self.status_label.setStyleSheet("color: #00AA00; font-size: 10pt; padding: 5px;")
             
         except Exception as e:
             self.status_label.setText(f"Error loading sessions: {str(e)}")
-            self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")
     
     def create_new_session(self):
         """Create new session"""
@@ -333,7 +250,6 @@ class SessionWidget(QWidget):
             
             if not session_data['name']:
                 self.status_label.setText("❌ Session name is required")
-                self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")
                 return
             
             try:
@@ -345,18 +261,15 @@ class SessionWidget(QWidget):
                 
                 self.refresh_sessions()
                 self.status_label.setText(f"✅ Created session: {session['name']}")
-                self.status_label.setStyleSheet("color: #00AA00; font-size: 10pt; padding: 5px;")
                 
             except Exception as e:
                 self.status_label.setText(f"Error creating session: {str(e)}")
-                self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")
     
     def edit_selected_session(self):
         """Edit selected session"""
         current_row = self.sessions_table.currentRow()
         if current_row < 0:
             self.status_label.setText("❌ Please select a session to edit")
-            self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")
             return
         
         try:
@@ -374,21 +287,17 @@ class SessionWidget(QWidget):
                         if session_manager.update_session(session_id, session_data):
                             self.refresh_sessions()
                             self.status_label.setText(f"✅ Updated session: {session_data['name']}")
-                            self.status_label.setStyleSheet("color: #00AA00; font-size: 10pt; padding: 5px;")
                         else:
                             self.status_label.setText("❌ Failed to update session")
-                            self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")
                 
         except Exception as e:
             self.status_label.setText(f"Error editing session: {str(e)}")
-            self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")
     
     def delete_selected_session(self):
         """Delete selected session"""
         current_row = self.sessions_table.currentRow()
         if current_row < 0:
             self.status_label.setText("❌ Please select a session to delete")
-            self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")
             return
         
         try:
@@ -399,21 +308,17 @@ class SessionWidget(QWidget):
                 if session_manager.delete_session(session_id):
                     self.refresh_sessions()
                     self.status_label.setText(f"🗑️ Deleted session {session_id}")
-                    self.status_label.setStyleSheet("color: #FFAA00; font-size: 10pt; padding: 5px;")
                 else:
                     self.status_label.setText("❌ Failed to delete session")
-                    self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")
                 
         except Exception as e:
             self.status_label.setText(f"Error deleting session: {str(e)}")
-            self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")
     
     def set_current_session(self):
         """Set current active session"""
         current_row = self.sessions_table.currentRow()
         if current_row < 0:
             self.status_label.setText("❌ Please select a session to set as current")
-            self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")
             return
         
         try:
@@ -425,16 +330,13 @@ class SessionWidget(QWidget):
                     self.refresh_sessions()
                     session = session_manager.get_session(session_id)
                     self.status_label.setText(f"✅ Set current session: {session['name']}")
-                    self.status_label.setStyleSheet("color: #00AA00; font-size: 10pt; padding: 5px;")
                     
                     self.session_changed.emit(session_id)
                 else:
                     self.status_label.setText("❌ Failed to set current session")
-                    self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")
                 
         except Exception as e:
             self.status_label.setText(f"Error setting current session: {str(e)}")
-            self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")
     
     def view_session_details(self, row, column):
         """View session details when double-clicked"""
@@ -486,7 +388,6 @@ class SessionWidget(QWidget):
                     
         except Exception as e:
             self.status_label.setText(f"Error loading session details: {str(e)}")
-            self.status_label.setStyleSheet("color: #FF4444; font-size: 10pt; padding: 5px;")
     
     def update_statistics_display(self, stats):
         """Update statistics display"""

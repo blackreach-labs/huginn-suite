@@ -30,7 +30,7 @@ class CentralizedDashboardPage(QWidget):
         title = QLabel("🔬 Centralized Security Dashboard")
         title.setFont(QFont("Arial", 16, QFont.Weight.Bold))
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        title.setStyleSheet("color: #00BFFF; margin: 10px;")
+        title.setStyleSheet("margin: 10px;")
         layout.addWidget(title)
         
         # Create splitter for main content
@@ -57,7 +57,7 @@ class CentralizedDashboardPage(QWidget):
         # Summary title
         summary_title = QLabel("📊 Scan Summary")
         summary_title.setFont(QFont("Arial", 12, QFont.Weight.Bold))
-        summary_title.setStyleSheet("color: #FFD700; margin-bottom: 10px;")
+        summary_title.setStyleSheet("margin-bottom: 10px;")
         summary_layout.addWidget(summary_title)
         
         # Create summary groups for each scan type
@@ -84,7 +84,6 @@ class CentralizedDashboardPage(QWidget):
         group.setStyleSheet(f"""
             QGroupBox {{
                 font-weight: bold;
-                border: 2px solid {color};
                 border-radius: 5px;
                 margin-top: 10px;
                 padding-top: 10px;
@@ -93,7 +92,6 @@ class CentralizedDashboardPage(QWidget):
                 subcontrol-origin: margin;
                 left: 10px;
                 padding: 0 5px 0 5px;
-                color: {color};
             }}
         """)
         
@@ -102,21 +100,21 @@ class CentralizedDashboardPage(QWidget):
         # Total results
         total_label = QLabel("Total Results:")
         total_value = QLabel("0")
-        total_value.setStyleSheet(f"color: {color}; font-weight: bold;")
+        total_value.setStyleSheet("font-weight: bold;")
         layout.addWidget(total_label, 0, 0)
         layout.addWidget(total_value, 0, 1)
         
         # Unique targets
         targets_label = QLabel("Targets:")
         targets_value = QLabel("0")
-        targets_value.setStyleSheet(f"color: {color}; font-weight: bold;")
+        targets_value.setStyleSheet("font-weight: bold;")
         layout.addWidget(targets_label, 1, 0)
         layout.addWidget(targets_value, 1, 1)
         
         # Last scan
         last_label = QLabel("Last Scan:")
         last_value = QLabel("Never")
-        last_value.setStyleSheet("color: #888888; font-size: 10px;")
+        last_value.setStyleSheet("font-size: 10px;")
         layout.addWidget(last_label, 2, 0)
         layout.addWidget(last_value, 2, 1)
         
@@ -135,17 +133,12 @@ class CentralizedDashboardPage(QWidget):
         tab_widget.setStyleSheet("""
             QTabWidget::pane {
                 border: 1px solid #555555;
-                background-color: #2b2b2b;
             }
             QTabBar::tab {
-                background-color: #3c3c3c;
-                color: white;
                 padding: 8px 16px;
                 margin-right: 2px;
             }
             QTabBar::tab:selected {
-                background-color: #555555;
-                color: #00BFFF;
             }
         """)
         
@@ -179,14 +172,9 @@ class CentralizedDashboardPage(QWidget):
         # Style the table
         table.setStyleSheet("""
             QTableWidget {
-                background-color: #2b2b2b;
-                color: white;
                 gridline-color: #555555;
-                selection-background-color: #4a4a4a;
             }
             QHeaderView::section {
-                background-color: #3c3c3c;
-                color: #00BFFF;
                 padding: 8px;
                 border: 1px solid #555555;
                 font-weight: bold;
@@ -205,7 +193,7 @@ class CentralizedDashboardPage(QWidget):
         """Setup export and control buttons"""
         controls_frame = QFrame()
         controls_frame.setFrameStyle(QFrame.Shape.StyledPanel)
-        controls_frame.setStyleSheet("background-color: #3c3c3c; border-radius: 5px; margin: 5px;")
+        controls_frame.setStyleSheet("border-radius: 5px; margin: 5px;")
         
         controls_layout = QHBoxLayout(controls_frame)
         
@@ -213,15 +201,12 @@ class CentralizedDashboardPage(QWidget):
         refresh_btn = QPushButton("🔄 Refresh Data")
         refresh_btn.setStyleSheet("""
             QPushButton {
-                background-color: #4CAF50;
-                color: white;
                 border: none;
                 padding: 8px 16px;
                 border-radius: 4px;
                 font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #45a049;
             }
         """)
         refresh_btn.clicked.connect(self.refresh_data)
@@ -231,15 +216,12 @@ class CentralizedDashboardPage(QWidget):
         export_json_btn = QPushButton("📄 Export JSON")
         export_json_btn.setStyleSheet("""
             QPushButton {
-                background-color: #2196F3;
-                color: white;
                 border: none;
                 padding: 8px 16px;
                 border-radius: 4px;
                 font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #1976D2;
             }
         """)
         export_json_btn.clicked.connect(self.export_json)
@@ -248,15 +230,12 @@ class CentralizedDashboardPage(QWidget):
         export_csv_btn = QPushButton("📊 Export CSV")
         export_csv_btn.setStyleSheet("""
             QPushButton {
-                background-color: #FF9800;
-                color: white;
                 border: none;
                 padding: 8px 16px;
                 border-radius: 4px;
                 font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #F57C00;
             }
         """)
         export_csv_btn.clicked.connect(self.export_csv)
@@ -266,15 +245,12 @@ class CentralizedDashboardPage(QWidget):
         export_pdf_btn = QPushButton("📋 Export PDF")
         export_pdf_btn.setStyleSheet("""
             QPushButton {
-                background-color: #9C27B0;
-                color: white;
                 border: none;
                 padding: 8px 16px;
                 border-radius: 4px;
                 font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #7B1FA2;
             }
         """)
         export_pdf_btn.clicked.connect(self.export_pdf)
@@ -284,7 +260,7 @@ class CentralizedDashboardPage(QWidget):
         
         # Status label
         self.status_label = QLabel("Ready")
-        self.status_label.setStyleSheet("color: #00FF41; font-weight: bold;")
+        self.status_label.setStyleSheet("font-weight: bold;")
         controls_layout.addWidget(self.status_label)
         
         layout.addWidget(controls_frame)

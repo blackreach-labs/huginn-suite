@@ -115,20 +115,5 @@ class ScanDetailsComponent(QWidget):
             return f"{hours}h {minutes}m"
 
     def apply_theme(self):
-        """Apply component theme"""
-        self.setStyleSheet("""
-            QFrame#scanDetailsFrame {
-                background-color: rgba(15, 20, 30, 200);
-                border: 1px solid rgba(100, 200, 255, 60);
-                border-radius: 10px;
-            }
-            QTextEdit {
-                background-color: rgba(10, 15, 25, 180);
-                border: 1px solid rgba(100, 200, 255, 40);
-                border-radius: 6px;
-                padding: 10px;
-                font-family: 'Neuropol X', monospace;
-                color: #DCDCDC;
-                selection-background-color: rgba(100, 200, 255, 80);
-            }
-        """)
+        """Theme is applied globally by UnifiedThemeManager."""
+        pass

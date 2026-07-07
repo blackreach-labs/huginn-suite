@@ -191,6 +191,15 @@ class PortScanningMixin:
         scan_type = self.port_scan_type.currentText()
         ports = self.port_input.text().strip() if scan_type in ["TCP Scan", "UDP Scan"] else ""
         
+        # Register with scan registry so it appears in Running Scans
+        from app.core.scan_registry import scan_registry
+        self._port_scan_id = scan_registry.register_scan(
+            scan_type, target,
+            source_page="recon_enumeration",
+            source_tab=1,  # Network Scanning tab index
+            source_subtab=None,
+        )
+        
         # Clear current scan type terminal before starting new scan
         current_terminal = self.get_current_port_terminal()
         if current_terminal:
@@ -381,6 +390,15 @@ class PortScanningMixin:
             self.current_worker.is_running = False
         
         self.port_scanning = False
+
+        # Mark scan as cancelled in the registry
+        try:
+            from app.core.scan_registry import scan_registry
+            if hasattr(self, '_port_scan_id') and self._port_scan_id:
+                scan_registry.finish_scan(self._port_scan_id, "Cancelled")
+                self._port_scan_id = None
+        except Exception:
+            pass
         
         # Reset button state
         if hasattr(self.port_run_button, 'stop_scan'):
@@ -400,6 +418,15 @@ class PortScanningMixin:
     def on_port_scan_finished(self):
         """Handle port scan completion"""
         self.port_scanning = False
+
+        # Mark scan as completed in the registry
+        try:
+            from app.core.scan_registry import scan_registry
+            if hasattr(self, '_port_scan_id') and self._port_scan_id:
+                scan_registry.finish_scan(self._port_scan_id, "Completed")
+                self._port_scan_id = None
+        except Exception:
+            pass
         
         # Reset button state
         if hasattr(self.port_run_button, 'stop_scan'):

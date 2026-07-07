@@ -19,13 +19,7 @@ class SSHBruteforceComponent(QWidget):
     
     def setup_ui(self):
         layout = QVBoxLayout(self)
-        
-        # Header
-        header = QLabel("🔓 SSH Bruteforce Attack")
-        header.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        header.setStyleSheet("font-size: 16pt; font-weight: bold; color: #FF6B6B; padding: 10px;")
-        layout.addWidget(header)
-        
+                
         # Target configuration
         target_frame = QFrame()
         target_layout = QVBoxLayout(target_frame)
@@ -171,67 +165,8 @@ class SSHBruteforceComponent(QWidget):
         layout.addWidget(self.terminal)
     
     def apply_theme(self):
-        self.setStyleSheet("""
-            QFrame {
-                background-color: rgba(0, 0, 0, 100);
-                border-radius: 8px;
-                border: 1px solid rgba(100, 200, 255, 50);
-                padding: 10px;
-                margin: 5px;
-            }
-            QPushButton {
-                background-color: rgba(30, 40, 50, 150);
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 6px;
-                color: #DCDCDC;
-                font-weight: bold;
-                padding: 8px;
-            }
-            QPushButton:hover {
-                background-color: rgba(50, 70, 90, 200);
-                border: 2px solid #64C8FF;
-            }
-            QPushButton:disabled {
-                background-color: rgba(20, 20, 20, 100);
-                border: 2px solid rgba(100, 100, 100, 50);
-                color: #666666;
-            }
-            QLineEdit, QSpinBox {
-                background-color: rgba(20, 30, 40, 150);
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 4px;
-                color: #DCDCDC;
-                padding: 5px;
-            }
-            QComboBox {
-                background-color: rgba(20, 30, 40, 150);
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 4px;
-                color: #DCDCDC;
-                padding: 5px;
-            }
-            QTextEdit {
-                background-color: rgba(0, 0, 0, 200);
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 6px;
-                color: #00FF41;
-                padding: 10px;
-            }
-            QProgressBar {
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 4px;
-                background-color: rgba(20, 30, 40, 150);
-                text-align: center;
-            }
-            QProgressBar::chunk {
-                background-color: #FF6B6B;
-                border-radius: 2px;
-            }
-            QLabel {
-                color: #DCDCDC;
-                font-weight: bold;
-            }
-        """)
+        """Theme is applied globally by UnifiedThemeManager."""
+        pass
     
     def on_attack_type_changed(self, attack_type):
         """Handle attack type change"""

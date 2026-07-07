@@ -356,60 +356,8 @@ class NotesPanelComponent(QWidget):
     # ------------------------------------------------------------------
 
     def _apply_theme(self):
-        """Apply dark theme with cyan accents consistent with the app."""
-        self.setStyleSheet("""
-            QWidget {
-                background-color: #1E1E2E;
-                color: #DCDCDC;
-                font-family: "Neuropol X", sans-serif;
-            }
-            QLineEdit, QTextEdit, QComboBox {
-                background-color: #2A2A3E;
-                border: 1px solid #3A3A5E;
-                border-radius: 4px;
-                padding: 4px 8px;
-                color: #E0E0E0;
-            }
-            QLineEdit:focus, QTextEdit:focus, QComboBox:focus {
-                border-color: #00E5FF;
-            }
-            QPushButton {
-                background-color: #2A2A3E;
-                border: 1px solid #3A3A5E;
-                border-radius: 4px;
-                padding: 4px 12px;
-                color: #E0E0E0;
-            }
-            QPushButton:hover {
-                background-color: #3A3A5E;
-                border-color: #00E5FF;
-            }
-            QPushButton:pressed {
-                background-color: #00E5FF;
-                color: #1E1E2E;
-            }
-            QListWidget {
-                background-color: #1A1A2A;
-                border: 1px solid #3A3A5E;
-                border-radius: 4px;
-            }
-            QListWidget::item {
-                border-bottom: 1px solid #2A2A3E;
-                padding: 2px;
-            }
-            QListWidget::item:selected {
-                background-color: #2A3A5E;
-            }
-            QFrame#scopeFrame, QFrame#revisionFrame, QFrame#createFrame {
-                background-color: #222236;
-                border: 1px solid #3A3A5E;
-                border-radius: 4px;
-            }
-            QLabel {
-                background-color: transparent;
-                border: none;
-            }
-        """)
+        """Theme is applied globally by UnifiedThemeManager."""
+        pass
 
     # ------------------------------------------------------------------
     # Signal Connections
@@ -836,16 +784,4 @@ class NotesDockWidget(QDockWidget):
         # Minimum size for usability
         self.setMinimumWidth(320)
 
-        # Apply dark titlebar style
-        self.setStyleSheet("""
-            QDockWidget {
-                color: #00E5FF;
-                font-weight: bold;
-                font-family: "Neuropol X", sans-serif;
-            }
-            QDockWidget::title {
-                background-color: #1A1A2A;
-                padding: 6px;
-                border-bottom: 1px solid #3A3A5E;
-            }
-        """)
+

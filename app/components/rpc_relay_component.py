@@ -94,21 +94,7 @@ class RpcRelayComponent(QWidget):
         """Create output panel"""
         panel = QFrame()
         layout = QVBoxLayout(panel)
-        
-        # Warning banner
-        warning = QLabel("⚠️ AUTHORIZED TESTING ONLY - RPC Relay & MITM Analysis")
-        warning.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        warning.setStyleSheet("""
-            background-color: #FF4444;
-            color: white;
-            padding: 10px;
-            font-weight: bold;
-            font-size: 12pt;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        """)
-        layout.addWidget(warning)
-        
+               
         self.terminal_output = QTextEdit()
         self.terminal_output.setReadOnly(True)
         self.terminal_output.setPlaceholderText("RPC relay and MITM analysis results will appear here...")
@@ -202,44 +188,5 @@ class RpcRelayComponent(QWidget):
             button.setEnabled(enabled)
 
     def apply_theme(self):
-        """Apply component theme"""
-        self.setStyleSheet("""
-            QFrame {
-                background-color: rgba(0, 0, 0, 100);
-                border-radius: 10px;
-                border: 1px solid rgba(100, 200, 255, 50);
-            }
-            QPushButton {
-                background-color: rgba(30, 40, 50, 150);
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 8px;
-                color: #DCDCDC;
-                font-weight: bold;
-                padding: 8px;
-            }
-            QPushButton:hover {
-                background-color: rgba(50, 70, 90, 200);
-                border: 2px solid #64C8FF;
-            }
-            QLineEdit, QComboBox {
-                background-color: rgba(20, 30, 40, 150);
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-                color: #DCDCDC;
-                padding: 5px;
-            }
-            QTextEdit {
-                background-color: rgba(0, 0, 0, 200);
-                border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-                color: #DCDCDC;
-                font-family: 'Courier New', monospace;
-            }
-            QLabel {
-                color: #64C8FF;
-                font-weight: bold;
-            }
-            QCheckBox {
-                color: #DCDCDC;
-            }
-        """)
+        """Theme is applied globally by UnifiedThemeManager."""
+        pass
