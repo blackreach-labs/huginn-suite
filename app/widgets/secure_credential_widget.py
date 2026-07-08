@@ -64,19 +64,11 @@ class SecureCredentialWidget(QWidget):
         widget_layout.setSpacing(8)
 
         FIELD_HEIGHT = 30
-        LABEL_STYLE  = "font-size: 10pt; font-weight: bold; color: #DCDCDC;"
-        HDR_STYLE    = ("font-size: 10pt; font-weight: bold; color: #64C8FF;"
-                        " padding: 8px 0px 4px 0px;")
+        LABEL_STYLE  = "font-size: 10pt; font-weight: bold;"
+        HDR_STYLE    = "font-size: 10pt; font-weight: bold; padding: 8px 0px 4px 0px;"
 
         # ── Form frame ────────────────────────────────────────────────────
         form_frame = QFrame()
-        form_frame.setStyleSheet("""
-            QFrame {
-                background-color: rgba(0, 0, 0, 150);
-                border-radius: 10px;
-                border: 1px solid rgba(100, 200, 255, 50);
-            }
-        """)
         form_frame.setSizePolicy(QSizePolicy.Policy.Expanding,
                                  QSizePolicy.Policy.Expanding)
         form_layout = QVBoxLayout(form_frame)
@@ -98,7 +90,6 @@ class SecureCredentialWidget(QWidget):
             w = QLineEdit()
             w.setPlaceholderText(placeholder)
             w.setFixedHeight(FIELD_HEIGHT)
-            w.setStyleSheet("font-size: 10pt; color: #DCDCDC;")
             if echo:
                 w.setEchoMode(QLineEdit.EchoMode.Password)
             return w
@@ -111,7 +102,6 @@ class SecureCredentialWidget(QWidget):
                                   "Kerberos Ticket", "SQL Server Auth",
                                   "Windows Auth", "API Key", "Contacts"])
         self.type_combo.setFixedHeight(FIELD_HEIGHT)
-        self.type_combo.setStyleSheet("font-size: 10pt;")
         self.type_combo.currentTextChanged.connect(self.on_type_changed)
         grid.addWidget(self.type_combo, r, 1); r += 1
 
@@ -182,28 +172,10 @@ class SecureCredentialWidget(QWidget):
         # Buttons inside frame
         btn_row = QHBoxLayout()
         add_btn = QPushButton("Add Credential")
-        add_btn.setStyleSheet("""
-            QPushButton {
-                background-color: rgba(50, 150, 50, 150);
-                border: 2px solid #64C8FF; border-radius: 5px;
-                color: #000000; font-weight: bold;
-                padding: 8px 15px; font-size: 12pt;
-            }
-            QPushButton:hover { background-color: rgba(70, 170, 70, 200); }
-        """)
         add_btn.clicked.connect(self.save_credential)
         btn_row.addWidget(add_btn)
 
         del_btn = QPushButton("Delete Selected")
-        del_btn.setStyleSheet("""
-            QPushButton {
-                background-color: rgba(50, 150, 50, 150);
-                border: 2px solid #FF6347; border-radius: 5px;
-                color: #FFFFFF; font-weight: bold;
-                padding: 8px 15px; font-size: 12pt;
-            }
-            QPushButton:hover { background-color: rgba(70, 170, 70, 200); }
-        """)
         del_btn.clicked.connect(self.delete_selected_credential)
         btn_row.addWidget(del_btn)
         btn_row.addStretch()
@@ -214,12 +186,11 @@ class SecureCredentialWidget(QWidget):
         # ── Stored Credentials header ─────────────────────────────────────
         cred_header = QHBoxLayout()
         cred_lbl = QLabel("Stored Credentials:")
-        cred_lbl.setStyleSheet("font-weight: bold; color: #64C8FF; margin-top: 4px;")
+        cred_lbl.setStyleSheet("font-weight: bold; margin-top: 4px;")
         cred_header.addWidget(cred_lbl)
         cred_header.addStretch()
 
         self.show_passwords_cb = QCheckBox("Show Passwords")
-        self.show_passwords_cb.setStyleSheet("color: #DCDCDC; font-weight: bold;")
         self.show_passwords_cb.stateChanged.connect(self._toggle_password_display)
         cred_header.addWidget(self.show_passwords_cb)
         widget_layout.addLayout(cred_header)
@@ -232,18 +203,6 @@ class SecureCredentialWidget(QWidget):
         self.credentials_table.setMinimumHeight(120)
         self.credentials_table.setSelectionBehavior(
             QTableWidget.SelectionBehavior.SelectRows)
-        self.credentials_table.setStyleSheet("""
-            QTableWidget {
-                background-color: rgba(20, 30, 40, 150);
-                border: 1px solid rgba(100, 200, 255, 50);
-                border-radius: 5px; color: #DCDCDC;
-                gridline-color: rgba(100, 200, 255, 50); font-size: 9pt;
-            }
-            QHeaderView::section {
-                background-color: rgba(100, 200, 255, 100);
-                color: #000000; font-weight: bold; padding: 3px; border: none;
-            }
-        """)
         hdr_view = self.credentials_table.horizontalHeader()
         # Resize columns to fit their content so nothing is truncated,
         # then let the Notes column stretch to fill remaining space.
@@ -388,26 +347,16 @@ class SecureCredentialWidget(QWidget):
         layout.setSpacing(10)
 
         FIELD_HEIGHT = 30
-        LABEL_STYLE  = "font-size: 10pt; font-weight: bold; color: #DCDCDC;"
-        HDR_STYLE    = "font-size: 10pt; font-weight: bold; color: #64C8FF; padding: 4px 0px;"
-        INPUT_STYLE  = "font-size: 10pt; color: #DCDCDC;"
-        HINT_STYLE   = "font-size: 9pt; color: #888888; font-style: italic;"
+        LABEL_STYLE  = "font-size: 10pt; font-weight: bold;"
+        HDR_STYLE    = "font-size: 10pt; font-weight: bold; padding: 4px 0px;"
+        HINT_STYLE   = "font-size: 9pt; font-style: italic;"
 
         # ── Connection status banner ──────────────────────────────────────
         self.secrets_status_banner = QFrame()
-        self.secrets_status_banner.setStyleSheet("""
-            QFrame {
-                background-color: rgba(60, 60, 60, 180);
-                border-radius: 6px;
-                border: 1px solid rgba(100, 200, 255, 40);
-            }
-        """)
         banner_row = QHBoxLayout(self.secrets_status_banner)
         banner_row.setContentsMargins(12, 6, 12, 6)
         self._status_dot = QLabel("●")
-        self._status_dot.setStyleSheet("color: #888888; font-size: 14pt;")
         self._status_text = QLabel("Not connected")
-        self._status_text.setStyleSheet("color: #AAAAAA; font-size: 10pt;")
         banner_row.addWidget(self._status_dot)
         banner_row.addWidget(self._status_text)
         banner_row.addStretch()
@@ -415,13 +364,6 @@ class SecureCredentialWidget(QWidget):
 
         # ── Provider selector ─────────────────────────────────────────────
         provider_frame = QFrame()
-        provider_frame.setStyleSheet("""
-            QFrame {
-                background-color: rgba(0, 0, 0, 150);
-                border-radius: 10px;
-                border: 1px solid rgba(100, 200, 255, 50);
-            }
-        """)
         provider_layout = QVBoxLayout(provider_frame)
         provider_layout.setContentsMargins(15, 12, 15, 12)
         provider_layout.setSpacing(8)
@@ -438,7 +380,6 @@ class SecureCredentialWidget(QWidget):
             "Azure Key Vault",
         ])
         self.sm_provider_combo.setFixedHeight(FIELD_HEIGHT)
-        self.sm_provider_combo.setStyleSheet("font-size: 10pt;")
         self.sm_provider_combo.currentTextChanged.connect(self._on_sm_provider_changed)
         provider_row.addWidget(self.sm_provider_combo)
         provider_layout.addLayout(provider_row)
@@ -449,13 +390,6 @@ class SecureCredentialWidget(QWidget):
 
         # — HashiCorp Vault page —
         vault_page = QFrame()
-        vault_page.setStyleSheet("""
-            QFrame {
-                background-color: rgba(0, 0, 0, 150);
-                border-radius: 10px;
-                border: 1px solid rgba(100, 200, 255, 50);
-            }
-        """)
         vault_grid = QGridLayout(vault_page)
         vault_grid.setContentsMargins(15, 12, 15, 12)
         vault_grid.setHorizontalSpacing(10)
@@ -468,20 +402,16 @@ class SecureCredentialWidget(QWidget):
         vault_grid.addWidget(vault_hdr, 0, 0, 1, 2)
 
         vault_grid.addWidget(QLabel("Vault URL:"), 1, 0)
-        vault_grid.itemAtPosition(1, 0).widget().setStyleSheet(LABEL_STYLE)
         self.sm_vault_url = QLineEdit()
         self.sm_vault_url.setPlaceholderText("https://vault.example.com:8200")
         self.sm_vault_url.setFixedHeight(FIELD_HEIGHT)
-        self.sm_vault_url.setStyleSheet(INPUT_STYLE)
         vault_grid.addWidget(self.sm_vault_url, 1, 1)
 
         vault_grid.addWidget(QLabel("Vault Token:"), 2, 0)
-        vault_grid.itemAtPosition(2, 0).widget().setStyleSheet(LABEL_STYLE)
         self.sm_vault_token = QLineEdit()
         self.sm_vault_token.setEchoMode(QLineEdit.EchoMode.Password)
         self.sm_vault_token.setPlaceholderText("hvs.XXXXXXXXXXXXXXXX")
         self.sm_vault_token.setFixedHeight(FIELD_HEIGHT)
-        self.sm_vault_token.setStyleSheet(INPUT_STYLE)
         vault_grid.addWidget(self.sm_vault_token, 2, 1)
 
         vault_hint = QLabel("Secrets are read from the path  huginn/<service>  (KV v2)")
@@ -491,13 +421,6 @@ class SecureCredentialWidget(QWidget):
 
         # — AWS Secrets Manager page —
         aws_page = QFrame()
-        aws_page.setStyleSheet("""
-            QFrame {
-                background-color: rgba(0, 0, 0, 150);
-                border-radius: 10px;
-                border: 1px solid rgba(100, 200, 255, 50);
-            }
-        """)
         aws_grid = QGridLayout(aws_page)
         aws_grid.setContentsMargins(15, 12, 15, 12)
         aws_grid.setHorizontalSpacing(10)
@@ -517,7 +440,6 @@ class SecureCredentialWidget(QWidget):
             w = QLineEdit()
             w.setPlaceholderText(placeholder)
             w.setFixedHeight(FIELD_HEIGHT)
-            w.setStyleSheet(INPUT_STYLE)
             if echo:
                 w.setEchoMode(QLineEdit.EchoMode.Password)
             return w
@@ -537,7 +459,6 @@ class SecureCredentialWidget(QWidget):
         aws_grid.addWidget(_aws_lbl("Region:"), 4, 0)
         self.sm_aws_region = QComboBox()
         self.sm_aws_region.setFixedHeight(FIELD_HEIGHT)
-        self.sm_aws_region.setStyleSheet(INPUT_STYLE)
         self._populate_aws_region_combo(self.sm_aws_region)
         aws_grid.addWidget(self.sm_aws_region, 4, 1)
 
@@ -554,20 +475,13 @@ class SecureCredentialWidget(QWidget):
             "\n"
             "2. Create an Access Key for the IAM user and enter above"
         )
-        aws_notes.setStyleSheet("font-size: 9pt; color: #AAAAAA; font-family: 'Neuropol X';")
+        aws_notes.setStyleSheet("font-size: 9pt; font-family: 'Neuropol X';")
         aws_notes.setWordWrap(True)
         aws_grid.addWidget(aws_notes, 5, 0, 1, 2)
         self.sm_config_stack.addWidget(aws_page)     # index 1
 
         # — Azure Key Vault page —
         az_page = QFrame()
-        az_page.setStyleSheet("""
-            QFrame {
-                background-color: rgba(0, 0, 0, 150);
-                border-radius: 10px;
-                border: 1px solid rgba(100, 200, 255, 50);
-            }
-        """)
         az_grid = QGridLayout(az_page)
         az_grid.setContentsMargins(15, 12, 15, 12)
         az_grid.setHorizontalSpacing(10)
@@ -580,11 +494,9 @@ class SecureCredentialWidget(QWidget):
         az_grid.addWidget(az_hdr, 0, 0, 1, 2)
 
         az_grid.addWidget(QLabel("Key Vault URL:"), 1, 0)
-        az_grid.itemAtPosition(1, 0).widget().setStyleSheet(LABEL_STYLE)
         self.sm_az_vault_url = QLineEdit()
         self.sm_az_vault_url.setPlaceholderText("https://myvault.vault.azure.net")
         self.sm_az_vault_url.setFixedHeight(FIELD_HEIGHT)
-        self.sm_az_vault_url.setStyleSheet(INPUT_STYLE)
         az_grid.addWidget(self.sm_az_vault_url, 1, 1)
 
         az_hint = QLabel(
@@ -599,43 +511,19 @@ class SecureCredentialWidget(QWidget):
 
         # ── Action buttons ────────────────────────────────────────────────
         btn_frame = QFrame()
-        btn_frame.setStyleSheet("""
-            QFrame {
-                background-color: rgba(0, 0, 0, 150);
-                border-radius: 10px;
-                border: 1px solid rgba(100, 200, 255, 50);
-            }
-        """)
         btn_layout = QHBoxLayout(btn_frame)
         btn_layout.setContentsMargins(15, 10, 15, 10)
         btn_layout.setSpacing(10)
 
-        BTN_BASE = """
-            QPushButton {{
-                background-color: rgba(50, 150, 50, 150);
-                border: 2px solid {border};
-                border-radius: 5px;
-                color: {color};
-                font-weight: bold;
-                padding: 6px 18px;
-                font-size: 10pt;
-            }}
-            QPushButton:hover {{ background-color: rgba(70, 170, 70, 200); }}
-            QPushButton:disabled {{ background-color: rgba(60, 60, 60, 120); color: #666; border-color: #444; }}
-        """
-
         self.sm_connect_btn = QPushButton("Connect")
-        self.sm_connect_btn.setStyleSheet(BTN_BASE.format(border="#64C8FF", color="#000000"))
         self.sm_connect_btn.clicked.connect(self.configure_secrets_manager)
         btn_layout.addWidget(self.sm_connect_btn)
 
         self.sm_test_btn = QPushButton("Test Connection")
-        self.sm_test_btn.setStyleSheet(BTN_BASE.format(border="#64C8FF", color="#000000"))
         self.sm_test_btn.clicked.connect(self._test_sm_connection)
         btn_layout.addWidget(self.sm_test_btn)
 
         self.sm_disconnect_btn = QPushButton("Disconnect")
-        self.sm_disconnect_btn.setStyleSheet(BTN_BASE.format(border="#FF6347", color="#FFFFFF"))
         self.sm_disconnect_btn.clicked.connect(self._disconnect_sm)
         btn_layout.addWidget(self.sm_disconnect_btn)
 

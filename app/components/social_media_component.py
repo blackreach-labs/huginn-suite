@@ -332,53 +332,5 @@ class SocialMediaComponent(QWidget):
             self.output_text.append(f"<p style='color: #FFD93D;'>Timeline: {len(timeline.get('events', []))} recent events</p>")
 
     def apply_theme(self):
-        """Apply component theme"""
-        self.setStyleSheet("""
-            QFrame {
-                background-color: rgba(0, 0, 0, 100);
-                border-radius: 10px;
-                border: 1px solid rgba(100, 200, 255, 50);
-            }
-            QPushButton {
-                background-color: rgba(30, 40, 50, 150);
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 8px;
-                color: #DCDCDC;
-                font-weight: bold;
-                padding: 8px;
-            }
-            QPushButton:hover {
-                background-color: rgba(50, 70, 90, 200);
-                border: 2px solid #64C8FF;
-            }
-            QLineEdit {
-                background-color: rgba(20, 30, 40, 150);
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-                color: #DCDCDC;
-                padding: 5px;
-            }
-            QTextEdit {
-                background-color: rgba(0, 0, 0, 200);
-                border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-                color: #DCDCDC;
-                font-family: 'Neuropol X', monospace;
-            }
-            QLabel {
-                color: #64C8FF;
-                font-weight: bold;
-            }
-            QGroupBox {
-                font-weight: bold;
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-                margin-top: 10px;
-                color: #64C8FF;
-            }
-            QGroupBox::title {
-                subcontrol-origin: margin;
-                left: 10px;
-                padding: 0 5px 0 5px;
-            }
-        """)
+        """Theme is applied globally by UnifiedThemeManager."""
+        pass

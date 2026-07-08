@@ -112,20 +112,11 @@ class CloudAssetsWidget(QWidget):
         results_layout = QVBoxLayout(results_widget)
         
         results_label = QLabel("Scan Results")
-        results_label.setStyleSheet("font-weight: bold; color: #87CEEB;")
         results_layout.addWidget(results_label)
         
         # Results output
         self.results_output = QTextEdit()
         self.results_output.setReadOnly(True)
-        self.results_output.setStyleSheet("""
-            QTextEdit {
-                background-color: #0A0A0A;
-                color: #DCDCDC;
-                border: 1px solid #333333;
-                font-family: 'Courier New', monospace;
-            }
-        """)
         results_layout.addWidget(self.results_output)
         
         # Findings summary

@@ -63,12 +63,12 @@ class AntiForensicsWidget(QWidget):
         
         # Warning
         warning = QLabel("⚠️ EXTREME CAUTION - AUTHORIZED USE ONLY - ENTERPRISE LICENSE REQUIRED")
-        warning.setStyleSheet("color: #FF0000; font-weight: bold; padding: 10px; background: rgba(255,0,0,0.1);")
+        warning.setStyleSheet("font-weight: bold; padding: 10px;")
         layout.addWidget(warning)
         
         # License warning
         self.license_warning = QLabel("❌ Anti-Forensics requires Enterprise license")
-        self.license_warning.setStyleSheet("color: #FF6B6B; font-weight: bold; padding: 10px;")
+        self.license_warning.setStyleSheet("font-weight: bold; padding: 10px;")
         layout.addWidget(self.license_warning)
         
         # Tabs
@@ -119,7 +119,7 @@ class AntiForensicsWidget(QWidget):
         logs_layout.addLayout(checkbox_layout)
         
         self.clear_logs_btn = QPushButton("Clear Selected Logs")
-        self.clear_logs_btn.setStyleSheet("background-color: #FF6B6B; font-weight: bold;")
+        self.clear_logs_btn.setStyleSheet("font-weight: bold;")
         logs_layout.addWidget(self.clear_logs_btn)
         
         layout.addWidget(logs_group)
@@ -170,7 +170,7 @@ class AntiForensicsWidget(QWidget):
         delete_layout.addLayout(passes_layout)
         
         self.secure_delete_btn = QPushButton("Secure Delete Files")
-        self.secure_delete_btn.setStyleSheet("background-color: #FF6B6B; font-weight: bold;")
+        self.secure_delete_btn.setStyleSheet("font-weight: bold;")
         delete_layout.addWidget(self.secure_delete_btn)
         
         layout.addWidget(delete_group)
@@ -212,7 +212,7 @@ class AntiForensicsWidget(QWidget):
             obfuscation_layout.addWidget(checkbox)
             
         self.obfuscate_traffic_btn = QPushButton("Apply Obfuscation Techniques")
-        self.obfuscate_traffic_btn.setStyleSheet("background-color: #64C8FF; font-weight: bold;")
+        self.obfuscate_traffic_btn.setStyleSheet("font-weight: bold;")
         obfuscation_layout.addWidget(self.obfuscate_traffic_btn)
         
         layout.addWidget(obfuscation_group)
@@ -225,7 +225,7 @@ class AntiForensicsWidget(QWidget):
         memory_layout.addWidget(memory_info)
         
         self.memory_evasion_btn = QPushButton("Enable Memory Evasion")
-        self.memory_evasion_btn.setStyleSheet("background-color: #64C8FF; font-weight: bold;")
+        self.memory_evasion_btn.setStyleSheet("font-weight: bold;")
         memory_layout.addWidget(self.memory_evasion_btn)
         
         layout.addWidget(memory_group)

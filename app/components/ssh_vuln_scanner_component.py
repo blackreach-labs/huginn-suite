@@ -180,21 +180,6 @@ class SSHVulnScannerComponent(QWidget):
         
         # Input section
         input_group = QGroupBox("Scan Configuration")
-        input_group.setStyleSheet("""
-            QGroupBox {
-                font-weight: bold;
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-                margin-top: 10px;
-                padding-top: 10px;
-                color: #DCDCDC;
-            }
-            QGroupBox::title {
-                subcontrol-origin: margin;
-                left: 10px;
-                padding: 0 5px 0 5px;
-            }
-        """)
         input_layout = QHBoxLayout(input_group)
         
         input_layout.addWidget(QLabel("Target:"))
@@ -211,23 +196,6 @@ class SSHVulnScannerComponent(QWidget):
         
         self.scan_button = QPushButton("Start SSH Vulnerability Scan")
         self.scan_button.clicked.connect(self.start_scan)
-        self.scan_button.setStyleSheet("""
-            QPushButton {
-                background-color: rgba(100, 200, 255, 150);
-                color: #000000;
-                border: none;
-                border-radius: 5px;
-                padding: 8px 16px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: rgba(100, 200, 255, 200);
-            }
-            QPushButton:disabled {
-                background-color: rgba(100, 100, 100, 100);
-                color: #666666;
-            }
-        """)
         input_layout.addWidget(self.scan_button)
         
         layout.addWidget(input_group)
@@ -245,10 +213,6 @@ class SSHVulnScannerComponent(QWidget):
         self.output_text.setReadOnly(True)
         self.output_text.setStyleSheet("""
             QTextEdit {
-                background-color: rgba(0, 0, 0, 150);
-                color: #DCDCDC;
-                border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
                 font-family: 'Neuropol X', monospace;
                 font-size: 10pt;
             }
@@ -258,17 +222,6 @@ class SSHVulnScannerComponent(QWidget):
         # Vulnerabilities tab
         self.vuln_tree = QTreeWidget()
         self.vuln_tree.setHeaderLabels(["Vulnerability", "Severity", "Description"])
-        self.vuln_tree.setStyleSheet("""
-            QTreeWidget {
-                background-color: rgba(0, 0, 0, 100);
-                color: #DCDCDC;
-                border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-            }
-            QTreeWidget::item:selected {
-                background-color: rgba(100, 200, 255, 100);
-            }
-        """)
         self.results_tabs.addTab(self.vuln_tree, "Vulnerabilities")
         
         # Security Report tab
@@ -276,10 +229,6 @@ class SSHVulnScannerComponent(QWidget):
         self.report_text.setReadOnly(True)
         self.report_text.setStyleSheet("""
             QTextEdit {
-                background-color: rgba(0, 0, 0, 150);
-                color: #DCDCDC;
-                border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
                 font-family: 'Neuropol X', monospace;
                 font-size: 10pt;
             }
@@ -288,23 +237,7 @@ class SSHVulnScannerComponent(QWidget):
         
         layout.addWidget(self.results_tabs)
         
-        # Apply global styling
-        self.setStyleSheet("""
-            QWidget {
-                background-color: transparent;
-                color: #DCDCDC;
-            }
-            QLineEdit, QSpinBox {
-                background-color: rgba(20, 30, 40, 150);
-                border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 3px;
-                padding: 5px;
-                color: #DCDCDC;
-            }
-            QLabel {
-                color: #DCDCDC;
-            }
-        """)
+        # Styling inherited from global theme
     
     def start_scan(self):
         target = self.target_input.text().strip()

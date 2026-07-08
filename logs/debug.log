@@ -172,3 +172,319 @@ ValueError: 'www.blackreachlabs.com' does not appear to be an IPv4 or IPv6 addre
 2026-07-07 22:07:46 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
 2026-07-07 22:13:16 - huginn - DEBUG - Memory monitoring stopped
 2026-07-07 22:13:16 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-07 22:15:55 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-07 22:17:28 - huginn - DEBUG - Memory monitoring stopped
+2026-07-07 22:17:28 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-08 17:45:08 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-08 17:45:20 - huginn - DEBUG - Session token generated
+2026-07-08 17:46:36 - huginn - DEBUG - Memory monitoring stopped
+2026-07-08 17:46:36 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-08 17:48:08 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-08 17:48:16 - huginn - DEBUG - Session token generated
+2026-07-08 17:51:47 - huginn - DEBUG - Memory monitoring stopped
+2026-07-08 17:51:47 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-08 17:51:51 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-08 17:53:30 - huginn - DEBUG - Memory monitoring stopped
+2026-07-08 17:53:30 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-08 17:54:21 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-08 19:51:48 - huginn - DEBUG - Memory monitoring stopped
+2026-07-08 19:51:48 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-08 19:53:02 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-08 19:55:45 - huginn - DEBUG - Memory monitoring stopped
+2026-07-08 19:55:45 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-08 19:56:36 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-08 19:58:49 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:49 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:49 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:49 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:49 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:49 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:49 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:49 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:50 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:51 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:51 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:51 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:51 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:51 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:51 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:51 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 19:58:51 - huginn - DEBUG - Suppressed exception
+Traceback (most recent call last):
+  File "C:\Users\allie\Coding Projects\huggin_suite\huginn\app\core\asset_manager.py", line 729, in _resolve_hostname_to_ip
+    ip = socket.gethostbyname(identifier)
+socket.gaierror: [Errno 11001] getaddrinfo failed
+2026-07-08 20:07:56 - huginn - DEBUG - Memory monitoring stopped
+2026-07-08 20:07:56 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-08 20:08:00 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-08 20:08:54 - huginn - DEBUG - Memory monitoring stopped
+2026-07-08 20:08:54 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-08 20:10:29 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-08 20:16:27 - huginn - DEBUG - Memory monitoring stopped
+2026-07-08 20:16:27 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-08 20:16:45 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-08 20:18:20 - huginn - DEBUG - Session token generated
+2026-07-08 20:20:17 - huginn - DEBUG - Memory monitoring stopped
+2026-07-08 20:20:17 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-08 20:20:22 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-08 20:20:54 - huginn - DEBUG - Session token generated
+2026-07-08 20:20:57 - huginn - DEBUG - Memory monitoring stopped
+2026-07-08 20:20:57 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-08 20:44:36 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-08 20:44:45 - huginn - DEBUG - Session token generated
+2026-07-08 20:47:06 - huginn - DEBUG - Memory monitoring stopped
+2026-07-08 20:47:06 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-08 20:50:08 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-08 20:52:17 - huginn - DEBUG - Memory monitoring stopped
+2026-07-08 20:52:17 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-08 21:26:49 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-08 21:27:19 - huginn - DEBUG - Memory monitoring stopped
+2026-07-08 21:27:19 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-08 21:31:49 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-08 21:33:38 - huginn - DEBUG - Memory monitoring stopped
+2026-07-08 21:33:38 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-08 21:35:04 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-08 21:38:31 - huginn - DEBUG - Memory monitoring stopped
+2026-07-08 21:38:31 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-08 21:38:35 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-08 21:39:22 - huginn - DEBUG - Memory monitoring stopped
+2026-07-08 21:39:22 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-08 21:40:44 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-08 21:41:32 - huginn - DEBUG - Memory monitoring stopped
+2026-07-08 21:41:32 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-08 21:43:24 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-08 21:43:44 - huginn - DEBUG - Memory monitoring stopped
+2026-07-08 21:43:44 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-08 21:44:04 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-08 21:44:17 - huginn - DEBUG - Memory monitoring stopped
+2026-07-08 21:44:17 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-08 21:47:47 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-08 21:48:07 - huginn - DEBUG - Memory monitoring stopped
+2026-07-08 21:48:07 - huginn - DEBUG - Connection pool closed all sessions
+2026-07-08 21:50:03 - huginn - DEBUG - [FeatureGapIntegration] Tenant→Engagement wiring connected.
+2026-07-08 21:50:18 - huginn - DEBUG - Memory monitoring stopped
+2026-07-08 21:50:18 - huginn - DEBUG - Connection pool closed all sessions

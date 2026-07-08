@@ -119,7 +119,7 @@ class CrackingPage(QWidget):
             from PyQt6.QtWidgets import QLabel
             error_label = QLabel(f"Hash cracking components unavailable: {e}")
             error_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            error_label.setStyleSheet("color: #FF6666; font-size: 12pt; padding: 50px;")
+            error_label.setStyleSheet("font-size: 12pt; padding: 50px;")
             layout.addWidget(error_label)
 
         return tab

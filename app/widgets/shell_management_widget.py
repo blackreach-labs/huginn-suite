@@ -501,8 +501,8 @@ class EmbeddedTerminalWidget(QWidget):
             self.status_label = QLabel(f"Session: {self.session_id}")
             self.connection_label = QLabel("Connected")
 
-        self.status_label.setStyleSheet("color: #00FF00; font-weight: bold;")
-        self.connection_label.setStyleSheet("color: #FFFF00;")
+        self.status_label.setStyleSheet("font-weight: bold;")
+        self.connection_label.setStyleSheet("")
         status_layout.addWidget(self.status_label)
         status_layout.addStretch()
         status_layout.addWidget(self.connection_label)
@@ -514,11 +514,7 @@ class EmbeddedTerminalWidget(QWidget):
         self.terminal_output.setFont(QFont("Consolas", 11))
         self.terminal_output.setStyleSheet("""
             QTextEdit {
-                background-color: #0C0C0C;
-                color: #CCCCCC;
-                border: 1px solid #333333;
                 font-family: 'Consolas', 'Courier New', monospace;
-                selection-background-color: #264F78;
             }
         """)
         # Enable word wrap so long lines don't force horizontal scrolling
@@ -530,7 +526,7 @@ class EmbeddedTerminalWidget(QWidget):
 
         self.prompt_label = QLabel("$ ")
         self.prompt_label.setStyleSheet(
-            "color: #00FF00; font-weight: bold; font-family: 'Consolas';"
+            "font-weight: bold; font-family: 'Consolas';"
         )
         input_layout.addWidget(self.prompt_label)
 
@@ -538,14 +534,8 @@ class EmbeddedTerminalWidget(QWidget):
         self.command_input.setFont(QFont("Consolas", 11))
         self.command_input.setStyleSheet("""
             QLineEdit {
-                background-color: #1E1E1E;
-                color: #CCCCCC;
-                border: 1px solid #333333;
                 padding: 5px;
                 font-family: 'Consolas', 'Courier New', monospace;
-            }
-            QLineEdit:focus {
-                border: 1px solid #007ACC;
             }
         """)
         self.command_input.setPlaceholderText("Type command and press Enter...")
@@ -757,7 +747,7 @@ class EmbeddedTerminalWidget(QWidget):
         if session_id == self.session_id:
             self._append_output(f"Session terminated: {reason}", "#FF0000")
             self.connection_label.setText("Disconnected")
-            self.connection_label.setStyleSheet("color: #FF0000;")
+            self.connection_label.setStyleSheet("")
             self.command_input.setEnabled(False)
 
     def _on_connection_received(self, listener_id: str, client_ip: str, data: str):
@@ -780,7 +770,7 @@ class EmbeddedTerminalWidget(QWidget):
         if listener_id == self.listener_id:
             self._append_output("Listener stopped", "#FF0000")
             self.connection_label.setText("Stopped")
-            self.connection_label.setStyleSheet("color: #FF0000;")
+            self.connection_label.setStyleSheet("")
 
     def _check_listener_connections(self):
         """Periodically update connection status display"""
@@ -789,11 +779,11 @@ class EmbeddedTerminalWidget(QWidget):
             conn_count = len(info['connections'])
             if conn_count == 0:
                 self.connection_label.setText("Waiting for connections...")
-                self.connection_label.setStyleSheet("color: #FFFF00;")
+                self.connection_label.setStyleSheet("")
                 self.prompt_label.setText("$ ")
             else:
                 self.connection_label.setText(f"Interactive Shell ({conn_count} connection(s))")
-                self.connection_label.setStyleSheet("color: #00FF00;")
+                self.connection_label.setStyleSheet("")
                 first_ip = info['connections'][0]['ip']
                 self.prompt_label.setText(f"{first_ip}$ ")
 
@@ -823,7 +813,7 @@ class EmbeddedLocalTerminal(QWidget):
         # Status bar
         status_layout = QHBoxLayout()
         self.cwd_label = QLabel(f"📁 {self.working_dir}")
-        self.cwd_label.setStyleSheet("color: #64C8FF; font-size: 10px;")
+        self.cwd_label.setStyleSheet("font-size: 10px;")
         status_layout.addWidget(self.cwd_label)
         status_layout.addStretch()
 
@@ -840,11 +830,7 @@ class EmbeddedLocalTerminal(QWidget):
         self.terminal_output.setFont(QFont("Consolas", 11))
         self.terminal_output.setStyleSheet("""
             QTextEdit {
-                background-color: #0C0C0C;
-                color: #CCCCCC;
-                border: 1px solid #333333;
                 font-family: 'Consolas', 'Courier New', monospace;
-                selection-background-color: #264F78;
             }
         """)
         # Enable word wrap so long lines don't force horizontal scrolling
@@ -856,7 +842,7 @@ class EmbeddedLocalTerminal(QWidget):
 
         self.prompt_label = QLabel("❯ ")
         self.prompt_label.setStyleSheet(
-            "color: #00FF00; font-weight: bold; font-family: 'Consolas';"
+            "font-weight: bold; font-family: 'Consolas';"
         )
         input_layout.addWidget(self.prompt_label)
 
@@ -864,14 +850,8 @@ class EmbeddedLocalTerminal(QWidget):
         self.command_input.setFont(QFont("Consolas", 11))
         self.command_input.setStyleSheet("""
             QLineEdit {
-                background-color: #1E1E1E;
-                color: #CCCCCC;
-                border: 1px solid #333333;
                 padding: 5px;
                 font-family: 'Consolas', 'Courier New', monospace;
-            }
-            QLineEdit:focus {
-                border: 1px solid #007ACC;
             }
         """)
         self.command_input.setPlaceholderText("Type command and press Enter...")

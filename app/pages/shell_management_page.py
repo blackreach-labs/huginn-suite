@@ -26,16 +26,6 @@ class ShellManagementPage(QWidget):
         # Header section
         header_frame = QFrame()
         header_frame.setFrameStyle(QFrame.Shape.Box)
-        header_frame.setStyleSheet("""
-            QFrame {
-                background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-                    stop:0 rgba(30, 40, 50, 200),
-                    stop:1 rgba(50, 60, 70, 200));
-                border: 2px solid rgba(100, 200, 255, 100);
-                border-radius: 10px;
-                margin: 5px;
-            }
-        """)
         
         header_layout = QVBoxLayout(header_frame)
         
@@ -44,12 +34,9 @@ class ShellManagementPage(QWidget):
         title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title_label.setStyleSheet("""
             QLabel {
-                color: #64C8FF;
                 font-size: 24px;
                 font-weight: bold;
                 padding: 10px;
-                background: transparent;
-                border: none;
             }
         """)
         header_layout.addWidget(title_label)
@@ -63,11 +50,8 @@ class ShellManagementPage(QWidget):
         desc_label.setWordWrap(True)
         desc_label.setStyleSheet("""
             QLabel {
-                color: #CCCCCC;
                 font-size: 14px;
                 padding: 5px 20px 15px 20px;
-                background: transparent;
-                border: none;
             }
         """)
         header_layout.addWidget(desc_label)
@@ -77,14 +61,6 @@ class ShellManagementPage(QWidget):
         # Quick actions section
         actions_frame = QFrame()
         actions_frame.setFrameStyle(QFrame.Shape.Box)
-        actions_frame.setStyleSheet("""
-            QFrame {
-                background: rgba(20, 30, 40, 150);
-                border: 1px solid rgba(100, 200, 255, 50);
-                border-radius: 8px;
-                margin: 2px;
-            }
-        """)
         
         actions_layout = QHBoxLayout(actions_frame)
         
@@ -101,25 +77,10 @@ class ShellManagementPage(QWidget):
             btn.setToolTip(tooltip)
             btn.setStyleSheet("""
                 QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                        stop:0 rgba(100, 200, 255, 150),
-                        stop:1 rgba(50, 150, 255, 150));
-                    color: #000000;
-                    border: none;
                     border-radius: 6px;
                     padding: 8px 16px;
                     font-weight: bold;
                     font-size: 12px;
-                }
-                QPushButton:hover {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                        stop:0 rgba(120, 220, 255, 180),
-                        stop:1 rgba(70, 170, 255, 180));
-                }
-                QPushButton:pressed {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                        stop:0 rgba(80, 180, 255, 200),
-                        stop:1 rgba(30, 130, 255, 200));
                 }
             """)
             btn.clicked.connect(callback)
@@ -133,7 +94,6 @@ class ShellManagementPage(QWidget):
         scroll_area.setStyleSheet("""
             QScrollArea {
                 border: none;
-                background: transparent;
             }
         """)
         
@@ -145,28 +105,15 @@ class ShellManagementPage(QWidget):
         
         # Navigation buttons
         nav_frame = QFrame()
-        nav_frame.setStyleSheet("""
-            QFrame {
-                background: rgba(20, 30, 40, 100);
-                border: 1px solid rgba(100, 200, 255, 50);
-                border-radius: 6px;
-            }
-        """)
         
         nav_layout = QHBoxLayout(nav_frame)
         
         back_btn = QPushButton("← Back to Exploitation")
         back_btn.setStyleSheet("""
             QPushButton {
-                background: rgba(255, 100, 100, 150);
-                color: #FFFFFF;
-                border: none;
                 border-radius: 4px;
                 padding: 8px 16px;
                 font-weight: bold;
-            }
-            QPushButton:hover {
-                background: rgba(255, 120, 120, 180);
             }
         """)
         back_btn.clicked.connect(lambda: self.navigate_signal.emit("web_exploits"))
@@ -177,15 +124,9 @@ class ShellManagementPage(QWidget):
         post_exploit_btn = QPushButton("Post-Exploitation Tools →")
         post_exploit_btn.setStyleSheet("""
             QPushButton {
-                background: rgba(100, 255, 100, 150);
-                color: #000000;
-                border: none;
                 border-radius: 4px;
                 padding: 8px 16px;
                 font-weight: bold;
-            }
-            QPushButton:hover {
-                background: rgba(120, 255, 120, 180);
             }
         """)
         post_exploit_btn.clicked.connect(lambda: self.navigate_signal.emit("cracking"))

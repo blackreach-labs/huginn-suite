@@ -354,10 +354,6 @@ class VulnScannerComponent(QWidget):
         self.terminal_output.setPlaceholderText("Vulnerability scan results will appear here...")
         self.terminal_output.setStyleSheet("""
             QTextEdit {
-                background-color: rgba(0, 0, 0, 150);
-                color: #DCDCDC;
-                border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
                 font-family: 'Neuropol X', monospace;
                 font-size: 10pt;
             }
@@ -369,17 +365,6 @@ class VulnScannerComponent(QWidget):
         self.vuln_table.setColumnCount(4)
         self.vuln_table.setHorizontalHeaderLabels(["CVE", "Severity", "Description", "Port"])
         self.vuln_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        self.vuln_table.setStyleSheet("""
-            QTableWidget {
-                background-color: rgba(0, 0, 0, 100);
-                color: #DCDCDC;
-                border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
-            }
-            QTableWidget::item:selected {
-                background-color: rgba(100, 200, 255, 100);
-            }
-        """)
         self.results_tabs.addTab(self.vuln_table, "Vulnerabilities")
         
         # Summary tab
@@ -387,10 +372,6 @@ class VulnScannerComponent(QWidget):
         self.summary_text.setReadOnly(True)
         self.summary_text.setStyleSheet("""
             QTextEdit {
-                background-color: rgba(0, 0, 0, 150);
-                color: #DCDCDC;
-                border: 1px solid rgba(100, 200, 255, 100);
-                border-radius: 5px;
                 font-family: 'Neuropol X', monospace;
                 font-size: 10pt;
             }

@@ -666,33 +666,13 @@ class ReconEnumerationPage(QWidget, ServiceScannersMixin, ServiceUIComponentsMix
         return tab
     
     def apply_terminal_theme_to_widget(self, widget):
-        """Apply theme-specific styling to any terminal widget"""
-        current_theme = getattr(self.main_window, 'current_theme', 'dark_blue')
-        
-        if current_theme == 'matrix':
-            widget.setStyleSheet("""
-                QTextEdit {
-                    background-color: #000000;
-                    color: #00FF41;
-                    font-family: 'Share Tech Mono', monospace;
-                    font-size: 11pt;
-                    border: 1px solid #00FF41;
-                    border-radius: 5px;
-                    selection-background-color: #003300;
-                }
-            """)
-        else:
-            widget.setStyleSheet("""
-                QTextEdit {
-                    background-color: #1E1E1E;
-                    color: #DCDCDC;
-                    font-family: 'Neuropol X', monospace;
-                    font-size: 10pt;
-                    border: 1px solid rgba(100, 200, 255, 100);
-                    border-radius: 5px;
-                    selection-background-color: #2D4F7C;
-                }
-            """)
+        """Apply terminal font to a widget. Colours are inherited from the global theme."""
+        widget.setStyleSheet("""
+            QTextEdit {
+                font-family: 'Neuropol X', monospace;
+                font-size: 10pt;
+            }
+        """)
     
     def run_port_scan(self):
         """Run port scan - fallback implementation"""

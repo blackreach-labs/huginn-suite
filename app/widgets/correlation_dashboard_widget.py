@@ -24,53 +24,16 @@ from PyQt6.QtCore import QTimer, Qt
 import json
 
 
-# ── exact copies of the style constants used in attack_chain_home.py ──────
-_FRAME_STYLE = """
-    QFrame {
-        background-color: rgba(0, 0, 0, 150);
-        border-radius: 10px;
-        border: 1px solid rgba(100, 200, 255, 50);
-    }
-"""
-_TABLE_STYLE = """
-    QTableWidget {
-        background-color: rgba(20, 30, 40, 150);
-        border: 1px solid rgba(100, 200, 255, 100);
-        border-radius: 5px;
-        color: #DCDCDC;
-        gridline-color: rgba(100, 200, 255, 50);
-    }
-    QHeaderView::section {
-        background-color: rgba(100, 200, 255, 100);
-        color: #000000;
-        font-weight: bold;
-        padding: 5px;
-        border: none;
-    }
-"""
-_HDR_STYLE = (
-    "font-size: 10pt; font-weight: bold; color: #64C8FF;"
-    " padding: 8px 0px 4px 0px;"
-)
-_SECTION_STYLE = "font-weight: bold; color: #64C8FF; margin-top: 4px;"
+# ── Style constants — colours now inherited from global theme ──────────────
+_FRAME_STYLE = ""
+_TABLE_STYLE = ""
+_HDR_STYLE = "font-size: 10pt; font-weight: bold; padding: 8px 0px 4px 0px;"
+_SECTION_STYLE = "font-weight: bold; margin-top: 4px;"
 
 
 def _get_button_style(border_color, text_color="#FFFFFF"):
-    """Exact copy of AttackChainHomePage.get_button_style()."""
-    return f"""
-        QPushButton {{
-            background-color: rgba(50, 150, 50, 150);
-            border: 2px solid {border_color};
-            border-radius: 5px;
-            color: {text_color};
-            font-weight: bold;
-            padding: 8px 15px;
-            font-size: 12pt;
-        }}
-        QPushButton:hover {{
-            background-color: rgba(70, 170, 70, 200);
-        }}
-    """
+    """No longer needed — buttons inherit from the global theme."""
+    return ""
 
 
 def _make_table(columns, fixed_height=None):
@@ -106,10 +69,6 @@ class CorrelationDashboardWidget(QWidget):
         layout.setContentsMargins(10, 10, 10, 10)
         layout.setSpacing(8)
 
-        # Match the black background of the Target Profiles tab
-        self.setAutoFillBackground(True)
-        self.setStyleSheet("CorrelationDashboardWidget { background-color: black; }")
-
         # ── Subtabs sit directly on the layout, no wrapping frame ─────────
         # (mirrors how Target Profiles / Credential Management are direct
         #  children of setup_subtabs in attack_chain_home.py)
@@ -136,9 +95,9 @@ class CorrelationDashboardWidget(QWidget):
         btn_layout.addStretch()
         layout.addLayout(btn_layout)
 
-        # ── Table header label (mirrors "📋 Profiles:" label) ─────────────
+        # ── Table header label ─────────────
         table_lbl = QLabel("🔗 Correlation Summary:")
-        table_lbl.setStyleSheet("font-weight: bold; color: #64C8FF; margin-top: 4px;")
+        table_lbl.setStyleSheet("font-weight: bold; margin-top: 4px;")
         layout.addWidget(table_lbl)
 
         # ── Summary table (fixed height, mirrors target_table) ────────────
@@ -240,15 +199,6 @@ class CorrelationDashboardWidget(QWidget):
         self.gaps_text = QTextEdit()
         self.gaps_text.setReadOnly(True)
         self.gaps_text.setFixedHeight(130)
-        self.gaps_text.setStyleSheet("""
-            QTextEdit {
-                background-color: rgba(20, 30, 40, 150);
-                border: 1px solid rgba(100, 200, 255, 50);
-                border-radius: 5px;
-                color: #DCDCDC;
-                font-size: 10pt;
-            }
-        """)
         form_layout.addWidget(self.gaps_text)
 
         layout.addWidget(form_frame, stretch=1)
